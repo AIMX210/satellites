@@ -3,7 +3,7 @@ import { searchSource } from '@/app/telemetry'
 import type { Place } from '@/types'
 import { isTimeout, liveFor, parseLive, parseStats, RANGES } from './api'
 import { mockLive, mockStats } from './fixture'
-import { fmtBucket, fmtPct, niceMax, SOURCE_NAMES } from './format'
+import { fmtBucket, fmtPct, funnelShares, niceMax, SOURCE_NAMES, type FunnelStage } from './format'
 import { liveSeries } from './live'
 import { dotRadius, GRID_STEP, legendCounts, placeGrid } from './placeGrid'
 
@@ -52,6 +52,33 @@ describe('formats', () => {
     expect(fmtBucket(Date.UTC(2026, 10, 8), 'day')).toBe('NOV 08') // a UTC day (before 0016)
     expect(fmtBucket(Date.UTC(2026, 10, 8, 5), 'day')).toBe('NOV 08') // an Eastern day: midnight EST
     expect(fmtBucket(Date.UTC(2026, 6, 8, 4), 'day')).toBe('JUL 08') // midnight EDT
+  })
+})
+
+describe('funnel shares', () => {
+  // The all-time funnel on 2026-11-15: more sessions expanded a photo than opened a pass, which read as 211% when
+  // each step was divided by the one listed above it.
+  const stages: FunnelStage[] = [
+    { key: 'search', label: 'Searched', n: 680_091 },
+    { key: 'results', label: 'Saw results', n: 667_734 },
+    { key: 'pass_open', label: 'Opened a pass', n: 165_370, of: 'results' },
+    { key: 'lightbox_open', label: 'Expanded a photo', n: 348_729, of: 'results' },
+    { key: 'share_open', label: 'Opened share', n: 9_478, of: 'results' },
+    { key: 'share_action', label: 'Shared', n: 3_230, of: 'share_open' },
+  ]
+  it('divides each step by the step it follows', () => {
+    const rows = funnelShares(stages)
+    expect(rows.map((r) => r.of?.key ?? null)).toEqual([null, 'search', 'results', 'results', 'results', 'share_open'])
+    expect(rows.map((r) => fmtPct(r.share))).toEqual(['—', '98%', '25%', '52%', '1.4%', '34%'])
+    expect(rows.every((r) => r.share === null || r.share <= 1)).toBe(true)
+  })
+  it('falls back to the step before, and never divides by zero or an unknown step', () => {
+    const rows = funnelShares([
+      { key: 'a', label: 'A', n: 0 },
+      { key: 'b', label: 'B', n: 5 },
+      { key: 'c', label: 'C', n: 2, of: 'missing' },
+    ])
+    expect(rows.map((r) => r.share)).toEqual([null, null, null])
   })
 })
 
