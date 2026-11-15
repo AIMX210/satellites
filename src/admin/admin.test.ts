@@ -56,29 +56,21 @@ describe('formats', () => {
 })
 
 describe('funnel shares', () => {
-  // The all-time funnel on 2026-11-15: more sessions expanded a photo than opened a pass, which read as 211% when
-  // each step was divided by the one listed above it.
+  // The all-time funnel on 2026-11-15. Every step is a share of the recorded sessions (owner): the steps are not one
+  // chain, and dividing each by the step listed above it read 211% for Expanded a photo.
   const stages: FunnelStage[] = [
-    { key: 'search', label: 'Searched', n: 680_091 },
+    { key: 'search', label: 'Searched', n: 682_426 },
     { key: 'results', label: 'Saw results', n: 667_734 },
-    { key: 'pass_open', label: 'Opened a pass', n: 165_370, of: 'results' },
-    { key: 'lightbox_open', label: 'Expanded a photo', n: 348_729, of: 'results' },
-    { key: 'share_open', label: 'Opened share', n: 9_478, of: 'results' },
-    { key: 'share_action', label: 'Shared', n: 3_230, of: 'share_open' },
+    { key: 'pass_open', label: 'Opened a pass', n: 165_370 },
+    { key: 'lightbox_open', label: 'Expanded a photo', n: 348_729 },
+    { key: 'share_open', label: 'Opened share', n: 9_478 },
+    { key: 'share_action', label: 'Shared', n: 3_230 },
   ]
-  it('divides each step by the step it follows', () => {
-    const rows = funnelShares(stages)
-    expect(rows.map((r) => r.of?.key ?? null)).toEqual([null, 'search', 'results', 'results', 'results', 'share_open'])
-    expect(rows.map((r) => fmtPct(r.share))).toEqual(['—', '98%', '25%', '52%', '1.4%', '34%'])
-    expect(rows.every((r) => r.share === null || r.share <= 1)).toBe(true)
+  it('gives each step as a share of the sessions, Searched being the sessions with at least one search', () => {
+    expect(funnelShares(stages, 1_029_586).map((r) => fmtPct(r.share))).toEqual(['66%', '65%', '16%', '34%', '0.9%', '0.3%'])
   })
-  it('falls back to the step before, and never divides by zero or an unknown step', () => {
-    const rows = funnelShares([
-      { key: 'a', label: 'A', n: 0 },
-      { key: 'b', label: 'B', n: 5 },
-      { key: 'c', label: 'C', n: 2, of: 'missing' },
-    ])
-    expect(rows.map((r) => r.share)).toEqual([null, null, null])
+  it('never divides by zero sessions', () => {
+    expect(funnelShares(stages, 0).every((r) => r.share === null)).toBe(true)
   })
 })
 
