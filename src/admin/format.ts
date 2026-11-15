@@ -15,7 +15,27 @@ export function fmtPct(f: number | null | undefined): string {
   return `${p >= 10 || p === 0 ? Math.round(p) : p.toFixed(1)}%`
 }
 
-export const fmtSec = (ms: number | null | undefined): string => (ms == null || !Number.isFinite(ms) ? '—' : (ms / 1000).toFixed(2))
+/**
+ * One step of the sessions funnel. The steps are not one chain: after a report, opening a pass, expanding a photo and
+ * opening share are separate choices (share opens from the headline, the photo viewer or a pass), so each step names
+ * the step it follows (`of`, by key) and its share is of that step. Without `of`, it follows the step listed before it.
+ */
+export interface FunnelStage {
+  key: string
+  label: string
+  n: number
+  of?: string
+}
+
+/** Each step with its share of the step it follows (null for the first step, or when that step is 0 or unknown). */
+export function funnelShares(stages: FunnelStage[]): { stage: FunnelStage; of: FunnelStage | null; share: number | null }[] {
+  return stages.map((stage, i) => {
+    const of = i === 0 ? null : stage.of ? (stages.find((s) => s.key === stage.of) ?? null) : stages[i - 1]
+    return { stage, of, share: of && of.n > 0 ? stage.n / of.n : null }
+  })
+}
+
+export const fmtSec =(ms: number | null | undefined): string => (ms == null || !Number.isFinite(ms) ? '—' : (ms / 1000).toFixed(2))
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
