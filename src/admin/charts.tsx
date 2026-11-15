@@ -164,21 +164,19 @@ export function RankList({ rows, total, max = 8, label, empty = 'Nothing yet', a
 
 // ── Funnel ──────────────────────────────────────────────────────────────────────────────────
 
-export function Funnel({ stages }: { stages: FunnelStage[] }) {
-  const first = stages[0]?.n || 0
+/** Each step's count and its share of `sessions`; a bar's length is that share, so bars and percentages agree. */
+export function Funnel({ stages, sessions }: { stages: FunnelStage[]; sessions: number }) {
   return (
     <ol className="a-funnel">
-      {funnelShares(stages).map(({ stage: s, of, share }, i) => {
+      {funnelShares(stages, sessions).map(({ stage: s, share }, i) => {
         return (
           <li key={s.key}>
             <span className="a-funnel-label">{s.label}</span>
             <span className="a-funnel-track" aria-hidden>
-              <span className={i === stages.length - 1 ? 'a-signal-bg' : undefined} style={{ width: first ? `${Math.max(0.4, (s.n / first) * 100)}%` : '0%' }} />
+              <span className={i === stages.length - 1 ? 'a-signal-bg' : undefined} style={{ width: share !== null ? `${Math.max(0.4, Math.min(1, share) * 100)}%` : '0%' }} />
             </span>
             <span className="a-funnel-n">{fmtInt(s.n)}</span>
-            <span className="a-funnel-pct" title={of ? `of ${of.label}` : undefined}>
-              {fmtPct(share)}
-            </span>
+            <span className="a-funnel-pct">{fmtPct(share)}</span>
           </li>
         )
       })}

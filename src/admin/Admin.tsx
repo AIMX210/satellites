@@ -350,14 +350,14 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
   const rec = s.recorded
   const shares = (t.share_action ?? 0) + (live?.share_action ?? 0)
   const conv = f.search ? (f.share_action ?? 0) / f.search : null
-  // Opening a pass, expanding a photo and opening share each follow the report, not each other (funnelShares).
+  // Every step is a share of the recorded sessions (funnelShares): the funnel is counted from recorded events only.
   const stages: FunnelStage[] = [
     { key: 'search', label: 'Searched', n: f.search ?? 0 },
     { key: 'results', label: 'Saw results', n: f.results ?? 0 },
-    { key: 'pass_open', label: 'Opened a pass', n: f.pass_open ?? 0, of: 'results' },
-    { key: 'lightbox_open', label: 'Expanded a photo', n: f.lightbox_open ?? 0, of: 'results' },
-    { key: 'share_open', label: 'Opened share', n: f.share_open ?? 0, of: 'results' },
-    { key: 'share_action', label: 'Shared', n: f.share_action ?? 0, of: 'share_open' },
+    { key: 'pass_open', label: 'Opened a pass', n: f.pass_open ?? 0 },
+    { key: 'lightbox_open', label: 'Expanded a photo', n: f.lightbox_open ?? 0 },
+    { key: 'share_open', label: 'Opened share', n: f.share_open ?? 0 },
+    { key: 'share_action', label: 'Shared', n: f.share_action ?? 0 },
   ]
   const r = s.results
   const v = s.vitals
@@ -416,8 +416,10 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
 
       <div className="a-cols">
         <Section n={3} title="FUNNEL · SESSIONS">
-          <Funnel stages={stages} />
-          <p className="a-note">Sessions that reached each step. The last column is the share of the step it follows: Saw results for opening a pass, expanding a photo and opening share (separate choices, not a chain), and Opened share for Shared.</p>
+          <Funnel stages={stages} sessions={rec.session} />
+          <p className="a-note">
+            Sessions that reached each step at least once (Searched: had at least one search), and their share of the {fmtInt(rec.session)} sessions recorded in this range.
+          </p>
         </Section>
         <Section n={4} title="HOW PEOPLE SEARCH">
           <RankList rows={s.top['search.source']} total={rec.search} label={(x) => SOURCE_NAMES[x] ?? x} />

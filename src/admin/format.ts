@@ -16,23 +16,19 @@ export function fmtPct(f: number | null | undefined): string {
 }
 
 /**
- * One step of the sessions funnel. The steps are not one chain: after a report, opening a pass, expanding a photo and
- * opening share are separate choices (share opens from the headline, the photo viewer or a pass), so each step names
- * the step it follows (`of`, by key) and its share is of that step. Without `of`, it follows the step listed before it.
+ * One step of the sessions funnel: how many of the range's sessions reached it. The steps are not one chain (after a
+ * report, opening a pass, expanding a photo and opening share are separate choices), so every step is shown as a share
+ * of the same base, the sessions recorded in the range (owner), never of the step listed above it.
  */
 export interface FunnelStage {
   key: string
   label: string
   n: number
-  of?: string
 }
 
-/** Each step with its share of the step it follows (null for the first step, or when that step is 0 or unknown). */
-export function funnelShares(stages: FunnelStage[]): { stage: FunnelStage; of: FunnelStage | null; share: number | null }[] {
-  return stages.map((stage, i) => {
-    const of = i === 0 ? null : stage.of ? (stages.find((s) => s.key === stage.of) ?? null) : stages[i - 1]
-    return { stage, of, share: of && of.n > 0 ? stage.n / of.n : null }
-  })
+/** Each step's share of `sessions` (null when there are none). */
+export function funnelShares(stages: FunnelStage[], sessions: number): { stage: FunnelStage; share: number | null }[] {
+  return stages.map((stage) => ({ stage, share: sessions > 0 ? stage.n / sessions : null }))
 }
 
 export const fmtSec =(ms: number | null | undefined): string => (ms == null || !Number.isFinite(ms) ? '—' : (ms / 1000).toFixed(2))
