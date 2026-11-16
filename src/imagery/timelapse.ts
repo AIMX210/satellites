@@ -53,7 +53,7 @@ const MIN_CLEAR = 0.95
 const SAME_GROUND = 0.03
 const MIN_GROUND_CLEAR = 0.6
 /** A scene is of the aimed-for quarter when it is within this many days of its middle. */
-const SEASON_HALF_DAYS = 45
+export const SEASON_HALF_DAYS = 45
 /** The middle day of each quarter a year can aim for (mid-January, mid-April, mid-July, mid-October). */
 export const SEASON_DAYS = [15, 105, 196, 288] as const
 /** Scenes of the aimed-for quarter asked about before any other date of the year gets a turn. */
