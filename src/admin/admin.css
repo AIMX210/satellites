@@ -384,6 +384,32 @@ a {
   stroke: var(--bone-3);
   stroke-width: 1;
 }
+/* daily ranges: lines through one point a day (charts.tsx), in the colours the bars use */
+.a-line-main {
+  stroke: var(--bone-2);
+  stroke-width: 1.5;
+}
+.a-line-ice {
+  stroke: var(--ice);
+}
+.a-line-signal {
+  stroke: var(--signal);
+}
+.a-area {
+  fill: var(--line);
+}
+.a-dot {
+  fill: var(--bone-2);
+}
+.a-dot-dim {
+  fill: var(--bone-3);
+}
+.a-dot-ice {
+  fill: var(--ice);
+}
+.a-dot-signal {
+  fill: var(--signal);
+}
 .a-cursor {
   stroke: var(--bone-3-mark);
   stroke-width: 1;
