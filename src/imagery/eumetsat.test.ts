@@ -1,4 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('./image', async (orig) => ({ ...(await orig<typeof import('./image')>()), preloadImage: vi.fn() }))
+
+import { EmptyImageError, preloadImage } from './image'
 import { eumetsatCapabilitiesUrl, eumetsatDomainUrl, eumetsatFrameCandidates, eumetsatFrames, eumetsatWmsUrl, latestEumetsatFrame, parseDomainRange, parseTimeDimension } from './eumetsat'
 
 const PARIS = { lat: 48.8566, lon: 2.3522 }
@@ -118,5 +122,29 @@ describe('EUMETView frame candidates', () => {
   it('shows nothing when the list cannot be read (a guessed time would be answered with its nearest frame)', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 503 })))
     await expect(latestEumetsatFrame({ layer: 'mtg_fd:down', stepMin: 10 }, PARIS, { halfSizeKm: 400, px: 176 }, { now: T('2026-11-11T05:37:00Z') })).resolves.toBeNull()
+  })
+
+  describe('which frames are asked for', () => {
+    const load = vi.mocked(preloadImage)
+    const now = T('2026-11-11T05:37:00Z')
+    const layer = { layer: 'mtg_fd:rgb_geocolour', stepMin: 10 }
+    const asked = () => load.mock.calls.map((c) => new URL(c[0]).searchParams.get('time')!.slice(11, 16))
+    const listing = () => vi.stubGlobal('fetch', vi.fn(async () => new Response(CAPS, { status: 200 })))
+    afterEach(() => load.mockReset())
+
+    it('goes one frame back from an empty frame', async () => {
+      listing()
+      load.mockRejectedValueOnce(new EmptyImageError('u')).mockResolvedValueOnce({} as HTMLImageElement)
+      const found = await latestEumetsatFrame(layer, PARIS, { halfSizeKm: 400, px: 176 }, { now })
+      expect(asked()).toEqual(['05:10', '05:00'])
+      expect(found?.time).toBe(T('2026-11-11T05:00:00Z'))
+    })
+
+    it('stops at a frame that fails to load: a busy service is not asked for three more', async () => {
+      listing()
+      load.mockRejectedValue(new Error('Image failed to load'))
+      await expect(latestEumetsatFrame(layer, PARIS, { halfSizeKm: 400, px: 176 }, { now: now + 1 })).resolves.toBeNull()
+      expect(asked()).toEqual(['05:10'])
+    })
   })
 })

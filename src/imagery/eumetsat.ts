@@ -28,7 +28,7 @@ import { bboxAround, sunElevationDeg } from '@/lib/geo'
 import type { LatLon } from '@/types'
 import { EUMETSAT_GEOSERVER, EUMETSAT_WMS, sanitizeCrop, type CropOpts } from './endpoints'
 import { isoSeconds, parseTimeDomain } from './gibs'
-import { preloadImage } from './image'
+import { EmptyImageError, preloadImage } from './image'
 import { isAbortError, raceAbort, throwIfAborted, withRetry } from './net'
 
 /** A EUMETView layer as the frame search needs it. */
@@ -151,8 +151,9 @@ function sunWasUp(info: EumetsatFrameLayer, place: LatLon, now: number, maxSteps
 /**
  * The newest frame EUMETView serves for the place on this layer, as a URL at `opts` size: the first of the newest few
  * listed frames that loads with pixels (`preloadImage` rejects an all-black answer, and the verified image stays
- * loaded, so showing the URL costs nothing more). Resolves null when nothing qualifies: a daylight product at night
- * (no request at all then), a place off the disc, the service down. Rejects only on abort. Browser only.
+ * loaded, so showing the URL costs nothing more). An empty frame gives way to the one before it; a frame that fails
+ * to load ends the search. Resolves null when nothing qualifies: a daylight product at night (no request at all
+ * then), a place off the disc, the service down or busy. Rejects only on abort. Browser only.
  */
 export async function latestEumetsatFrame(
   info: EumetsatFrameLayer,
@@ -174,8 +175,11 @@ export async function latestEumetsatFrame(
     try {
       await preloadImage(url, { signal })
       return { url, time: t }
-    } catch {
+    } catch (err) {
       throwIfAborted(signal)
+      // Only an empty frame (masked, or not yet whole) sends the search one frame back. A failed or slow answer means
+      // the service is busy: asking it for three more frames then would add to that, for a picture nobody waits for.
+      if (!(err instanceof EmptyImageError)) return null
     }
   }
   return null

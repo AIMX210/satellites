@@ -70,8 +70,9 @@ export class ImageTimeoutError extends Error {
 const EMPTY_NO_DATA = 0.98
 
 const isGibsUrl = (url: string) => url.startsWith(GIBS_WMS)
+const isEumetsatUrl = (url: string) => url.startsWith(EUMETSAT_WMS)
 /** Weather imagery (NASA GIBS, EUMETSAT): shown from bytes the pixels worker has checked for "no data". */
-const isCheckedUrl = (url: string) => isGibsUrl(url) || url.startsWith(EUMETSAT_WMS)
+const isCheckedUrl = (url: string) => isGibsUrl(url) || isEumetsatUrl(url)
 
 /**
  * A NASA GIBS photo or a EUMETSAT frame for display (I-1): fetched and checked for "no data" in the pixels worker (its 32 px decode),
@@ -207,7 +208,9 @@ function loadOnce(url: string, timeoutMs: number): Promise<HTMLImageElement> {
 
 /**
  * Load and decode an image, with one retry for transient failures (PC's tiler occasionally
- * 5xxs on a cold scene). Cached by URL; failures are not cached.
+ * 5xxs on a cold scene). Cached by URL; failures are not cached. A EUMETSAT picture is asked for once, whatever
+ * stops it: its map service is shared and asks clients not to repeat requests without backing off (its User Service
+ * Helpdesk, 2026-11-17), and a failure there usually means it is busy.
  *
  * Sentinel-2 / Landsat crops are toned first (see the header), so the element's `src` is a blob: URL too.
  * NASA GIBS images are also checked (in the pixels worker, I-1): an all-black response is GIBS saying
@@ -232,7 +235,7 @@ export function preloadImage(url: string, opts: { signal?: AbortSignal; timeoutM
     try {
       return await load()
     } catch (err) {
-      if (err instanceof EmptyImageError || err instanceof ImageTimeoutError) throw err
+      if (err instanceof EmptyImageError || err instanceof ImageTimeoutError || isEumetsatUrl(url)) throw err
       await sleep(700 + Math.random() * 500)
       return load()
     }
