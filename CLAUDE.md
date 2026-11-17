@@ -167,7 +167,10 @@
   are JPEG because EUMETView's download speed is the limit (50–165 kB/s; the same piece as PNG is 7 MB). JPEG work
   in the Worker is MozJPEG in WebAssembly (`worker/jpegCodec.ts`): jpeg-js needs ~116 MB to decode a piece, against
   a Worker's 128 MB. KV is eventually consistent (up to a minute), which is why a frame is listed two minutes after
-  it is stored and the fill keeps its own state key. Vercel and `npm run dev` have no cache: the Meteosat rows say
+  it is stored and the fill keeps its own state key. The Worker stores no logs (Workers Logs would bill every
+  request): what the fill's last 40 working runs saw is in that state, KV key `fill`, field `log` (read it with the
+  Cloudflare API: `…/storage/kv/namespaces/<id>/values/fill`). EUMETView publishes a frame 21–29 minutes after it
+  is taken, and its cached list can lag minutes more, so the fill asks its tile service too when the list stalls. Vercel and `npm run dev` have no cache: the Meteosat rows say
   "No image just now" there; `npx wrangler dev --test-scheduled` has one (start a fill with `/__scheduled`, see
   docs/SELF-HOSTING.md). Cloud containers cannot reach EUMETView from `wrangler dev` (workerd ignores the proxy): set
   `GEO_UPSTREAM` to a local stand-in that serves downloaded pieces.
