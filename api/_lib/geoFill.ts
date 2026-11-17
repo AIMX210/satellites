@@ -13,8 +13,9 @@
  *    the app's visitors had each asked it directly (about 1,000 pictures a minute at the peak of 2026-11-15).
  *  - The list is the layer's capabilities document, which EUMETView's own cache hands out (cheap for it) but which
  *    can be minutes stale (ages of 121–177 s were seen against its stated 120; a cached error was once held for
- *    minutes: 2026-11-11). So when it has shown nothing new three times running, every second read asks the tile
- *    service's DescribeDomains instead: 250 bytes, never cached, the same newest frame.
+ *    minutes: 2026-11-11). So every second read asks the tile service's DescribeDomains instead: 250 bytes, never
+ *    cached, the same newest frame. In production it named a new frame of two layers while the document still named
+ *    the one before (2026-11-17 18:23Z), and the frame could be fetched at once.
  *  - The last runs that did anything are kept in the stored state (`log`): the one record of what a list read saw,
  *    since the Worker stores no logs. On the first evening a frame of each satellite was skipped and nothing could
  *    say whether EUMETView had listed it late or a read had failed.
@@ -118,8 +119,8 @@ const PUBLISH_LAG_MS = 20 * 60_000
 const POLL_AGAIN_MS = 55_000
 const POLL_PATIENT_AFTER = 6
 const POLL_PATIENT_MS = 115_000
-/** After this many reads with nothing new, every second read asks the tile service (see the header). */
-const SECOND_OPINION_AFTER = 3
+/** After a read with nothing new, every second read asks the tile service (see the header). */
+const SECOND_OPINION_AFTER = 1
 const LEASE_MS = 150_000
 /** No new piece is started this long into a run. */
 const BUDGET_MS = 100_000

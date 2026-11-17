@@ -167,8 +167,8 @@ describe('filling the frame cache', () => {
       w.at(NOON + m * MIN)
       found.push(...(await runFill(w.deps)).ready)
     }
-    // Three reads of the list, then the tile service, which names 08:50.
-    expect(w.kinds().filter((k) => k.includes(FCI) && !k.startsWith('piece'))).toEqual([`list ${FCI}`, `list ${FCI}`, `list ${FCI}`, `tiles ${FCI}`])
+    // One read of the list, then the tile service, which names 08:50.
+    expect(w.kinds().filter((k) => k.includes(FCI) && !k.startsWith('piece'))).toEqual([`list ${FCI}`, `tiles ${FCI}`])
     expect(found).toEqual([`${FCI}@2026-11-17T08:50:00.000Z`])
   })
 
