@@ -14,7 +14,7 @@ const CAPS =
 describe('EUMETView URLs', () => {
   it('asks for a square around the place at one frame, lat first, with black for no data', () => {
     const u = new URL(eumetsatWmsUrl('mtg_fd:rgb_geocolour', T('2026-11-11T05:10:00Z'), PARIS, { halfSizeKm: 400, px: 640 }))
-    expect(u.origin + u.pathname).toBe('https://view.eumetsat.int/geoserver/ows')
+    expect(u.origin + u.pathname).toBe('https://view.eumetsat.int/geoserver/wms')
     const q = u.searchParams
     expect(q.get('layers')).toBe('mtg_fd:rgb_geocolour')
     expect(q.get('time')).toBe('2026-11-11T05:10:00Z')

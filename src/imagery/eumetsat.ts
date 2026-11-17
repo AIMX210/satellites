@@ -6,8 +6,10 @@
  *  - Every layer publishes its own small capabilities document (1.6 kB gzipped, CORS `*`, cached for 2 minutes).
  *    Its time dimension reads "start/end/PT10M": the end is the newest frame, 22–27 minutes old then.
  *  - A TIME between two frames is answered with the NEAREST frame (`nearestValue="1"`), so only listed instants
- *    are ever asked for: the age on screen is the frame's own. A TIME past the newest frame is a 200 with an XML
- *    ServiceException, which the image loader reads as a failed load (no retry storm: the next frame back is tried).
+ *    are ever asked for: the age on screen is the frame's own. A TIME past the newest frame is an error (a 502 with
+ *    no body on /wms, measured 2026-11-17), which the image loader reads as a failed load.
+ *  - Pictures are asked of /geoserver/wms, the endpoint EUMETSAT asks clients to use for GetMap (its User Service
+ *    Helpdesk, 2026-11-17). It draws the same frame as /ows, black where there is no data, a little smoother at 1024 px.
  *  - Off the disc, and where a daylight product is masked at night, the JPEG is WHITE unless BGCOLOR says otherwise.
  *    Black is NASA GIBS's "no data" too, so the one emptiness check serves both services (image.ts).
  *  - Meteosat-9's natural-colour product is masked wherever the sun stands under about 3°. An 800 km square is whole
