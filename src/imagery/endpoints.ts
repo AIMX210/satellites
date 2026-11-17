@@ -17,6 +17,12 @@ export const WORLDVIEW = 'https://worldview.earthdata.nasa.gov/'
 export const EUMETSAT_GEOSERVER = 'https://view.eumetsat.int/geoserver'
 /** Its map endpoint for pictures (GetMap): the one EUMETSAT asks clients to use (User Service Helpdesk, 2026-11-17). */
 export const EUMETSAT_WMS = `${EUMETSAT_GEOSERVER}/wms`
+/**
+ * The site's own cache of Meteosat frames: a place's small picture cut from a stored frame (api/geo.ts), and the
+ * frames there are (api/geo-frames.ts). Same origin, whichever host serves the app.
+ */
+export const GEO_CUT = '/api/geo'
+export const GEO_FRAMES_LIST = '/api/geo-frames'
 export const PHOTON = 'https://photon.komoot.io'
 /** Open-Meteo's place search (GeoNames): Photon's backup for typed searches (./geocode.ts searchPlaces). */
 export const OPEN_METEO_GEOCODE = 'https://geocoding-api.open-meteo.com/v1/search'

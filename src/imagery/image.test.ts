@@ -30,4 +30,11 @@ describe('loading a weather picture', () => {
     await expect(preloadImage(`${EUMETSAT_WMS}?service=WMS&request=GetMap&layers=mtg_fd%3Argb_geocolour&width=1024&time=x`, { timeoutMs: 5_000 })).rejects.toThrow('Image failed to load')
     expect(f).toHaveBeenCalledTimes(1)
   })
+
+  it("asks the site's frame cache for a cut once too: what it cannot cut now it cannot cut a second later", async () => {
+    const f = vi.fn(async (_url: string) => new Response(null, { status: 503 }))
+    vi.stubGlobal('fetch', f)
+    await expect(preloadImage('/api/geo?layer=mtg_fd%3Argb_geocolour&time=2026-11-17T15%3A40%3A00Z&lat=48.85660&lon=2.35220&px=176', { timeoutMs: 5_000 })).rejects.toThrow('Image failed to load')
+    expect(f).toHaveBeenCalledTimes(1)
+  })
 })
