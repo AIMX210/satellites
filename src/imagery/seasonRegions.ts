@@ -1,5 +1,7 @@
 /**
- * The war zones where every year of the time-lapse is the same season, and the season.
+ * The places where every year of the time-lapse is the same season, and the season: the war zones people search
+ * for, and glaciers (below, by GLACIER_SEASONS: a glacier's loop that turns through the seasons shows snow coming
+ * and going, not the ice going).
  *
  * Why (owner, 2026-11-16): elsewhere the years turn through the seasons (timelapse.ts). In a war zone that hides the
  * war or invents some: Gaza turns brown every summer, war or no war, so a summer frame after a winter one shows the
@@ -23,6 +25,7 @@
  *    border sees the zone in its square anyway.
  */
 import type { LatLon } from '@/types'
+import { GLACIER_CELL, GLACIER_ROWS } from './glaciers'
 
 export type SeasonName = 'winter' | 'spring' | 'summer' | 'autumn'
 
@@ -209,10 +212,80 @@ function kmToRing(lon: number, lat: number, r: readonly number[]): number {
 }
 
 /** The war zone a place is in (or within NEAR_KM of), if any. */
-export function seasonRegionAt(place: LatLon): SeasonRegion | undefined {
+function warZoneAt(place: LatLon): SeasonRegion | undefined {
   const { lon, lat } = place
   return (
     SEASON_REGIONS.find((z) => z.rings.some((r) => inRing(lon, lat, r))) ??
     SEASON_REGIONS.find((z) => z.rings.some((r) => kmToRing(lon, lat, r) <= NEAR_KM))
   )
+}
+
+// ── Glaciers ───────────────────────────────────────────────────────────────────────────────
+
+/**
+ * The glaciers' season, by hemisphere: the window in which seasonal snow hides the least of the ice, so a year's
+ * frame shows where the ice itself ends (owner, 2026-11-16: "the same time of year where you can see the ice melt
+ * over the years the most"). The score is the tile's snow-and-ice share (the archive's `s2:snow_ice_percentage`)
+ * on each year's least cloudy scene in the window, the scene this app would take, averaged over the years
+ * (Sentinel-2, 2015–2026, windows a fortnight apart, 2026-11-16). The glacier itself is in every tile, so what moves
+ * the score is the snow round it:
+ *
+ *  - North, mid-August: ten glaciers (Columbia, Alsek, Yakutat, Mendenhall, Breiðamerkurjökull, Aletsch,
+ *    Jakobshavn, Athabasca, Nathorstbreen, Khumbu) 27.4 %, a flat floor from mid-August (27.4) to late September
+ *    (27.6) against 61 % in spring; every glacier has a frame in all 11 years. Mid-August keeps late September's
+ *    first snows, and the lakes' first ice, at the window's far edge.
+ *  - South, mid-February: five (Perito Moreno, Upsala, San Quintín, Grey, Tasman) 13.0 %, rising every fortnight
+ *    after (14.1 in early March, 30.5 in late August). The window may not cross New Year, so it can begin no earlier.
+ *  - Between the tropics the seasons are wet and dry, not snow and thaw, and the turning seasons stay.
+ */
+export const GLACIER_SEASONS: { readonly north: SeasonRegion; readonly south: SeasonRegion } = {
+  north: { name: 'Glaciers, north', season: 'summer', day: 227, rings: [] },
+  south: { name: 'Glaciers, south', season: 'summer', day: 45, rings: [] },
+}
+
+/** Glaciers this close to the Equator keep the turning seasons. */
+export const TROPIC_LAT = 23.44
+/** Everything south of this is Antarctica's ice, which Natural Earth's glaciers leave out. */
+export const ANTARCTIC_LAT = -60
+
+let glacierRows: Map<number, Int32Array> | undefined
+
+/** Row → [start, end, start, end, …] of its set cells (glaciers.ts), decoded on first use. */
+function glacierGrid(): Map<number, Int32Array> {
+  if (glacierRows) return glacierRows
+  glacierRows = new Map()
+  let row = 0
+  for (const line of GLACIER_ROWS.split(';')) {
+    const n = line.split(',').map((t) => parseInt(t, 36))
+    row += n[0]
+    const runs = new Int32Array(n.length - 1)
+    for (let i = 1, end = 0; i < n.length; i += 2) {
+      runs[i - 1] = end + n[i]
+      end = runs[i] = runs[i - 1] + n[i + 1]
+    }
+    glacierRows.set(row, runs)
+  }
+  return glacierRows
+}
+
+/** Does the place's 10 km square hold glacier ice (to the grid's 0.1°)? */
+export function hasGlacier(place: LatLon): boolean {
+  if (place.lat <= ANTARCTIC_LAT) return true
+  const row = Math.floor((90 - place.lat) / GLACIER_CELL)
+  const col = Math.floor(((((place.lon + 180) % 360) + 360) % 360) / GLACIER_CELL)
+  const runs = glacierGrid().get(row)
+  if (!runs) return false
+  for (let i = 0; i < runs.length; i += 2) if (col >= runs[i] && col < runs[i + 1]) return true
+  return false
+}
+
+/** The glaciers' season for a place with ice in its square, outside the tropics. */
+function glacierSeasonAt(place: LatLon): SeasonRegion | undefined {
+  if (Math.abs(place.lat) < TROPIC_LAT || !hasGlacier(place)) return undefined
+  return place.lat > 0 ? GLACIER_SEASONS.north : GLACIER_SEASONS.south
+}
+
+/** The one season every year of a place's time-lapse keeps: its war zone's, else its glaciers', else none. */
+export function seasonRegionAt(place: LatLon): SeasonRegion | undefined {
+  return warZoneAt(place) ?? glacierSeasonAt(place)
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SEASON_REGIONS, seasonRegionAt } from './seasonRegions'
+import { GLACIER_SEASONS, hasGlacier, SEASON_REGIONS, seasonRegionAt } from './seasonRegions'
 import { SEASON_HALF_DAYS } from './timelapse'
 
 const zoneOf = (lat: number, lon: number) => seasonRegionAt({ lat, lon })?.name
@@ -81,5 +81,68 @@ describe('war zones', () => {
         }
       }
     }
+  })
+})
+
+describe('glaciers', () => {
+  it('gives the end of the melt season to every year of a glacier, by hemisphere', () => {
+    const north: [string, number, number][] = [
+      ['Columbia Glacier', 61.15, -147.08],
+      ['Mendenhall Glacier', 58.437, -134.548],
+      ['Alsek Glacier', 59.14, -138.12],
+      ['Breiðamerkurjökull', 64.08, -16.34],
+      ['Aletsch Glacier', 46.43, 8.03],
+      ['Jakobshavn Isbræ', 69.17, -49.85],
+      ['Athabasca Glacier', 52.19, -117.25],
+      ['Khumbu Glacier', 27.98, 86.85],
+      // On the ice's edge, not on it: the square reaches it.
+      ['Chamonix', 45.92, 6.87],
+    ]
+    const south: [string, number, number][] = [
+      ['Perito Moreno Glacier', -50.48, -73.04],
+      ['Upsala Glacier', -49.905, -73.29],
+      ['San Quintín Glacier', -46.875, -74.01],
+      ['Tasman Glacier', -43.68, 170.18],
+      ['Pine Island Glacier', -75.1, -101.0],
+    ]
+    for (const [name, lat, lon] of north) expect([name, zoneOf(lat, lon)]).toEqual([name, GLACIER_SEASONS.north.name])
+    for (const [name, lat, lon] of south) expect([name, zoneOf(lat, lon)]).toEqual([name, GLACIER_SEASONS.south.name])
+  })
+
+  it('leaves the turning seasons to places without ice in their square, and to the tropics', () => {
+    const outside: [string, number, number][] = [
+      ['Toronto', 43.653, -79.384],
+      ['Reykjavík', 64.15, -21.94],
+      ['Anchorage', 61.22, -149.9],
+      ['Calgary', 51.05, -114.07],
+      ['Geneva', 46.2, 6.15],
+      ['Nuuk', 64.18, -51.72],
+      ['Ushuaia', -54.8, -68.3],
+      ['Lima', -12.05, -77.04],
+      ['Huascarán (tropical ice)', -9.12, -77.6],
+    ]
+    for (const [name, lat, lon] of outside) expect([name, zoneOf(lat, lon)]).toEqual([name, undefined])
+    expect(hasGlacier({ lat: -9.12, lon: -77.6 })).toBe(true)
+  })
+
+  it('reads the grid at the antimeridian from either side', () => {
+    expect(hasGlacier({ lat: 61.15, lon: -147.08 + 360 })).toBe(true)
+    expect(hasGlacier({ lat: 0, lon: 180 })).toBe(false)
+  })
+
+  it('keeps the war zones’ seasons where both apply', () => {
+    for (const z of SEASON_REGIONS) expect(z.name.startsWith('Glaciers')).toBe(false)
+    expect(zoneOf(31.5017, 34.4668)).toBe('Gaza Strip')
+  })
+
+  it('keeps both glacier windows inside the calendar year, in each hemisphere’s summer', () => {
+    const month = (day: number) => new Date(Date.UTC(2023, 0, 1 + day)).getUTCMonth()
+    for (const z of [GLACIER_SEASONS.north, GLACIER_SEASONS.south]) {
+      expect(z.day - SEASON_HALF_DAYS).toBeGreaterThanOrEqual(0)
+      expect(z.day + SEASON_HALF_DAYS).toBeLessThanOrEqual(364)
+      expect(z.season).toBe('summer')
+    }
+    expect([6, 7, 8]).toContain(month(GLACIER_SEASONS.north.day))
+    expect([0, 1, 2]).toContain(month(GLACIER_SEASONS.south.day))
   })
 })
