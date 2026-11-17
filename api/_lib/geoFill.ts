@@ -7,10 +7,17 @@
  *
  * Why it works the way it does:
  *  - The load on EUMETSAT is fixed, whatever the site's traffic: per layer, four pictures a frame and a few looks at
- *    the list (frames come every 10 or 15 minutes at times that can be foreseen, so the list is only read from 2½
- *    minutes before the next is due, then once a minute until it shows). Under one request a minute per layer, which
- *    is what its User Service Helpdesk asked for on 2026-11-17 after the app's visitors had each asked it directly
- *    (about 1,000 pictures a minute at the peak of 2026-11-15).
+ *    the list. EUMETView publishes a frame 21 to 29 minutes after it is taken (measured 2026-11-17), so the list is
+ *    read from 20 minutes after the next frame's own time, once a minute, then every two minutes if it is late. About
+ *    one request a minute per layer or less, which is what its User Service Helpdesk asked for on 2026-11-17 after
+ *    the app's visitors had each asked it directly (about 1,000 pictures a minute at the peak of 2026-11-15).
+ *  - The list is the layer's capabilities document, which EUMETView's own cache hands out (cheap for it) but which
+ *    can be minutes stale (ages of 121–177 s were seen against its stated 120; a cached error was once held for
+ *    minutes: 2026-11-11). So when it has shown nothing new three times running, every second read asks the tile
+ *    service's DescribeDomains instead: 250 bytes, never cached, the same newest frame.
+ *  - The last runs that did anything are kept in the stored state (`log`): the one record of what a list read saw,
+ *    since the Worker stores no logs. On the first evening a frame of each satellite was skipped and nothing could
+ *    say whether EUMETView had listed it late or a read had failed.
  *  - A piece that fails is asked for again a minute later, six times at most; then the frame is given up and the
  *    next one awaited. Never a tight loop.
  *  - A daylight product is black where the sun is down. A piece wholly in the dark is not fetched, and a tile with
@@ -68,6 +75,8 @@ interface FillLayer {
   pollAt: number
   /** The newest frame ever seen listed */
   newest: number
+  /** List reads in a row that showed nothing newer */
+  misses?: number
   pending?: PendingFrame
   /** Newest first */
   ready: StoredFrame[]
@@ -79,7 +88,20 @@ interface FillState {
   layers: Record<string, FillLayer>
   /** The frames document as last written */
   pub: string
+  /** What the last runs that did anything saw, oldest first */
+  log?: RunNote[]
 }
+
+/** One run, for whoever reads the state later: when, which lists it read and what each named, and how it went. */
+interface RunNote {
+  at: string
+  /** "<layer>=<newest frame it named, HH:MM>" or "<layer>!<why it could not be read>"; "~" marks the tile service */
+  lists: string[]
+  fetched: number
+  ready: string[]
+  failed: string[]
+}
+const LOG_KEPT = 40
 
 /** A layer lists its newest four frames (the app looks no further back: eumetsat.ts maxSteps). */
 export const LISTED_FRAMES = 4
@@ -90,8 +112,14 @@ const EXP_MARGIN_MS = 2 * 60_000
 export const LIST_DELAY_MS = 120_000
 /** A listed frame can still be cut for at least this long: longer than a browser keeps a list. */
 const LIST_MIN_LEFT_MS = 10 * 60_000
-const POLL_EARLY_MS = 150_000
+/** EUMETView publishes a frame at least this long after its time (21–29 minutes measured): no list read before. */
+const PUBLISH_LAG_MS = 20 * 60_000
+/** Then a read a minute (55 s: the next run must find it due), and one every two minutes once it is this late. */
 const POLL_AGAIN_MS = 55_000
+const POLL_PATIENT_AFTER = 6
+const POLL_PATIENT_MS = 115_000
+/** After this many reads with nothing new, every second read asks the tile service (see the header). */
+const SECOND_OPINION_AFTER = 3
 const LEASE_MS = 150_000
 /** No new piece is started this long into a run. */
 const BUDGET_MS = 100_000
@@ -160,6 +188,16 @@ export function newestListed(xml: string): number {
     if (Number.isFinite(t) && !(t <= newest)) newest = t
   }
   return newest
+}
+
+/** The newest instant the tile service's DescribeDomains names ("<Domain>start--end</Domain>"). */
+export function newestInDomain(xml: string): number {
+  return Date.parse(/<Domain>[^<]*--([^<]+)<\/Domain>/.exec(xml)?.[1] ?? '')
+}
+
+/** The tile service's time domain for a layer: the list's second opinion (see the header). */
+export function domainUrl(geoserver: string, layer: string): string {
+  return `${geoserver}/gwc/service/wmts?service=WMTS&version=1.0.0&request=DescribeDomains&layer=${encodeURIComponent(layer)}&tileMatrixSet=${encodeURIComponent('EPSG:4326')}&domains=time`
 }
 
 /** One layer's own capabilities document (GeoServer's per-layer virtual service): 1.6 kB gzipped, kept 2 minutes there. */
@@ -289,24 +327,36 @@ export async function runFill(deps: FillDeps): Promise<FillReport> {
   if (!layers.some((l) => of(l).pollAt <= t0 || of(l).pending)) return { ...report, skipped: 'idle' }
 
   // ── is there a new frame? ──
+  const lists: string[] = []
+  const hm = (t: number) => new Date(t).toISOString().slice(11, 16)
   await Promise.all(
     layers.map(async (l) => {
       const st = of(l)
       if (st.pollAt > t0) return
       report.polled.push(l.layer)
-      st.pollAt = t0 + POLL_AGAIN_MS
+      const misses = st.misses ?? 0
+      st.misses = misses + 1
+      st.pollAt = t0 + (misses + 1 >= POLL_PATIENT_AFTER ? POLL_PATIENT_MS : POLL_AGAIN_MS)
+      const second = misses >= SECOND_OPINION_AFTER && (misses - SECOND_OPINION_AFTER) % 2 === 0
+      const base = deps.geoserver ?? GEOSERVER
       try {
-        const res = await deps.fetch(capabilitiesUrl(deps.geoserver ?? GEOSERVER, l.layer), { headers: { 'user-agent': USER_AGENT }, signal: AbortSignal.timeout(LIST_TIMEOUT_MS) })
-        const newest = res.ok ? newestListed(await res.text()) : NaN
+        const res = await deps.fetch(second ? domainUrl(base, l.layer) : capabilitiesUrl(base, l.layer), { headers: { 'user-agent': USER_AGENT }, signal: AbortSignal.timeout(LIST_TIMEOUT_MS) })
+        const xml = res.ok ? await res.text() : ''
+        const newest = second ? newestInDomain(xml) : newestListed(xml)
         if (!Number.isFinite(newest)) throw new Error(`list ${res.status}`)
+        lists.push(`${l.layer}${second ? '~' : '='}${hm(newest)}`)
         if (newest > st.newest && newest <= t0 + 60_000) {
           st.newest = newest
+          st.misses = 0
           // An unfinished older frame gives way: the newest is the one people are shown.
           st.pending = { t: newest, got: 0, tiles: NO_TILES, tries: 0, exp: t0 + frameTtlMs(l) - EXP_MARGIN_MS }
-          st.pollAt = t0 + l.stepMin * 60_000 - POLL_EARLY_MS
+          // The next frame is a step later and is published no sooner than the lag after that.
+          st.pollAt = Math.max(t0 + POLL_AGAIN_MS, newest + l.stepMin * 60_000 + PUBLISH_LAG_MS)
         }
       } catch (err) {
-        report.failed.push(`${l.layer} ${err instanceof Error ? err.message : String(err)}`)
+        const why = err instanceof Error ? err.message : String(err)
+        lists.push(`${l.layer}!${why}`)
+        report.failed.push(`${l.layer} ${why}`)
       }
     }),
   )
@@ -337,6 +387,7 @@ export async function runFill(deps: FillDeps): Promise<FillReport> {
   const end = now()
   for (const l of layers) of(l).ready = of(l).ready.filter((f) => f.exp > end).slice(0, 2 * LISTED_FRAMES)
   state.lease = 0
+  state.log = [...(state.log ?? []), { at: new Date(t0).toISOString(), lists: lists.sort(), fetched: report.fetched, ready: report.ready, failed: report.failed.map((f) => f.slice(0, 120)) }].slice(-LOG_KEPT)
   const doc: FramesDoc = { v: 1, layers: Object.fromEntries(layers.map((l) => [l.layer, of(l).ready])) }
   const pub = JSON.stringify(doc)
   if (pub !== state.pub) {
