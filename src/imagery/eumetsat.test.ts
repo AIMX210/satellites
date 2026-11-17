@@ -26,9 +26,11 @@ describe('Meteosat picture URLs', () => {
   it("cuts the small pictures from the site's own cache of the frame: nothing is asked of EUMETSAT", () => {
     const u = new URL(eumetsatCropUrl(FCI, T('2026-11-11T05:10:00Z'), PARIS, { halfSizeKm: 400, px: 176 }), 'https://www.watched.earth')
     expect(u.origin + u.pathname).toBe('https://www.watched.earth/api/geo')
-    expect(Object.fromEntries(u.searchParams)).toEqual({ layer: FCI, time: '2026-11-11T05:10:00Z', lat: '48.85660', lon: '2.35220', px: '176' })
+    expect(Object.fromEntries(u.searchParams)).toEqual({ layer: FCI, time: '2026-11-11T05:10:00Z', lat: '48.86', lon: '2.35', px: '176' })
     // The list thumbnail too (112 px), for every Meteosat layer.
-    expect(eumetsatCropUrl('msg_iodc:ir108', T('2026-11-11T05:15:00Z'), DELHI, { halfSizeKm: 400, px: 112 })).toBe('/api/geo?layer=msg_iodc%3Air108&time=2026-11-11T05%3A15%3A00Z&lat=28.61390&lon=77.20900&px=112')
+    expect(eumetsatCropUrl('msg_iodc:ir108', T('2026-11-11T05:15:00Z'), DELHI, { halfSizeKm: 400, px: 112 })).toBe('/api/geo?layer=msg_iodc%3Air108&time=2026-11-11T05%3A15%3A00Z&lat=28.61&lon=77.21&px=112')
+    // Two pins a few hundred metres apart are the same picture: cut once, kept once.
+    expect(eumetsatCropUrl(FCI, T('2026-11-11T05:10:00Z'), { lat: 48.8584, lon: 2.3541 }, { halfSizeKm: 400, px: 176 })).toBe(eumetsatCropUrl(FCI, T('2026-11-11T05:10:00Z'), PARIS, { halfSizeKm: 400, px: 176 }))
   })
 
   it("asks EUMETView for a larger picture: a square around the place at one frame, lat first, with black for no data", () => {

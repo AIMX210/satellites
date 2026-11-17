@@ -62,7 +62,9 @@ export function eumetsatCropUrl(layer: string, ms: number, place: LatLon, opts: 
   const lat = (v: number) => Math.max(-90, Math.min(90, v)).toFixed(5)
   const lon = (v: number) => v.toFixed(5)
   const time = encodeURIComponent(isoSeconds(ms))
-  if (isCut(layer, halfSizeKm, px)) return `${GEO_CUT}?layer=${encodeURIComponent(layer)}&time=${time}&lat=${lat(place.lat)}&lon=${lon(place.lon)}&px=${px}`
+  // The place to 0.01° (about 1 km, a quarter of one pixel of a cut): pins in one neighbourhood share a picture, so
+  // the site cuts it once, and the site's host learns no more of the place than the picture needs.
+  if (isCut(layer, halfSizeKm, px)) return `${GEO_CUT}?layer=${encodeURIComponent(layer)}&time=${time}&lat=${place.lat.toFixed(2)}&lon=${place.lon.toFixed(2)}&px=${px}`
   const [w, s, e, n] = bboxAround(place.lat, place.lon, halfSizeKm)
   return (
     `${EUMETSAT_WMS}?service=WMS&version=1.3.0&request=GetMap&layers=${encodeURIComponent(layer)}&styles=` +
