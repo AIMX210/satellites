@@ -105,6 +105,18 @@ describe('planning', () => {
     ])
     expect(planTimelapse(yearly(), TORONTO).season).toBeUndefined()
   })
+
+  it('on a glacier, asks only about the end of the melt season, so no year is snow over the ice', () => {
+    const COLUMBIA = { lat: 61.15, lon: -147.08 }
+    const zone = seasonRegionAt(COLUMBIA)!
+    const scenes = [scene(on(2019, zone.day), 10), scene(on(2019, 100), 0), scene(on(2020, 20), 0), scene(on(2021, zone.day + 30), 4)]
+    const plan = planTimelapse(scenes, COLUMBIA)
+    expect(plan.season).toBe('summer')
+    expect(plan.slots.map((s) => [s.key, s.candidates.map((c) => c.cloud)])).toEqual([
+      ['2019', [10]],
+      ['2021', [4]],
+    ])
+  })
 })
 
 describe('haze', () => {

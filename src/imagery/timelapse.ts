@@ -18,7 +18,8 @@
  *    least cloudy scene of any date (Singapore gets 10 of 10 years that way, 2 if a season were required).
  *  - Except in the war zones people search for (seasonRegions.ts: the Palestinian territories, Ukraine, Lebanon):
  *    there every year is the same season, the one that shows the war's change most, and only that season (owner,
- *    2026-11-16). Turning seasons there would show summer as damage, or winter rain as recovery.
+ *    2026-11-16). Turning seasons there would show summer as damage, or winter rain as recovery. Glaciers too, outside
+ *    the tropics: every year is the end of the melt season, when snow hides the least of the ice (owner, 2026-11-16).
  *  - A scene's cloud percentage is for its whole 110 km tile. Each slot's least cloudy scenes are checked at the
  *    place itself (the cloud mask the photos already use), least cloudy first, and the first that shows at least
  *    95 % of the square is kept: usually the first one asked.
