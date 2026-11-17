@@ -8,8 +8,9 @@
  * emptiness check reads both the same way.
  *
  * A cut depends on its URL alone, so it is kept by the browser for a week and in Cloudflare's cache for an hour
- * (worker/router.ts `cached`): a place many people search is cut once per data centre and frame. A cut costs about
- * 10 ms of CPU (the JPEG encode) and one to six tile reads, most of them from Cloudflare's cache, which is free.
+ * (worker/router.ts `cached`): a place many people search is cut once per data centre and frame. A cut took about
+ * 20 ms on one core of a local Worker, tile reads included (9 ms of it the JPEG encode; 1,500 different places in
+ * 30 s without an error, 2026-11-17), and reads one to six tiles, most of them from Cloudflare's cache, which is free.
  *
  *   200  image/jpeg
  *   302  a real frame time the cache does not hold (a frame shared days ago, a tab left open for hours): to
