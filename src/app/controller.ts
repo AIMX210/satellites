@@ -108,6 +108,13 @@ const ARCHIVE_RETRY_MS = 8000
 let catalogFault: string | undefined
 const CATALOG_ERROR = 'Could not load the orbit catalog. Check your connection and try again.'
 const COMPUTE_ERROR = 'Something went wrong computing passes for this place. Try again in a moment.'
+/**
+ * With the catalog's notice up and nothing to re-run, the catalog is asked for again this long after the notice
+ * appeared, and whenever the browser says it is back online: a phone that opened the page with no signal gets its
+ * landing without finding the button. (The loader has already tried three times before the notice shows.)
+ */
+const CATALOG_RECHECK_MS = [6000, 20_000, 60_000]
+
 /** An error as the stats keep it: its name and message. */
 const causeOf = (e: unknown) => (e instanceof Error ? (isCatalogLoadError(e) ? e.message : `${e.name}: ${e.message}`) : String(e))
 
@@ -125,9 +132,19 @@ function startCatalog() {
   )
 }
 
-/** The catalog's notice in place of the landing (no search to re-run). */
+/** The catalog's notice in place of the landing (no search to re-run), and the quiet re-asks behind it. */
 function showCatalogFault() {
   useApp.getState().setPhase('error', CATALOG_ERROR, catalogFault)
+  const again = () => void retryCatalog()
+  const timers = CATALOG_RECHECK_MS.map((ms) => setTimeout(again, ms))
+  addEventListener('online', again)
+  // Until the notice goes: the catalog arrived (retryCatalog shows the landing), or the visitor pressed Back.
+  const unsubscribe = useApp.subscribe((st) => {
+    if (st.phase === 'error') return
+    timers.forEach(clearTimeout)
+    removeEventListener('online', again)
+    unsubscribe()
+  })
 }
 
 let booted = false
