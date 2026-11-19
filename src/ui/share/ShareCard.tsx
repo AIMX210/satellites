@@ -27,6 +27,7 @@ import {
   CARD_COLOR,
   CARD_FS,
   HEAD,
+  HEAD_CJK,
   PANEL,
   TONE_COLOR,
   hatchPath,
@@ -76,13 +77,18 @@ export function ShareCard({ spec }: { spec: CardSpec }) {
         <div className={s.head} style={{ left: PANEL.x, top: PANEL.headTop, width: PANEL.w, height: PANEL.headBottom - PANEL.headTop }}>
           {spec.head.map((part, i) =>
             isAccent(part) ? (
-              <div key={i} className={s.place} style={{ fontSize: P, lineHeight: HEAD.placeLH, marginTop: blockGap(i), letterSpacing: -0.01 * P }}>
+              <div key={i} className={s.place} style={{ fontSize: P, lineHeight: (spec.cjk ? HEAD_CJK : HEAD).placeLH, marginTop: blockGap(i), letterSpacing: -0.01 * P }}>
                 {part.accent.map((q, j) => (
                   <Fragment key={j}>{plain([q])}</Fragment>
                 ))}
               </div>
             ) : (
-              <div key={i} className={s.lead} style={{ fontSize: S, lineHeight: HEAD.leadLH, letterSpacing: -0.02 * S, marginTop: blockGap(i) }}>
+              // Chinese, Japanese, Korean: each text part one phrase on one line, at their leading (HEAD_CJK)
+              <div
+                key={i}
+                className={s.lead}
+                style={{ fontSize: S, lineHeight: (spec.cjk ? HEAD_CJK : HEAD).leadLH, letterSpacing: -0.02 * S, marginTop: blockGap(i), whiteSpace: spec.cjk ? 'nowrap' : undefined }}
+              >
                 {plain([part])}
               </div>
             ),

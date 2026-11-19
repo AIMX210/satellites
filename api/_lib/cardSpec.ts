@@ -109,6 +109,13 @@ export const PANEL = {
 
 /** Lead line height, place line height and gap (in em of their own font sizes): .place { line-height: .9; margin-top: .1em } */
 export const HEAD = { leadLH: 0.94, placeScale: 1.06, placeLH: 0.9, placeGap: 0.1, subGap: 16, subLH: 1.3 } as const
+/**
+ * Chinese, Japanese and Korean headlines (CardSpec.cjk): full-height glyphs need real leading (at 0.94 two lines'
+ * characters touched), and each text part of the headline is one phrase on one line, never broken inside: the
+ * translations split their headline into line-sized phrases ("この1週間、" "256基の衛星が" "見ていた"), so a particle
+ * is never left alone on a line and a word is never cut ("注 / 视过"). headlineSize picks the size they all fit at.
+ */
+export const HEAD_CJK = { leadLH: 1.12, placeLH: 1.1 } as const
 
 // ── Spec ────────────────────────────────────────────────────────────────────────────────────
 
@@ -224,6 +231,8 @@ export interface CardSpec {
   sub?: string
   /** Headline font size, px */
   size: number
+  /** A Chinese, Japanese or Korean headline: HEAD_CJK's leading, and each text part on one line (see HEAD_CJK) */
+  cjk?: true
   readouts: Readout[]
   /** Readout value size, px (default CARD_FS.readout; four columns use a smaller one) */
   readoutSize?: number
@@ -396,6 +405,41 @@ export function headlineSize(lead: string, place: string): number {
   const byLead = n <= 24 ? 84 : n <= 32 ? 72 : n <= 42 ? 62 : 54
   const byPlace = p <= 13 ? 84 : p <= 18 ? 72 : p <= 26 ? 62 : 54
   return Math.min(byLead, byPlace)
+}
+
+/** Width in em of text in the card's faces: a Han, kana or hangul character (or full-width punctuation) is a full em. */
+export function cjkEm(text: string): number {
+  let em = 0
+  for (const ch of text) em += /[\u1100-\u11ff\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef]/.test(ch) ? 1 : /\s/.test(ch) ? 0.25 : 0.52
+  return em
+}
+
+/**
+ * A Chinese, Japanese or Korean headline's size: the largest (84 px down, in 2 px steps) at which every text part
+ * fits one line of the column, the place fits two, and the whole block, sub-line included, fits its band.
+ */
+export function headlineSizeCjk(head: Rich, sub?: string): number {
+  const texts = head.filter((p): p is string => typeof p === 'string').map((t) => t.trim()).filter(Boolean)
+  const places = head.filter(isAccent).map((p) => plain(p.accent))
+  const widest = Math.max(0, ...texts.map(cjkEm))
+  const subH = sub ? HEAD.subGap + Math.ceil((cjkEm(sub) * CARD_FS.sub) / PANEL.w) * CARD_FS.sub * HEAD.subLH : 0
+  for (let S = 84; S > 36; S -= 2) {
+    const P = S * HEAD.placeScale
+    if (widest * S * 0.98 > PANEL.w) continue
+    // Whole characters per line (a line never holds a fraction of one), so 11 at 78 px take three lines, not 1.85.
+    const perLine = Math.max(1, Math.floor(PANEL.w / P))
+    const placeLines = places.map((t) => Math.ceil(cjkEm(t) / perLine))
+    if (placeLines.some((n) => n > 2)) continue
+    const blocks = texts.length + places.length
+    const h = texts.length * S * HEAD_CJK.leadLH + placeLines.reduce((a, n) => a + n * P * HEAD_CJK.placeLH, 0) + Math.max(0, blocks - 1) * P * HEAD.placeGap + subH
+    if (h <= PANEL.headBottom - PANEL.headTop - 8) return S
+  }
+  return 36
+}
+
+/** The headline's size and script flags for a card in `locale` (English and every other script: headlineSize). */
+function headSizing(locale: Locale, head: Rich, lead: string, sub?: string): { size: number; cjk?: true } {
+  return LOCALE_INFO[locale].script === 'cjk' ? { size: headlineSizeCjk(head, sub), cjk: true } : { size: headlineSize(lead, accentText(head, locale)) }
 }
 
 // ── Numbers and places ──────────────────────────────────────────────────────────────────────
@@ -873,7 +917,7 @@ export function buildCardSpec(input: CardInput, locale: Locale = DEFAULT_LOCALE)
     ...pieces,
     sub: words?.sub,
     // The place's lines hold the place and any words the language sets beside it (its full stop is too small to count).
-    size: headlineSize(pieces.lead, accentText(head, locale)),
+    ...headSizing(locale, head, pieces.lead, words?.sub),
     readouts: readoutsFor(input, m, locale),
     footLeft: m.invite,
     host: input.host,
@@ -1005,7 +1049,7 @@ export function buildSummarySpec(i: SummaryInput, locale: Locale = DEFAULT_LOCAL
     ...pieces,
     sub: photosSentence(i.counts.imaged, { ...i, short: true }, locale),
     // The words on the place's line ("Waterloo this week.") count toward what it must hold.
-    size: headlineSize(pieces.lead, accentText(head, locale)),
+    ...headSizing(locale, head, pieces.lead, photosSentence(i.counts.imaged, { ...i, short: true }, locale)),
     readouts,
     // Four columns of 116px: a six-character count ("12,345") steps down so it clears the next rule.
     readoutSize: readouts.some((r) => r.value.length > 5) ? 21 : 26,

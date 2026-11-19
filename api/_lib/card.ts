@@ -29,6 +29,7 @@ import {
   CHIP_BOX,
   DEFAULT_CARD_ALT,
   HEAD,
+  HEAD_CJK,
   PANEL,
   PLATE,
   TONE_COLOR,
@@ -204,10 +205,12 @@ function plate(locale: Locale, p: Plate, dataUri: string | null): ReactElement {
  * the optional sub-line. The display text is tracked -0.02em in every language, as the app's own preview and PNG of
  * this card are (src/ui/share/ShareCard.tsx and card.ts): the unfurl shows what the sharer saw.
  */
-function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
+function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk'>): ReactElement {
   const S = spec.size
   const P = S * HEAD.placeScale
   const gap = P * HEAD.placeGap
+  // Chinese, Japanese and Korean: their leading, and each text part one phrase on one line (HEAD_CJK).
+  const lh = spec.cjk ? HEAD_CJK : HEAD
   const blocks = spec.head.map((part, i) =>
     isAccent(part)
       ? h(
@@ -218,7 +221,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
               fontFamily: FAMILY.serif,
               fontStyle: 'italic',
               fontSize: P,
-              lineHeight: HEAD.placeLH,
+              lineHeight: lh.placeLH,
               ...(i ? { marginTop: gap } : {}),
               letterSpacing: -0.01 * P,
               color: C.bone,
@@ -234,7 +237,8 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
               fontFamily: FAMILY.display,
               fontWeight: 600,
               fontSize: S,
-              lineHeight: HEAD.leadLH,
+              lineHeight: lh.leadLH,
+              ...(spec.cjk ? { whiteSpace: 'nowrap' as const } : {}),
               ...(i ? { marginTop: gap } : {}),
               letterSpacing: -0.02 * S,
               color: C.bone,

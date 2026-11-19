@@ -30,6 +30,7 @@ import {
   CARD_W,
   CHIP_BOX,
   HEAD,
+  HEAD_CJK,
   PANEL,
   PLATE,
   TONE_COLOR,
@@ -702,15 +703,18 @@ export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   const lead: Face = { family: SANS, size: S, weight: 560, stretch: 'condensed', tracking: -0.02 * S }
   const place: Face = { family: SERIF, size: P, italic: true, tracking: -0.01 * P }
   const sub: Face = { family: SANS, size: CARD_FS.sub }
-  const leadLH = S * HEAD.leadLH
-  const placeLH = P * HEAD.placeLH
+  // Chinese, Japanese, Korean: their leading, and each text part one phrase on one line (HEAD_CJK)
+  const lh = spec.cjk ? HEAD_CJK : HEAD
+  const leadLH = S * lh.leadLH
+  const placeLH = P * lh.placeLH
   const subLH = CARD_FS.sub * HEAD.subLH
   const blockGap = P * HEAD.placeGap
   const blocks = spec.head.map((part) => {
     const serif = isAccent(part)
     const face = serif ? place : lead
     setFace(ctx, face)
-    return { face, lh: serif ? placeLH : leadLH, lines: wrap(ctx, serif ? plain(part.accent) : plain([part]), PANEL.w, face.tracking!, spec.locale) }
+    const text = serif ? plain(part.accent) : plain([part])
+    return { face, lh: serif ? placeLH : leadLH, lines: spec.cjk && !serif ? [text.trim()] : wrap(ctx, text, PANEL.w, face.tracking!, spec.locale) }
   })
   setFace(ctx, sub)
   const subLines = spec.sub ? wrap(ctx, spec.sub, PANEL.w, 0, spec.locale) : []
