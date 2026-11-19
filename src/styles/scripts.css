@@ -1,0 +1,40 @@
+/*
+ * Type per writing system (docs/I18N.md). html[data-script] is set by index.html's boot script and by the language
+ * switcher: latin | cyrillic | cjk | arabic. These rules only override tokens and a few families, so components never
+ * special-case a language; English (and every Latin-script language) is untouched by this file.
+ *
+ * Why the stacks are built this way:
+ * - Latin letters and digits stay in the brand faces (Instrument, Martian Mono) in every language: satellite names,
+ *   numbers and units look the same everywhere. A script the brand faces lack falls through to the next family.
+ * - Chinese, Japanese and Korean use each platform's own fonts (PingFang / Hiragino / Apple SD Gothic Neo,
+ *   Microsoft YaHei / JhengHei / Yu Gothic / Malgun Gothic, Noto Sans CJK): no download, the fonts their readers
+ *   already read everything in. The order of the stack is per language, so shared Han characters take that
+ *   language's glyph forms (with the page's lang).
+ * - Synthetic italics are never drawn for scripts that have no italic (font-synthesis-style: none): the serif accent
+ *   is upright there, and carried by the serif and the signal colour.
+ */
+
+:root[data-script='cjk'] {
+  font-synthesis-style: none;
+}
+:root:lang(ja) {
+  --cjk-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', YuGothic, Meiryo, 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif;
+  --cjk-serif: 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, 'Noto Serif JP', 'Noto Serif CJK JP', serif;
+}
+:root:lang(zh-Hans) {
+  --cjk-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', 'Source Han Sans SC', sans-serif;
+  --cjk-serif: 'Songti SC', STSong, 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', SimSun, serif;
+}
+:root:lang(zh-Hant) {
+  --cjk-sans: 'PingFang TC', 'PingFang HK', 'Microsoft JhengHei', 'Noto Sans TC', 'Noto Sans HK', 'Noto Sans CJK TC', 'Source Han Sans TC', sans-serif;
+  --cjk-serif: 'Songti TC', 'Noto Serif TC', 'Noto Serif CJK TC', 'Source Han Serif TC', PMingLiU, MingLiU, serif;
+}
+:root:lang(ko) {
+  --cjk-sans: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', 'Source Han Sans K', sans-serif;
+  --cjk-serif: 'AppleMyungjo', 'Noto Serif KR', 'Noto Serif CJK KR', 'Source Han Serif K', Batang, serif;
+}
+:root[data-script='cjk'] {
+  --font-sans: 'Instrument Sans Variable', 'Instrument Sans', var(--cjk-sans);
+  --font-mono: 'Martian Mono Variable', 'Martian Mono', var(--cjk-sans);
+  --font-serif: 'Instrument Serif', var(--cjk-serif);
+}

@@ -1,0 +1,119 @@
+import { afterEach, describe, expect, it } from 'vitest'
+import { LOCALES, LOCALE_INFO, localeForTag, matchLocale, type Locale } from '../../api/_lib/i18n/locales'
+import { PLURALS, fmt } from '../../api/_lib/i18n/format'
+import { accent, num, plain, strong } from '../../api/_lib/i18n/parts'
+import { bootLocale, type BootData } from './boot'
+
+const TAGS = [
+  'en', 'en-US', 'en-GB', 'EN_us', 'es', 'es-MX', 'es-419', 'fr-CA', 'fr', 'de-AT', 'de-CH', 'pt', 'pt-BR', 'pt-PT', 'pt_br',
+  'it', 'nl-BE', 'pl', 'tr', 'id', 'in', 'in-ID', 'uk', 'uk-UA', 'ru', 'ru-UA', 'be', 'ja', 'ja-JP', 'ko-KR', 'zh', 'zh-CN',
+  'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant', 'zh-Hant-HK', 'ZH-tw', 'ar', 'ar-SA', 'ar-EG',
+  'he', 'hi-IN', 'vi', 'th', 'sv', '', ' ', 'x-pseudo', 'enx',
+]
+
+describe('locale matching', () => {
+  it('maps tags the way the product promises', () => {
+    expect(localeForTag('zh-CN')).toBe('zh-Hans')
+    expect(localeForTag('zh-SG')).toBe('zh-Hans')
+    expect(localeForTag('zh')).toBe('zh-Hans')
+    expect(localeForTag('zh-HK')).toBe('zh-Hant')
+    expect(localeForTag('zh-Hant-HK')).toBe('zh-Hant')
+    expect(localeForTag('zh-TW')).toBe('zh-Hant')
+    expect(localeForTag('pt-PT')).toBe('pt-BR')
+    expect(localeForTag('in')).toBe('id')
+    expect(localeForTag('ru')).toBeUndefined()
+    expect(localeForTag('enx')).toBeUndefined()
+  })
+  it('takes the first language we speak, English when none', () => {
+    expect(matchLocale(['ru-RU', 'uk-UA', 'en'])).toBe('uk')
+    expect(matchLocale(['en-US', 'ja'])).toBe('en')
+    expect(matchLocale(['ru', 'he'])).toBe('en')
+    expect(matchLocale([])).toBe('en')
+  })
+})
+
+/** Run index.html's boot script against fake globals and read what it decided. */
+function boot(langs: readonly string[], search = '', saved: string | null = null) {
+  const store = new Map<string, string>(saved ? [['watched.lang', saved]] : [])
+  const attrs: Record<string, string> = {}
+  const links: { rel: string; href: string }[] = []
+  const g = globalThis as Record<string, unknown>
+  const keep = { localStorage: g.localStorage, location: g.location, navigator: g.navigator, document: g.document }
+  Object.assign(g, {
+    localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => store.set(k, v), removeItem: (k: string) => store.delete(k) },
+    location: { search },
+    document: {
+      documentElement: { lang: '', dir: '', setAttribute: (k: string, v: string) => (attrs[k] = v) },
+      head: { appendChild: (l: { rel: string; href: string }) => links.push(l) },
+      createElement: () => ({}),
+    },
+  })
+  Object.defineProperty(g, 'navigator', { value: { languages: langs, language: langs[0] }, configurable: true, writable: true })
+  const data: BootData = {
+    locales: Object.fromEntries(Object.values(LOCALE_INFO).map((l) => [l.code, [l.script, l.dir, l.listed ? 1 : 0]])),
+    preload: { de: ['/assets/de.js'] },
+  }
+  try {
+    bootLocale(data)
+    const root = (g.document as { documentElement: { lang: string; dir: string } }).documentElement
+    return { lang: root.lang, dir: root.dir, attrs, links, saved: store.get('watched.lang') }
+  } finally {
+    Object.defineProperty(g, 'navigator', { value: keep.navigator, configurable: true, writable: true })
+    Object.assign(g, { localStorage: keep.localStorage, location: keep.location, document: keep.document })
+  }
+}
+
+describe('boot script (index.html)', () => {
+  afterEach(() => undefined)
+  it('agrees with matchLocale on every tag', () => {
+    for (const tag of TAGS) expect(boot([tag]).lang, tag).toBe(matchLocale([tag]))
+    for (let i = 0; i < TAGS.length - 1; i++) expect(boot([TAGS[i], TAGS[i + 1]]).lang).toBe(matchLocale([TAGS[i], TAGS[i + 1]]))
+  })
+  it('sets direction and script, and preloads the bundle', () => {
+    const ar = boot(['ar-SA'])
+    expect([ar.lang, ar.dir, ar.attrs['data-script']]).toEqual(['ar', 'rtl', 'arabic'])
+    const de = boot(['de-DE'])
+    expect(de.links.map((l) => [l.rel, l.href])).toEqual([['modulepreload', '/assets/de.js']])
+    expect(boot(['en-US']).links).toEqual([])
+  })
+  it('lets ?hl= and the saved choice win, and remembers ?hl=', () => {
+    expect(boot(['en-US'], '?hl=ja')).toMatchObject({ lang: 'ja', saved: 'ja' })
+    expect(boot(['en-US'], '', 'de').lang).toBe('de')
+    expect(boot(['en-US'], '?hl=auto', 'de')).toMatchObject({ lang: 'en', saved: undefined })
+    expect(boot(['fr'], '?hl=klingon').lang).toBe('fr')
+  })
+})
+
+describe('formatting', () => {
+  it('keeps the plural table equal to the runtime ICU', () => {
+    for (const l of LOCALES) {
+      const icu = new Intl.PluralRules(LOCALE_INFO[l].intl).resolvedOptions().pluralCategories
+      expect([...icu].sort(), l).toEqual([...LOCALE_INFO[l].plurals].sort())
+      expect([...PLURALS[l]].sort(), l).toEqual([...LOCALE_INFO[l].plurals].sort())
+    }
+  })
+  it('formats numbers per locale, English as before', () => {
+    expect(fmt('en').int(1715)).toBe('1,715')
+    expect(fmt('en').dec(7.456, 2)).toBe('7.46')
+    expect(fmt('de').int(1715)).toBe('1.715')
+    expect(fmt('de').dec(7.456, 2)).toBe('7,46')
+    expect(fmt('ar').int(1715)).toBe('1,715')
+    expect(fmt('en').list(['Umbra', 'Capella', '7 other radar satellites'])).toBe('Umbra, Capella and 7 other radar satellites')
+  })
+  it('picks plural forms', () => {
+    const pl = fmt('pl')
+    const forms = { one: 'satelita', few: 'satelity', many: 'satelitów', other: 'satelity' }
+    expect([1, 2, 5, 22, 25].map((n) => pl.plural(n, forms))).toEqual(['satelita', 'satelity', 'satelitów', 'satelity', 'satelitów'])
+  })
+})
+
+describe('rich parts', () => {
+  it('flattens to text with the locale sentence gap', () => {
+    const s = ['In the last 7 days, ', strong(num('256'), ' satellites watched'), ' ', accent('Waterloo'), '.']
+    expect(plain(s)).toBe('In the last 7 days, 256 satellites watched Waterloo.')
+    expect(plain([[num('25', '%')], [num('7.46', 'km/s')]])).toBe('25% 7.46 km/s')
+    expect(plain([['今週。'], ['見ていた。']], '')).toBe('今週。見ていた。')
+  })
+})
+
+export type { Locale }

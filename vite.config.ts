@@ -1,6 +1,9 @@
-import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { defineConfig, loadEnv, minifySync, type IndexHtmlTransformContext, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'node:url'
+import { LOCALE_INFO } from './api/_lib/i18n/locales.ts'
+import { bootLocale, type BootData } from './src/i18n/boot.ts'
+import { BOOT_TEXT } from './src/i18n/bootText.ts'
 
 /**
  * Production origin for absolute link-preview URLs (og:url, og:image): VITE_SITE_ORIGIN, else Vercel's
@@ -46,6 +49,10 @@ const CRITICAL_FONTS = /^(?:.*\/)?(instrument-sans-latin-standard-normal|martian
  *  - <link rel=preload as=font> for the critical woff2 files (hashed names are only known after bundling).
  *  - <link rel=modulepreload> for the lazily imported globe chunk (three.js + R3F) and its static imports,
  *    so it downloads in parallel with the shell instead of after it evaluates.
+ *  - The language: src/i18n/boot.ts inlined right after <meta charset> with the locales and, in a build, each locale's
+ *    messages chunk, so the page's lang/dir/script are set before first paint and a non-English visitor's messages
+ *    download in parallel with the shell (main.tsx awaits them before the first render); and src/i18n/bootText.ts
+ *    inlined after the loading screen, so its few words are in that language too (I18N).
  */
 function overflightHtml(): Plugin {
   let origin = ''
@@ -60,6 +67,7 @@ function overflightHtml(): Plugin {
       order: 'post',
       handler(html, ctx) {
         html = html.replaceAll('__SITE_ORIGIN__', origin).replaceAll('__APP_VERSION__', appVersion())
+        html = withLocaleBoot(html, ctx.bundle ? localePreloads(ctx.bundle, base) : undefined)
         const bundle = ctx.bundle
         if (!bundle) return html
         const tags: { tag: string; attrs: Record<string, string | boolean>; injectTo: 'head' }[] = []
@@ -83,6 +91,47 @@ function overflightHtml(): Plugin {
       },
     },
   }
+}
+
+type OutputBundle = NonNullable<IndexHtmlTransformContext['bundle']>
+
+/**
+ * Each locale's messages chunk (src/i18n/<locale>/index.ts, a dynamic import of src/i18n/runtime.ts) and the chunks it
+ * imports that the entry doesn't already load, as URLs to modulepreload when the boot script picks that locale.
+ */
+function localePreloads(bundle: OutputBundle, base: string): Record<string, string[]> {
+  const entry = Object.values(bundle).find((o) => o.type === 'chunk' && o.isEntry)
+  const have = new Set(entry && entry.type === 'chunk' ? [entry.fileName, ...entry.imports] : [])
+  const out: Record<string, string[]> = {}
+  for (const o of Object.values(bundle)) {
+    if (o.type !== 'chunk' || !o.isDynamicEntry || !o.facadeModuleId) continue
+    const m = /[\\/]src[\\/]i18n[\\/]([A-Za-z-]+)[\\/]index\.ts$/.exec(o.facadeModuleId)
+    if (!m || !(m[1] in LOCALE_INFO)) continue
+    out[m[1]] = [o.fileName, ...o.imports.filter((f) => !have.has(f))].map((f) => base + f)
+  }
+  return out
+}
+
+/**
+ * index.html with the boot language script after <meta charset> and the loading screen's words after it. The script
+ * is src/i18n/boot.ts's function itself (serialised), so the build and the tests run the same code.
+ */
+function withLocaleBoot(html: string, preload: Record<string, string[]> | undefined): string {
+  const data: BootData = {
+    locales: Object.fromEntries(Object.values(LOCALE_INFO).map((l) => [l.code, [l.script, l.dir, l.listed ? 1 : 0]])),
+    ...(preload ? { preload } : {}),
+  }
+  const json = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c')
+  const min = (code: string) => minifySync('boot.js', code, {}).code.trim().replace(/;$/, '')
+  const boot = `<script>${min(`(${bootLocale.toString()})(${json(data)})`)}</script>`
+  const text = Object.fromEntries(Object.entries(BOOT_TEXT).filter(([k]) => k !== 'en'))
+  const words =
+    `<script>(function(t){var e=t[document.documentElement.lang];if(!e)return;var b=document.getElementById('boot-static');` +
+    `if(b){b.setAttribute('aria-label',e.loading);var n=b.querySelector('.bs-note');if(n)n.textContent=e.slow}` +
+    `document.title=e.title})(${json(text)})</script>`
+  const charset = /<meta charset="UTF-8" \/>\n/
+  if (!charset.test(html) || !html.includes('<!-- boot-text -->')) throw new Error('index.html: missing <meta charset> or <!-- boot-text -->')
+  return html.replace(charset, (m) => `${m}    ${boot}\n`).replace('<!-- boot-text -->', words)
 }
 
 /**
