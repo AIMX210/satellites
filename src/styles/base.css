@@ -69,6 +69,13 @@ img {
   scale: -1 1;
 }
 
+/* Units keep their case in mono caps rows: "786 km", "10 m", "7.46 km/s", never "786 KM" (DESIGN §3,
+   api/_lib/i18n/units.ts). Rich and withUnits set each unit symbol in a [data-unit] span; :root lifts this over a
+   component's own `text-transform: uppercase` on the span that holds it. */
+:root [data-unit] {
+  text-transform: none;
+}
+
 /* utility type styles */
 .t-display {
   font-family: var(--font-sans);
