@@ -1217,7 +1217,8 @@ request, a service, stored data, or a byte for a non-Arabic visitor.
    - Geocoders stay asked in English. Never add `language=ar`. Place names are data (`src/i18n/en/geo.ts`): one town is
      one row in the stats, the lookups and the share links whatever the visitor's language.
 8. **Country names** come from `Intl.DisplayNames(['ar-u-nu-latn'], { type: 'region' })` in the long style. Hong Kong and
-   Macao take the short style for length (`هونغ كونغ`، `مكاو`). Palestine is the one open owner decision (§8).
+   Macao take the short style for length (`هونغ كونغ`، `مكاو`), and so does Palestine (`فلسطين`, owner, 2026-11-19, §8):
+   `shownCountryName` in `src/imagery/localPlaces.ts`, display only.
 9. **File names stay ASCII.** The PNG name's place slug drops non-ASCII letters, so an Arabic-script place gives an
    empty slug. It falls back to `place`, as `timelapse.fileNamePlace` does.
 10. **The time-lapse video** draws its words on a canvas. Set `ctx.direction = 'rtl'` and end alignment for Arabic, and
@@ -1315,8 +1316,8 @@ Words that are dangerous next to these places:
   territories" is the Western diplomatic formula. It would show in every Gaza and West Bank sublabel (Gaza alone is
   about 1,300 searches). The native reviewer recommends the short style. The short style is CLDR data, as for Hong Kong,
   but choosing it here would be a per-language choice for political reasons, which the policy above rules out unless
-  the owner makes it. Until the owner decides, Arabic shows CLDR's long style, as every other language shows its own
-  CLDR name.
+  the owner makes it. **Decided (owner, 2026-11-19): `فلسطين`**, CLDR's short name, for Arabic (and *Palestina* for
+  Indonesian); the other languages keep their long CLDR name. Display only: the stored labels stay English.
 - Curated sublabels list two countries in Arabic alphabetical order: `الأردن وإسرائيل`، `زامبيا وزيمبابوي`، `الصين
   ونيبال`.
 - Ukrainian cities in our copy: `كييف`، `خاركيف`، `لفيف`.

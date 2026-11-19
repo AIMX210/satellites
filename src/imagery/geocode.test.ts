@@ -443,6 +443,26 @@ describe('places on screen', () => {
     )
   })
 
+  it('name Hong Kong and Macao by their short names in every language, English included, and Palestine so in Arabic and Indonesian', () => {
+    expect(displaySublabel({ sublabel: 'Wong Tai Sin District, Hong Kong SAR China', countryCode: 'hk' })).toBe('Wong Tai Sin District, Hong Kong')
+    expect(displaySublabel({ sublabel: 'Macao SAR China', countryCode: 'mo' })).toBe('Macao')
+    expect(displaySublabel({ sublabel: 'Gaza Strip, Palestinian Territories', countryCode: 'ps' })).toBe('Gaza Strip, Palestinian Territories')
+    expect(displaySublabel({ sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('England, United Kingdom') // never "UK"
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}، ${country}`)
+    setBundleForTests('ar', { geo: { ...enGeo, where } })
+    expect(displaySublabel({ sublabel: 'Gaza Strip, Palestinian Territories', countryCode: 'ps' })).toBe('Gaza Strip، فلسطين')
+    expect(displaySublabel({ sublabel: 'Hong Kong SAR China', countryCode: 'hk' })).toBe('هونغ كونغ')
+    expect(displaySublabel({ sublabel: 'Washington, United States', countryCode: 'us' })).toBe('Washington، الولايات المتحدة')
+    setBundleForTests('id', { geo: { ...enGeo } })
+    expect(displaySublabel({ sublabel: 'West Bank, Palestinian Territories', countryCode: 'ps' })).toBe('West Bank, Palestina')
+    expect(displaySublabel({ sublabel: 'Macao SAR China', countryCode: 'mo' })).toBe('Makau')
+    setBundleForTests('de', { geo: { ...enGeo } })
+    expect(displaySublabel({ sublabel: 'Gaza Strip, Palestinian Territories', countryCode: 'ps' })).toBe('Gaza Strip, Palästinensische Autonomiegebiete')
+    expect(displaySublabel({ sublabel: 'Kowloon City District, Hong Kong SAR China', countryCode: 'hk' })).toBe('Kowloon City District, Hongkong')
+    // A geocoder that writes the short name already is read the same way.
+    expect(displaySublabel({ sublabel: 'Macao', countryCode: 'mo' })).toBe('Macau')
+  })
+
   it('show any other sublabel as it came: no code, another country, a spelling not the browser’s, copy already translated', () => {
     setBundleForTests('de', { geo: { ...enGeo, where: () => 'never' } })
     expect(displaySublabel({ sublabel: 'Ontario, Canada' })).toBe('Ontario, Canada')

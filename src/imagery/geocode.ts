@@ -29,7 +29,7 @@ import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { fmtLat, fmtLon } from '@/ui/system/format'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
-import { countryName, nearestLocal, searchLocal, type LocalPlace } from './localPlaces'
+import { countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
 import { fetchJson, hedge, HttpError, isAbortError, sleep, throwIfAborted } from './net'
@@ -88,12 +88,13 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
 }
 
 /**
- * A place's sublabel as shown to the visitor. English: the sublabel itself. In another language, when the sublabel
- * ends with the English name of the place's own country (as the offline list and the geocoders, asked in English,
- * write it), that country is named in the visitor's language (the browser's own names) and joined to the rest by the
- * 'geo' namespace's `where`; the rest stays one piece of data, never split back into parts. Any other sublabel (no
- * country code, a geocoder's own spelling of the country, a curated place's copy already in the visitor's language)
- * is shown as it came.
+ * A place's sublabel as shown to the visitor. When the sublabel ends with the English name of the place's own country
+ * (as the offline list and the geocoders, asked in English, write it: CLDR's long name, or the short one SHORT_NAMES
+ * shows), that country is named as the visitor reads it (shownCountryName: the browser's own names, a few by their
+ * short name) and joined to the rest by the 'geo' namespace's `where`; the rest stays one piece of data, never split
+ * back into parts. In English that is the sublabel itself, except Hong Kong and Macao by their short names. Any other
+ * sublabel (no country code, a geocoder's own spelling of the country, a curated place's copy already in the
+ * visitor's language) is shown as it came.
  *
  * Read at call time: React callers subscribe to the language (useLocale()) so a switch re-renders it. The Place keeps
  * its English sublabel, which is what the usage stats and lookups send.
@@ -102,12 +103,14 @@ export function displaySublabel(place: Pick<Place, 'sublabel' | 'countryCode'>):
   const sub = place.sublabel
   const cc = place.countryCode
   if (!sub || !cc) return sub
-  const country = countryName(cc)
-  const rest = sub === country ? undefined : sub.endsWith(`, ${country}`) ? sub.slice(0, -(country.length + 2)) : null
-  if (rest === null) return sub
-  const shown = countryName(cc, currentLocale())
+  const long = countryName(cc)
+  const short = shownCountryName(cc, 'en')
+  const country = [long, short].find((c) => sub === c || sub.endsWith(`, ${c}`))
+  if (country === undefined) return sub
+  const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
+  const shown = shownCountryName(cc, currentLocale())
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
-  return msgs(enGeo).where(rest, shown.toUpperCase() === cc.toUpperCase() ? country : shown)
+  return msgs(enGeo).where(rest, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
 }
 
 /** "43.4723°N 80.5449°W": international notation, the same in every language. */

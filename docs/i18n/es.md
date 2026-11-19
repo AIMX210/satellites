@@ -796,9 +796,9 @@ English does not make. Seasons are the hemisphere's own (the code picks them), s
   Spanish texts), and the gazetteer will show *Kyiv* on the same screens: both are fine, we never "correct" either.
   *Crimea* takes no qualifier.
 - *Líbano*, *Taiwán* (as `Intl` gives them); never *Taiwán (China)*, *provincia* or *República de China*.
-- **Hong Kong (China)** and **Macao (China)**: the same facts as the English UI (`Intl` English gives *Hong Kong SAR
-  China*), without Intl Spanish's acronym *RAE* (*RAE de Hong Kong (China)*), which every Spanish reader takes for the
-  Real Academia Española.
+- **Hong Kong** and **Macao**: CLDR's short names, as in every language, English included (owner, 2026-11-19,
+  `shownCountryName`), which also avoids Intl Spanish's acronym *RAE* (*RAE de Hong Kong (China)*), which every Spanish
+  reader takes for the Real Academia Española. (This guide had proposed *Hong Kong (China)*.)
 - **Costa de Marfil** for CI: Intl `es` gives the French *Côte d’Ivoire*; Fundéu recommends *Costa de Marfil*.
 - These three need a small per-locale override map in `countryName` (`src/imagery/localPlaces.ts`): code, a few lines,
   free. Translators cannot do it from the catalogs.

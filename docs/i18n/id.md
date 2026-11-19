@@ -31,7 +31,7 @@ count phrase; inside an italic example the accent is written \*…\*. `[PLACE]`,
 | Dates | CLDR `id`: *Min, 1 Nov* · *Minggu, 1 November*. A stamp that stands alone drops the weekday: `1 Nov 2026 · 11:21 WIB`. |
 | Zones | Arrive formatted; a translator never writes or changes one. |
 | Time-lapse | The loan **time-lapse** (upright, hyphenated). |
-| Country names | CLDR `id` via `Intl.DisplayNames`; recommended override PS/HK/MO to CLDR's own short names *Palestina*, *Hong Kong*, *Makau* (owner decision before `id` is listed, §8). |
+| Country names | CLDR `id` via `Intl.DisplayNames`, with CLDR's own short names *Palestina*, *Hong Kong*, *Makau* for PS/HK/MO (owner, 2026-11-19, §8; `shownCountryName`, display only). |
 
 ---
 
@@ -1123,8 +1123,8 @@ exactly what they did before.
   card drawn for an `l=id` link (an address-bar place link, a missing share) is Indonesian, with the four-line hero
   (§3.1) and *Pilih tempat di Bumi*, and `card.defaultAlt` describes that Indonesian card.
 - **Proposed, owner's call (each free at runtime):**
-  1. *Palestina* / *Hong Kong* / *Makau* for PS / HK / MO in `countryName` for `id` (CLDR's own short names), before
-     `id` is listed.
+  1. *Palestina* / *Hong Kong* / *Makau* for PS / HK / MO (CLDR's own short names): **done** (owner, 2026-11-19), in
+     `shownCountryName` (`src/imagery/localPlaces.ts`), display only.
   2. `'Asia/Pontianak': 'WIB'`, `'Asia/Makassar': 'WITA'`, `'Asia/Jayapura': 'WIT'` in both `FIXED_ABBR` tables
      (`src/ui/results/lib/time.ts`, `api/_lib/cardSpec.ts`). Zone names are not translated, so this changes English
      output for those zones too (*UTC+8* → *WITA*).

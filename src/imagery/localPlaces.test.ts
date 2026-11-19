@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reversePlace, searchPlaces } from './geocode'
-import { countryName, nearestLocal, parsePlaces, reachKm, searchLocal } from './localPlaces'
+import { countryName, nearestLocal, parsePlaces, reachKm, searchLocal, shownCountryName } from './localPlaces'
 import { placeKey, shardFor, shardOf, tileAt, tileFile, tileIndex } from './placeKey'
 import { PLACE_TILES_SPLIT } from './localPlaces.gen'
 
@@ -178,5 +178,21 @@ describe('countryName', () => {
     expect(countryName('DE', 'de')).toBe('Deutschland')
     expect(countryName('JP', 'ja')).toBe('日本')
     expect(countryName('')).toBe('')
+    // The data keeps the long names, Hong Kong's too.
+    expect(countryName('HK')).toBe('Hong Kong SAR China')
+  })
+
+  it('shows Hong Kong and Macao by their short names everywhere, Palestine in Arabic and Indonesian, and no other', () => {
+    expect(shownCountryName('hk', 'en')).toBe('Hong Kong')
+    expect(shownCountryName('MO', 'en')).toBe('Macao')
+    expect(shownCountryName('HK', 'fr')).toBe('Hong Kong')
+    expect(shownCountryName('HK', 'zh-Hant')).toBe('香港')
+    expect(shownCountryName('MO', 'pl')).toBe('Makau')
+    expect(shownCountryName('PS', 'ar')).toBe('فلسطين')
+    expect(shownCountryName('PS', 'id')).toBe('Palestina')
+    expect(shownCountryName('PS', 'en')).toBe('Palestinian Territories')
+    expect(shownCountryName('PS', 'de')).toBe('Palästinensische Autonomiegebiete')
+    expect(shownCountryName('US', 'en')).toBe('United States')
+    expect(shownCountryName('GB', 'de')).toBe('Vereinigtes Königreich')
   })
 })
