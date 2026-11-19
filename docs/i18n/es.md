@@ -304,7 +304,7 @@ semana?* · the descriptions' closing question *¿Qué te observó esta semana?*
 | Count unit | `pasada` / `pasadas` | same | same | same |
 | Definition | Hay una imagen real de este lugar en un archivo público. | La franja de una cámara fija cubrió este lugar. No hay ninguna imagen publicada. | Una cámara orientable o privada tenía este lugar a su alcance. Su operador no dice si llegó a mirar. | Cruzó tu cielo. Estaciones espaciales y todo lo demás. |
 | Prose verb | *observó / observaron* | *cubrió … con su franja* | *tuvo … a su alcance* | *sobrevoló / sobrevolaron* |
-| About, one more line | Si la mostramos, es la imagen real. | La imagen aún no es pública o se descartó por las nubes. | No hay forma de saber si llegó a hacerlo. | (none) |
+| About, one more line | Si la mostramos, es la imagen real. | La imagen aún no es pública o se descartó por las nubes. | No hay forma de saber si lo hizo. | (none) |
 
 Notes and rejected alternates:
 - The titles agree with *pasada*, the noun they head (*Observada · 12 pasadas*); they describe the pass, never the
@@ -334,11 +334,11 @@ Notes and rejected alternates:
 | `lastWeek` | *Últimos 7 días* | |
 | `readout` | *Altitud*, *Elevación*, *Velocidad*, *Fuera de nadir*, *Píxel*, *Píxel mosaico*, *Más cerca* | 155 px columns at 13 px hold 16 characters. |
 | `lane` | *Imagen*, *Probable*, *Posible*, *De paso* | ≤ 8. |
-| `geometry` | *Geometría de la pasada · norte arriba* | |
+| `geometry` | *Geometría · norte arriba* | One line over the drawing, never cut: the English length (24). *Geometría de la pasada · norte arriba* (37) ran into the scale bar. |
 | `note` | *La imagen se abre en la app* · *Imagen no disponible ahora* · *Archivo comercial, no público* · *En la franja, sin imagen pública aún* · *Traza terrestre en el punto más cercano* | |
 | `acquiring` | *Captando…* | |
 | `noPublicPhoto` / `noPhoto` | *Ninguna imagen pública esta semana* / *Sin imagen que mostrar* | *imagen*, never *foto*: the week can be radar only. |
-| `look` | *Vista más cercana* · *Última sin nubes* · *Nublado* · *Radar* | |
+| `look` | *Más cercana* · *Última sin nubes* · *Nublado* · *Radar* | The week card's lead chip ends before the picture's scale chip: *Vista más cercana · Sentinel-2C · 10 m* (38) ran into it; the gallery keeps *Vista más cercana*. |
 | `cloud.only` | sub *Nublado. Solo vio nubes.* · chip *Nublado · 95%* · post *Solo vio nubes.* · desc *Solo vio nubes (95%).* | |
 | `cloud.mostly` | sub *Casi todo nubes: el 81% de la escena.* · chip *Casi todo nubes · 81%* · post and desc *Vio casi solo nubes (81%).* | |
 | `cloud.spot` | sub *Nubes sobre el punto exacto.* · chip *Nubes en el punto* · post and desc *Las nubes cubrían el punto exacto.* | |
@@ -369,13 +369,13 @@ uppercases it).
 | archive | archivo | m.; first mention *archivo de imágenes*. Not *repositorio*. |
 | scene | escena | f. Never *escenario*, never *toma* (also a military capture). |
 | swath | franja | f.; *franja de 290 km*; label `FRANJA`. Never *faja*, never *barrido*. |
-| off-nadir | fuera de nadir | Label `FUERA DE NADIR` (labels drop articles); row *5,3° fuera de nadir*; prose *a 5,3° de la vertical*. |
+| off-nadir | fuera de nadir | Label `FUERA DE NADIR` (labels drop articles); value in a row or tooltip *5,3° del nadir* ("5.3° from nadir", as *a 30° del cenit*); prose *a 5,3° de la vertical*. |
 | straight down, nadir | directamente hacia abajo; la vertical; nadir (m.) | *nadir* only in labels. |
 | ground track | traza terrestre | f.; short *traza*. |
 | orbit | órbita | f. |
 | altitude | altitud | f.; label `ALTITUD`; prose *a 786 km de altura*. |
 | elevation (above horizon) | elevación | f.; *a 47° sobre tu horizonte*; label `ELEVACIÓN DESDE TI`. The English unit "up" after the degrees has no Spanish word: leave `unit.up` empty (the label says it) and write the compass alone in `upCompass` (`SSO`). |
-| ground speed | velocidad sobre el suelo | Geometry label; card readout *Velocidad*; prose just *a 7,46 km/s*. |
+| ground speed | velocidad sobre el suelo | Geometry label *Velocidad terrestre* (the aviation term, 19 characters: the phone column holds 19; never *Velocidad en tierra*, which is a speed while on the ground); card readout *Velocidad*; prose just *a 7,46 km/s*. |
 | ground distance | distancia horizontal | Label. |
 | heading | rumbo | m.; label `RUMBO`; prose *rumbo al sur*; unit `SSO · DESC`. |
 | ascending / descending | ascendente / descendente | Readout `ASC` / `DESC`. |
@@ -1012,6 +1012,20 @@ shipped fonts, the CSS and Intl (Node 22 / ICU 78).
 39. About title and short words: **accepted.** `Cómo` / `*funciona*.`, section names (*En resumen*, *Cómo encontramos las pasadas*, *Qué significan las etiquetas*, *Lo que no podemos ver*, *Privacidad*, *Créditos*, *Teclado*), boot *Conexión lenta, todavía cargando*, tab title.
 40. Spelling rules: **accepted.** *solo*, *este*, *guion*, *o* between digits, *unos 10 km*, *vía* in §6.
 41. Time-lapse widths: **accepted.** Static lines as proposed; the progress lines, which the critique did not cover, are reworded to fit 280 px (*Vistas despejadas: 03 de 11*).
+
+Visual QA on every screen (2026-11-19, desktop 1280×800 and 1024×768, phones 390 and 360 px):
+
+42. Pass list rows: *5,3° fuera de nadir · 73 km · nubosidad 25%* (43) and *Más cercana 8,9° fuera de nadir · 131 km* were
+    cut with "…" on desktop and phone. The row value is now *5,3° del nadir* (34 and 35 characters, the English length);
+    the label stays *Fuera de nadir*. The timeline tooltip follows.
+43. Computing readout's window line: *Ventana de 7 días · 27 oct 05:00 → 3 nov 05:00 UTC* was cut; now *7 días · …* (39).
+44. Share card plate: *Geometría · norte arriba* (§3.6).
+45. Geometry label *Velocidad terrestre* (§4).
+46. About: *A ti no se te ve.* left *ve.* alone on a phone line; the clitics are held to the verb with no-break spaces
+    (§6). The `could` line no longer repeats *llegó a*: *No hay forma de saber si lo hizo.*
+47. Week card: *esta semana.* is held together by a no-break space, so the serif lines read *Waterloo* / *esta semana.*
+    instead of *Waterloo esta* / *semana.*
+48. Week card's lead chip: *Más cercana* (§3.6), which ends before the scale chip.
 
 Reviewer's "side notes for the code", carried to the owner (not language decisions):
 - S1. The English hint's `−80.54` uses U+2212, which `parseCoordinates` rejects: fix the parser or the English, and the Spanish hint follows the English character for character.

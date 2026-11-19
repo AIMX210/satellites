@@ -9,7 +9,9 @@
  *    old shares are the §3.4 frames; the words after the place (*con su franja.*, *a su alcance.*) sit in the accent,
  *    on the place's serif line, as its tail. When the place was cut short ("…") English drops its full stop and the
  *    week's " this week."; Spanish does the same, and moves a tail the sentence cannot lose in front of the place
- *    instead (*tuvo a su alcance Cataratas del Ni…*), so the line never ends on words after an ellipsis.
+ *    instead (*tuvo a su alcance Cataratas del Ni…*), so the line never ends on words after an ellipsis. The week's
+ *    *esta semana.* is held together by a no-break space, so the serif lines break before it (*Waterloo* / *esta
+ *    semana.*), never leaving *semana.* alone.
  *  - The place is a bare direct object or follows a preposition: no article, no personal *a*, no *del/al* before it,
  *    never a subject (§5). A nameless satellite is *Un satélite* as a subject and *un satélite* after *de*, written by
  *    each sentence; only the chips and the plan plate print `aSatellite`.
@@ -92,7 +94,7 @@ const es: CardMessages = {
     could: (sat: SatName, place: string, cut: boolean): Rich => withTail(`${subject(sat)} tuvo`, 'a su alcance', place, cut),
     overhead: (sat: SatName, place: string, cut: boolean): Rich => [`${subject(sat)} sobrevoló`, accent(place, ...stop(cut))],
   },
-  headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [watched(satellites), accent(place, ...stop(cut, ' esta semana.'))],
+  headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [watched(satellites), accent(place, ...stop(cut, ' esta semana.'))],
 
   // ── The line under the headline ───────────────────────────────────────────────────────────────────────────────────
   photos: (count: number, atLeast: boolean) =>
@@ -155,7 +157,7 @@ const es: CardMessages = {
   pixelSize: (metres: number) => (metres >= 1000 ? `${f.int(metres / 1000)} km` : `${metres < 1 ? f.dec(metres, 2) : f.int(metres)} m`),
   distance: (km: number) => `${f.int(km)} km`,
   scale: (km: number) => (km >= 1 ? `${f.int(km)} km` : `${f.int(km * 1000)} m`),
-  geometry: 'Geometría de la pasada · norte arriba',
+  geometry: 'Geometría · norte arriba',
   note: {
     imageInApp: 'La imagen se abre en la app',
     imageUnavailable: 'Imagen no disponible ahora',
@@ -166,8 +168,11 @@ const es: CardMessages = {
   acquiring: 'Captando…',
   noPublicPhoto: 'Ninguna imagen pública esta semana',
   noPhoto: 'Sin imagen que mostrar',
+  // The week card's lead chip (mono, top left) must end before the picture's scale chip: *Más cercana · Sentinel-2C ·
+  // 10 m* (32) does, where *Vista más cercana* (38 with the same tail) ran into it. The gallery keeps *Vista más
+  // cercana*.
   look: {
-    closest: 'Vista más cercana',
+    closest: 'Más cercana',
     lastClear: 'Última sin nubes',
     clouded: 'Nublado',
     radar: 'Radar',

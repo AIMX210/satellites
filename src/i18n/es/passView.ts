@@ -8,7 +8,7 @@
  * satellite is never referred to by a pronoun (pro-drop, *su*), the spot is *aquí*, never *tu punto* (§9). Readout
  * labels are the glossary's, sized for the strip's four cells (≤ 8 characters a line, wrapping at spaces: *Fuera de
  * nadir*, *Nubes aquí*) and the two-column grid (§7), whose labels are nowrap in a 162 px column on a 360 px phone: at
- * 8.0 px a character they hold 19, so the glossary's longer forms are cut to *Velocidad en tierra*, *Escaneo aquí ·
+ * 8.0 px a character they hold 19, so the glossary's longer forms are cut to *Velocidad terrestre*, *Escaneo aquí ·
  * UTC*, *Sentido del escaneo*, *Velocidad de línea*. The elevation's unit is empty: the label says it, and the compass
  * point stands alone (`SSO`, §4). Days, clocks, compass points and durations arrive written; *a las* becomes *a la*
  * before a clock that starts with `01:` (§5).
@@ -54,7 +54,7 @@ const passView: typeof en = {
     ]
       .filter(Boolean)
       .join(', '),
-  offNadir: (deg: number) => `${f.dec(deg, 1)}° fuera de nadir`,
+  offNadir: (deg: number) => `${f.dec(deg, 1)}° del nadir`,
   offNadirShort: (deg: number) => `${f.dec(deg, 1)}°`,
   distanceKm: (km: number) => `${f.int(km)} km`,
   cloudPct: (pct: number) => `nubosidad ${f.int(pct)}%`,
@@ -136,7 +136,7 @@ const passView: typeof en = {
     closestLocal: 'Más cerca · local',
     groundDistance: 'Distancia horizontal',
     elevationFromYou: 'Elevación desde ti',
-    groundSpeed: 'Velocidad en tierra',
+    groundSpeed: 'Velocidad terrestre',
     heading: 'Rumbo',
     sunElevation: 'Elevación del Sol',
     fieldOfRegard: 'Alcance',

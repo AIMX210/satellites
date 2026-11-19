@@ -218,7 +218,7 @@ const results: typeof en = {
     ok: 'OK',
     seconds: (s: number) => `${f.dec(s, 2)}\u00a0s`,
     window: (n: number, from: UtcWhen, to: UtcWhen): Rich => [
-      strong(`Ventana de ${days(n)} · `),
+      strong(`${days(n)} · `),
       `${dayMonth(from.ms, 'UTC')} ${from.time} → ${dayMonth(to.ms, 'UTC')} ${to.time} UTC`,
     ],
     percent: (pct: number) => `${f.int(pct)}%`,
@@ -269,7 +269,7 @@ const results: typeof en = {
     geoLane: (n: number): Rich => [strong('Geo · '), f.int(n)],
     geoNames: (names: readonly string[]) => names.join(', '),
     now: 'Ahora',
-    geometry: (deg: number, km: number) => `${f.dec(deg, 1)}° fuera de nadir · ${f.int(km)}\u00a0km`,
+    geometry: (deg: number, km: number) => `${f.dec(deg, 1)}° del nadir · ${f.int(km)}\u00a0km`,
     markMosaic: (gsdM: number) => `Mosaico diario, ${f.int(gsdM)}\u00a0m · ●`,
     markRadar: (gsdM: number) => `Imagen de radar, ${f.int(gsdM)}\u00a0m · ◆`,
     markImaged: (title: string) => `${title} · ◆`,

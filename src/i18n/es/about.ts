@@ -49,7 +49,7 @@ const about: typeof en = {
     /** es.md §2 (before and after): the subject named, *auto* for every region, the quietly uncanny ending */
     seeMe: {
       term: '¿Puede verme un satélite?',
-      text: 'No. En el mejor de los casos, aquí un píxel mide 10 m de lado. Un auto ocupa un píxel. A ti no se te ve.',
+      text: 'No. En el mejor de los casos, aquí un píxel mide 10 m de lado. Un auto ocupa un píxel. A ti no\u00a0se\u00a0te\u00a0ve.',
     },
     every: {
       term: '¿Aparecen todos los satélites?',
@@ -118,7 +118,7 @@ const about: typeof en = {
   verdictMore: {
     imaged: 'Si la mostramos, es la imagen real.',
     likely: 'La imagen aún no es pública o se descartó por las nubes.',
-    could: 'No hay forma de saber si llegó a hacerlo.',
+    could: 'No hay forma de saber si lo hizo.',
     overhead: '',
   },
 
