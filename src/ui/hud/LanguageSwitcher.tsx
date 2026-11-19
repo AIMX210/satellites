@@ -62,11 +62,14 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     setAt({ left, top, maxHeight: Math.max(160, window.innerHeight - top - EDGE) })
   }, [open])
 
-  // Focus the current language when it opens; close on Esc (capture) and on a press outside.
+  // Focus the current language once the menu is placed and shown: it is measured under visibility: hidden first, and
+  // nothing under it takes focus (keyboard users were left on the trigger, the arrows doing nothing).
+  useEffect(() => {
+    if (open && at) menu.current?.querySelector<HTMLElement>('[aria-checked="true"]')?.focus({ preventScroll: true })
+  }, [open, at])
+  // Close on Esc (capture) and on a press outside.
   useEffect(() => {
     if (!open) return
-    const current = menu.current?.querySelector<HTMLElement>('[aria-checked="true"]')
-    current?.focus({ preventScroll: true })
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key !== 'Escape') return
       e.preventDefault()
@@ -113,9 +116,11 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     else if (e.key === toFirst) go(i >= half ? i - half : i)
     else if (e.key === 'Home') go(0)
     else if (e.key === 'End') go(items.length - 1)
-    else if (e.key === 'Tab') close(false)
+    // Tab leaves the menu where it opened: on the trigger (the focused item unmounts with the menu, which dropped
+    // focus to the page), so the next Tab goes on from there.
+    else if (e.key === 'Tab') close()
     else return
-    if (e.key !== 'Tab') e.preventDefault()
+    e.preventDefault()
   }
 
   const info = LOCALE_INFO[locale]
