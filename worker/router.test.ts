@@ -1,10 +1,8 @@
 /**
- * The Worker answers every path as vercel.json does (api/_lib/api.test.ts walks vercel.json for the same cases),
- * and its bot list and security headers stay equal to vercel.json's while both hosts run.
+ * Where the Worker sends every path, what it caches, and the headers it adds on the way out.
  */
-import { readFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { SECURITY_HEADERS, UNFURLER_UA, route, type Routes } from './router.ts'
+import { SECURITY_HEADERS, route, type Routes } from './router.ts'
 
 const BOT = 'Mozilla/5.0 (compatible; Twitterbot/1.0)'
 const IMESSAGE =
@@ -54,7 +52,7 @@ describe('worker routes', () => {
 
   it('falls back to the app for app paths only', async () => {
     expect((await at('/about')).body).toBe('asset /')
-    expect((await at('/week/43.47,-80.54')).res.status).toBe(404) // a dot: never the app, as on Vercel
+    expect((await at('/week/43.47,-80.54')).res.status).toBe(404) // a dot: a file that is not there, never the app
     expect((await at('/missing.png')).res.status).toBe(404)
   })
 
@@ -68,7 +66,7 @@ describe('worker routes', () => {
   })
 })
 
-describe('cache-control as browsers get it from Vercel', () => {
+describe('cache-control as browsers get it', () => {
   it('drops s-maxage and stale-while-revalidate from what handlers send, and fills in a missing header', async () => {
     const r: Routes = {
       ...routes(),
@@ -81,7 +79,7 @@ describe('cache-control as browsers get it from Vercel', () => {
     expect((await get('/api/nope')).headers.get('cache-control')).toBe('public, max-age=0, must-revalidate')
   })
 
-  it('remembers a missing file in a versioned directory, as Vercel does', async () => {
+  it('remembers a missing file in a versioned directory', async () => {
     const get = async (path: string) => (await route(new Request(`https://www.watched.earth${path}`), routes())).headers.get('cache-control')
     expect(await get('/places/20261112/s/zz.txt')).toBe('public, max-age=31536000, immutable')
     expect(await get('/assets/gone-abc123.js')).toBe('public, max-age=31536000, immutable')
@@ -92,26 +90,6 @@ describe('cache-control as browsers get it from Vercel', () => {
     const cc = 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400'
     const r: Routes = { ...routes(), assets: { fetch: async () => new Response('{}', { headers: { 'cache-control': cc } }) } }
     expect((await route(new Request('https://www.watched.earth/about'), r)).headers.get('cache-control')).toBe(cc)
-  })
-})
-
-describe('parity with vercel.json', () => {
-  interface Route {
-    src?: string
-    headers?: Record<string, string>
-    has?: { type: string; key: string; value?: string }[]
-  }
-  const vercel = async () => (JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8')) as { routes: Route[] }).routes
-
-  it('matches the same link unfurlers', async () => {
-    const ua = (await vercel()).flatMap((r) => r.has ?? []).find((c) => c.key === 'user-agent')
-    expect(ua?.value).toBe(UNFURLER_UA)
-  })
-
-  it('sends the same security headers on every path', async () => {
-    const all = (await vercel()).find((r) => r.src === '/(.*)')!.headers!
-    const { 'Strict-Transport-Security': _hsts, ...rest } = SECURITY_HEADERS // Vercel adds HSTS on its own
-    expect(rest).toEqual(all)
   })
 })
 
@@ -154,7 +132,7 @@ describe('edge cache', () => {
     expect(calls).toEqual(['og /api/og?id=ab3d5f7h'])
   })
 
-  it('keeps only what Vercel would keep: 200 or 404 with s-maxage, never no-store or an error', async () => {
+  it('keeps only a 200 or 404 that says s-maxage, never no-store or an error', async () => {
     const { get, store } = cachedRoutes({
       og: respond(500, 'public, s-maxage=300'),
       pan: respond(400, 'public, max-age=86400'),
