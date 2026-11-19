@@ -72,7 +72,8 @@ const landing: typeof en = {
   suggestions: 'Plekken',
 
   // ── Use my location ──────────────────────────────────────────────────────────────────────
-  useMyLocation: 'Mijn locatie gebruiken',
+  // `Mijn locatie`: `Mijn locatie gebruiken` (22) left the field too little room for its placeholder at 1024 px.
+  useMyLocation: 'Mijn locatie',
   locateMe: 'Mijn plek',
   nearMe: 'Mijn plek',
   locating: 'Bepalen…',

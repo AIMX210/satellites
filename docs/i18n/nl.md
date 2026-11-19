@@ -21,7 +21,7 @@ headlines), `[SAT]` a satellite name, `[CLOCK]` a 24-hour clock with its zone ab
 | Scene | `opname` (de), plural `opnamen`. Never `scène`. |
 | Verdicts | `Bekeken` / `Waarschijnlijk bekeken` / `Kon hierheen kijken` / `Vloog over je heen`. Lanes `BEELD` / `STROOK` / `BEREIK` / `HEMEL`. |
 | The "could" modal | `kon` everywhere. Never `had … kunnen`. |
-| Buttons | Infinitive, no pronoun: `Delen`, `Kopiëren`, `Opnieuw proberen`. Where English says my / me, the user speaks: `Mijn locatie gebruiken`, `Verras me`. An invitation that says "your" uses the `je`-imperative: `Zoek jouw plek`. |
+| Buttons | Infinitive, no pronoun: `Delen`, `Kopiëren`, `Opnieuw proberen`. Where English says my / me, the user speaks: `Mijn locatie`, `Verras me`. An invitation that says "your" uses the `je`-imperative: `Zoek jouw plek`. |
 | Tense | Simple past for what a satellite did (`keek`, `vloog`, `streek over`). Present perfect for a state that holds now (`zijn openbaar gemaakt`) and for whether something happened (`Of dat ook gebeurd is`). Present tense with `sinds` (`kijkt sinds 1999`). |
 | Numbers | Digits in mono wherever the English has digits. Decimal comma, thousands point: `7,46 km/s`, `1.715 beelden`. Words where the English spells a number out (`elke zes uur`). |
 | Coordinates | International notation, exactly as the code formats them: `52.3676°N 4.9041°E`, `ZON 16.2°S 063.0°E`. Never localised. In a sentence, a geostationary seat is written in words: `op 0,2° westerlengte`. |
@@ -44,7 +44,7 @@ reader personally ("Something watched *you*"), and the voice is calm, close and 
 | Display headlines (hero, results headline, About title, card headline) | `je`, with stressed `jou` where the accent falls | `Iets keek deze week naar *jou*.` | The accent is the human moment. Dutch has a stressed object pronoun for it, and the sentence stress falls on it at the end of the line. |
 | Sentences and prose (results, pass detail, footnotes, spot lines) | unstressed `je`; `we` for the makers | `38° boven je horizon in het zuiden.` / `Bewolking boven je plek.` | Most sentences have the satellite as subject. The reader appears only in possessives and places, and unstressed `je` keeps that quiet. |
 | Action buttons | infinitive, no pronoun | `Delen`, `Beeld downloaden`, `Kopiëren`, `Opnieuw proberen`, `Sluiten` | A button names an action; it does not order the reader about. The infinitive is the Dutch software default and works in mono caps. |
-| Buttons where English says my / me | first person, the user speaking | `Mijn locatie gebruiken`, `Mijn plek`, `Verras me` | Same convention as English. `Jouw locatie gebruiken` would make the product speak inside the user's own button. |
+| Buttons where English says my / me | first person, the user speaking | `Mijn locatie`, `Mijn plek`, `Verras me` | Same convention as English. `Jouw locatie gebruiken` would make the product speak inside the user's own button. |
 | Invitations where English says "your" | `je`-imperative; stressed `jouw` when it contrasts with someone else's place | `Zoek jouw plek` (narrow phones: `Jouw plek`) | It invites the reader, as the English does. On a shared link it contrasts with the sharer's place, so `jouw` is stressed. |
 | Placeholders and prompts | `je`-imperative | `Zoek een plek` | A placeholder invites; it is not a command button. |
 | Readout labels (a quantity's name over a value) | nouns only, no pronouns, no verbs | `HOOGTE`, `NADIRHOEK`, `STROOKBREEDTE`, `AFGELOPEN 7 DAGEN`, `02 / OVERVLUCHTEN` | Instrument labels name a quantity. Other mono caps strings (buttons, chips, progress rows) follow their own row of this table. |
@@ -535,7 +535,7 @@ Where a wrong guess is likely, these are the Dutch strings. Every other key foll
 | `clearSearch` / `go` (aria) | `Zoekveld leegmaken` / `Overvluchten van deze plek tonen` |
 | `searchDown` | `Het zoeken naar plekken reageert niet. Coördinaten zoals 43.47, −80.54 werken nog steeds.` (the example stays as the field parses it) |
 | `nothingMatches` | `Niets gevonden voor “Waterloo”. Probeer een stad, een bezienswaardigheid of coördinaten.` |
-| `useMyLocation` / `locateMe` / `nearMe` | `Mijn locatie gebruiken` / `Mijn plek` / `Mijn plek` |
+| `useMyLocation` / `locateMe` / `nearMe` | `Mijn locatie` / `Mijn plek` / `Mijn plek` (`Mijn locatie gebruiken` ellipsised the placeholder at 1024 px) |
 | `locating` (chip, about as wide as `Mijn plek`) | `Bepalen…` |
 | `cancelSearch` / `cancelLocate` / `cancelLocating` | `Annuleren` / `Annuleren` / `Locatie bepalen annuleren` |
 | `requestingPosition` / `namingPlace` / `elapsed` | `Positie opvragen` / `Naam opzoeken` / `04 s` |
@@ -557,7 +557,7 @@ Where a wrong guess is likely, these are the Dutch strings. Every other key foll
 | invite bar | text `Iets keek deze week ook naar jou.`, button `Zoek jouw plek` |
 | shared-pass CTA (lead hidden on narrow phones) | `Zoek ` + `jouw plek` (narrow: `Jouw plek`) |
 | `passView.empty` | `Geen satelliet die we volgen, vloog in deze periode over deze plek. Dat is zeldzaam; de voetnoten hierboven melden of een gegevensbron uitviel.` |
-| `imagedOrder` | `scherpste, dan nieuwste` |
+| `imagedOrder` | `scherpste eerst` (19 characters at most beside `40 overvluchten`, or the count drops to a second line) |
 | `count` / `countStack` | `1 overvlucht` / `31 overvluchten` (unit in the number's form) |
 | `sats` | `1 satelliet` / `12 satellieten` (no `sat` / `sats`) |
 | `showAllSats` / `showAllRows` / `showMore` / `left` / `showFewer` | `Alle 31 satellieten tonen` / `Alle 12 rijen tonen` / `Nog 40 tonen` / `nog 12` / `Minder tonen` |
@@ -566,7 +566,7 @@ Where a wrong guess is likely, these are the Dutch strings. Every other key foll
 | `offNadir` / `cloudPct` | `5,3° nadirhoek` / `bewolking 25%` |
 | `expandLabel` / `expandTitle` | `Beeld vergroten: Sentinel-2C, zo 1 nov 16:14` / `Beeld vergroten` |
 | `satLabel` | `Sentinel-2C, ESA, 3 overvluchten, laatste vrijdag 6 november 16:14` |
-| `latest` / `closest` / `cloudChip` | `Laatste ` / `Dichtstbij ` / `Wolk` |
+| `latest` / `closest` / `cloudChip` | empty / `Dichtstbij ` / `Wolk` (`Laatste ` ran the row past its box beside the 12-letter count unit; the row is the latest pass) |
 | `photosSection` / `planSection` / `geometry` / `replay` | `Beelden` / `Bovenaanzicht` / `Geometrie` / `Herhaling` |
 | `fullDiscNote` | `Een beeld van de hele schijf: één opname van alles wat de satelliet kan zien, hier met 2 km per pixel. Grof, maar echt, en het nieuwste dat gepubliceerd is; de satelliet maakte de hele week elke 10 minuten zo’n beeld.` (no cadence: `… om de paar minuten zo’n beeld.`) |
 | `mosaicNote` | `Een dagmozaïek: NASA voegt de stroken van elke dag samen tot één beeld met 375 m per pixel. Grof, maar echt, en van de dag van deze overvlucht.` |
@@ -810,7 +810,7 @@ right and are wrong here.
 | military / spy satellite | `militaire satelliet` / `spionagesatelliet` | Only where the English says it. |
 | place | `plek` (de) | Never `locatie` for a searched place. |
 | spot (the exact pixel) | `plek`; for contrast `precies je plek` | |
-| location (GPS) | `locatie` (de); position `positie` | `Mijn locatie gebruiken`, `Positie opvragen`. |
+| location (GPS) | `locatie` (de); position `positie` | `Mijn locatie`, `Positie opvragen`. |
 | area (privacy) | `gebied` (het) | `een gebied van ongeveer 10 km`. Never `vak`, `cel`, `~`. |
 | globe | `wereldbol` (de), short `bol` | |
 | pin / drop a pin | `speld` (de) / `Speld neerzetten` | |
@@ -829,7 +829,7 @@ right and are wrong here.
 | download / save PNG / video | `Beeld downloaden` / `PNG opslaan` / `video` (de), pl. `video’s` | |
 | match (search) | `treffer` (de), pl. `treffers` | `Geen treffers`. |
 | fault | `storing` (de) | Notice label `Storing`. |
-| use my location / near me / locating | `Mijn locatie gebruiken` / `Mijn plek` / `Bepalen…` | |
+| use my location / near me / locating | `Mijn locatie` / `Mijn plek` / `Bepalen…` | |
 | surprise me | `Verras me` | |
 | how this works | `Hoe het werkt` | |
 | last 7 days / this week / that week | `afgelopen 7 dagen` / `deze week` / `die week` (`in die week` after `keek`) | |
@@ -1172,7 +1172,7 @@ runs about 10–20% longer. The budget is the English width, so:
 | English | chars | nl | chars | Note |
 |:--|--:|:--|--:|:--|
 | SURPRISE ME | 11 | VERRAS ME | 9 | |
-| USE MY LOCATION | 15 | MIJN LOCATIE GEBRUIKEN | 22 | Wide screens and the accessible name only. |
+| USE MY LOCATION | 15 | MIJN LOCATIE | 12 | Wide screens and the accessible name only. `MIJN LOCATIE GEBRUIKEN` (22) ellipsised the placeholder at 1024 px. |
 | LOCATE ME / NEAR ME | 9 / 7 | MIJN PLEK / MIJN PLEK | 9 / 9 | They share the search line with the input. |
 | LOCATING… | 10 | BEPALEN… | 8 | Not `ZOEKEN…`: that is the search status. |
 | HOW THIS WORKS | 14 | HOE HET WERKT | 13 | |
@@ -1443,3 +1443,10 @@ The critique's 40 items (38 numbered, the missing-keys table, and the note on En
 - `Intl.DisplayNames('nl')` gives `Hongkong SAR van China`; it is used as it comes, and hand-written sublabels say
   `Hongkong`.
 - `Garden City Crop Circles` is `Ronde akkers van Garden City`: `graancirkels` names something else.
+
+**On-screen review (2026-11-19)**, every state in the browser at 1024, 1280, 1440, 390 and 360 px and the share cards
+rendered, against English: `useMyLocation` `Mijn locatie` (the placeholder ellipsised beside the long label at
+1024 px); the pass rows' `latest` empty and `imagedOrder` `scherpste eerst` (rows and group headers ran past their
+boxes). The rest fits as written; what copy cannot fix (the pass rows' meta lines beside `overvluchten`, the
+three share buttons on a phone) is a layout change, reported to the coordinator. The catalogue's literal no-break spaces
+(139, outside comments) are now written as ` ` escapes, as the house style asks; no string changed.

@@ -35,7 +35,8 @@ const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
   empty:
     'Geen satelliet die we volgen, vloog in deze periode over deze plek. Dat is zeldzaam; de voetnoten hierboven melden of een gegevensbron uitviel.',
-  imagedOrder: 'scherpste, dan nieuwste',
+  // 19 characters at most, or the group's count drops to a second line (`scherpste, dan nieuwste` did).
+  imagedOrder: 'scherpste eerst',
   count: (n: number, _verdict: Verdict) => passCount(n),
   countStack: (n: number, _verdict: Verdict): NumPart => num(f.int(n), passes(n)),
   sats: (n: number) => `${f.int(n)} ${f.plural(n, { one: 'satelliet', other: 'satellieten' })}`,
@@ -69,7 +70,8 @@ const passView: typeof en = {
   expandTitle: 'Beeld vergroten',
   satLabel: (o: { sat: string; operator?: string; passes: number; verdict: Verdict; day: string; time: string }) =>
     `${o.sat}${o.operator ? `, ${o.operator}` : ''}, ${passCount(o.passes)}, laatste ${o.day} ${o.time}`,
-  latest: 'Laatste ',
+  // Nothing: the row is the latest pass, and `Laatste ` ran it past its box beside the 12-letter `overvluchten`.
+  latest: '',
   closest: 'Dichtstbij ',
   cloudChip: 'Wolk',
 
