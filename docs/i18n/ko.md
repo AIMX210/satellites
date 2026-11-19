@@ -52,7 +52,7 @@ card is cached per link (§6.8).
 | Numbers | 1,715 · 7.46 km/s · 786 km · 25% · 98.6°. Half-width digits, comma grouping, never 만 / 억. |
 | Dates | The `day` slot and prose: 11월 1일(일). Dotted only with a year: 2026.11.1(일), kicker 2026.11.12 → 11.19 UTC. Spoken: 11월 6일 금요일. 24 h clock. |
 | Ranges | Prose 10~30 m (물결표, no spaces). Mono spans and directions →. |
-| Card headline | lead / *place* / tail, three parts: Sentinel-2C 위성이 / *Waterloo* / 일대를 지켜봤다. The tail is its own text part, with no leading space. |
+| Card headline | lead / *place* / tail phrases, a line each: Sentinel-2C 위성이 / *Waterloo* / 일대를 / 지켜봤다. Each phrase is its own text part, with no leading space. |
 | Type | System fonts (scripts.css stacks and CJK tokens). Upright Myeongjo accent (embedded subset), never slanted. `word-break: keep-all` + `overflow-wrap: break-word` on the root. |
 | Country names | `Intl.DisplayNames('ko', { type: 'region' })`, never typed by hand. Place names are data, shown as they come (§8 for the four contested names). |
 
@@ -436,24 +436,28 @@ the idiom is fine in a rhetorical hook, §3.6); 감시 or 촬영 in any form.
 ### 3.6 Share card, share page and post
 
 **Card headline (`card.headline`, `headlineBy`, `headlineWeek`).** The renderers set the headline's parts as blocks in
-their order: a text part in the condensed display face, the accent part in the serif. Korean builds it as three parts,
-lead / place / tail:
+their order: a text part in the condensed display face, the accent part in the serif. Each text part is ONE line of the
+card, never broken inside (cardSpec.ts `HEAD_CJK`), and the size is the largest at which every part fits the 466 px
+column (`headlineSizeCjk`), so Korean splits its lead and tail into phrases between eojeol, where a typesetter breaks a
+display headline; the place keeps its words whole (`keep-all`) on every renderer. The blocks join with a space in the
+page title and the post (`sentenceGap: ' '`), so they read as the sentence:
 
 ```ts
 const named = (sat: SatName) => sat ?? '이름 미상'
-const tail = (rest: string) => rest            // a text part of its own: no leading space, never inside accent()
 
-headline:   (n, place, cut) => [`위성 ${f.int(n)}기가`, accent(place), '일대를 지켜봤다.']
+headline:   (n, place, cut) => [`위성 ${f.int(n)}기가`, accent(place), '일대를', '지켜봤다.']
 headlineBy: {
-  imaged:   (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대를 지켜봤다.'],
-  likely:   (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대를 훑고 지나갔다.'],
-  could:    (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대가 보이는 곳을 지나갔다.'],
-  overhead: (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '상공을 지나갔다.'],
+  imaged:   (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대를', '지켜봤다.'],
+  likely:   (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대를', '훑고 지나갔다.'],
+  could:    (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대가 보이는', '곳을 지나갔다.'],
+  overhead: (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '상공을', '지나갔다.'],
 }
 headlineWeek: (n, place, cut) =>
-  n > 0 ? [`지난 일주일, 위성 ${f.int(n)}기가`, accent(place), '일대를 지켜봤다.']
-        : ['지난 일주일, 추적 중인 어떤 위성도', accent(place), '일대를 지켜보지 않았다.']
+  n > 0 ? ['지난 일주일,', `위성 ${f.int(n)}기가`, accent(place), '일대를', '지켜봤다.']
+        : ['지난 일주일,', '추적 중인', '어떤 위성도', accent(place), '일대를', '지켜보지 않았다.']
 ```
+
+Measured: the week's card 52 px (it was 40 with the long lead), a pass card 74.
 
 | Card | lead / *place* / tail |
 |---|---|
@@ -596,7 +600,7 @@ numbers with `fmt('ko')`. "(same)" means the English stays as it is.
 | head.passWhen | [DAY] · [TIME] [ZONE], geostationary ≈ [TIME] [ZONE] |
 | computing.stages | 궤도 카탈로그 / 카탈로그 준비됨 · 궤도 계산 · [N]일 / 궤도 계산됨 · Sentinel-2 + Landsat 아카이브 / 아카이브 검색됨 · 장면과 통과 대조 / 장면 대조됨 |
 | computing.ready / ok / seconds / percent | 보고서 준비됨 / OK / 1.84초 / 42% |
-| computing.window | `[strong('7일 기간 · '), '[DAY] [TIME] → [DAY] [TIME] UTC']` (the rest reads alone on phones) |
+| computing.window | `[strong('7일 · '), '[DAY] [TIME] → [DAY] [TIME] UTC']` (the rest reads alone on phones; no 기간: with it the line's end was cut on a 1280 px laptop) |
 | computing.slow | Planetary Computer와 NASA는 요청이 올 때마다 이미지를 렌더링한다. 이 단계는 몇 초 걸릴 수 있다. |
 | computing.verySlow | 이미지 아카이브의 응답이 느리다. 끝내 응답하지 않으면 통과는 궤도 계산만으로 보여 주고, 그렇다고 밝힌다. |
 | computing.sharedAlt | [SAT] 위성이 찍은 [PLACE] 일대 이미지. 공유받은 이미지다. (no name: 이름 미상 위성이 …) |

@@ -212,9 +212,9 @@ const results: typeof en = {
     ok: 'OK',
     /** "1.84초": the counter attached, as every Korean duration is */
     seconds: (s: number) => `${f.dec(s, 2)}초`,
-    /** "**7일 기간 · **11월 1일 05:47 → 11월 8일 05:47 UTC" (the strong part hides on phones; the rest reads alone) */
+    /** "**7일 · **11월 1일 05:47 → 11월 8일 05:47 UTC" (the strong part hides on phones; the rest reads alone; 기간 would cut the end on laptops) */
     window: (days: number, from: UtcWhen, to: UtcWhen): Rich => [
-      strong(`${f.int(days)}일 기간 · `),
+      strong(`${f.int(days)}일 · `),
       `${dayMonth(from.ms, 'UTC')} ${from.time} → ${dayMonth(to.ms, 'UTC')} ${to.time} UTC`,
     ],
     percent: (pct: number) => `${f.int(pct)}%`,

@@ -18,10 +18,10 @@ import { koDayProse } from '../../../api/_lib/i18n/card/ko'
 
 const f = fmt('ko')
 
-/** "795 km": the satellite's altitude, in whole km */
-const km = (altitudeKm: number) => `${f.int(altitudeKm)} km`
+/** "795 km": the satellite's altitude, in whole km (a no-break space: the post never breaks a number from its unit) */
+const km = (altitudeKm: number) => `${f.int(altitudeKm)}\u00a0km`
 /** "10 m", "2 km": a pixel's size, in whole metres or whole km from 1,000 m */
-const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)} km` : `${f.int(m)} m`)
+const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)}\u00a0km` : `${f.int(m)}\u00a0m`)
 /** " 픽셀당 10 m.", or nothing when the pixel size is unknown */
 const perPixel = (m?: number) => (m !== undefined ? ` 픽셀당 ${pixel(m)}.` : '')
 /** "Sentinel-2C 위성이 현지 시각 11월 1일(일) 11:21에 ": the subject and the moment that open every post */
