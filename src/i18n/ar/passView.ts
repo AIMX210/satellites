@@ -13,7 +13,8 @@
  *  - Readout labels are nouns with the article («الارتفاع»، «زاوية الارتفاع»، «الانحراف»), never «الميل» (inclination)
  *    or «الهندسة» (engineering): the geometry section is «القياسات». Units are the symbols («كم»، «م»، «كم/ث»، «د»);
  *    prose spells metres with agreement («250 مترًا»). Compass points arrive in Latin letters («SSW») and stay.
- *  - Spans and directions read right to left with ← (ar.md §6.1); each clock stays its own island.
+ *  - Spans and directions read right to left with ← (ar.md §6.1); each clock stays its own island. A degree after an
+ *    Arabic word is one LRI…PDI island (DOM-only text, §6.2.7), or right-to-left text draws its «°» before the digits.
  *  - Joins inside accessible names use «، », and a percentage is said in words there («25 بالمئة», ar.md §5.5).
  */
 import type en from '../en/passView'
@@ -25,6 +26,8 @@ const f = fmt('ar')
 /** A whole count, or a fraction kept (its plural form is `other`) */
 const count = (n: number) => (Number.isInteger(n) ? f.int(n) : f.dec(n, 1))
 const nb = '\u00a0'
+/** U+2066 LEFT-TO-RIGHT ISOLATE \u2026 U+2069 POP DIRECTIONAL ISOLATE: one left-to-right run in a DOM-only string */
+const ltr = (s: string) => `\u2066${s}\u2069`
 
 /** Passes in a run of text: «مرة واحدة» · «مرتان» · «3 مرات» · «11 مرة» · «100 مرة» (and «0 مرة») */
 const passes = (n: number) =>
@@ -113,7 +116,8 @@ const passView: typeof en = {
     ]
       .filter(Boolean)
       .join('، '),
-  offNadir: (deg: number) => `انحراف ${f.dec(deg, 1)}°`,
+  // The angle is isolated, as in the timeline's tooltip (results.ts): after an Arabic word «8.9°» would display «°8.9».
+  offNadir: (deg: number) => `انحراف ${ltr(`${f.dec(deg, 1)}°`)}`,
   offNadirShort: (deg: number) => `${f.dec(deg, 1)}°`,
   distanceKm: (km: number) => `${f.int(km)}${nb}كم`,
   cloudPct: (pct: number) => `السحب ${f.int(pct)}%`,

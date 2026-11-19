@@ -61,7 +61,7 @@ const hud: typeof en = {
     }),
   objectsPending: 'أجسام',
   catalog: 'الكتالوج',
-  fetched: (stamp: string) => `جُلب ⁦${stamp}⁩`,
+  fetched: (stamp: string) => `جُلب \u2066${stamp}\u2069`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'قديم، ' : ''}${age(unit, n)}`,
   catalogUnavailable: 'الكتالوج غير متاح',
   catalogLoading: 'جارٍ تحميل الكتالوج',

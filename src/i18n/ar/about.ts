@@ -30,11 +30,11 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { accent, num, type Part, type Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('ar')
-const nb = ' '
+const nb = '\u00a0'
 
 const link = (...parts: Part[]): LinkPart => ({ link: parts })
 /** The maker's handle as the link's text, kept left to right inside the right-to-left line (§6.2.7) */
-const handleLink = (handle: string): LinkPart => link(`⁦${handle}⁩`)
+const handleLink = (handle: string): LinkPart => link(`\u2066${handle}\u2069`)
 
 /**
  * "This page loaded N objects, fetched STAMP." The count's six forms (ar.md §5.4): one and two are words, the clause
@@ -43,7 +43,7 @@ const handleLink = (handle: string): LinkPart => link(`⁦${handle}⁩`)
  */
 const loaded = (count: number, stamp: string): AboutPart[] => {
   const n = Math.round(count)
-  const at = num(`⁦${stamp}⁩`)
+  const at = num(`\u2066${stamp}\u2069`)
   return f.plural(n, {
     zero: ['لم تحمّل هذه الصفحة أي جسم. جُلبت النسخة في ', at, '.'],
     one: ['حمّلت هذه الصفحة جسمًا واحدًا، جُلب في ', at, '.'],

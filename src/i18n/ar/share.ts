@@ -9,7 +9,9 @@
  *    to right on X and in share sheets, ar.md §6.2.2), and two Latin names never touch. The imaged and likely frames are
  *    nominal («القمر الصناعي Sentinel-2C رصد Waterloo»); with a preposition between the names the verb comes first
  *    («مرّ القمر الصناعي … على مرأى من Waterloo»). The satellite's frame is masculine throughout («كاميرته»،
- *    «مشغّله»): these messages get no crewed flag, so a station reads as a satellite too (ar.md §5.2).
+ *    «مشغّله»). These messages get no crewed flag, so a crewed station is recognised by its display name (ISS,
+ *    Tiangong), as the pass view and the card recognise it: the overhead post, the only one a station can get, says
+ *    «مرّت المحطة الفضائية ISS» (f), never «القمر الصناعي ISS» (ar.md §5.2, §9.1).
  *  - The day is the Intl long day at the place («يوم الأحد، 1 نوفمبر»), then the clock as it comes and
  *    «بالتوقيت المحلي»: never a bare «م» after a clock (it reads «مساءً», §5.7).
  *  - The pixel arrives as metres, so prose spells them with agreement («10 أمتار»، «30 مترًا»), and from 1000 m in km.
@@ -27,6 +29,10 @@ const nb = '\u00a0'
 
 /** «القمر الصناعي Sentinel-2C»: the head noun carries the gender, a no-break space keeps it with the name */
 const theSat = (sat: string) => `القمر الصناعي${nb}${sat}`
+/** Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong): the messages carry no crewed flag */
+const CREWED = /^(ISS|Tiangong)\b/
+/** "[SAT] passed": «مرّ القمر الصناعي X» (m), or «مرّت المحطة الفضائية ISS» (f) */
+const passed = (sat: string) => (CREWED.test(sat) ? `مرّت المحطة الفضائية${nb}${sat}` : `مرّ ${theSat(sat)}`)
 /** «795 كم»: the satellite's altitude (whole km) */
 const km = (altitudeKm: number) => `${f.int(altitudeKm)}${nb}كم`
 /** The pixel as the predicate of «الدقة» (nominative): «متر واحد» · «متران» · «10 أمتار» · «30 مترًا» · «2 كم» */
@@ -88,8 +94,9 @@ const share: typeof en = {
       `${theSat(sat)} غطّى ${place} من ارتفاع ${km(altitudeKm)} ${when(w)}. شمل نطاق مسح كاميرته البقعة.`,
     could: (sat: string, place: string, w: PostWhen) =>
       `مرّ ${theSat(sat)} على مرأى من ${place} ${when(w)}. كان بإمكانه توجيه كاميرته إلى هنا. لا يقول مشغّله إن كان قد فعل.`,
+    // The one post a crewed station can get: «مرّت المحطة الفضائية ISS» (f), as the pass view and the card say it.
     overhead: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
-      `مرّ ${theSat(sat)} على ارتفاع ${km(altitudeKm)} فوق ${place} ${when(w)}.`,
+      `${passed(sat)} على ارتفاع ${km(altitudeKm)} فوق ${place} ${when(w)}.`,
   },
   // «أيضًا» echoes the hero, «ثمّة شيء رصدك أنت»; the second hook is a question, never an imperative.
   hookWatched: 'ثمّة شيء رصدك أنت أيضًا هذا الأسبوع.',

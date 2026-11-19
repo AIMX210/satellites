@@ -12,8 +12,10 @@
  *  - The satellite always follows its head noun «القمر الصناعي» (a no-break space between them), masculine throughout.
  *    When the place would be the object right after the satellite's name the sentence is nominal («القمر الصناعي
  *    Sentinel-2C رصد | *Waterloo.*»), so two Latin names never touch; with a preposition between them the verb leads.
- *    A nameless satellite is an indefinite «قمر صناعي» after the verb. These messages get no crewed flag, so a station
- *    takes the satellite frame too (ar.md §5.2).
+ *    A nameless satellite is an indefinite «قمر صناعي» after the verb. These messages get no crewed flag, so a crewed
+ *    station is recognised by its display name (ISS, Tiangong), as the pass view and the results recognise it: the
+ *    overhead sentences, the only ones that can name one, say «مرّت المحطة الفضائية ISS» (f), never «القمر الصناعي
+ *    ISS», which no Arabic writer says (ar.md §5.2, §9.1).
  *  - The place is never inflected, never takes an attached preposition, an article or a pronoun pointing back at it.
  *  - Plain text everywhere (the PNG, the og tags, the page title): it starts with an Arabic letter, holds no bidi
  *    control characters (the renderer strips them; X counts each as two), uses «،» and «؟», and never an em dash.
@@ -70,6 +72,14 @@ const images = (n: number) =>
 
 /** «القمر الصناعي Sentinel-2C», or an indefinite «قمر صناعي» for a nameless one (after a verb or a preposition) */
 const theSat = (sat: SatName) => (sat ? `القمر الصناعي${nb}${sat}` : 'قمر صناعي')
+/**
+ * Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong). No message carries a crewed flag, so
+ * the station is recognised by its name, as the pass view and the results do (src/i18n/ar/pass.ts, results.ts).
+ */
+const CREWED = /^(ISS|Tiangong)\b/
+const isStation = (sat: SatName) => !!sat && CREWED.test(sat)
+/** "[SAT] passed": «مرّ القمر الصناعي X» (m), or «مرّت المحطة الفضائية ISS» (f), never «القمر الصناعي ISS» (ar.md §9.1) */
+const passed = (sat: SatName) => (isStation(sat) ? `مرّت المحطة الفضائية${nb}${sat}` : `مرّ ${theSat(sat)}`)
 
 /** Moving: 0 north … 7 northwest (ar.md §4.2, the "heading" column) */
 const HEADING = [
@@ -84,8 +94,9 @@ const HEADING = [
 ]
 /** « عند 11:21 EST يوم الأحد، 1 نوفمبر 2026» (running prose that wraps: a no-break space ties the clock to its zone) */
 const at = (w?: CardWhen) => (w ? ` عند ${w.clock}${nb}${w.zone} يوم ${dayYear(w.ms, w.timeZone)}` : '')
-/** «، متجهًا نحو الجنوب» (its subject is the sentence's satellite) */
-const moving = (heading?: number) => (heading !== undefined && HEADING[heading] ? `، متجهًا ${HEADING[heading]}` : '')
+/** «، متجهًا نحو الجنوب» (its subject is the sentence's satellite; «متجهةً» for a station, f) */
+const moving = (heading?: number, station = false) =>
+  heading !== undefined && HEADING[heading] ? `، ${station ? 'متجهةً' : 'متجهًا'} ${HEADING[heading]}` : ''
 const pct = (n: number) => `${f.int(n)}%`
 
 const ar: CardMessages = {
@@ -103,7 +114,7 @@ const ar: CardMessages = {
       head(place, cut),
     ],
     could: (sat: SatName, place: string, cut: boolean): Rich => [`مرّ ${theSat(sat)} على مرأى من`, head(place, cut)],
-    overhead: (sat: SatName, place: string, cut: boolean): Rich => [`مرّ ${theSat(sat)} فوق`, head(place, cut)],
+    overhead: (sat: SatName, place: string, cut: boolean): Rich => [`${passed(sat)} فوق`, head(place, cut)],
   },
   headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [
     `هذا الأسبوع، ${watched(satellites)}`,
@@ -136,7 +147,8 @@ const ar: CardMessages = {
 
   // ── The top row ───────────────────────────────────────────────────────────────────────────────────────────────────
 
-  stamp: (ms: number, timeZone: string, clock: string, zone: string) => `${dayYear(ms, timeZone)} · ${clock} ${zone}`,
+  // A no-break space keeps the clock with its zone, as in every Arabic stamp (ar.md §6.7).
+  stamp: (ms: number, timeZone: string, clock: string, zone: string) => `${dayYear(ms, timeZone)} · ${clock}${nb}${zone}`,
   // A mono stamp may start with a digit (ar.md §6.2.2); the week is always seven days.
   weekTo: (ms: number, timeZone: string) => `7${nb}أيام حتى ${dayYear(ms, timeZone)}`,
   lastWeek: `آخر 7${nb}أيام`,
@@ -197,7 +209,7 @@ const ar: CardMessages = {
   enterAnyPlace: 'أي مكان على الأرض',
   defaultPlace: 'نخلة جميرا',
   defaultAlt:
-    'صورة حقيقية من القمر الصناعي Sentinel-2 لنخلة جميرا في دبي، بجانب العبارة: ثمّة شيء رصدك أنت هذا الأسبوع. أي مكان على الأرض.',
+    `صورة حقيقية من القمر الصناعي${nb}Sentinel-2 لنخلة جميرا في دبي، بجانب العبارة: ثمّة شيء رصدك أنت هذا الأسبوع. أي مكان على الأرض.`,
 
   // ── The share page ────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -215,7 +227,7 @@ const ar: CardMessages = {
   // heading each drop out cleanly when unknown.
   crossed: (o: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) => {
     const alt = o.altitudeKm !== undefined ? ` على ارتفاع ${f.int(o.altitudeKm)}${nb}كم` : ''
-    return `مرّ ${theSat(o.sat)}${alt} فوق ${o.place}${at(o.when)}${moving(o.heading)}.`
+    return `${passed(o.sat)}${alt} فوق ${o.place}${at(o.when)}${moving(o.heading, isStation(o.sat))}.`
   },
   withinView: (o: PassFacts) => `مرّ ${theSat(o.sat)} على مرأى من ${o.place}${at(o.when)}${moving(o.heading)}.`,
   couldHave: 'كان بإمكانه توجيه كاميرته إلى هنا. لا يقول مشغّله إن كان قد فعل.',

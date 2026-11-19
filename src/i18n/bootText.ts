@@ -21,6 +21,7 @@ import ja from './ja/boot.ts'
 import ko from './ko/boot.ts'
 import zhHans from './zh-Hans/boot.ts'
 import zhHant from './zh-Hant/boot.ts'
+import ar from './ar/boot.ts'
 
 export interface BootText {
   /** aria-label of the loading screen: "Loading Watched" */
@@ -46,4 +47,5 @@ export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   ko,
   'zh-Hans': zhHans,
   'zh-Hant': zhHant,
+  ar,
 }

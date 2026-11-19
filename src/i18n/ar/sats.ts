@@ -28,7 +28,7 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { formatDate } from '../../../api/_lib/i18n/dates'
 
 const f = fmt('ar')
-const nb = ' '
+const nb = '\u00a0'
 /** A whole number or a decimal, grouped by fmt('ar') and tied to its unit */
 const n = (v: number) => (Number.isInteger(v) ? f.int(v) : f.dec(v, 1))
 const km = (v: number) => `${n(v)}${nb}كم`
