@@ -194,7 +194,8 @@ const about: typeof en = {
   /** The names printed on Italian keyboards' caps */
   keyNames: { enter: 'Invio', space: 'Spazio', esc: 'Esc' },
 
-  builtBy: (handle: string): AboutPart[] => ['Creato da ', link(handle)],
+  /** "Built by", as the landing's credit says it (landing.builtBy): one phrase for the same credit */
+  builtBy: (handle: string): AboutPart[] => ['Realizzato da ', link(handle)],
   footerNote: 'Realizzato con dati pubblici. Non abbiamo scattato nessuna di queste foto.',
 }
 

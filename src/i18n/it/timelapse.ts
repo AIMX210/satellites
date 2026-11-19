@@ -25,7 +25,8 @@ const pad2 = (n: number) => String(n).padStart(2, '0')
 /** A frame's day, month and year at UTC from Intl's parts, joined by spaces: *22 ott*, *2015* */
 function fields(ms: number, month: 'short' | 'long'): { dayMonth: string; year: string } {
   const parts = dateFormat('it', 'UTC', { day: 'numeric', month, year: 'numeric' }).formatToParts(ms)
-  const get = (t: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === t)?.value ?? ''
+  // Some ICU data ends an abbreviation with a full stop; the guide's readouts have none (§6), as the 'time' namespace's.
+  const get = (t: Intl.DateTimeFormatPartTypes) => (parts.find((p) => p.type === t)?.value ?? '').replace(/\.$/, '')
   return { dayMonth: `${get('day')} ${get('month')}`, year: get('year') }
 }
 /** *22 ott* */

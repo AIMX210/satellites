@@ -29,12 +29,15 @@ const f = fmt('it')
 
 // ── Days at the place's zone (Intl `it`) ────────────────────────────────────────────────────────────────────────────
 
-/** Intl's parts of a day at the place, joined by single spaces (*dom 1 nov 2026*, *domenica 1 novembre 2026*) */
+/**
+ * Intl's parts of a day at the place, joined by single spaces (*dom 1 nov 2026*, *domenica 1 novembre 2026*). Some ICU
+ * data ends an abbreviation with a full stop; the stamps have none (§6), as the app's dates have none.
+ */
 function day(ms: number, timeZone: string, opts: Intl.DateTimeFormatOptions): string {
   return dateFormat('it', timeZone, opts)
     .formatToParts(ms)
     .filter((p) => p.type !== 'literal')
-    .map((p) => p.value)
+    .map((p) => p.value.replace(/\.$/, ''))
     .join(' ')
 }
 /** *dom 1 nov 2026*: the stamps (a readout, uppercased by the renderers) */
