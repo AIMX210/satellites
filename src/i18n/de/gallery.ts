@@ -101,7 +101,8 @@ const gallery: typeof en = {
 
   // ── a photo developing (the pushbroom reveal) ────────────────────────────────────────────
   stillRendering: 'Rendert noch. Große Szenen können 10\u00a0s und länger brauchen.',
-  cropMissing: 'Das Archiv hat diesen Ausschnitt nicht geschickt. Es ist vielleicht ausgelastet; das Bild selbst gibt es trotzdem.',
+  // Three mono lines of ≤ ~30 characters above the retry button, as the English (the title already says no crop came).
+  cropMissing: 'Das Archiv ist vielleicht ausgelastet. Das Bild selbst gibt es trotzdem.',
   scanLine: (line: string, lines: string): Rich => ['Zeile ', strong(line), ` → ${lines}`],
   awaiting: { pass: 'Überflug steht bevor', scan: 'Scan steht bevor' },
 }

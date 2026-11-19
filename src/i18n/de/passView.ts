@@ -147,10 +147,12 @@ const passView: typeof en = {
   },
 
   // ── 01 / Geometry ────────────────────────────────────────────────────────────────────────
-  // No label longer than the English's longest, 168 px at 10.5 px (de.md §7).
+  // No label longer than the English's longest, 168 px at 10.5 px (de.md §7); on a 390 px phone a cell's label has
+  // about 164 px at 11 px (19 characters). The local-time cell sits right of its UTC twin, so *Ortszeit* alone says it:
+  // *Am nächsten · Ortszeit* (177 px) ran past the panel's edge on phones.
   geo: {
     closestUtc: 'Am nächsten · UTC',
-    closestLocal: 'Am nächsten · Ortszeit',
+    closestLocal: 'Ortszeit',
     groundDistance: 'Bodenabstand',
     elevationFromYou: 'Höhenwinkel bei dir',
     groundSpeed: 'Tempo über Grund',
@@ -163,7 +165,7 @@ const passView: typeof en = {
     window: 'Zeitfenster',
     noradPass: 'NORAD · Überflug',
     scanUtc: 'Scan hier · UTC',
-    scanLocal: 'Scan hier · Ortszeit',
+    scanLocal: 'Ortszeit',
     aboveEquator: 'Über dem Äquator bei',
     inYourSky: 'An deinem Himmel',
     scanDirection: 'Scanrichtung',

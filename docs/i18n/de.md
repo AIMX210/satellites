@@ -703,7 +703,7 @@ Ort bei größter Annäherung.*; northUp *Draufsicht · Norden oben*; fieldOfReg
 | strip labels | Höhe · Elevation · Off-Nadir · Pixel · Kanal · Sonne · Wolken · Wolken am Ort (*Elevation*, Duden's word, is 71.4 px at 11 px, the English width; *Höhenwinkel*, 87.5 px, crosses the hairline of a ~67 px cell on a 375 px phone) |
 | band / spotValue | Infrarot · Sichtbar · Farbe / Klar · Zirren · Wolken · Schatten |
 | unit | km · m · km/s · hoch · Mosaik · Szene · Tag / Dämmerung / Nacht |
-| geo grid | Am nächsten · UTC · Am nächsten · Ortszeit · Bodenabstand · Höhenwinkel bei dir · Tempo über Grund · Kurs · Sonnenhöhe · Schwenkbereich · Streifenbreite · Im Streifen · In Sicht · Zeitfenster · NORAD · Überflug · Scan hier · UTC · Scan hier · Ortszeit · Über dem Äquator bei · An deinem Himmel · Scanrichtung · Linientempo hier · Abdeckung · Dieser Scan · NORAD · Scan |
+| geo grid | Am nächsten · UTC · Ortszeit (beside its UTC twin; *Am nächsten · Ortszeit*, 177 px, ran past a 390 px phone's edge) · Bodenabstand · Höhenwinkel bei dir · Tempo über Grund · Kurs · Sonnenhöhe · Schwenkbereich · Streifenbreite · Im Streifen · In Sicht · Zeitfenster · NORAD · Überflug · Scan hier · UTC · Ortszeit · Über dem Äquator bei · An deinem Himmel · Scanrichtung · Linientempo hier · Abdeckung · Dieser Scan · NORAD · Scan |
 | values | Nord → Süd / Süd → Nord · `16:14:21 → 16:18` · Tag / Dämmerung / Nacht · Vollscheibe · alle 10 min · hoch · SSW · SSW · absteigend / aufsteigend |
 | pan-sharpened | Mit dem 15-m-Kanal von Landsat geschärft (never *Landsats*) |
 
@@ -718,8 +718,8 @@ Bild* / *Nächstes Bild* (*Voriges (←)* / *Nächstes (→)*); lead *Aus nächs
 deinem Ort* / *Wolken an deinem Ort*; status *Bewölkt · 81 %* / *Wolken am Ort* / *Klar* / *Dünne Zirren* /
 *Wolkenschatten* / *Wolken 25 %* / *Tagesmosaik*; photoAlt *Bild von Sentinel-2C: Waterloo. Der Ort liegt in der
 Bildmitte.*; acquiring *Erfassung …*; noImage *Kein Bild erhalten*; retry *Erneut laden*; stillRendering *Rendert noch.
-Große Szenen können 10 s und länger brauchen.*; cropMissing *Das Archiv hat diesen Ausschnitt nicht geschickt. Es ist
-vielleicht ausgelastet; das Bild selbst gibt es trotzdem.*; expand *Bild vergrößern* (*Vergrößern (F)*); scanLine
+Große Szenen können 10 s und länger brauchen.*; cropMissing *Das Archiv ist vielleicht ausgelastet. Das Bild selbst gibt
+es trotzdem.* (three mono lines above the retry button: the title already says no crop came); expand *Bild vergrößern* (*Vergrößern (F)*); scanLine
 *Zeile **0412** → 1024*; awaiting *Überflug steht bevor* / *Scan steht bevor*; north *N*.
 
 **Globe** (`globe`): capture line *Erfasst 11:21:21 EST · 10 m* (geostationary: *Erfasst ≈ 11:21 EST*, DOM only);
@@ -1258,7 +1258,7 @@ character count. A reviewer who changes a constrained string measures it the sam
 | Gallery lead chip | about 20 characters | *Letzter klarer Blick* 20, *Aus nächster Nähe* 17 |
 | Pass list cloud chip | a 56 px square (48 px on small phones) | *Wolke* 37 px (*Cloud* 37) |
 | Pass strip values (21 px) | the English band value's width | *Schatten* 121 px = *Infrared* 121; *Infrarot* 121, *Sichtbar* 121 |
-| Geometry grid labels | no longer than the English longest (22 characters, 168 px at 10.5 px) | *Am nächsten · Ortszeit* 168, *Scan hier · Ortszeit* 152, *Höhenwinkel bei dir* 145, *Tempo über Grund* 122 |
+| Geometry grid labels | no longer than the English longest (22 characters, 168 px at 10.5 px); a 390 px phone gives a cell's label about 164 px at 11 px (19 characters) | *Über dem Äquator bei* 168 (the English *Above the equator at* is as long), *Höhenwinkel bei dir* 160 on the phone, *Tempo über Grund* 122, *Ortszeit* beside *Am nächsten · UTC* / *Scan hier · UTC* |
 | Computing rows | about 40 characters on a 390 px phone | longest *Abgleich · 31 Szenen mit 412 Überflügen* (39) |
 | Computing window line (under the bar, one `nowrap` line with the percentage; first span ellipsised) | desktop dock 382 px at 10.5 px | *7 Tage · 01.11. 05:47 → 08.11. 05:47 UTC* + *42 %* 353 px, 369 at 11 px (English 375–384, 401); *7-Tage-Fenster · …* was 414 and lost *UTC* |
 | Replay key hints (laptops: key caps and words in one `nowrap` row, 10 px, clipped without an ellipsis) | about 406 px visible | *Leertaste* cap + *Start / Pause* + ← → caps + *Überflüge dieser Art* 391 px (English 449); *Abspielen / Pause* + *voriger / nächster Überflug dieser Art* was 547 |
