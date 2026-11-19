@@ -408,8 +408,10 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
 /**
  * Publish what the landing covers so the camera frames the globe in the rest (store.uiInsets):
  *   stacked          the ink panel: bottom = from its top edge down
- *   short landscape  the copy column on the right
- *   wide             the text on the left: left = the end of the longest line + TEXT_CLEAR
+ *   short landscape  the copy column on the right (the left right to left)
+ *   wide             the text on the left: left = the end of the longest line + TEXT_CLEAR (right to left the
+ *                    text is on the right: right = from the start of the longest line)
+ * The side is read from where the column is, never from the language (ErrorNotice.tsx does the same).
  * Not while searching: the camera must not move while you type.
  */
 function useInsets(
@@ -430,16 +432,24 @@ function useInsets(
       const H = window.innerHeight
       if (shortLandscape()) {
         // offsetLeft: layout position, ignoring the entrance transforms.
-        set({ right: Math.max(0, W - column.offsetLeft + TEXT_CLEAR), bottom: 0, left: 0 })
+        const left = column.offsetLeft
+        const right = left + column.offsetWidth
+        if (left + column.offsetWidth / 2 >= W / 2) set({ right: Math.max(0, W - left + TEXT_CLEAR), bottom: 0, left: 0 })
+        else set({ left: Math.max(0, right + TEXT_CLEAR), bottom: 0, right: 0 })
       } else if (isStacked(W, H)) {
         set({ bottom: Math.max(0, H - (column.offsetTop - PANEL_PAD_TOP)), left: 0, right: 0 })
       } else {
-        let right = 0
+        // Each block is as wide as its text (align-items: flex-start), so the blocks' outer edge is where the text
+        // ends: the rightmost right edge, or right to left (the column on the right) the leftmost left edge.
+        const box = column.getBoundingClientRect()
+        const onRight = box.left + box.width / 2 > W / 2
+        let edge = onRight ? Infinity : 0
         for (const el of content.children) {
           const r = el.getBoundingClientRect()
-          if (r.width > 0 && r.height > 0) right = Math.max(right, r.right)
+          if (r.width > 0 && r.height > 0) edge = onRight ? Math.min(edge, r.left) : Math.max(edge, r.right)
         }
-        set({ left: right > 0 ? right + TEXT_CLEAR : column.getBoundingClientRect().right + TEXT_CLEAR, right: 0, bottom: 0 })
+        if (onRight) set({ right: Math.max(0, W - (edge < Infinity ? edge : box.left) + TEXT_CLEAR), left: 0, bottom: 0 })
+        else set({ left: edge > 0 ? edge + TEXT_CLEAR : box.right + TEXT_CLEAR, right: 0, bottom: 0 })
       }
     }
     if (typeof ResizeObserver === 'undefined') {
@@ -571,10 +581,12 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
   const markEnd = () => {
     const ul = listRef.current
     if (!ul) return
-    const end = ul.scrollWidth - ul.clientWidth - ul.scrollLeft <= 2
+    // Right to left a row scrolls toward negative scrollLeft: the distance travelled is its magnitude.
+    const scrolled = Math.abs(ul.scrollLeft)
+    const end = ul.scrollWidth - ul.clientWidth - scrolled <= 2
     if (end) ul.dataset.end = ''
     else delete ul.dataset.end
-    if (ul.scrollLeft > 2) ul.dataset.scrolled = ''
+    if (scrolled > 2) ul.dataset.scrolled = ''
     else delete ul.dataset.scrolled
   }
   useLayoutEffect(() => {

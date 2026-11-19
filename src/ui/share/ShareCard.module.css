@@ -16,6 +16,11 @@
   border: 1px solid var(--line-strong);
   background: var(--ink-0);
 }
+/* The preview is the picture card.ts and api/og.tsx draw, and they lay the card out left to right in every language
+   (an Arabic run keeps its own direction inside its box): so does this, or the preview and the shared image differ. */
+:root[dir='rtl'] .wrap {
+  direction: ltr;
+}
 .card {
   position: absolute;
   left: 0;

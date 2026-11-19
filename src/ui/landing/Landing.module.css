@@ -14,6 +14,10 @@
  *   WIDE             (min-width: 761px) and (orientation: landscape), (min-width: 1101px)
  *   SHORT_LANDSCAPE  (orientation: landscape) and (max-height: 540px)
  * Phone-only sizing stays on (max-width: 760px).
+ *
+ * Right to left every side is the logical one (inline start / end), so the page mirrors: the column is on the right,
+ * the short-landscape copy in the left half, the chip rows scroll and fade toward the left. Landing.tsx publishes
+ * the insets from where the column is, so the globe frames itself in what is left either way.
  */
 .landing {
   --safe-x: calc(env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
@@ -44,7 +48,7 @@
 
 .column {
   position: absolute;
-  left: calc(var(--bezel-inset) + var(--margin) + env(safe-area-inset-left, 0px));
+  inset-inline-start: calc(var(--bezel-inset) + var(--margin) + var(--safe-start));
   top: calc(var(--bezel-inset) + var(--clear-y));
   bottom: calc(var(--bezel-inset) + var(--clear-y));
   width: var(--span-6);
@@ -138,7 +142,7 @@
   font-size: calc(1.08em * var(--accent-k));
   line-height: 0;
   letter-spacing: -0.015em;
-  margin-right: 0.02em;
+  margin-inline-end: 0.02em;
 }
 
 /* ── sub copy ─────────────────────────────────────────────────── */
@@ -188,8 +192,9 @@
   align-items: center;
   gap: 10px;
   height: 32px;
-  padding: 0 0 0 16px;
-  border-left: 1px solid var(--line-strong);
+  padding: 0;
+  padding-inline-start: 16px;
+  border-inline-start: 1px solid var(--line-strong);
   font-family: var(--font-mono);
   font-stretch: 87.5%;
   font-size: var(--fs-label);
@@ -204,7 +209,8 @@
   justify-content: center;
   gap: 0;
   min-width: 44px;
-  padding: 0 14px 0 15px;
+  padding: 0;
+  padding-inline: 15px 14px;
 }
 /* Search mode (phones): the way back out. Its own class: the location button's narrow-phone and short-landscape
    rules (hidden ≤ 400 px, a 44 px icon box) must not reach it. */
@@ -213,8 +219,9 @@
   display: inline-flex;
   align-items: center;
   height: 32px;
-  padding: 0 2px 0 14px;
-  border-left: 1px solid var(--line-strong);
+  padding: 0;
+  padding-inline: 14px 2px;
+  border-inline-start: 1px solid var(--line-strong);
   font-family: var(--font-mono);
   font-stretch: 87.5%;
   font-size: var(--fs-label);
@@ -236,7 +243,7 @@
   color: var(--bone);
   transition-duration: 0ms;
 }
-/* the ring hugs the button (its left edge is the divider) instead of floating over the line */
+/* the ring hugs the button (its leading edge is the divider) instead of floating over the line */
 .locateInline:focus-visible {
   outline-offset: 0;
 }
@@ -292,7 +299,8 @@
   align-items: baseline;
   gap: 14px;
   margin: 14px 0 0;
-  padding: 10px 10px 11px 14px;
+  padding: 10px 10px 11px;
+  padding-inline-start: 14px;
   border: 1px solid var(--line-strong);
   background: var(--ink-1);
   font-size: var(--fs-small);
@@ -414,6 +422,11 @@
 }
 .exCoord {
   color: var(--bone-2);
+}
+/* Coordinates are Latin notation: one left-to-right island inside the right-to-left hint. */
+:root[dir='rtl'] .exCoord {
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 /* The header's idle hint (a mouse): a click on the globe drops a pin. */
 .pinHint {
@@ -603,8 +616,8 @@
     padding: 4px;
     scroll-padding-inline: 4px;
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
   }
   .chips[data-end] {
     -webkit-mask-image: none;
@@ -629,7 +642,7 @@
     display: inline-flex;
     align-items: center;
     height: 32px;
-    padding-right: 4px;
+    padding-inline-end: 4px;
   }
 }
 
@@ -650,7 +663,7 @@
   }
   .column {
     top: auto;
-    right: calc(var(--bezel-inset) + var(--margin) + env(safe-area-inset-right, 0px));
+    inset-inline-end: calc(var(--bezel-inset) + var(--margin) + var(--safe-end));
     bottom: calc(var(--bezel-inset) + 22px + env(safe-area-inset-bottom, 0px));
     width: auto;
     justify-content: flex-end;
@@ -703,7 +716,8 @@
   }
   .locateInline {
     height: 40px;
-    padding: 0 2px 0 14px;
+    padding: 0;
+    padding-inline: 14px 2px;
   }
   .examples {
     margin-top: 14px;
@@ -711,7 +725,7 @@
   .foot {
     margin-top: 12px;
   }
-  /* One swipeable row of chips, led by "Or try", bleeding to the bezel; the fade at the right edge
+  /* One swipeable row of chips, led by "Or try", bleeding to the bezel; the fade at the trailing edge
      says it scrolls (it lifts once the row is scrolled to its end). */
   .chips {
     flex-wrap: nowrap;
@@ -721,8 +735,8 @@
     scroll-snap-type: x proximity;
     scroll-padding-inline: var(--margin);
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
   }
   .chips[data-end] {
     -webkit-mask-image: none;
@@ -739,7 +753,7 @@
     display: inline-flex;
     align-items: center;
     height: 40px;
-    padding-right: 4px;
+    padding-inline-end: 4px;
   }
   .chip {
     height: 40px;
@@ -863,7 +877,7 @@
     width: 44px;
     height: 44px;
     padding: 0;
-    margin-right: -10px;
+    margin-inline-end: -10px;
   }
   .locateLabelShort {
     display: none;
@@ -885,8 +899,8 @@
     --search-w: 100%;
   }
   .column {
-    left: 50%;
-    right: calc(var(--bezel-inset) + var(--margin) + env(safe-area-inset-right, 0px));
+    inset-inline-start: 50%;
+    inset-inline-end: calc(var(--bezel-inset) + var(--margin) + var(--safe-end));
     top: calc(var(--bezel-inset) + 52px);
     bottom: calc(var(--bezel-inset) + 14px + env(safe-area-inset-bottom, 0px));
     width: auto;
@@ -923,11 +937,13 @@
   .chips {
     flex-wrap: nowrap;
     overflow-x: auto;
-    margin: 0 calc(-1 * var(--margin)) 0 0;
-    padding: 0 var(--margin) 0 0;
+    margin: 0;
+    margin-inline-end: calc(-1 * var(--margin));
+    padding: 0;
+    padding-inline-end: var(--margin);
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
   }
   .chips[data-end] {
     -webkit-mask-image: none;
@@ -943,7 +959,7 @@
     display: inline-flex;
     align-items: center;
     height: 40px;
-    padding-right: 4px;
+    padding-inline-end: 4px;
   }
   .chip {
     height: 40px;
@@ -1008,14 +1024,14 @@
 }
 
 /* A scrolled chip row (the stacked and short-wide layouts, where it is a scroller): the leading edge fades as the
-   trailing one does, so the chip leaving on the left is never hard-cut at the bezel (U-5). */
+   trailing one does, so the chip leaving at the start is never hard-cut at the bezel (U-5). */
 .chips[data-scrolled] {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  -webkit-mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px, #000 calc(100% - 28px), transparent);
 }
 .chips[data-scrolled][data-end] {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 28px);
-  mask-image: linear-gradient(to right, transparent, #000 28px);
+  -webkit-mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px);
+  mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px);
 }
 
 /* Search mode (phones): the location glyph beside Cancel. Its divider is drawn 32 px tall like Cancel's (the button
@@ -1023,16 +1039,16 @@
    button's size rules above. */
 .locateInline.locateGlyphOnly {
   position: relative;
-  border-left: 0;
+  border-inline-start: 0;
 }
 .locateInline.locateGlyphOnly::before {
   content: '';
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   top: 50%;
   height: 32px;
   margin-top: -16px;
-  border-left: 1px solid var(--line-strong);
+  border-inline-start: 1px solid var(--line-strong);
 }
 
 

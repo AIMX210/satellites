@@ -107,9 +107,18 @@
   /* The sign of "forward" along the reading: a translateX that means "deeper, next, in" multiplies by it
      (docs/I18N.md, Right to left). */
   --dir-x: 1;
+  /* The safe areas (notch, rounded corners) on the reading's start and end sides, for a logical inset that adds
+     them: `inset-inline-start: calc(… + var(--safe-start))` is the left one in a left-to-right page. */
+  --safe-start: env(safe-area-inset-left, 0px);
+  --safe-end: env(safe-area-inset-right, 0px);
+  /* A gradient toward the reading's end (a scroll row's "more" fade): `linear-gradient(var(--to-inline-end), …)`. */
+  --to-inline-end: to right;
 }
 :root[dir='rtl'] {
   --dir-x: -1;
+  --safe-start: env(safe-area-inset-right, 0px);
+  --safe-end: env(safe-area-inset-left, 0px);
+  --to-inline-end: to left;
 }
 
 /* Phone spacing and the phone type floor stay on width (not the stacked query): a portrait tablet keeps

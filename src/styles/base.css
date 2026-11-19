@@ -63,6 +63,12 @@ img {
   max-width: 100%;
 }
 
+/* Right to left (docs/I18N.md): an arrow that points along the reading points the other way. `scale`, not
+   `transform`, so a component's own rotation (a down arrow) composes with it. */
+:root[dir='rtl'] [data-reading] {
+  scale: -1 1;
+}
+
 /* utility type styles */
 .t-display {
   font-family: var(--font-sans);

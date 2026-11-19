@@ -54,7 +54,11 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     const r = trigger.current.getBoundingClientRect()
     const w = menu.current.offsetWidth
     const top = Math.round(r.bottom + 10)
-    const left = Math.round(Math.max(EDGE, Math.min(r.left - 16, window.innerWidth - w - EDGE)))
+    // Its edge on the trigger's reading side: the left one, or the right one in a right-to-left page (the trigger
+    // is then in the top-right corner).
+    const rtl = getComputedStyle(trigger.current).direction === 'rtl'
+    const want = rtl ? r.right + 16 - w : r.left - 16
+    const left = Math.round(Math.max(EDGE, Math.min(want, window.innerWidth - w - EDGE)))
     setAt({ left, top, maxHeight: Math.max(160, window.innerHeight - top - EDGE) })
   }, [open])
 
@@ -97,12 +101,16 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     const items = [...(menu.current?.querySelectorAll<HTMLElement>('[role="menuitemradio"]') ?? [])]
     const i = items.indexOf(document.activeElement as HTMLElement)
     const go = (j: number) => items[(j + items.length) % items.length]?.focus({ preventScroll: true })
-    // Two columns: Left/Right move across, Up/Down within the reading order.
+    // Two columns: Left/Right move across, Up/Down within the reading order. Right to left, the first column is
+    // the right one, so the keys that go to the second swap.
     const half = Math.ceil(items.length / 2)
+    const rtl = getComputedStyle(e.currentTarget).direction === 'rtl'
+    const toSecond = rtl ? 'ArrowLeft' : 'ArrowRight'
+    const toFirst = rtl ? 'ArrowRight' : 'ArrowLeft'
     if (e.key === 'ArrowDown') go(i + 1)
     else if (e.key === 'ArrowUp') go(i - 1)
-    else if (e.key === 'ArrowRight') go(i < half ? Math.min(i + half, items.length - 1) : i)
-    else if (e.key === 'ArrowLeft') go(i >= half ? i - half : i)
+    else if (e.key === toSecond) go(i < half ? Math.min(i + half, items.length - 1) : i)
+    else if (e.key === toFirst) go(i >= half ? i - half : i)
     else if (e.key === 'Home') go(0)
     else if (e.key === 'End') go(items.length - 1)
     else if (e.key === 'Tab') close(false)

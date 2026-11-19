@@ -435,7 +435,13 @@ function aboutPart(p: AboutPart, href: string | undefined): ReactNode {
         <AboutText parts={p.link} />
       </a>
     )
-  if (isNum(p)) return <span className={s.num}>{numText(p)}</span>
+  // data-num: a left-to-right island inside right-to-left prose (scripts.css), as Rich renders its numbers.
+  if (isNum(p))
+    return (
+      <span className={s.num} data-num="">
+        {numText(p)}
+      </span>
+    )
   if (isAccent(p)) return <AboutText parts={p.accent} />
   if (isStrong(p)) return <AboutText parts={p.strong} />
   return null

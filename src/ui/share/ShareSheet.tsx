@@ -55,6 +55,19 @@ import { ShareCard } from './ShareCard'
 import { useBackLayer } from '@/lib/backStack'
 import s from './ShareSheet.module.css'
 
+/**
+ * A post's @handles and links as left-to-right islands (<bdi>), the way X draws them: in right-to-left text the "@"
+ * is a neutral that would otherwise land after the name ("armaangupt0@"). Only right to left: left to right the text
+ * stays one run (a split run is shaped apart, and shifts the handle by a fraction of a pixel).
+ */
+const HANDLE_OR_LINK = /(@\w+|https?:\/\/\S+)/
+function isolateHandles(para: string): React.ReactNode {
+  if (typeof document === 'undefined' || document.documentElement.dir !== 'rtl') return para
+  const parts = para.split(HANDLE_OR_LINK)
+  if (parts.length === 1) return para
+  return parts.map((t, i) => (i % 2 ? <bdi key={i}>{t}</bdi> : t))
+}
+
 export interface ShareSheetProps {
   /** The pass to share (kind 'pass', the default). */
   pass?: Pass
@@ -639,7 +652,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
         {/* Paragraphs as the post will have them (a blank line on X), set a little tighter here. */}
         <span className={s.textBody}>
           {text.split('\n\n').map((para, i) => (
-            <span key={i}>{para}</span>
+            <span key={i}>{isolateHandles(para)}</span>
           ))}
         </span>
       </p>

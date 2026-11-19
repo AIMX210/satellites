@@ -180,6 +180,16 @@
   transform: translateX(calc(-50% + var(--below-dx, 0px)));
 }
 
+/* Right to left the plate stays as it is (a label of the globe, aligned toward its reticle): the coordinates are Latin
+   notation that must read lat then lon, and the capture line under them is right-to-left text in the same box. */
+:root[dir='rtl'] .coord {
+  direction: ltr;
+}
+:root[dir='rtl'] .coordAcq {
+  direction: rtl;
+  text-align: left;
+}
+
 /* The capture line under the coordinates: signal, snapping in with a short mask wipe (one entrance per capture). */
 .coordAcq {
   color: var(--signal);

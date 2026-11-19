@@ -118,6 +118,9 @@
   --font-serif: 'Instrument Serif', 'Watched Arabic Serif', serif;
   /* Arabic's ascenders and marks need room: hero 0.92 → 1.25, headline 0.98 → 1.33 */
   --lh-k: 1.36;
+  /* ...so the wide hero is set smaller to keep the column's height (Arabic at 76 % reads as large as the English
+     capitals, and the column then still ends clear of the bottom readouts, 1024 × 768 to 1440 × 900) */
+  --display-k: 0.76;
   --lh-text-k: 1.15;
   --accent-k: 1.08;
   /* tracking breaks the joins: none, anywhere */
