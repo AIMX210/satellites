@@ -33,22 +33,9 @@
 .trigger:focus-visible {
   outline: none;
 }
-.trigger:focus-visible :is(.full, .tiny) {
+.trigger:focus-visible .full {
   text-decoration: underline 1px var(--signal);
   text-underline-offset: 4px;
-}
-
-/* Wide screens show the language's name; phones (where the clock and the sun share the top) a short form. */
-.tiny {
-  display: none;
-}
-@media (max-width: 760px) {
-  .full {
-    display: none;
-  }
-  .tiny {
-    display: inline;
-  }
 }
 
 /* A hairline between "How this works" and the language (none when the language is alone on the line). */

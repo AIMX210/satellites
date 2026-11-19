@@ -23,14 +23,12 @@ const EDGE = 12
 
 const ORDER: readonly Locale[] = ['en', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt-BR', 'tr', 'uk', 'ar', 'ja', 'ko', 'zh-Hans', 'zh-Hant']
 
-/** The name the trigger shows on wide screens (the list uses the full native name). */
+/**
+ * The name the trigger shows, on every screen: the language's own name, as the list writes it ("English", "Deutsch",
+ * "日本語"), never a code (owner, 2026-11-19: "EN" said less than "English"). Indonesian's is shortened (the list
+ * keeps "Bahasa Indonesia"). On a narrow phone the sun line beside it steps aside (Hud.tsx useCrowdedSun).
+ */
 const SHORT: Partial<Record<Locale, string>> = { id: 'Indonesia' }
-
-/** Phones: the top-left line has room for a few characters only (the clock and the sun share the top). */
-const TINY: Record<Locale, string> = {
-  en: 'EN', es: 'ES', fr: 'FR', de: 'DE', 'pt-BR': 'PT', it: 'IT', nl: 'NL', pl: 'PL', tr: 'TR', id: 'ID',
-  uk: 'УКР', ar: 'عربي', ja: '日本語', ko: '한국어', 'zh-Hans': '简体', 'zh-Hant': '繁體',
-}
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const m = useMsgs(enSwitcher)
@@ -138,9 +136,6 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         <span className={s.rule} aria-hidden="true" />
         <span lang={locale} className={s.full}>
           {SHORT[locale] ?? info.native}
-        </span>
-        <span lang={locale} className={s.tiny}>
-          {TINY[locale]}
         </span>
       </button>
       {open
