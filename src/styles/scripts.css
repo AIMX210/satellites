@@ -150,6 +150,20 @@
 
 /* ── Chinese, Japanese, Korean ──────────────────────────────────────────────────────────────────── */
 
+/* The space in a CJK page's mono labels: Martian Mono's is a 0.65-0.75 em cell, so Korean words in a mono label read
+   «이  지점  위에» and a Chinese label's spaces around digits gape («有  256  颗»). Instrument Sans's space (0.2 em, plus
+   the label's tracking: about the system CJK fonts' own word space) is the space-only face first in the CJK mono
+   stack. It is the Latin file fontsource already declares for Instrument Sans (same URL, one asset in the build), so
+   nothing new is downloaded; Latin mono on these pages takes the narrower space too, no other page lists it. */
+@font-face {
+  font-family: 'Watched CJK Space';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../../node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-standard-normal.woff2') format('woff2-variations');
+  unicode-range: U+0020, U+00A0;
+}
+
 :root:lang(ja) {
   --cjk-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', YuGothic, Meiryo, 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif;
   --cjk-serif: 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, 'Noto Serif JP', 'Noto Serif CJK JP', var(--cjk-sans);
@@ -170,7 +184,7 @@
 }
 :root[data-script='cjk'] {
   --font-sans: 'Instrument Sans Variable', 'Instrument Sans', var(--cjk-sans);
-  --font-mono: 'Martian Mono Variable', 'Martian Mono', var(--cjk-sans);
+  --font-mono: 'Watched CJK Space', 'Martian Mono Variable', 'Martian Mono', var(--cjk-sans);
   /* place names: the platform serif, then the sans (never a subset face: names are unbounded) */
   --font-serif: 'Instrument Serif', var(--cjk-serif);
   /* the static accents (the hero's word for "you"): a subset face the language's bundle installs (src/i18n/accentFont.ts) */
@@ -190,14 +204,19 @@
   --w-serif: 500;
   --fs-panel-h: 27px;
   --fs-panel-sub: 18px;
-  /* 10.5 px Han or hangul is a smudge: labels at 12 px (this outranks the phone :root rule) */
+  /* 10.5 px Han or hangul is a smudge on a laptop's screen: labels at 12 px (phones below) */
   --fs-label: 12px;
   --track-label: 0.1em;
   --feat-display: 'palt';
 }
 @media (max-width: 760px) {
   :root[data-script='cjk'] {
+    /* the phone hero's sizes are fixed (Landing.module.css): its last rule applies this to each line */
     --display-k: 0.9;
+    /* Phones draw an 11 px Han, kana or hangul at 2-3 device pixels per px: crisp, and the guides' floor. At the Latin
+       label's own size the Latin and digits beside it stay the English ones, and the rows that cut (the photo viewer's
+       meta, the computing header's zone) cut no more than English's (measured 2026-11-19 at 390 and 360). */
+    --fs-label: 11px;
   }
 }
 /* Phrase-aware line breaking and the language's own spacing between Han and Latin/digits where browsers support it. */
@@ -215,8 +234,9 @@
 :root:lang(ko) {
   word-break: keep-all;
 }
-/* Japanese headings break at phrase boundaries (never inside a word); long paragraphs keep the default. */
-:root:lang(ja) :is(h1, h2, h3) {
+/* Japanese breaks at phrase boundaries (never inside a word: 撮／られた, 公開さ／れた): headings, the landing's sub line,
+   the results' second line, the notes. Chromium only; a phrase longer than its box still breaks inside. */
+:root:lang(ja) {
   word-break: auto-phrase;
 }
 

@@ -917,7 +917,7 @@ chunk the boot script already preloads.
 | Results headline | 34 px, 540 / strong 560 | 27 px, 500 / strong 600, leading about 1.2 | `--fs-panel-h: 27px` |
 | Second line | 22 px | 18 px, 500, leading 1.3 | `--fs-panel-sub: 18px` |
 | Body | 15 px / 1.5 | 15 px / 1.75 | |
-| Mono labels | 10.5 px (phone 11), +0.08em, 400 | 12 px desktop and phone, +0.10em, 500 | `--fs-label: 12px`, `--track-label: .1em` |
+| Mono labels | 10.5 px (phone 11), +0.08em, 400 | 12 px desktop, 11 px phone, +0.10em, 500 | `--fs-label: 12px`, `--track-label: .1em` |
 | Accent size | 1.08em (hero), 1.16em (headline) | 1.04em / 1.11em | `--accent-k: .96` |
 | Hero accent | Instrument Serif italic | Noto Serif SC 500, upright, signal | the subset |
 | Place accent | Instrument Serif italic | Latin: unchanged. Han: the platform serif at 500, else the sans | |

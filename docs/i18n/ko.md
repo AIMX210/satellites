@@ -1506,7 +1506,7 @@ them there, and only after a Korean specimen check.
   phones; leading `0.92 × --lh-k 1.2` ≈ 1.1 (0.92 makes Hangul lines collide); tracking `--track-display` −0.01em (Korean
   headlines are set slightly tight; 0 looks loose at 80–100 px, −0.02em crowds the jamo).
 - **Running text:** leading ≈ 1.75 (`--lh-text-k` 1.1667 over the base 1.5).
-- **Labels:** 12 px (`--fs-label`) with +0.1em tracking (`--track-label`), set for CJK: Hangul at 10.5 px is a smudge,
+- **Labels:** 12 px on laptops, 11 px on phones (`--fs-label`) with +0.1em tracking (`--track-label`), set for CJK: Hangul at 10.5 px is a smudge,
   and the wider tracking keeps the Latin caps that share a label (TLE 기준 … · CELESTRAK) from crowding.
 - **Weights** (never 501–599: system CJK fonts round them up): display 600, panel heads 500, strong 600, serif 500, body
   400.

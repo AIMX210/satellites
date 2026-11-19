@@ -39,7 +39,7 @@ has, once per link (the card is cached per link).
 | Dates | Mono: 11/1(日), 2026/11/1(日). Prose: 11月1日（日）, 2026年11月1日（日）. Spoken: 11月1日日曜日. 24 h clock. |
 | Ranges | Mono: 10–30 M, kicker 2026/11/12 → 11/19 UTC. Prose: 10〜30 m (U+301C). Never ～ (U+FF5E). |
 | Share card headline | Place last, a relative clause with a noun ending: 衛星7基が／見ていた／*Waterloo*。 |
-| Type | System gothic and Mincho; Latin and digits stay in the brand faces. Upright accent, never slanted. palt on display. Labels 12 px, nothing under 11 px. |
+| Type | System gothic and Mincho; Latin and digits stay in the brand faces. Upright accent, never slanted. palt on display. Labels 12 px on laptops, 11 px on phones (scripts.css), nothing under 11 px. |
 | Country names | Intl.DisplayNames long style with seven overrides (§8). |
 
 ---
