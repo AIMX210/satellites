@@ -24,9 +24,35 @@ describe('fallback fonts', () => {
     )
     const fonts = await loadFallbackAsset('ja-JP', '東京')
     expect(fonts).toEqual([{ name: expect.stringMatching(/^Noto Sans JP \(fallback \d+\)$/), data: TTF, weight: 400, style: 'normal', lang: 'ja-JP' }])
-    expect(seen[0].url).toBe(`https://fonts.googleapis.com/css2?family=Noto+Sans+JP&text=${encodeURIComponent('東京')}`)
+    expect(seen[0].url).toBe(`https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600&text=${encodeURIComponent('東京')}`)
     expect(seen[0].ua).toMatch(/Safari\/533/) // an old browser gets TTF, which satori reads (not WOFF2)
     expect(seen[1].url).toBe('https://fonts.gstatic.com/s/notosansjp/x.ttf')
+  })
+
+  it('takes the subset at 400 and 600, under one name, for a headline set at 600', async () => {
+    const sheet =
+      "@font-face { font-family: 'Noto Sans KR'; font-weight: 400; src: url(https://f/400.ttf) format('truetype'); }\n" +
+      "@font-face { font-family: 'Noto Sans KR'; font-weight: 600; src: url(https://f/600.ttf) format('truetype'); }"
+    const W600 = new Uint8Array([6]).buffer
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => (url.startsWith('https://fonts.googleapis.com/') ? new Response(sheet) : new Response(url.endsWith('600.ttf') ? W600 : TTF))),
+    )
+    const fonts = (await loadFallbackAsset('ko-KR', '서울')) as SatoriFont[]
+    expect(fonts.map((f) => [f.weight, f.data])).toEqual([
+      [400, TTF],
+      [600, W600],
+    ])
+    expect(fonts[0].name).toBe(fonts[1].name)
+  })
+
+  it('asks a family Google serves at one weight for that weight only', async () => {
+    const fetch = vi.fn(async (url: string) =>
+      url.startsWith('https://fonts.googleapis.com/') ? new Response("src: url(https://f/x.ttf) format('truetype')") : new Response(TTF),
+    )
+    vi.stubGlobal('fetch', fetch)
+    await loadFallbackAsset('math', '∮')
+    expect(String(fetch.mock.calls[0][0])).toBe(`https://fonts.googleapis.com/css2?family=Noto+Sans+Math&text=${encodeURIComponent('∮')}`)
   })
 
   it('leaves the script untagged for characters satori cannot place', async () => {
