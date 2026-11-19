@@ -1,9 +1,8 @@
 /**
  * Static font instances for satori (built by scripts/backend-fonts.py into api/_fonts/).
  *
- * Read from disk next to the function: `new URL('../_fonts/…', import.meta.url)` is what Vercel's
- * file tracer follows, and vercel.json `includeFiles` ships the folder regardless. The cwd-based
- * path is a second chance for runtimes that relocate the compiled module.
+ * The Worker registers its bundled copies (api/_lib/bundled.ts). Under Node (tests, scripts) they are read from
+ * disk next to this module; the cwd-based path is a second chance for runners that relocate the compiled module.
  */
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'

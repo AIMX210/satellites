@@ -1,5 +1,5 @@
 /**
- * GET /s/:id  (vercel.json rewrites it to /api/s?id=:id)
+ * GET /s/:id  (worker/router.ts rewrites it to /api/s?id=:id)
  *
  * The URL people paste into X / iMessage / Slack. Unfurlers get real Open Graph tags for the
  * shared pass, with og:image pointing at the /api/og card; people are sent straight on to the
@@ -10,7 +10,7 @@
  *   db unreachable → 200, generic tags but the card URL still names the share, cached briefly
  *
  * Place mode (share SH7): an address-bar link, /?q=43.47,-80.54&n=Waterloo, fetched by a link
- * unfurler (vercel.json sends only bot user agents here; people get the SPA). Title "What
+ * unfurler (worker/router.ts sends only bot user agents here; people get the app). Title "What
  * watched Waterloo this week", the card at /api/og?kind=place…, coordinates coarsened to 0.01°,
  * and people who land here anyway are handed to the same address in the app.
  *
@@ -166,8 +166,4 @@ export async function handleSharePage(request: Request): Promise<Response> {
     200,
     'public, max-age=60, s-maxage=60',
   )
-}
-
-export default {
-  fetch: handleSharePage,
 }

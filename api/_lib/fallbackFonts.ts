@@ -3,8 +3,8 @@
  *
  * satori asks for them while it lays out a card, naming the script (`ja-JP`, `ar-AR`, … or `unknown`) and the
  * exact characters. Google Fonts serves a Noto subset of just those characters, as TTF when asked with an older
- * browser's user agent (satori cannot read WOFF2). The cards relied on @vercel/og's loader for this before; this is
- * the same idea written for our renderer, so it runs on any host with `fetch`. A failure returns no font: satori then
+ * browser's user agent (satori cannot read WOFF2). The cards relied on the loader in @vercel/og for this before; this
+ * is the same idea written for our renderer, so it runs anywhere with `fetch`. A failure returns no font: satori then
  * draws the missing characters as boxes rather than failing the card.
  */
 import type { SatoriFont } from './fonts.js'
