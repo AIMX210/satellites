@@ -1,11 +1,13 @@
 /**
  * The Worker's routes: which request goes where on www.watched.earth.
  *
- * wrangler.jsonc runs this for `/`, `/s/*` and `/api/*`, and for any request no static file matches; every other
- * file is served by Cloudflare without running it. In order:
+ * wrangler.jsonc runs this for `/`, `/s/*`, `/api/*` and the place pages, and for any request no static file
+ * matches; every other file is served by Cloudflare without running it. In order:
  *   - `/?q=…` from a link unfurler → that place's share page (api/s.ts); people get the app;
  *   - `/s/<id>` → the stored share's page; `/api/og`, `/api/s`, `/api/e`, `/api/pan`, `/api/geo` and
  *     `/api/geo-frames` → their handlers;
+ *   - `/place` and `/place/<slug>` → the static page the build wrote (scripts/build-seo.ts); a place with no page
+ *     → the app, as a 404;
  *   - a path with no dot outside `/api/` and `/s/` → the app's index.html, which routes it itself;
  *   - anything else → 404.
  * Cards, share pages, pan crops and the Meteosat cuts and frame list are kept in Cloudflare's cache when they say
@@ -18,6 +20,7 @@
  * WebAssembly, so worker/router.test.ts can run it under Node.
  */
 import { isProductionHost } from '../api/_lib/env.js'
+import { isPlacePath } from '../src/lib/placePage.ts'
 
 /** Link unfurlers: the fetchers that read a pasted link's Open Graph tags, by user agent. */
 export const UNFURLER_UA =
@@ -138,8 +141,23 @@ async function dispatch(request: Request, url: URL, routes: Routes): Promise<Res
     case '/api/geo-frames':
       return cached(request, routes.geoFrames, routes)
   }
+  if (isPlacePath(path)) return placePage(request, url, routes)
   if (APP_PATH.test(path)) return routes.assets.fetch(rewrite(request, new URL('/', url)))
   return notFound(path)
+}
+
+/**
+ * A place page or the list of them: the file itself (Cloudflare serves `place/<slug>.html` at `/place/<slug>` and
+ * redirects the `.html` and trailing-slash spellings to it). They come through the Worker, though they are static,
+ * so that a preview or the staging copy marks them noindex like everything else it serves.
+ * A place with no page gets the app, which opens on its landing, but as a 404: a visitor with a mistyped or retired
+ * address can still search, and a search engine drops the address instead of filing the landing under it.
+ */
+async function placePage(request: Request, url: URL, routes: Routes): Promise<Response> {
+  const res = await routes.assets.fetch(request)
+  if (res.status !== 404) return res
+  const app = await routes.assets.fetch(rewrite(request, new URL('/', url)))
+  return new Response(app.body, { status: 404, headers: app.headers })
 }
 
 /** What a response that names no Cache-Control is sent with: revalidate every time. */

@@ -56,6 +56,39 @@ describe('worker routes', () => {
     expect((await at('/missing.png')).res.status).toBe(404)
   })
 
+  it('serves a place page as the file the build wrote, and the app as a 404 where there is none', async () => {
+    const pages = new Set(['/place', '/place/paris'])
+    const r: Routes = {
+      ...routes(),
+      assets: {
+        fetch: async (req) => {
+          const { pathname } = new URL(req.url)
+          if (pathname === '/') return new Response('the app', { headers: { 'cache-control': 'public, max-age=0, must-revalidate' } })
+          if (pathname === '/place/paris.html') return new Response(null, { status: 307, headers: { location: '/place/paris' } })
+          return pages.has(pathname) ? new Response(`page ${pathname}`) : new Response(null, { status: 404 })
+        },
+      },
+    }
+    const get = (path: string, host = 'https://www.watched.earth') => route(new Request(`${host}${path}`), r)
+    vi.stubEnv('PRODUCTION_HOSTS', 'www.watched.earth')
+    expect(await (await get('/place/paris')).text()).toBe('page /place/paris')
+    expect(await (await get('/place')).text()).toBe('page /place')
+    expect((await get('/place/paris')).headers.get('x-robots-tag')).toBeNull()
+    // The spelling Cloudflare redirects stays a redirect.
+    const dotted = await get('/place/paris.html')
+    expect([dotted.status, dotted.headers.get('location')]).toEqual([307, '/place/paris'])
+    // No such place: people can still search; search engines are told there is nothing here.
+    for (const path of ['/place/atlantis', '/place/paris/more']) {
+      const missing = await get(path)
+      expect([missing.status, await missing.text()], path).toEqual([404, 'the app'])
+    }
+    // A preview serves the same pages, marked so they are never indexed.
+    const preview = await get('/place/paris', 'https://abc12345-watched.example.workers.dev')
+    expect([preview.status, preview.headers.get('x-robots-tag')]).toEqual([200, 'noindex'])
+    // The offline place list's files are not place pages.
+    expect((await get('/places/20261112/s/zz.txt')).status).toBe(404)
+  })
+
   it('adds the security headers, and marks hosts outside PRODUCTION_HOSTS noindex', async () => {
     vi.stubEnv('PRODUCTION_HOSTS', 'www.watched.earth,watched.earth')
     const live = (await at('/')).res.headers
