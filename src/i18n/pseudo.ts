@@ -28,7 +28,8 @@ function pseudoValue(v: unknown): unknown {
   if (Array.isArray(v)) return v.map(pseudoValue)
   if (v && typeof v === 'object') {
     const p = v as Part
-    if (isNum(p)) return p
+    // A number part has only `n` (and `u`): pass.ts compass16 has an `n` too ("N"), among fifteen other points.
+    if (isNum(p) && Object.keys(p).every((k) => k === 'n' || k === 'u')) return p
     if (isAccent(p)) return { accent: p.accent.map(pseudoValue) }
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, pseudoValue(x)]))
   }
