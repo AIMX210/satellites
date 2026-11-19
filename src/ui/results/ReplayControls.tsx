@@ -191,8 +191,11 @@ export function ReplayControls({ pass }: { pass: Pass }) {
         <div className={s.keys}>
           <Kbd>{m.spaceKey}</Kbd> {m.playPause}
           <span className={s.keysGap} />
-          <Kbd>←</Kbd>
-          <Kbd>→</Kbd> {m.stepKind}
+          <span className={s.arrows}>
+            <Kbd>←</Kbd>
+            <Kbd>→</Kbd>
+          </span>{' '}
+          {m.stepKind}
         </div>
       ) : null}
     </div>
