@@ -41,7 +41,18 @@
 .top > * {
   pointer-events: auto;
 }
+/* The lead and the position share a line where they fit. Where they do not (beside the time-lapse button on a phone:
+   "CLOSEST LOOK · 1 / 40" at 360 px, "VISTA MAIS PRÓXIMA" at 390) the position moves under the lead, whole ("1 /"
+   never parts from "40"), and the separator, drawn in the gap before it, is clipped off the start of that line: no
+   line ends or opens on a dangling '·', and the lead keeps its words. */
 .counter {
+  /* the width of " · " in the label face, as the text separator was */
+  --counter-sep: calc(3ch + 3 * var(--track-label));
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--counter-sep);
+  min-width: 0;
+  overflow-x: clip;
   font-family: var(--font-mono);
   font-stretch: 87.5%;
   font-size: var(--fs-label);
@@ -51,9 +62,29 @@
   color: var(--bone-2);
 }
 .counterLead {
+  /* alone on its line, a lead longer than the bar's room still ends in an ellipsis rather than overflowing */
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--bone);
 }
-.counterLead.warn {
+.counterPos {
+  position: relative;
+  white-space: nowrap;
+}
+.counterLead + .counterPos::before {
+  content: '·';
+  content: '·' / '';
+  position: absolute;
+  inset-inline-end: 100%;
+  width: var(--counter-sep);
+  text-align: center;
+  color: var(--bone);
+}
+.counterLead.warn,
+.counterLead.warn + .counterPos::before {
   color: var(--warn);
 }
 /* The time-lapse's way in: on the right, before the zoom control (laptops) or the close button (phones). */

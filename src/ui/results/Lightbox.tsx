@@ -631,8 +631,8 @@ function Viewer({ id, model, mobile, startKey, from, onReplay, onShare, covered 
 
       <div ref={setChrome(0)} className={s.top}>
         <span className={s.counter}>
-          {lead ? <span className={cx(s.counterLead, why === 'clouded' && s.warn)}>{lead} · </span> : null}
-          {counter}
+          {lead ? <span className={cx(s.counterLead, why === 'clouded' && s.warn)}>{lead}</span> : null}
+          <span className={s.counterPos}>{counter}</span>
           <span className="sr-only" aria-live="polite">
             {spoken}
           </span>
