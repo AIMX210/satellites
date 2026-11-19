@@ -18,8 +18,8 @@ describe('units keep their case in mono caps', () => {
   })
 
   it('takes a no-break, narrow or thin space, or none, between the number and its unit', () => {
-    expect(capsExceptUnits('Fauchée 2 900 km', 'fr')).toBe('FAUCHÉE 2 900 km')
-    expect(en('10 m')).toBe('10 m')
+    expect(capsExceptUnits('Fauchée 2\u202f900\u00a0km', 'fr')).toBe('FAUCHÉE 2\u202f900\u00a0km')
+    expect(en('10\u2009m')).toBe('10\u2009m')
     expect(en('10m')).toBe('10m')
   })
 
@@ -34,8 +34,8 @@ describe('units keep their case in mono caps', () => {
   })
 
   it('keeps Cyrillic and Turkish units lowercase, and the words around them in their language’s capitals', () => {
-    expect(capsExceptUnits('Найближче 3 км', 'uk')).toBe('НАЙБЛИЖЧЕ 3 км')
-    expect(capsExceptUnits('Смуга 290 км · 10 м', 'uk')).toBe('СМУГА 290 км · 10 м')
+    expect(capsExceptUnits('Найближче 3\u00a0км', 'uk')).toBe('НАЙБЛИЖЧЕ 3\u00a0км')
+    expect(capsExceptUnits('Смуга 290\u00a0км · 10\u00a0м', 'uk')).toBe('СМУГА 290\u00a0км · 10\u00a0м')
     expect(capsExceptUnits('7,46 км/с', 'uk')).toBe('7,46 км/с')
     expect(capsExceptUnits('2 млн', 'uk')).toBe('2 МЛН')
     expect(capsExceptUnits('En yakın 3 km · 7,46 km/sn', 'tr')).toBe('EN YAKIN 3 km · 7,46 km/sn')
@@ -49,7 +49,7 @@ describe('units keep their case in mono caps', () => {
 
   it('a string that follows a number part may open on its unit', () => {
     expect(en(' km', true)).toBe(' km')
-    expect(en(' км', true)).toBe(' км')
+    expect(en('\u00a0км', true)).toBe('\u00a0км')
     expect(en(' km · imaged', true)).toBe(' km · IMAGED')
     expect(en(' kmh', true)).toBe(' KMH')
     expect(en(' km')).toBe(' KM')
@@ -63,7 +63,7 @@ describe('units keep their case in mono caps', () => {
   })
 
   it('tells a unit slot’s symbol from a word', () => {
-    for (const u of ['km', 'm', 'km/s', 'km/sn', 'км', 'м', 'км/с', ' km']) expect(isUnitSymbol(u)).toBe(true)
+    for (const u of ['km', 'm', 'km/s', 'km/sn', 'км', 'м', 'км/с', '\u00a0km']) expect(isUnitSymbol(u)).toBe(true)
     for (const u of ['day', 'scene', 'mosaic', 'up', 'KM', 'every 10 min', 'كم']) expect(isUnitSymbol(u)).toBe(false)
   })
 })
