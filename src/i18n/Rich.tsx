@@ -64,14 +64,20 @@ function renderPart(p: Part, c: RichClasses, accentAs: AccentTag, strongAs: Acce
 export function withUnits(text: string, afterNumber = false): ReactNode {
   const runs = unitRuns(text, afterNumber)
   if (runs.length === 1 && !runs[0].unit) return text
-  return runs.map((r, i) =>
-    r.unit ? (
-      <span key={i} data-unit="">
-        {r.text}
-      </span>
-    ) : (
-      <Fragment key={i}>{r.text}</Fragment>
-    ),
+  // One inline box around the runs: in a flex row (the viewer's chips) each run would be a flex item of its own, and
+  // the space before the unit would be dropped at the item's edge.
+  return (
+    <span>
+      {runs.map((r, i) =>
+        r.unit ? (
+          <span key={i} data-unit="">
+            {r.text}
+          </span>
+        ) : (
+          <Fragment key={i}>{r.text}</Fragment>
+        ),
+      )}
+    </span>
   )
 }
 
