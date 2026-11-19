@@ -317,14 +317,15 @@ The lead must wrap to at most three short lines in the 466 px column (about 24 
 jours*. Readout labels: *Altitude*, *Élévation*, *Vitesse*, *Dépointage*, *Pixel*, *Pixel mosaïque*, *Au plus près*.
 Lanes (≤ 8 characters): *Image*, *Probable*, *Possible*, *Survol*.
 
-**Over the picture:** `geometry` *Géométrie du passage · nord en haut*; notes: *Image dans l’application* · *Image
+**Over the picture:** `geometry` *Géométrie · nord en haut* (*du passage* ran into the scale bar); notes: *Image dans l’application* · *Image
 indisponible pour l’instant* · *Archives commerciales, non publiques* · *Dans la fauchée, aucune image publique* ·
 *Trace au sol au plus près*; `acquiring` *Acquisition…*; `noPublicPhoto` *Aucune image publique cette semaine*;
 `noPhoto` *Aucune image à montrer*; `look` *Vue rapprochée* · *Dernière vue dégagée* · *Ciel couvert* · *Radar*;
 `aSatellite` *Un satellite* (a chip label only: `VUE RAPPROCHÉE · UN SATELLITE · 10 M`).
 
 **Footer:** `invite` *Voir ce qui vous observait* (26 characters beside `www.watched.earth` in the 466 px row);
-`enterAnyPlace` *N’importe quel lieu sur Terre*.
+`enterAnyPlace` *Choisissez un lieu* (the sub's first words; *N’importe quel lieu sur Terre*, 29 characters, ran
+into `www.watched.earth` on the rendered card).
 
 **The share page:**
 
@@ -344,7 +345,7 @@ indisponible pour l’instant* · *Archives commerciales, non publiques* · *Dan
 | `bestFrom` | *La vue rapprochée a été prise par [SAT].* · *La dernière vue dégagée a été prise par [SAT].* · *La première image a été prise par [SAT].* (nameless: *par un satellite*) |
 | `question` | *Qu’est-ce qui vous observait cette semaine ?* |
 | `cardAlt.withPhoto` / `plain` | *La carte de partage, avec la vue rapprochée de la semaine, prise par [SAT].* / *La carte de partage.* |
-| `defaultAlt` | *Une vraie photo Sentinel-2 de Palm Jumeirah, à Dubaï, à côté de la phrase « Quelque chose vous observait cette semaine. » N’importe quel lieu sur Terre.* |
+| `defaultAlt` | *Une vraie photo Sentinel-2 de Palm Jumeirah, à Dubaï, à côté de la phrase « Quelque chose vous observait cette semaine. » Choisissez un lieu, n’importe où sur Terre.* |
 
 **The post** (`share.post`; X counts 280 characters and French runs longer, so the invitation is dropped first, as in
 English):
@@ -410,7 +411,7 @@ English):
   · *Est-ce que ce sont tous les satellites ?* *Non. Les satellites militaires et de renseignement figurent rarement
   dans les catalogues publics, et les entreprises ne disent pas où elles pointent leurs caméras.*
 - `tilting`: *De nombreux satellites commerciaux peuvent s’incliner de 30 à 45 degrés. Si vous étiez à portée, nous
-  l’appelons « Aurait pu viser ici ».*
+  classons le passage « Aurait pu viser ici ».* (*l’appelons* had no antecedent: the paragraph never names the pass.)
 - Privacy (translate exactly, promise nothing more or less): *Nous comptons les recherches par ville et par zone
   d’environ 10 km, jamais votre position exacte…*; the locate note: *Votre position est envoyée au géocodeur Photon
   pour nommer le lieu. Nous ne conservons qu’un carré d’environ 10 km de côté.*
@@ -450,12 +451,13 @@ neutral for war zones and glaciers (no *évolution*, no *transformation*).
 
 ### 3.9 Other screens
 
-- **Landing:** placeholder *Rechercher un lieu* (fall back to *Chercher un lieu* if it ellipsises on a 390 px phone);
+- **Landing:** placeholder *Chercher un lieu* (*Rechercher un lieu* ellipsised at 1024 px beside the locate button);
+  `useMyLocation` *Ma position* (*Utiliser ma position* left the field too little room on laptops);
   `placeLabel` *Lieu*; `searching` *Recherche*; `matches` *3 résultats* (`one` *1 résultat*); `noMatch` *Aucun
   résultat*; `searchHint` *Nom, adresse ou lat., long.*; `searchDown` *La recherche de lieux ne répond pas. Les
   coordonnées telles que 43.47, −80.54 fonctionnent toujours.* (point and U+2212 minus kept exactly: the field parses
   them); `nothingMatches` *Rien ne correspond à « [query] ». Essayez une ville, un monument ou des coordonnées.*;
-  `locating` *Localisation…*; `requestingPosition` *Demande de position*; `namingPlace` *Recherche du nom du lieu*;
+  `locating` *Localisation…*; `requestingPosition` *Demande de position*; `namingPlace` *Recherche du nom* (16, as English);
   `elapsed` *04 s*; `builtBy` *Créé par [handle]*; `surpriseName` *Au hasard : un lieu célèbre tiré au sort*.
 - **Gallery and viewer chrome say *Images*:** they hold radar images and weather mosaics. `barLabel` *Images*;
   `filterLabel` *Afficher les images*; filter (≤ 8 characters each) *Toutes · Précises · Météo · Radar*; `prevPhoto` /
@@ -465,10 +467,13 @@ neutral for war zones and glaciers (no *évolution*, no *transformation*).
   picture (About's *Retouches*, the `detailed` filter's tooltip, `expandTitle` of a photo row).
 - **Gallery counters:** `photosThisWeek` and `photosThatWeek` *27 en 7 jours* (one form for both, 13 characters in a
   12-character box: check the 263 px landscape bar).
-- **Pass list:** `imagedOrder` *vue rapprochée d’abord, puis les plus récentes*; `sats` *4 sat.*; `showAllSats`
+- **Pass list:** `imagedOrder` *vue rapprochée en tête* (23 characters at most, or the group's count drops to a
+  second line); `sats` *4 sat.*; `showAllSats`
   *Voir les 31 satellites*; `showMore` *Voir 40 de plus*; `left` *12 restantes*; `showFewer` *Voir moins*;
-  `latest` *Dernier* (with its trailing space); `closest` *Au plus près* (with its trailing space); tags *Mosaïque*,
-  *Radar*, *Nuages · 25 %*, *Nuages · ici*; `cloudChip` *Nuages*.
+  `latest` empty (*Dernier lun. 2 nov.* reads « lundi dernier », and the row ran past its box); `closest` *Au plus
+  près* (with its trailing space); `offNadir` *5,3° du nadir* (the rows' mono lines hold about 36 characters:
+  *de dépointage* ran them past their box); tags *Mosaïque*,
+  *Radar*, *Nuages · 25 %*, *Nuages · ici*; `cloudChip` *Nuage* (one word on a 48 px thumbnail; *Nuages* is clipped there).
 - **Pass view:** section rules `01 / GÉOMÉTRIE`, `02 / RECONSTITUTION` (a noun, like its neighbour; *Lecture* is the
   play button's name); buttons *Rejouer*, `replay.long` *Rejouer ce passage*; links *Télécharger l’image*,
   *Téléchargement…*, *Ouvrir l’image pour l’enregistrer*, *Voir la source · [archive]*; `spot` *Lecture du pixel à
@@ -479,7 +484,9 @@ neutral for war zones and glaciers (no *évolution*, no *transformation*).
   `mosaicNote` *Une mosaïque quotidienne : la NASA assemble les fauchées de chaque jour en une image à 250 m par pixel.
   Peu détaillée, mais réelle, et du jour de ce passage.*
 - **Share sheet:** *Partager ce passage* · *Partager cette image* · *Partager cette semaine* · *Partager l’image* ·
-  *Préparation de l’image…* · *Copier le lien* · *Copié* · *Publier sur X* · *Copier l’image* · *Enregistrer* (Save PNG)
+  *Préparation de l’image…* · *Copier* (the link, beside the field labelled *Lien*: *Copier le lien* does not fit
+  three buttons on a 360 px phone) · *Copié* · *Poster sur X* (X's own French verb; *Publier sur X* ran past its
+  border) · *Copier l’image* · *Enregistrer* (Save PNG)
   · *Lien* · *Texte* · *Création du lien…* · *Créé au moment du partage* · *Lien direct : le lien court n’a pas pu être
   créé pour l’instant* · *La carte n’a pas pu être générée ici ; le lien fonctionne toujours.* · *Fermer (Échap)*.
 - **Globe:** `searchAria` *Voir ce qui a survolé [PLACE]*; `droppedIn` *Repère posé : [PLACE]. Appuyez sur Entrée ou
@@ -513,7 +520,7 @@ Gender: (m) masculine, (f) feminine. "Invariable apposition" means the second no
 | photo | photo (f) | Only optical images (Sentinel-2, Landsat). Never for radar, mosaics or full-disc images. |
 | image | image (f) | The umbrella word: photos, mosaics, radar, full disc. |
 | picture | image (f) | Never *tableau*, never *cliché*. |
-| closest look | vue rapprochée (f) | The most detailed clear photo of the week. Chip, tag, card `look.closest`, *vue rapprochée d’abord*. |
+| closest look | vue rapprochée (f) | The most detailed clear photo of the week. Chip, tag, card `look.closest`, *vue rapprochée en tête*. |
 | closest (approach) | au plus près | Timing and distance only: `AU PLUS PRÈS · UTC`, `AU PLUS PRÈS · LOCAL`, the globe's moment label, the card readout. |
 | last clear look | Dernière vue dégagée | |
 | look (n.) | vue (f) | *vue dégagée*, *vues dégagées*. |
@@ -602,8 +609,8 @@ Gender: (m) masculine, (f) feminine. "Invariable apposition" means the second no
 | copy link / copied / link copied | Copier le lien / Copié (lien) · Copiée (image) / Lien copié | Two keys where both exist. |
 | save PNG / save video | Enregistrer | |
 | post (share text) | Texte | Share sheet label. |
-| search a place / another place | Rechercher un lieu / Chercher un autre lieu | |
-| use my location / locate me / near me | Utiliser ma position / Me localiser / Près de moi | Never *location* (= rental). |
+| search a place / another place | Chercher un lieu / Chercher un autre lieu | |
+| use my location / locate me / near me | Ma position / Me localiser / Près de moi | Never *location* (= rental). |
 | surprise me / drop a pin / or try | Au hasard / Poser un repère / Ou essayez | |
 | how this works / about | Comment ça marche (About title) / À propos (HUD, bar) | |
 | try again / back / close / cancel | Réessayer / Retour / Fermer / Annuler | |
@@ -837,7 +844,7 @@ Use `fmt('fr').list` (`Intl.ListFormat('fr', { type: 'conjunction' })`): *Umbra,
 |---|---|---|
 | `:` | U+00A0 before, space after. One colon per sentence. | *Couverture nuageuse de la scène : 25 %.* |
 | `;` `!` `?` | U+202F before | *… n’est encore publiée ; les archives…* · *Peut-on me voir ?* |
-| `« »` | French guillemets with U+202F inside; nested quotes “ ” | *nous l’appelons « Aurait pu viser ici ».* |
+| `« »` | French guillemets with U+202F inside; nested quotes “ ” | *nous classons le passage « Aurait pu viser ici ».* |
 | `’` | Typographic apostrophe U+2019, never `'` | *l’image*, *aujourd’hui*, *n’a* |
 | `…` | One character U+2026, no space before | *Recherche…*, *Création du lien…* |
 | `–` (en dash) | Ranges in compact labels only, no spaces | `10–30 m`; in prose: *de 10 à 30 m* |
@@ -884,7 +891,7 @@ mono sentence that needs a colon keeps its U+00A0: French typography does not ch
 | Kicker (`lastDays` · `windowRange`) | built by hand from `formatToParts`, with `→` | `7 DERNIERS JOURS · 12 → 19 NOV. 2026 UTC`, `29 OCT. → 5 NOV. 2026 UTC` |
 | Day range (`dayRange`) | by hand, month once | *1 → 8 nov.*, *29 oct. → 5 nov.* |
 | Time | 24 h, colons, in prose too | *16:14:21*, *11:21* (never *16 h 14*: the time is one mono token and the seconds matter) |
-| Relative (`relative`) | `relativeParts`; *à l’instant* for unit `second`; `relativeFormat('fr', 'short')` for minutes and hours, `'long'` for days | *à l’instant*, *il y a 12 min*, *il y a 41 h*, *il y a 3 jours*, *dans 3 h* |
+| Relative (`relative`) | `relativeParts`; *à l’instant* for unit `second`; `relativeFormat('fr', 'short')` for every unit (the compact form only stands in mono meta lines; the long *il y a 6 jours* ran the pass rows past their box) | *à l’instant*, *il y a 12 min*, *il y a 41 h*, *il y a 3 j*, *dans 3 h* |
 | Relative, spoken | `relativeFormat('fr', 'long')` | *il y a 12 minutes*, *il y a 41 heures*, *il y a 1 heure* |
 | HUD age | | `IL Y A 42 MIN`, `IL Y A < 1 MIN`, `IL Y A 5 H`, `IL Y A 3 J` |
 | Durations | | *38 s*, *4 min 12 s*, *1 h 02 min* |
@@ -989,11 +996,11 @@ abbreviation (*j*, *min*, *max.*, *sat.*); move detail into the `aria-label` / `
 |---|---|---|
 | HOW THIS WORKS (14) | À PROPOS (8) | HUD corner, 375 px phone |
 | SURPRISE ME (11) | AU HASARD (9) | Example chip |
-| USE MY LOCATION (15) | UTILISER MA POSITION (20) | Wide screens; also the accessible name |
+| USE MY LOCATION (15) | MA POSITION (11) | Wide screens; also the accessible name. *Utiliser ma position* (20) ellipsised the placeholder |
 | LOCATE ME (9) | ME LOCALISER (12) | Phone search line |
 | NEAR ME (7) | PRÈS DE MOI (11) | Chip on phones ≤ 400 px |
 | LOCATING… (9) | LOCALISATION… (13) | Same chip while locating |
-| SEARCH A PLACE (14) | RECHERCHER UN LIEU (18) | Placeholder; fallback CHERCHER UN LIEU (16) |
+| SEARCH A PLACE (14) | CHERCHER UN LIEU (16) | Placeholder; *Rechercher un lieu* ellipsised at 1024 px |
 | OR TRY (6) | OU ESSAYEZ (10) | Example row lead |
 | LAST 7 DAYS (11) | 7 DERNIERS JOURS (16) | Kicker |
 | CLOSEST LOOK (12) | VUE RAPPROCHÉE (14) | Tag, chip |
@@ -1004,7 +1011,7 @@ abbreviation (*j*, *min*, *max.*, *sat.*); move detail into the `aria-label` / `
 | PASSES (6) | PASSAGES (8) | Rule label, tiles |
 | SHARE (5) | PARTAGER (8) | Buttons |
 | DOWNLOAD IMAGE (14) | TÉLÉCHARGER L’IMAGE (19) | Pass view link |
-| COPY LINK (9) | COPIER LE LIEN (14) | Share sheet |
+| COPY LINK (9) | COPIER (6) | Share sheet, three buttons on a 360 px phone; *Copier le lien* (14) ran over its border |
 | SAVE PNG (8) | ENREGISTRER (11) | Share sheet |
 | REPLAY (6) | REJOUER (7) | Buttons; the section is RECONSTITUTION (14) |
 | TRY AGAIN (9) | RÉESSAYER (9) | Error notices |
@@ -1120,7 +1127,7 @@ Gender reminders: *orbite* (f), *image* (f), *photo* (f), *vue* (f), *scène* (f
 11. **Compass:** whole phrases from the closed set in prose; bearing letters with **O** in readouts; coordinates with
     N / S / E / W.
 12. **Dates:** *1er* for day 1 in prose and spoken forms; CLDR abbreviations with periods in readouts; full months in
-    display headlines; months and weekdays lowercase; relative days long (*il y a 3 jours*).
+    display headlines; months and weekdays lowercase; compact relative days short (*il y a 3 j*), spoken ones long.
 13. **Form:** buttons in the infinitive, labels as nouns, sentence case, accents on capitals.
 14. **Honesty:** *image* versus *photo* matches what is on screen (radar, mosaics and full disc are images; the
     gallery and viewer chrome say *Images*); *Nous ne pouvons pas savoir* for what we cannot know; no claim beyond the
@@ -1151,8 +1158,8 @@ Each item of the native review (`fr.critique.md`), numbered as there, and how it
 7. **ISS *point fixe***: Accepted: *éclairée par le soleil … comme un point brillant, sans clignoter.* (§3.4).
 8. ***une chaque automne***: Accepted: whole phrases *une par an, en hiver / au printemps / en été / en automne*
    (§3.8, §5.5, §8).
-9. ***Voyez***: Accepted: sub *Vous verrez…*, card `invite` *Voir ce qui vous observait*, `enterAnyPlace` *N’importe
-   quel lieu sur Terre* (§3.2, §3.5).
+9. ***Voyez***: Accepted: sub *Vous verrez…*, card `invite` *Voir ce qui vous observait*, `enterAnyPlace` *Choisissez
+   un lieu* (§3.2, §3.5; first *N’importe quel lieu sur Terre*, too long for the card's footer).
 10. ***Au plus près* for two things**: Accepted: "Closest look" is *Vue rapprochée* everywhere; *Au plus près* only
     for closest approach (§4.1).
 11. ***votre point*, *nuages au point***: Partly accepted: prose *l’endroit même*, labels *ici*; the card chip is
@@ -1218,3 +1225,24 @@ From the review's "Missing from the guide" list:
 - **M6 At sea and the credit**: Accepted: *UTC−9 · en mer*; *Créé par [handle]* (§3.9, §6.3).
 - **M7 4-digit grouping trap**: Accepted: never pass a year, NORAD ID or pass ID through `f.int` (§5.5). Verified:
   `fmt('fr').int(2026)` gives *2 026*.
+
+### On-screen review (2026-11-19)
+
+Every state checked in the browser at 1024, 1280, 1440, 390 and 360 px, and the share cards rendered, against English.
+What changed, and why:
+
+- **Fit.** `searchPlaceholder` *Chercher un lieu* and `useMyLocation` *Ma position* (the placeholder ellipsised beside
+  the long locate label); `computing.window` drops *Fenêtre de* (*7 jours · 27 oct. 05:00 → 3 nov. 05:00 UTC*);
+  `stages.match.idle` *Association scènes-passages* (28 characters: the row ellipsised at 390 px); the pass rows:
+  `latest` empty, `offNadir` *5,3° du nadir* (also the timeline's tooltip), compact relative days *il y a 6 j*,
+  `imagedOrder` *vue rapprochée en tête*; the laptop photo card's `status.mosaic` *Mosaïque* (the pass list's
+  tag; *Mosaïque météo* ran the line past its box); the geostationary square's `noneNow` *Rien pour l’instant* (two lines, as
+  English; *Pas d’image pour l’instant* took four); the card's `geometry` *Géométrie · nord en haut* (it ran into the
+  scale bar) and `enterAnyPlace` *Choisissez un lieu* (it ran into `www.watched.earth`; the default card's alt text
+  ends *Choisissez un lieu, n’importe où sur Terre.*).
+- **Line breaks.** The card's headlines tie the auxiliary to its participle with U+00A0 (*a observé*, *ont observé*,
+  *a balayé*, *a survolé*, *pouvait viser*): a bare *a* closed the first line (*Sentinel-2C a / observé / Waterloo.*).
+- **Copy.** About's `tilting`: *nous classons le passage « Aurait pu viser ici »* (*l’appelons* had no antecedent).
+- **Kept after seeing them:** *Poster sur X* (X's own French verb, fits), *Copier* for the link (the only form that fits
+  three buttons on a phone), `cloudChip` *Nuage*, `namingPlace` *Recherche du nom*, the hero on the default card (it fits
+  the 466 px column with room to spare).

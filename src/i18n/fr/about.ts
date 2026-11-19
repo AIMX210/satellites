@@ -90,7 +90,7 @@ const about: typeof en = {
       /** Quotes the could verdict's title as the results show it, in « » (§3.7) */
       tilting: {
         term: 'Caméras orientables',
-        text: 'De nombreux satellites commerciaux peuvent s’incliner de 30 à 45\u00a0degrés. Si vous étiez à portée, nous l’appelons «\u202fAurait pu viser ici\u202f».',
+        text: 'De nombreux satellites commerciaux peuvent s’incliner de 30 à 45\u00a0degrés. Si vous étiez à portée, nous classons le passage «\u202fAurait pu viser ici\u202f».',
       },
       daylight: {
         term: 'Lumière du jour',

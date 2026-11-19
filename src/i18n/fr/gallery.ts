@@ -78,8 +78,9 @@ const gallery: typeof en = {
     cirrus: 'Cirrus fins',
     shadow: 'Ombre de nuage',
     cloudPct: (p: number) => `Nuages ${pct(p)}`,
-    // *Mosaïque quotidienne* (20) does not fit the ~14-character slot; the weather mosaic is what the picture is.
-    mosaic: 'Mosaïque météo',
+    // *Mosaïque*, the pass list's tag: *Mosaïque quotidienne* (20) does not fit the slot, and *Mosaïque météo* ran the
+    // laptop card's second line past its box beside *il y a 8 h*.
+    mosaic: 'Mosaïque',
   },
   cropKm: (km: number) => `${km >= 100 ? f.int(km) : f.dec(km, 1)}\u00a0km`,
 

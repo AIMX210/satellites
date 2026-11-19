@@ -28,7 +28,8 @@ const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
   empty:
     'Aucun satellite que nous suivons n’a survolé ce lieu sur cette période. C’est rare\u202f; les notes ci-dessus indiquent si une source de données était indisponible.',
-  imagedOrder: 'vue rapprochée d’abord, puis les plus récentes',
+  // 23 characters at most, or the group's count drops to a second line (*puis les plus récentes* did).
+  imagedOrder: 'vue rapprochée en tête',
   count: (n: number, _verdict: Verdict) => passCount(n),
   countStack: (n: number, _verdict: Verdict): NumPart => num(f.int(n), passes(n)),
   // *sat.* is invariable (fr.md §4.1).
@@ -68,7 +69,8 @@ const passView: typeof en = {
     ]
       .filter(Boolean)
       .join(', '),
-  offNadir: (deg: number) => `${f.dec(deg, 1)}° de dépointage`,
+  // *du nadir*, not *de dépointage*: the rows' two mono lines hold about 36 characters (fr.md §3.9).
+  offNadir: (deg: number) => `${f.dec(deg, 1)}° du nadir`,
   offNadirShort: (deg: number) => `${f.dec(deg, 1)}°`,
   distanceKm: (km: number) => `${f.int(km)}\u00a0km`,
   cloudPct: (pct: number) => `nuages ${f.int(pct)}\u00a0%`,
@@ -77,7 +79,8 @@ const passView: typeof en = {
   expandTitle: 'Agrandir l’image',
   satLabel: (o: { sat: string; operator?: string; passes: number; verdict: Verdict; day: string; time: string }) =>
     `${o.sat}${o.operator ? `, ${o.operator}` : ''}, ${passCount(o.passes)}, dernier passage le ${o.day} à ${o.time}`,
-  latest: 'Dernier ',
+  // Nothing: *Dernier lun. 2 nov.* reads «lundi dernier» and ran the row past its box; the row is the latest pass.
+  latest: '',
   closest: 'Au plus près ',
   // One short word on a 48 px thumbnail (small phones): *Nuage*, 5 characters like *Cloud*; *Nuages* is clipped there.
   cloudChip: 'Nuage',

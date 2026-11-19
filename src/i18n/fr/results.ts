@@ -276,14 +276,16 @@ const results: typeof en = {
       catalog: { idle: 'Catalogue d’orbites', done: 'Catalogue chargé' },
       propagate: { idle: (days: number) => `Propagation des orbites · ${dayCount(days)}`, done: 'Orbites propagées' },
       archive: { idle: 'Archives Sentinel-2 + Landsat', done: 'Archives interrogées' },
-      match: { idle: 'Association des scènes aux passages', done: 'Scènes associées' },
+      // 28 characters at most: the row ellipsises on a 390 px phone.
+      match: { idle: 'Association scènes-passages', done: 'Scènes associées' },
     },
     ready: 'Rapport prêt',
     ok: 'OK',
     seconds: (s: number) => `${f.dec(s, 2)}\u00a0s`,
     // Phones up to 420 px hide the strong part; the two ends read alone.
     window: (days: number, from: UtcWhen, to: UtcWhen): Rich => [
-      strong(`Fenêtre de ${dayCount(days)} · `),
+      // *7 jours · *: *Fenêtre de* ran the line past its box at 1280 px.
+      strong(`${dayCount(days)} · `),
       `${dayMonth(from.ms, 'UTC')} ${from.time} → ${dayMonth(to.ms, 'UTC')} ${to.time}\u00a0UTC`,
     ],
     percent: (pct: number) => `${f.int(pct)}\u00a0%`,
@@ -317,7 +319,8 @@ const results: typeof en = {
       noPublic: 'Aucune image publique',
       poorQuality: 'Qualité médiocre',
       // "just now" is *pour l’instant* everywhere (the archive notes, the card's *Image indisponible pour l’instant*).
-      noneNow: 'Pas d’image pour l’instant',
+      // *Rien*: two lines in the square, as English; *Pas d’image pour l’instant* took four, edge to edge.
+      noneNow: 'Rien pour l’instant',
       unavailable: 'Image non chargée',
     },
     frameAlt: (sat: string, infrared: boolean) => `${sat}\u00a0: dernière image${infrared ? ' infrarouge' : ''} autour du lieu`,
@@ -339,7 +342,7 @@ const results: typeof en = {
     geoLane: (n: number): Rich => [strong('Géo · '), f.int(n)],
     geoNames: (names: readonly string[]) => names.join(', '),
     now: 'Maintenant',
-    geometry: (deg: number, km: number) => `${f.dec(deg, 1)}° de dépointage · ${f.int(km)}\u00a0km`,
+    geometry: (deg: number, km: number) => `${f.dec(deg, 1)}° du nadir · ${f.int(km)}\u00a0km`,
     markMosaic: (gsdM: number) => `Mosaïque quotidienne, ${f.int(gsdM)}\u00a0m · ●`,
     markRadar: (gsdM: number) => `Image radar, ${f.int(gsdM)}\u00a0m · ◆`,
     markImaged: (title: string) => `${title} · ◆`,

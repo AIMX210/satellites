@@ -10,8 +10,9 @@
  * (§5.5). The compact timeline day takes the first two letters of CLDR's weekday (*di 1*, *lu 2*), never Intl's narrow
  * letter, where *M* is both Tuesday and Wednesday. Ranges are built by hand with the product's arrow and the month
  * written once (Intl's formatRange would put U+2009 around an en dash). Relative times are numeric, as an instrument
- * says them: *à l’instant*, short style for minutes and hours (*il y a 12 min*, *il y a 41 h*, *dans 3 h*), long for days
- * (*il y a 3 jours*: the short *3 j* is not how a sentence says it), long throughout for screen readers. A number and
+ * says them: *à l’instant*, then CLDR's short style (*il y a 12 min*, *il y a 41 h*, *il y a 3 j*, *dans 3 h*): the
+ * compact form only ever stands in a mono meta line, never in a sentence, and the long *il y a 6 jours* ran the pass
+ * rows past their box. Screen readers get the long style throughout. A number and
  * its unit never part (U+00A0), and a time never parts from its zone. Clocks, zones and the T− countdown stay
  * international and are never touched.
  */
@@ -45,7 +46,7 @@ const tie = (s: string) => s.replace(/(\d) /g, '$1\u00a0')
 function relativeFr(ms: number, now: number, spoken: boolean): string {
   const r = relativeParts(ms, now)
   if (r.unit === 'second') return 'à l’instant'
-  return tie(relativeFormat('fr', spoken || r.unit === 'day' ? 'long' : 'short').format(r.value, r.unit))
+  return tie(relativeFormat('fr', spoken ? 'long' : 'short').format(r.value, r.unit))
 }
 
 const time: typeof en = {

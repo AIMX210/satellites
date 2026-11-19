@@ -63,9 +63,9 @@ const proseDay = (ms: number, timeZone: string) =>
 const watched = (n: number) =>
   n > 0
     ? f.plural(n, {
-        one: `${f.int(n)}\u00a0satellite a observé`,
-        many: `${f.int(n)}\u00a0de satellites ont observé`,
-        other: `${f.int(n)}\u00a0satellites ont observé`,
+        one: `${f.int(n)}\u00a0satellite a\u00a0observé`,
+        many: `${f.int(n)}\u00a0de satellites ont\u00a0observé`,
+        other: `${f.int(n)}\u00a0satellites ont\u00a0observé`,
       })
     : 'Aucun satellite que nous suivons n’a observé'
 /** The full stop after the place, unless the place was cut short ("…." reads as a typo). */
@@ -91,10 +91,11 @@ const card: CardMessages = {
 
   headline: (satellites: number, place: string, cut: boolean): Rich => [watched(satellites), accent(place, ...stop(cut))],
   headlineBy: {
-    imaged: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} a observé`, accent(place, ...stop(cut))],
-    likely: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} a balayé`, accent(place, ...stop(cut))],
-    could: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} pouvait viser`, accent(place, ...stop(cut))],
-    overhead: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} a survolé`, accent(place, ...stop(cut))],
+    // The auxiliary keeps to its participle (U+00A0): a bare *a* or *ont* never closes a line of the headline.
+    imaged: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} a\u00a0observé`, accent(place, ...stop(cut))],
+    likely: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} a\u00a0balayé`, accent(place, ...stop(cut))],
+    could: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} pouvait\u00a0viser`, accent(place, ...stop(cut))],
+    overhead: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} a\u00a0survolé`, accent(place, ...stop(cut))],
   },
   headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [watched(satellites), accent(place, ...stop(cut, ' cette semaine.'))],
 
@@ -165,7 +166,8 @@ const card: CardMessages = {
   pixelSize: (metres: number) => (metres >= 1000 ? `${f.int(metres / 1000)}\u00a0km` : `${metres < 1 ? f.dec(metres, 2) : f.int(metres)}\u00a0m`),
   distance: (km: number) => `${f.int(km)}\u00a0km`,
   scale: (km: number) => (km >= 1 ? `${f.int(km)}\u00a0km` : `${f.int(km * 1000)}\u00a0m`),
-  geometry: 'Géométrie du passage · nord en haut',
+  // *du passage* dropped: the chip ran into the scale bar beside it (24 characters, as English).
+  geometry: 'Géométrie · nord en haut',
   note: {
     imageInApp: 'Image dans l’application',
     imageUnavailable: 'Image indisponible pour l’instant',
@@ -190,10 +192,11 @@ const card: CardMessages = {
 
   // 13 / 14 / 14 characters, the accent alone at the head of the middle line (fr.md §3.1).
   hero: [['Quelque chose'], [accent('vous'), ' observait'], ['cette semaine.']] as Rich[],
-  enterAnyPlace: 'N’importe quel lieu sur Terre',
+  // The sub's first words; *N’importe quel lieu sur Terre* (29) ran into www.watched.earth beside it.
+  enterAnyPlace: 'Choisissez un lieu',
   defaultPlace: 'Palm Jumeirah',
   defaultAlt:
-    'Une vraie photo Sentinel-2 de Palm Jumeirah, à Dubaï, à côté de la phrase «\u202fQuelque chose vous observait cette semaine.\u202f» N’importe quel lieu sur Terre.',
+    'Une vraie photo Sentinel-2 de Palm Jumeirah, à Dubaï, à côté de la phrase «\u202fQuelque chose vous observait cette semaine.\u202f» Choisissez un lieu, n’importe où sur Terre.',
 
   // ── The share page ────────────────────────────────────────────────────────────────────────────────────────────────
 

@@ -62,7 +62,8 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Créé par ${handle}`,
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
-  searchPlaceholder: 'Rechercher un lieu',
+  // *Chercher*: *Rechercher un lieu* ellipsised at 1024 px, beside the locate button.
+  searchPlaceholder: 'Chercher un lieu',
   placeLabel: 'Lieu',
   searching: 'Recherche',
   searchUnavailable: 'Recherche indisponible',
@@ -77,7 +78,8 @@ const landing: typeof en = {
   suggestions: 'Lieux',
 
   // ── Use my location ──────────────────────────────────────────────────────────────────────
-  useMyLocation: 'Utiliser ma position',
+  // *Ma position*: *Utiliser ma position* (20) left the field too little room for its placeholder on laptops.
+  useMyLocation: 'Ma position',
   locateMe: 'Me localiser',
   nearMe: 'Près de moi',
   locating: 'Localisation…',
