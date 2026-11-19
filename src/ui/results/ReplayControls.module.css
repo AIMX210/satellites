@@ -226,10 +226,13 @@
   background: var(--bone-2);
 }
 
+/* Two groups, key and words, 22 px apart; the second wraps under the first when the panel is too narrow for both
+   (it was clipped at the panel's edge in every language, and the squeezed SPACE cap ran into its words). */
 .keys {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px 22px;
   padding-top: 4px;
   font-family: var(--font-mono);
   font-stretch: 87.5%;
@@ -239,8 +242,14 @@
   color: var(--bone-3);
   white-space: nowrap;
 }
-.keysGap {
-  width: 10px;
+.keyPair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* A key cap is never squeezed below its label */
+.keyPair kbd {
+  flex: none;
 }
 /* The ← → pair: one row of the keys line in left to right (see right to left below). */
 .arrows {

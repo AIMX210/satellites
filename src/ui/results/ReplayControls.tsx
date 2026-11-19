@@ -189,13 +189,17 @@ export function ReplayControls({ pass }: { pass: Pass }) {
       </div>
       {!mobile ? (
         <div className={s.keys}>
-          <Kbd>{m.spaceKey}</Kbd> {m.playPause}
-          <span className={s.keysGap} />
-          <span className={s.arrows}>
-            <Kbd>←</Kbd>
-            <Kbd>→</Kbd>
-          </span>{' '}
-          {m.stepKind}
+          {/* Each key with its words, as one group: the line wraps between the groups, never inside one */}
+          <span className={s.keyPair}>
+            <Kbd>{m.spaceKey}</Kbd> {m.playPause}
+          </span>
+          <span className={s.keyPair}>
+            <span className={s.arrows}>
+              <Kbd>←</Kbd>
+              <Kbd>→</Kbd>
+            </span>{' '}
+            {m.stepKind}
+          </span>
         </div>
       ) : null}
     </div>
