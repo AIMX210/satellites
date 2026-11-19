@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reversePlace, searchPlaces } from './geocode'
-import { nearestLocal, parsePlaces, reachKm, searchLocal } from './localPlaces'
+import { countryName, nearestLocal, parsePlaces, reachKm, searchLocal } from './localPlaces'
 import { placeKey, shardFor, shardOf, tileAt, tileFile, tileIndex } from './placeKey'
 import { PLACE_TILES_SPLIT } from './localPlaces.gen'
 
@@ -168,5 +168,15 @@ describe('searchPlaces and reversePlace with the offline list', () => {
     expect(early).toHaveBeenCalledWith([expect.objectContaining({ label: 'Eiffel Tower', sublabel: 'Paris, France' })])
     expect(r.map((p) => p.label)).toEqual(['Eiffel Tower', 'Eiffel Towers'])
     expect(f.mock.calls.some((c) => String(c[0]).startsWith('https://photon.komoot.io/'))).toBe(false)
+  })
+})
+
+describe('countryName', () => {
+  it('is English by default (what the list matches and keeps), any language on request', () => {
+    expect(countryName('US')).toBe('United States')
+    expect(countryName('ca')).toBe('Canada')
+    expect(countryName('DE', 'de')).toBe('Deutschland')
+    expect(countryName('JP', 'ja')).toBe('日本')
+    expect(countryName('')).toBe('')
   })
 })

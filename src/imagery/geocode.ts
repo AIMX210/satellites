@@ -18,10 +18,15 @@
  * when Photon is slow, and its requests are spaced NOMINATIM_GAP_MS apart.
  *
  * Labels are built for a two-line display: `label` is the thing itself ("Waterloo"),
- * `sublabel` is where it is ("Ontario, Canada"), with no part repeated.
+ * `sublabel` is where it is ("Ontario, Canada"), with no part repeated. Both are data, in English whatever the
+ * visitor's language (the geocoders are asked in English, the offline list is English): the usage stats and the
+ * lookups count them, so one town is one row in every language. Only on screen does the sublabel's country follow the
+ * visitor's language (`displaySublabel`).
  */
 import { haversineKm } from '@/lib/geo'
 import type { LatLon, Place } from '@/types'
+import enGeo from '@/i18n/en/geo'
+import { currentLocale, msgs } from '@/i18n/runtime'
 import { fmtLat, fmtLon } from '@/ui/system/format'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
 import { countryName, nearestLocal, searchLocal, type LocalPlace } from './localPlaces'
@@ -82,7 +87,30 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
   return out.length ? out.join(', ') : undefined
 }
 
-/** "43.4723°N 80.5449°W" */
+/**
+ * A place's sublabel as shown to the visitor. English: the sublabel itself. In another language, when the sublabel
+ * ends with the English name of the place's own country (as the offline list and the geocoders, asked in English,
+ * write it), that country is named in the visitor's language (the browser's own names) and joined to the rest by the
+ * 'geo' namespace's `where`; the rest stays one piece of data, never split back into parts. Any other sublabel (no
+ * country code, a geocoder's own spelling of the country, a curated place's copy already in the visitor's language)
+ * is shown as it came.
+ *
+ * Read at call time: React callers subscribe to the language (useLocale()) so a switch re-renders it. The Place keeps
+ * its English sublabel, which is what the usage stats and lookups send.
+ */
+export function displaySublabel(place: Pick<Place, 'sublabel' | 'countryCode'>): string | undefined {
+  const sub = place.sublabel
+  const cc = place.countryCode
+  if (!sub || !cc) return sub
+  const country = countryName(cc)
+  const rest = sub === country ? undefined : sub.endsWith(`, ${country}`) ? sub.slice(0, -(country.length + 2)) : null
+  if (rest === null) return sub
+  const shown = countryName(cc, currentLocale())
+  // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
+  return msgs(enGeo).where(rest, shown.toUpperCase() === cc.toUpperCase() ? country : shown)
+}
+
+/** "43.4723°N 80.5449°W": international notation, the same in every language. */
 export function coordinateLabel(lat: number, lon: number): string {
   return `${fmtLat(lat)} ${fmtLon(lon)}`
 }
@@ -234,6 +262,11 @@ export function preferSettlements(hits: Hit[]): Hit[] {
   return out
 }
 
+/**
+ * An OpenStreetMap tag as English words ('bus_stop' → 'Bus stop'). It goes into the sublabel, which is data (English
+ * in every language, kept by the stats and lookups); a Place does not carry the tag, so the word cannot be shown in
+ * another language until it does (src/i18n/en/geo.ts says so to translators).
+ */
 const humanise = (v: string) => v.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase())
 
 /** Two rows reading exactly alike ("Ushuaia · Argentina" twice) get the county, then the kind. */
@@ -544,22 +577,18 @@ export async function reversePlace(lat: number, lon: number, signal?: AbortSigna
 
 export type LocateErrorCode = 'denied' | 'unavailable' | 'timeout' | 'unsupported' | 'insecure'
 
-/** A geolocation failure with a message fit to show as-is. */
+/**
+ * A geolocation failure. `code` says why; the words a visitor reads are the landing's, chosen by that code
+ * (src/i18n/en/landing.ts `locateErrors`) and rendered in the language on screen. `message` is only a developer's
+ * diagnostic, in English, the same in every language.
+ */
 export class LocateError extends Error {
   readonly code: LocateErrorCode
-  constructor(code: LocateErrorCode, message: string) {
+  constructor(code: LocateErrorCode, message = `Geolocation failed: ${code}`) {
     super(message)
     this.name = 'LocateError'
     this.code = code
   }
-}
-
-const LOCATE_MESSAGES: Record<LocateErrorCode, string> = {
-  denied: 'Location access is blocked. Allow it in your browser settings, or search for a place.',
-  unavailable: 'Your position isn’t available right now. Search for a place instead.',
-  timeout: 'Finding your position took too long. Try again, or search for a place.',
-  unsupported: 'This browser can’t share its location. Search for a place instead.',
-  insecure: 'Location needs a secure (https) connection. Search for a place instead.',
 }
 
 const LOCATE_TIMEOUT_MS = 10_000
@@ -570,12 +599,12 @@ const LOCATE_TIMEOUT_MS = 10_000
 const LOCATE_PROMPT_CAP_MS = 30_000
 
 /**
- * The device's position. Rejects with a LocateError whose message is ready to display.
+ * The device's position. Rejects with a LocateError whose code says why (the landing words it).
  * Coarse accuracy is plenty (a pass covers kilometres) and much faster on desktop.
  */
 export function locateMe(): Promise<LatLon> {
   return new Promise<LatLon>((resolve, reject) => {
-    const fail = (code: LocateErrorCode) => reject(new LocateError(code, LOCATE_MESSAGES[code]))
+    const fail = (code: LocateErrorCode) => reject(new LocateError(code))
     if (typeof window !== 'undefined' && window.isSecureContext === false) return fail('insecure')
     const geo = typeof navigator !== 'undefined' ? navigator.geolocation : undefined
     if (!geo) return fail('unsupported')

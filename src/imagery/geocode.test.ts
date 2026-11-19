@@ -15,7 +15,9 @@ import junk from './__fixtures__/photon-junk.json'
 import {
   coordinateLabel,
   dedupePlaces,
+  displaySublabel,
   joinUnique,
+  locateMe,
   parseCoordinates,
   photonReverseToPlace,
   photonToPlace,
@@ -33,6 +35,8 @@ import {
   type PhotonResponse,
 } from './geocode'
 import type { Place } from '@/types'
+import { setBundleForTests } from '@/i18n/runtime'
+import enGeo from '@/i18n/en/geo'
 
 const places = (r: unknown) => dedupePlaces((r as PhotonResponse).features.map((f) => photonToPlace(f)).filter((p): p is Place => !!p))
 const labels = (ps: Place[]) => ps.map((p) => [p.label, p.sublabel ?? ''])
@@ -368,5 +372,45 @@ describe('searchPlaces on the network (Open-Meteo first, Photon as backup)', () 
     expect(settled).toBe(false)
     ctrl.abort()
     await expect(p).rejects.toMatchObject({ name: 'AbortError' })
+  })
+})
+
+describe('places on screen', () => {
+  afterEach(() => setBundleForTests('en', null))
+
+  it('show the English sublabel as it is in English', () => {
+    for (const sublabel of ['Ontario, Canada', 'Paris, Île-de-France, France', 'Giza, Egypt', 'Japan', 'Bus stop, Ushuaia, Tierra del Fuego, Argentina'])
+      expect(displaySublabel({ sublabel, countryCode: 'ca' })).toBe(sublabel)
+    expect(displaySublabel({ sublabel: 'New York, United States', countryCode: 'us' })).toBe('New York, United States')
+    expect(displaySublabel({ countryCode: 'ca' })).toBeUndefined()
+  })
+
+  it('name the country in the language on screen, joined its way to the rest, which stays one piece as it came', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${country} · ${rest}`)
+    setBundleForTests('de', { geo: { ...enGeo, where } })
+    expect(displaySublabel({ sublabel: 'Ontario, Canada', countryCode: 'ca' })).toBe('Kanada · Ontario')
+    expect(displaySublabel({ sublabel: 'Germany', countryCode: 'de' })).toBe('Deutschland')
+    // The rest is never split back into parts: a disambiguated row keeps its kind and commas exactly as written.
+    expect(displaySublabel({ sublabel: 'Paris, Île-de-France, France', countryCode: 'fr' })).toBe('Frankreich · Paris, Île-de-France')
+    expect(displaySublabel({ sublabel: 'Bus stop, Ushuaia, Tierra del Fuego, Argentina', countryCode: 'ar' })).toBe(
+      'Argentinien · Bus stop, Ushuaia, Tierra del Fuego',
+    )
+  })
+
+  it('show any other sublabel as it came: no code, another country, a spelling not the browser’s, copy already translated', () => {
+    setBundleForTests('de', { geo: { ...enGeo, where: () => 'never' } })
+    expect(displaySublabel({ sublabel: 'Ontario, Canada' })).toBe('Ontario, Canada')
+    expect(displaySublabel({ sublabel: 'Ontario, Canada', countryCode: 'us' })).toBe('Ontario, Canada')
+    expect(displaySublabel({ sublabel: 'Ontario, Kanada', countryCode: 'ca' })).toBe('Ontario, Kanada')
+    expect(displaySublabel({ sublabel: 'Gizeh, Ägypten', countryCode: 'eg' })).toBe('Gizeh, Ägypten')
+    expect(displaySublabel({ sublabel: 'Little Canada', countryCode: 'ca' })).toBe('Little Canada')
+    expect(displaySublabel({ countryCode: 'ca' })).toBeUndefined()
+  })
+
+  it('reject a failed "Use my location" with a stable code and an English diagnostic, whatever the language', async () => {
+    const failure = { name: 'LocateError', code: 'unsupported', message: 'Geolocation failed: unsupported' }
+    await expect(locateMe()).rejects.toMatchObject(failure)
+    setBundleForTests('de', { geo: enGeo })
+    await expect(locateMe()).rejects.toMatchObject(failure)
   })
 })

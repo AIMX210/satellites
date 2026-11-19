@@ -10,6 +10,7 @@
  * page and kept in memory (a small LRU), shared by every caller: an abort only stops that caller waiting.
  */
 import { haversineKm } from '@/lib/geo'
+import { LOCALE_INFO, type Locale } from '../../api/_lib/i18n/locales'
 import { PLACE_GROUPS, PLACE_SPLIT, PLACE_TILES, PLACE_TILES_SPLIT, PLACES_VERSION } from './localPlaces.gen'
 import { Lru } from './lru'
 import { raceAbort, throwIfAborted } from './net'
@@ -93,18 +94,26 @@ function load(path: string, signal?: AbortSignal): Promise<LocalPlace[] | null> 
   return raceAbort(p, signal)
 }
 
-let regionNames: Intl.DisplayNames | null | undefined
-/** "United States" for "US", in English; the code itself if the browser can't say. */
-export function countryName(cc: string): string {
-  if (regionNames === undefined) {
+/** The browser's country names, one set per language (null where it has none). */
+const regionNames = new Map<Locale, Intl.DisplayNames | null>()
+
+/**
+ * "United States" for "US": in English by default, which is what the offline list's rows are matched against ("paris
+ * france") and what the places keep as data; in `locale` for a name shown to the visitor (geocode.ts
+ * displaySublabel). The code itself if the browser can't say.
+ */
+export function countryName(cc: string, locale: Locale = 'en'): string {
+  let names = regionNames.get(locale)
+  if (names === undefined) {
     try {
-      regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+      names = new Intl.DisplayNames([locale === 'en' ? 'en' : LOCALE_INFO[locale].intl], { type: 'region' })
     } catch {
-      regionNames = null
+      names = null
     }
+    regionNames.set(locale, names)
   }
   try {
-    return regionNames?.of(cc) ?? cc
+    return names?.of(cc.toUpperCase()) ?? cc
   } catch {
     return cc
   }
