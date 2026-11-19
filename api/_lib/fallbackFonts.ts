@@ -1,15 +1,19 @@
 /**
  * Fonts for text the card's own fonts cannot draw: a place named in Japanese, Arabic, Devanagari and so on.
  *
- * satori asks for them while it lays out a card, naming the script (`ja-JP`, `ar-AR`, … or `unknown`) and the
- * exact characters. Google Fonts serves a Noto subset of just those characters, as TTF when asked with an older
- * browser's user agent (satori cannot read WOFF2). The cards relied on @vercel/og's loader for this before; this is
- * the same idea written for our renderer, so it runs on any host with `fetch`. A failure returns no font: satori then
- * draws the missing characters as boxes rather than failing the card.
+ * satori names what a card lacks (ogRender.ts asks it in a first pass): the script (`ja-JP`, `ar-AR`, … or `unknown`)
+ * and the exact characters. Google Fonts serves a Noto subset of just those characters, as TTF when asked with an
+ * older browser's user agent (satori cannot read WOFF2). The cards relied on @vercel/og's loader for this before; this
+ * is the same idea written for our renderer, so it runs on any host with `fetch`. A failure returns no font: satori
+ * then draws the missing characters as boxes rather than failing the card.
  *
- * Every subset is registered under a name of its own. satori keeps the fonts it is handed for the life of the instance
- * and asks only the first face registered under a name (and weight and style): under one shared name, a second card's
- * subset would never be asked, and every character the first card did not print would be drawn as a box.
+ * Every subset is registered under a name of its own: satori asks only the first face registered under a name (and
+ * weight and style), and one card can need two subsets of one family (a Japanese card asks for its kana as `ja-JP`
+ * and for its kanji as `ja-JP|zh-CN|zh-TW|zh-HK`, each with a Noto Sans JP subset).
+ *
+ * Answers are cached by script and characters, a bounded number (CACHE_SIZE): a card asks for all it lacks at once, so
+ * answers seldom repeat across cards, and the cache only spares the same card drawn twice (two edge locations asking)
+ * and repeated emoji. Unbounded, it would keep every subset an instance ever fetched.
  */
 import type { SatoriFont } from './fonts.js'
 
@@ -78,22 +82,29 @@ async function load(code: string, text: string): Promise<string | SatoriFont[]> 
   return out
 }
 
+/** How many answers are kept (the least recently asked goes first). */
+export const CACHE_SIZE = 32
+
 const cache = new Map<string, Promise<string | SatoriFont[]>>()
 
 /**
- * satori's `loadAdditionalAsset`: a data URI for an emoji, fonts otherwise (none when nothing could be loaded).
- * Answers are kept per script and text for the life of the instance.
+ * What satori names as missing (`loadAdditionalAsset`'s arguments): a data URI for an emoji, fonts otherwise (none when
+ * nothing could be loaded).
  */
 export function loadFallbackAsset(code: string, text: string): Promise<string | SatoriFont[]> {
   const key = `${code}\u0000${text}`
   let hit = cache.get(key)
-  if (!hit) {
-    hit = load(code, text).catch((err: unknown) => {
+  if (hit) {
+    cache.delete(key) // the most recently asked, last in line to go
+  } else {
+    const promise = load(code, text).catch((err: unknown) => {
       console.error('[og] fallback font failed', code, err)
-      cache.delete(key) // a transient failure is retried by the next card
+      if (cache.get(key) === promise) cache.delete(key) // a transient failure is retried by the next card
       return []
     })
-    cache.set(key, hit)
+    hit = promise
   }
+  cache.set(key, hit)
+  if (cache.size > CACHE_SIZE) cache.delete(cache.keys().next().value!)
   return hit
 }

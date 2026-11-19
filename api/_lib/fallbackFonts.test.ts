@@ -3,7 +3,7 @@
  * card a few glyphs, never the card.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { loadFallbackAsset } from './fallbackFonts.js'
+import { CACHE_SIZE, loadFallbackAsset } from './fallbackFonts.js'
 import type { SatoriFont } from './fonts.js'
 
 afterEach(() => vi.unstubAllGlobals())
@@ -52,6 +52,20 @@ describe('fallback fonts', () => {
     expect(first.map((f) => f.lang)).toEqual(['ja-JP', 'zh-CN', 'zh-TW', 'zh-HK'])
     const names = [...first, ...second].map((f) => f.name)
     expect(new Set(names).size).toBe(names.length)
+  })
+
+  it('keeps the answers asked for last, a bounded number of them', async () => {
+    const fetch = vi.fn(async (url: string) =>
+      url.startsWith('https://fonts.googleapis.com/') ? new Response("src: url(https://f/x.ttf) format('truetype')") : new Response(TTF),
+    )
+    vi.stubGlobal('fetch', fetch)
+    const ask = (i: number) => loadFallbackAsset('th-TH', `ก${i}`)
+    for (let i = 0; i <= CACHE_SIZE; i++) await ask(i) // one more than it keeps: the first is let go
+    const fetched = fetch.mock.calls.length
+    await ask(CACHE_SIZE)
+    expect(fetch.mock.calls.length).toBe(fetched) // kept
+    await ask(0)
+    expect(fetch.mock.calls.length).toBe(fetched + 2) // asked again: its style sheet, then its font
   })
 
   it('draws an emoji from Twemoji', async () => {
