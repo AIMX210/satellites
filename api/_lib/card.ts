@@ -224,6 +224,8 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale
               fontStyle: 'italic',
               fontSize: P,
               lineHeight: lh.placeLH,
+              // Korean breaks only between words, as the page (scripts.css keep-all) and the canvas do: 종로 / 구 otherwise
+              ...(spec.locale === 'ko' ? { wordBreak: 'keep-all' as const } : {}),
               ...(i ? { marginTop: gap } : {}),
               letterSpacing: track.place * P,
               color: C.bone,
