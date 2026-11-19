@@ -1052,7 +1052,9 @@
   text-transform: uppercase;
   color: var(--bone-2);
   line-height: 1.35;
-  white-space: nowrap;
+  /* A verdict name too long for its tile takes two balanced lines rather than be cut: English's fit one line on
+     laptops; "Probablemente observada" or "Pudo haber apuntado aquí" do not (LAP-09 did this for 1024 px first). */
+  text-wrap: balance;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
@@ -1292,21 +1294,10 @@
   padding: 32px 0;
 }
 
-/* The 400 px panel of narrow laptops (1024): a long verdict name takes two lines rather than be cut (LAP-09). */
-@media (min-width: 761px) and (max-width: 1100px) {
-  .verdictLabel {
-    white-space: normal;
-  }
-}
-
 /* ── stacked layouts ──────────────────────────────────────────── */
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
   .body.body {
     padding-top: 16px;
-  }
-  /* phones: the name may take two lines rather than be cut */
-  .verdictLabel {
-    white-space: normal;
   }
   .passName {
     font-size: 24px;
