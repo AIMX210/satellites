@@ -9,6 +9,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('uk')
@@ -35,7 +36,7 @@ const hud: typeof en = {
 
   objects: (n: number) =>
     `${Number.isInteger(n) ? f.int(n) : f.dec(n, 1)}\u00a0${f.plural(n, { one: 'об’єкт', few: 'об’єкти', many: 'об’єктів', other: 'об’єкта' })}`,
-  objectsPending: 'Об’єкти',
+  objectsPending: (count: string): Rich => [num(count), '\u00a0Об’єкти'],
   catalog: 'Каталог',
   fetched: (stamp: string) => `Отримано ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Застарілий, ' : ''}${age(unit, n)} тому`,

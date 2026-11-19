@@ -11,6 +11,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('zh-Hant')
@@ -36,7 +37,7 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => `${f.int(n)} 個物體`,
-  objectsPending: '物體',
+  objectsPending: (count: string): Rich => [num(count), ' 物體'],
   catalog: '目錄',
   fetched: (stamp: string) => `更新於 ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? '已過時，' : ''}${age(unit, n)}`,

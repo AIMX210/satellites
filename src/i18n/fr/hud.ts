@@ -11,6 +11,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('fr')
@@ -39,7 +40,7 @@ const hud: typeof en = {
     const c = Math.round(n) // the form follows the number as shown
     return f.plural(c, { one: `${f.int(c)}\u00a0objet`, many: `${f.int(c)}\u00a0d’objets`, other: `${f.int(c)}\u00a0objets` })
   },
-  objectsPending: 'Objets',
+  objectsPending: (count: string): Rich => [num(count), '\u00a0Objets'],
   catalog: 'Catalogue',
   fetched: (stamp: string) => `Récupéré ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Périmé, ' : ''}il y a ${ageFr(unit, n)}`,

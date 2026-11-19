@@ -19,6 +19,7 @@
  */
 import { memo, useLayoutEffect, useRef, type RefObject } from 'react'
 import enHud from '@/i18n/en/hud'
+import { Rich } from '@/i18n/Rich'
 import { currentLocale, useLocale, useMsgs } from '@/i18n/runtime'
 import { timeZoneAt, tzReady } from '@/imagery'
 import { subsolarPoint } from '@/lib/geo'
@@ -231,9 +232,11 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
               {fmtSource(catalog.source)}
             </>
           ) : (
-            <>
-              <span className={s.value}>—</span> {m.objectsPending}
-            </>
+            // One span, so the space beside the placeholder stays (a bare text node at the inline-flex line's edge
+            // dropped it: "—OBJECTS"); each language puts the placeholder where its count goes ("物体数 —").
+            <span>
+              <Rich parts={m.objectsPending('—')} classes={{ num: s.value }} />
+            </span>
           )}
         </Reveal>
         <Reveal key={`${k}-age`} skip={booting} axis="x" duration={480} delay={at(180)} as="div" className={cx(s.line, s.dim)}>

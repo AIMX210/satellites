@@ -16,6 +16,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('tr')
@@ -42,7 +43,7 @@ const hud: typeof en = {
 
   objects: (n: number) =>
     n === 0 ? 'Nesne yok' : f.plural(n, { one: `${f.int(n)} nesne`, other: `${f.int(n)} nesne` }),
-  objectsPending: 'Nesne',
+  objectsPending: (count: string): Rich => [num(count), ' Nesne'],
   catalog: 'Katalog',
   fetched: (stamp: string) => `İndirildi ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Eski, ' : ''}${ageTr(unit, n)} önce`,

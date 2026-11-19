@@ -11,6 +11,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('ja')
@@ -36,7 +37,7 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => `物体数 ${f.int(n)}`,
-  objectsPending: '物体数',
+  objectsPending: (count: string): Rich => ['物体数 ', num(count)],
   catalog: 'カタログ',
   fetched: (stamp: string) => `取得 ${stamp}`,
   /** "古い · 3日前" when stale: the warning word is a field of its own, set apart like the line's other fields. */

@@ -12,6 +12,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('nl')
@@ -37,7 +38,7 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => f.plural(n, { one: `${f.int(n)} object`, other: `${f.int(n)} objecten` }),
-  objectsPending: 'Objecten',
+  objectsPending: (count: string): Rich => [num(count), ' Objecten'],
   catalog: 'Catalogus',
   fetched: (stamp: string) => `Opgehaald ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Verouderd, ' : ''}${ageNl(unit, n)} geleden`,

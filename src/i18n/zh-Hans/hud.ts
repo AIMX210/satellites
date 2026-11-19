@@ -10,6 +10,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('zh-Hans')
@@ -35,7 +36,7 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => `${f.int(n)}\u00a0个在轨物体`,
-  objectsPending: '在轨物体',
+  objectsPending: (count: string): Rich => [num(count), '\u00a0在轨物体'],
   catalog: '目录',
   fetched: (stamp: string) => `获取于 ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? '已过时，' : ''}${age(unit, n)}`,

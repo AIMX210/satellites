@@ -9,6 +9,7 @@
  * coordinates ("16.6°S 007.1°E"), clocks, "UTC", ISO stamps.
  */
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import { ns } from '../ns'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
@@ -46,8 +47,11 @@ export default ns('hud', {
 
   /** Bottom left: how many objects the orbit catalog holds, then its source ("16,893 OBJECTS · CELESTRAK GP") */
   objects: (n: number) => `${en.int(n)} ${en.plural(n, { one: 'OBJECT', other: 'OBJECTS' })}`,
-  /** The same while the catalog loads, after a dash: "— Objects" */
-  objectsPending: 'Objects',
+  /**
+   * The same while the catalog loads or after it failed: `count` is a placeholder ("—") standing where the number
+   * goes, so put it where `objects` puts the count. "— Objects"
+   */
+  objectsPending: (count: string): Rich => [num(count), ' Objects'],
   /** The catalog's source when it has no name */
   catalog: 'CATALOG',
   /** Under it: when the catalog was fetched; `stamp` is an ISO time, "2026-11-08 03:34Z" (keep it as it is) */

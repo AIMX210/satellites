@@ -9,6 +9,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('id')
@@ -37,8 +38,7 @@ const hud: typeof en = {
 
   /** "16.893 OBJEK · CELESTRAK GP" */
   objects: (n: number) => f.plural(n, { other: `${f.int(n)} objek` }),
-  /** "— OBJEK" */
-  objectsPending: 'objek',
+  objectsPending: (count: string): Rich => [num(count), ' objek'],
   catalog: 'Katalog',
   fetched: (stamp: string) => `Diambil ${stamp}`,
   /** "Diambil 2026-11-08 03:34Z · 4 jam lalu"; stale: "Usang, 3 hari lalu" */

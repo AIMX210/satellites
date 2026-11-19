@@ -13,6 +13,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('es')
@@ -38,7 +39,7 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => `${f.int(n)} ${f.plural(n, { one: 'objeto', many: 'objetos', other: 'objetos' })}`,
-  objectsPending: 'Objetos',
+  objectsPending: (count: string): Rich => [num(count), ' Objetos'],
   catalog: 'Catálogo',
   fetched: (stamp: string) => `Descargado ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Desactualizado, ' : ''}hace ${age(unit, n)}`,

@@ -13,6 +13,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('it')
@@ -47,7 +48,7 @@ const hud: typeof en = {
       many: `${f.int(n)} di oggetti`,
       other: `${f.int(n)} oggetti`,
     }),
-  objectsPending: 'Oggetti',
+  objectsPending: (count: string): Rich => [num(count), ' Oggetti'],
   catalog: 'Catalogo',
   fetched: (stamp: string) => `Aggiornato ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Vecchio, ' : ''}${age(unit, n)} fa`,

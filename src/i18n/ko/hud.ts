@@ -11,6 +11,7 @@
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('ko')
@@ -36,7 +37,7 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => `물체 ${f.int(n)}개`,
-  objectsPending: '물체',
+  objectsPending: (count: string): Rich => ['물체 ', num(count)],
   catalog: '카탈로그',
   fetched: (stamp: string) => `수신 ${stamp}`,
   /** "오래됨, 3일 전" when stale (the warning colour covers the whole line). */
