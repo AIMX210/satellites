@@ -7,7 +7,7 @@
  * title does not change when the app takes over. The slow line is one short centred mono line under the wordmark: a
  * plain fact with no 請 and no apology, and 網速 rather than 網路 / 網絡, which split Taiwan and Hong Kong (§1.4).
  */
-import type { BootText } from '../bootText'
+import type { BootText } from '../bootText.ts'
 
 export default {
   loading: '正在載入 Watched',

@@ -8,7 +8,10 @@
  * A locale missing here keeps the English of index.html.
  */
 import type { Locale } from '../../api/_lib/i18n/locales.ts'
+import es from './es/boot.ts'
+import nl from './nl/boot.ts'
 import ja from './ja/boot.ts'
+import zhHans from './zh-Hans/boot.ts'
 import zhHant from './zh-Hant/boot.ts'
 
 export interface BootText {
@@ -22,6 +25,9 @@ export interface BootText {
 
 export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   en: { loading: 'Loading Watched', slow: 'Slow connection, still loading', title: 'Watched · Something watched you this week' },
+  es,
+  nl,
   ja,
+  'zh-Hans': zhHans,
   'zh-Hant': zhHant,
 }

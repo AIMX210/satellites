@@ -59,7 +59,7 @@ const landing: typeof en = {
   searching: 'Zoeken',
   searchUnavailable: 'Zoeken niet beschikbaar',
   matches: (n: number) =>
-    n === 0 ? 'Geen treffers' : f.plural(n, { one: `${f.int(n)} treffer`, other: `${f.int(n)} treffers` }),
+    n === 0 ? 'Geen treffers' : f.plural(n, { one: `${f.int(n)} treffer`, other: `${f.int(n)} treffers` }),
   noMatch: 'Geen treffers',
   searchHint: 'Naam, adres of coördinaten',
   clearSearch: 'Zoekveld leegmaken',

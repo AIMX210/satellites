@@ -36,7 +36,7 @@ const hud: typeof en = {
   subsolar: 'Subsolair punt',
   gmst: (time: string) => `GMST ${time}`,
 
-  objects: (n: number) => f.plural(n, { one: `${f.int(n)} object`, other: `${f.int(n)} objecten` }),
+  objects: (n: number) => f.plural(n, { one: `${f.int(n)} object`, other: `${f.int(n)} objecten` }),
   objectsPending: 'Objecten',
   catalog: 'Catalogus',
   fetched: (stamp: string) => `Opgehaald ${stamp}`,

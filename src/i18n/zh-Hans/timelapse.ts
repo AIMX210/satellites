@@ -36,7 +36,7 @@ const EACH: Record<SeasonName, string> = {
   autumn: '每年秋季一帧',
 }
 /** The first sentence both notes share */
-const SQUARE = (km: number) => `每一帧都是同一块 ${f.int(km)} km 见方的区域，由 Sentinel-2 拍摄，和这里的每张照片一样经过调色。`
+const SQUARE = (km: number) => `每一帧都是同一块 ${f.int(km)}${NB}km 见方的区域，由 Sentinel-2 拍摄，和这里的每张照片一样经过调色。`
 
 const timelapse: typeof en = {
   // ── The dialog and its bar ────────────────────────────────────────────────────────────────

@@ -74,14 +74,14 @@ const gallery: typeof en = {
     cloudPct: (p: number) => `Nubosidad ${pct(p)}`,
     mosaic: 'Mosaico diario',
   },
-  cropKm: (km: number) => `${km >= 100 ? f.int(km) : f.dec(km, 1)} km`,
+  cropKm: (km: number) => `${km >= 100 ? f.int(km) : f.dec(km, 1)} km`,
 
   // ── a photo frame ────────────────────────────────────────────────────────────────────────
   photoAlt: (sat: string, place: string) => `Imagen de ${place} tomada por ${sat}. El lugar está en el centro.`,
   acquiring: 'Captando',
   noImage: 'No llegó ninguna imagen',
   retry: 'Reintentar',
-  scaleKm: (km: number) => `${km >= 1 ? f.int(km) : f.dec(km, 1)} km`,
+  scaleKm: (km: number) => `${km >= 1 ? f.int(km) : f.dec(km, 1)} km`,
   // The cartographic N, as Spanish maps mark north.
   north: 'N',
   expandLabel: 'Ampliar la imagen',

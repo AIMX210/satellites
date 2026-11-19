@@ -4,7 +4,8 @@
  * Why the words are these: a pass is 过境, counted with 次, and every verdict counts passes, so a count is one form
  * ("1 次过境", "31 次过境"; zh has one plural category). Rows are 条 ("再显示 40 条": 次 there would say "show it again
  * 40 times"). The notes under the plan view point up at the drawing (上图是这次过境的示意图), and a radar image is
- * never a 照片. A number and its measure word are joined by U+00A0, so "31 颗" never splits. Readout labels are noun
+ * never a 照片. A number and its measure word are joined by U+00A0, so "31 颗" never splits, and so are a number and
+ * its unit in the notes that wrap ("每像素 375 m"). Readout labels are noun
  * phrases with no punctuation but · and /; `latest` and `closest` keep their trailing space (a mono row's label and
  * value are spaced). Satellite names are placed through cjkGap.
  */
@@ -67,7 +68,7 @@ const passView: typeof en = {
   fullDiscNote: (pixel: string, cadenceMin?: number) =>
     `这是一张全圆盘图像：这颗卫星能看到的一切都在这一张画面里，这里每像素 ${pixel}。画面虽然粗糙，但是真实的，也是已发布的最新一张；这一周它${every(cadenceMin)}获取一张这样的图像。`,
   mosaicNote: (gsdM: number) =>
-    `这是一张每日拼接图：NASA 把每天的成像带拼成一张画面，每像素 ${f.int(gsdM)} m。画面虽然粗糙，但是真实的，而且来自这次过境的当天。`,
+    `这是一张每日拼接图：NASA 把每天的成像带拼成一张画面，每像素 ${f.int(gsdM)}${NB}m。画面虽然粗糙，但是真实的，而且来自这次过境的当天。`,
   radarNote:
     '这是雷达图像，不是照片：Sentinel-1 发射微波并记录回波，所以云层和黑夜都挡不住它。亮度表示地面反射微波的强弱：建筑和粗糙的地面较亮，平静的水面较暗。',
   noImage: {

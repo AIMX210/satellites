@@ -13,7 +13,7 @@
  *    the reason (§8). `lente`, not `voorjaar`, so the four seasons read alike.
  *  - No mono caps line opens on `Eén` (CSS would print `EÉN`): `Elk jaar één heldere opname`, `één per jaar`.
  *  - The place follows `van`, or opens a title (`Waterloo, jaar na jaar`), never a sentence (§5). Years are never
- *    grouped.
+ *    grouped. A count never parts from its noun (`11 heldere opnamen`, U+00A0), as in the results panel.
  */
 import type en from '../en/timelapse'
 import { fmt } from '../../../api/_lib/i18n/format'
@@ -45,7 +45,7 @@ const daySpoken = (ms: number) => {
   return `${d.dayMonth} ${d.year}`
 }
 /** "1 heldere opname", "11 heldere opnamen" */
-const looks = (n: number) => f.plural(n, { one: `${f.int(n)} heldere opname`, other: `${f.int(n)} heldere opnamen` })
+const looks = (n: number) => f.plural(n, { one: `${f.int(n)} heldere opname`, other: `${f.int(n)} heldere opnamen` })
 const EACH: Record<SeasonName, string> = {
   winter: 'elke winter',
   spring: 'elke lente',

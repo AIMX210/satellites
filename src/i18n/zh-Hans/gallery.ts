@@ -34,9 +34,9 @@ const gallery: typeof en = {
   filter: { all: '全部', detailed: '精细', weather: '气象', radar: '雷达' },
   filterTitle: {
     all: '全部图像，最清晰画面在前，其余由新到旧',
-    detailed: 'Sentinel-2 和 Landsat，每像素 10–30 m',
-    weather: '每日气象拼接图，每像素 250 m 及以上',
-    radar: 'Sentinel-1 雷达图像，每像素 20 m：能穿透云层，不分昼夜',
+    detailed: `Sentinel-2 和 Landsat，每像素 10–30${NB}m`,
+    weather: `每日气象拼接图，每像素 250${NB}m 及以上`,
+    radar: `Sentinel-1 雷达图像，每像素 20${NB}m：能穿透云层，不分昼夜`,
   },
   position: (k: number, n: number) => `${f.int(k)} / ${f.int(n)}`,
   photosThisWeek: (n: number) => `这一周 ${f.int(n)}${NB}张`,

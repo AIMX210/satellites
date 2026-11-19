@@ -8,7 +8,7 @@
  * まだ読み込み中 (まだ for "still"). The tab title is the hero's sentence in its plain copy, word for word, without its
  * 。 (a tab title takes no full stop), and identical to app.documentTitle, which takes over once the app runs.
  */
-import type { BootText } from '../bootText'
+import type { BootText } from '../bootText.ts'
 
 export default {
   loading: 'Watchedを読み込み中',

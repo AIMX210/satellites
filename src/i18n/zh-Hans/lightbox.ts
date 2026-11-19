@@ -27,7 +27,7 @@ const lightbox: typeof en = {
   close: '关闭图像查看器',
   closeTitle: '关闭（Esc）',
   perPixel: (pixel: string) => `每像素 ${pixel}`,
-  panTitle: '用 Landsat 的 15 m 全色波段锐化',
+  panTitle: `用 Landsat 的 15${NB}m 全色波段锐化`,
   panProduct: (pixel: string) => `Landsat C2 L2 + L1 全色 · ${pixel}`,
   status: {
     clouded: (pct?: number) => `云层遮挡${pct !== undefined ? ` · ${f.int(pct)}%` : ''}`,

@@ -5,7 +5,7 @@
  * Why it is built this way:
  *  - Every verdict counts passes (DESIGN §7), so the unit is `overvlucht` / `overvluchten` in nl's two plural forms
  *    whatever the group; satellites are counted in full words (`12 satellieten`), never `sat` or `sats` (§6: no
- *    abbreviations).
+ *    abbreviations). A count never parts from its noun, nor a number from its unit (U+00A0), as in 'results'.
  *  - Readout labels are nouns in sentence case, uppercased by CSS (`Nadirhoek`, `Strookbreedte`, `Elevatie hier`);
  *    readouts keep the international forms they arrive in (compass points as the 'pass' namespace writes them, UTC
  *    clocks, NORAD ids). The only shortened word is the unit `min`, a unit symbol, not an abbreviation.
@@ -24,12 +24,12 @@ const f = fmt('nl')
 
 /** The unit of every verdict's count, in the form the number takes: `1 overvlucht`, `0 overvluchten`, `31 overvluchten` */
 const passes = (n: number) => f.plural(n, { one: 'overvlucht', other: 'overvluchten' })
-const passCount = (n: number) => `${f.int(n)} ${passes(n)}`
+const passCount = (n: number) => `${f.int(n)} ${passes(n)}`
 /** "Sentinel-2C, zo 1 nov 16:14" */
 const who = (sat: string, day: string, time: string) => `${sat}, ${day} ${time}`
 /** How often a geostationary satellite takes a full-disc image: `elke minuut`, `elke 10 minuten`, `om de paar minuten` */
 const cadence = (min?: number) =>
-  min ? f.plural(min, { one: 'elke minuut', other: `elke ${f.int(min)} minuten` }) : 'om de paar minuten'
+  min ? f.plural(min, { one: 'elke minuut', other: `elke ${f.int(min)} minuten` }) : 'om de paar minuten'
 
 const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
@@ -38,9 +38,9 @@ const passView: typeof en = {
   imagedOrder: 'scherpste, dan nieuwste',
   count: (n: number, _verdict: Verdict) => passCount(n),
   countStack: (n: number, _verdict: Verdict): NumPart => num(f.int(n), passes(n)),
-  sats: (n: number) => `${f.int(n)} ${f.plural(n, { one: 'satelliet', other: 'satellieten' })}`,
-  showAllSats: (n: number) => f.plural(n, { one: `${f.int(n)} satelliet tonen`, other: `Alle ${f.int(n)} satellieten tonen` }),
-  showAllRows: (n: number) => f.plural(n, { one: `${f.int(n)} rij tonen`, other: `Alle ${f.int(n)} rijen tonen` }),
+  sats: (n: number) => `${f.int(n)} ${f.plural(n, { one: 'satelliet', other: 'satellieten' })}`,
+  showAllSats: (n: number) => f.plural(n, { one: `${f.int(n)} satelliet tonen`, other: `Alle ${f.int(n)} satellieten tonen` }),
+  showAllRows: (n: number) => f.plural(n, { one: `${f.int(n)} rij tonen`, other: `Alle ${f.int(n)} rijen tonen` }),
   showMore: (n: number) => `Nog ${f.int(n)} tonen`,
   left: (n: number) => `nog ${f.int(n)}`,
   showFewer: 'Minder tonen',
@@ -166,7 +166,7 @@ const passView: typeof en = {
   sunPhase: { day: 'Dag', twilight: 'Schemer', night: 'Nacht' },
   fullDisc: 'Hele schijf',
   // `elke minuut` for one: `elke 1 min` is not Dutch.
-  everyMin: (n: number) => f.plural(n, { one: 'elke minuut', other: `elke ${f.int(n)} min` }),
+  everyMin: (n: number) => f.plural(n, { one: 'elke minuut', other: `elke ${f.int(n)} min` }),
   upCompass: (compass: string) => `hoog · ${compass}`,
   heading: (compass: string, ascending: boolean) => `${compass} · ${ascending ? 'stijgend' : 'dalend'}`,
 }
