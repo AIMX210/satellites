@@ -47,18 +47,28 @@
   margin-inline: auto;
 }
 /* ── four-up readout strip under the frame (R23) ──────────────── */
+/* Two shared rows (labels, values), each cell a subgrid of them: a label that takes two lines ("Cloud at spot",
+   "Fora do nadir") moves every value down with its own, so the four values stay on one line. */
 .strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto auto;
+  container-type: inline-size;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 .stripCell {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  /* Its own column never grows past the cell for a word wider than it ("Bewolking" on a phone). */
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   gap: 6px;
   min-width: 0;
-  padding: 10px 8px 10px 0;
+  /* logical, so right to left the cells mirror (the gutter on the inline end, as the + rule's start is) */
+  padding-block: 10px;
+  padding-inline: 0 8px;
 }
 .stripCell + .stripCell {
   padding-inline-start: 10px;

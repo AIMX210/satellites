@@ -372,7 +372,9 @@
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  padding: 7px 8px 7px 32px;
+  /* logical: right to left the sub-rows still sit under the satellite's name */
+  padding-block: 7px;
+  padding-inline: 32px 8px;
   font-family: var(--font-mono);
   font-stretch: 87.5%;
   font-size: var(--fs-meta, 10px);
