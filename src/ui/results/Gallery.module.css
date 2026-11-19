@@ -713,17 +713,30 @@ b.warn,
   margin-top: 8px;
   min-width: 0;
 }
-/* A narrow card (the 400 px panel at 1024, the short-landscape dock's half column; PH-14 / LAP-09): the replay control
-   is its glyph and the status leaves the second line, so both lines keep the time whole instead of truncating it. */
-.capTimeB {
-  display: none;
+/*
+ * The time ends the first line when that line holds it whole, else it opens the second, where the relative age and
+ * then the status give way (Gallery.tsx useClockFit writes the attributes). A piece set aside stays measurable: out
+ * of flow, unpainted, unspoken. Phones always set the time on the second line.
+ */
+.mobile .mLines {
+  --clock-below: 1;
 }
+.mLines:not([data-below]) [data-fit='clock2'],
+.mLines[data-below] [data-fit='clock1'],
+.mLines[data-no-ago] [data-fit='ago'],
+.mLines[data-no-status] [data-fit='status'] {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+/* A narrow card (the 400 px panel at 1024, the short-landscape dock's half column; PH-14 / LAP-09): the replay control
+   is its glyph, the status leaves the second line and the time opens it. */
 @container card (max-width: 360px) {
-  .gallery:not(.mobile) .capTimeA {
-    display: none;
-  }
-  .gallery:not(.mobile) .capTimeB {
-    display: inline;
+  .gallery:not(.mobile) .mLines {
+    --clock-below: 1;
   }
   .gallery:not(.mobile) .mReplayText {
     display: none;
@@ -750,6 +763,8 @@ b.warn,
   gap: 3px;
 }
 .mLine {
+  /* holds the pieces set aside (above), clipped with the line */
+  position: relative;
   font-family: var(--font-mono);
   font-stretch: 87.5%;
   font-size: var(--fs-label);

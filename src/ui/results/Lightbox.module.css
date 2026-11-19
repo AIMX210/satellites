@@ -434,11 +434,33 @@
 }
 /* Phones: one fact group per line (MetaStrip's phone form); a line too long for its column ends in an ellipsis. */
 .metaLine {
+  /* holds the pieces the clock's fit sets aside (below), clipped with the line */
+  position: relative;
   display: block;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+/* The clock ends the first line when that line holds it whole, else it opens the second, where how long ago and then
+   the status give way; the weekday gives way where the head alone would be cut (Gallery.tsx useClockFit writes the
+   attributes). A piece set aside stays measurable: out of flow, unpainted, unspoken. */
+.clockFit:not([data-short-day]) [data-fit='dayShort'],
+.clockFit[data-short-day] [data-fit='day'],
+.clockFit:not([data-below]) [data-fit='clock2'],
+.clockFit[data-below] [data-fit='clock1'],
+.clockFit[data-no-ago] [data-fit='ago'],
+.clockFit[data-no-status] [data-fit='status'] {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+/* how long ago opens the second line when the clock is not there before it */
+.clockFit:not([data-below]) .sepBelow {
+  display: none;
 }
 .metaName {
   font-weight: 400;

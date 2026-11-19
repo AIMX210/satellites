@@ -16,7 +16,7 @@
  * listener (no layout reads: the stride comes from a ResizeObserver); React renders only when the photo
  * under the snap changes (which neighbours load) and when it settles.
  */
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react'
 import type { Pass } from '@/types'
 import { Glyph, cx, prefersReducedMotion } from '@/ui/system'
 import { msgs, useMsgs } from '@/i18n/runtime'
@@ -535,6 +535,8 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
   void total
   const replay = !detail && pass && onReplay ? () => onReplay(pass) : undefined
   const frameRef = useRef<HTMLDivElement>(null)
+  const linesRef = useRef<HTMLSpanElement>(null)
+  useClockFit(linesRef)
   const onView = () => {
     const el = frameRef.current?.querySelector<HTMLElement>('[data-photo-frame]')
     if (el) onExpand(photo, el)
@@ -569,27 +571,32 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
     const status = mobile ? undefined : heroStatus(photo)
     caption = (
       <figcaption className={s.mCap}>
-        <span className={s.mLines}>
-          <span className={s.mLine}>
-            <b>{meta.name}</b>
-            {' · '}
-            {t.day}
-            {mobile ? null : (
-              <span className={s.capTimeA}>
-                {' · '}
-                {t.time}
-              </span>
-            )}
+        {/* The time ends the first line when it fits there whole, else it opens the second (useClockFit). */}
+        <span ref={linesRef} className={s.mLines}>
+          <span className={s.mLine} data-fit-line="">
+            <span data-fit="head">
+              <b>{meta.name}</b>
+              {' · '}
+              {t.day}
+            </span>
+            <span data-fit="clock1">
+              {' · '}
+              {t.time}
+            </span>
           </span>
-          <span className={s.mLine}>
-            {/* Phones, and a narrow card (PH-14), set the time at the head of the second line, so the first never cuts it. */}
-            {mobile ? `${t.time} · ` : <span className={s.capTimeB}>{`${t.time} · `}</span>}
-            {pixelLabel(capture)}
-            <span className={s.dim}>
+          <span className={s.mLine} data-fit-line="">
+            <span data-fit="clock2">{`${t.time} · `}</span>
+            <span data-fit="rest">{pixelLabel(capture)}</span>
+            <span className={s.dim} data-fit="ago">
               {' · '}
               <Ago t={when} base={model.clock} />
             </span>
-            {status ? <span className={s.mStatus}> · {status}</span> : null}
+            {status ? (
+              <span className={s.mStatus} data-fit="status">
+                {' · '}
+                {status}
+              </span>
+            ) : null}
           </span>
         </span>
         {replay ? (
@@ -655,6 +662,77 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
     </figure>
   )
 })
+
+/**
+ * Where a caption's clock goes, decided by what its lines hold, not by the card's width: a width says nothing of how
+ * long the words are, and at widths English fits, "SO 01.11." beside "ABSPIELEN", "DIM. 1 NOV.", Japanese or Korean
+ * cut the time to "11:…". The clock ends the first line when it fits there whole; otherwise it opens the second,
+ * where the relative age gives way first and then the status, so the time is never cut. A root whose CSS sets
+ * `--clock-below: 1` (phones, a narrow card: PH-14) always sets it on the second line. A head may also offer its day
+ * with and without the weekday (`day` / `dayShort`): the short form is used only when the head alone would be cut.
+ *
+ * The pieces are marked `data-fit` and always rendered; one set aside is taken out of flow and hidden by CSS
+ * (`[data-below]`, `[data-no-ago]`, `[data-no-status]`, `[data-short-day]` on the root, written here and never by
+ * React), so its width can still be read and the decision never feeds back on itself. Measured in a ResizeObserver's callback (after
+ * layout, before paint: the first paint is already right, and the commit forces no layout), and again when the words
+ * change (a locale, the age ticking) or a font arrives. The lines' root holds two `data-fit-line` lines; a root
+ * without them (the viewer's laptop strip, which drops its age whole by itself) is left alone.
+ */
+export function useClockFit(ref: RefObject<HTMLElement | null>, layout?: unknown) {
+  useLayoutEffect(() => {
+    const root = ref.current
+    if (!root || typeof ResizeObserver === 'undefined') return
+    const fit = () => fitClock(root)
+    const ro = new ResizeObserver(fit)
+    ro.observe(root)
+    const mo = new MutationObserver(fit)
+    mo.observe(root, { childList: true, characterData: true, subtree: true })
+    const fonts = typeof document !== 'undefined' ? document.fonts : undefined
+    fonts?.addEventListener?.('loadingdone', fit)
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+      fonts?.removeEventListener?.('loadingdone', fit)
+    }
+    // `layout`: a caller whose lines' root is another element in another layout (the viewer's phone and laptop forms)
+  }, [ref, layout])
+}
+
+function fitClock(root: HTMLElement, again = true) {
+  const lines = root.querySelectorAll<HTMLElement>('[data-fit-line]')
+  if (lines.length < 2) return
+  // Rects, not offsetWidth: fractional, and scaled alike while the viewer's open animation transforms the strip.
+  const width = (k: string) => {
+    let w = 0
+    for (const el of root.querySelectorAll<HTMLElement>(`[data-fit="${k}"]`)) w += el.getBoundingClientRect().width
+    return w
+  }
+  const room = (i: number) => lines[i].getBoundingClientRect().width + 0.5
+  // A head that offers its day in two forms (the viewer's phone strip: "NIEDZ., 1 LIS" / "1 LIS") holds whichever is in
+  // flow: the weekday gives way only when the head alone would be cut, so the date itself never is.
+  const day = width('day')
+  const dayShort = width('dayShort')
+  const headBase = width('head') - (root.hasAttribute('data-short-day') ? dayShort : day)
+  const shortDay = dayShort > 0 && headBase + day > room(0)
+  const head = headBase + (shortDay ? dayShort : day)
+  const below = getComputedStyle(root).getPropertyValue('--clock-below').trim() === '1' || head + width('clock1') > room(0)
+  let noAgo = false
+  let noStatus = false
+  if (below) {
+    const line2 = width('clock2') + width('rest')
+    const status = width('status')
+    noAgo = line2 + width('ago') + status > room(1)
+    noStatus = noAgo && line2 + status > room(1)
+  }
+  const moved = below !== root.hasAttribute('data-below')
+  root.toggleAttribute('data-short-day', shortDay)
+  root.toggleAttribute('data-below', below)
+  root.toggleAttribute('data-no-ago', noAgo)
+  root.toggleAttribute('data-no-status', noStatus)
+  // A piece can read differently once the clock has moved (the viewer's age gains its leading separator only below
+  // the clock), and the line it was measured in no longer exists: measure the new arrangement once more.
+  if (moved && again) fitClock(root, false)
+}
 
 /** What a picture shows at the place, in the fewest words (honest about cloud, decision #2). Read at render time. */
 function shortStatus(p: Photo): string | undefined {

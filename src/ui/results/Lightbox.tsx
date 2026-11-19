@@ -27,7 +27,7 @@ import { msgs, useLocale, useMsgs } from '@/i18n/runtime'
 import enGallery from '@/i18n/en/gallery'
 import enLightbox from '@/i18n/en/lightbox'
 import { Ago } from './Ago'
-import { credit, galleryCtl } from './Gallery'
+import { credit, galleryCtl, useClockFit } from './Gallery'
 import { Mark } from './Mark'
 import { PushbroomReveal } from './PushbroomReveal'
 import { Reticle } from './Reticle'
@@ -873,28 +873,37 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
   const status = photo.kind === 'mosaic' ? undefined : photo.clouded ? lm.status.clouded(capture.cloudCoverPct) : capture.spot === 'clear' ? lm.status.clearAtSpot : capture.spot === 'cirrus' ? gm.status.cirrus : undefined
   const km = gm.cropKm(w)
   const product = pan ? lm.panProduct(pixelLabel(PAN_PIXEL)) : productLabel(capture)
-  const ago = <Ago t={pass?.tClosest ?? capture.datetime} base={model.clock} />
+  const when = pass?.tClosest ?? capture.datetime
+  const ago = <Ago t={when} base={model.clock} />
+  const linesRef = useRef<HTMLDivElement>(null)
+  useClockFit(linesRef, mobile)
   if (mobile) {
     // Phones (PH-11): one fact group per line, never wrapped like prose ('15:24 / EST', '240 / KM', a line opening on
     // a dangling '·'): who and when · how long ago (and the status) · the product · the place · the credit.
-    // Right to left, the day is words ("الأحد، 1 نوفمبر") and the first line has no room left for the clock, which
-    // the ellipsis would take whole: the clock opens the second line instead, before how long ago.
+    // The clock ends the first line when it fits there whole; where it does not (a 360 px phone, a long day: "SUN 1
+    // NOV · 11:…", "الأحد، 1 نوفمبر"), it opens the second, and how long ago gives way to it (Gallery's useClockFit).
     const clock = <span data-num>{t.time} {t.zone}</span>
-    const clockBelow = document.documentElement.dir === 'rtl'
     return (
-      <div className={s.metaText}>
-        <span className={s.metaLine}>
-          <b className={s.metaName}>{meta.name}</b> · {t.day}
-          {clockBelow ? null : <> · {clock}</>}
+      <div ref={linesRef} className={cx(s.metaText, s.clockFit)}>
+        <span className={s.metaLine} data-fit-line="">
+          {/* the weekday gives way where the head alone would be cut (Polish at 390 px: "NIEDZ., 1 LI…") */}
+          <span data-fit="head">
+            <b className={s.metaName}>{meta.name}</b> · <span data-fit="day">{t.day}</span>
+            <span data-fit="dayShort">{fmtDayMonth(when, tz)}</span>
+          </span>
+          <span data-fit="clock1"> · {clock}</span>
         </span>
-        <span className={cx(s.metaLine, s.dim)}>
-          {clockBelow ? <>{clock} · </> : null}
-          {ago}
+        <span className={cx(s.metaLine, s.dim)} data-fit-line="">
+          <span data-fit="clock2">{clock}</span>
+          <span data-fit="ago">
+            <span className={s.sepBelow}>{' · '}</span>
+            {ago}
+          </span>
           {status ? (
-            <>
+            <span data-fit="status">
               {' · '}
               <span className={cx(s.statusInline, photo.clouded && s.warn)}>{status}</span>
-            </>
+            </span>
           ) : null}
         </span>
         <span className={s.metaLine}>
