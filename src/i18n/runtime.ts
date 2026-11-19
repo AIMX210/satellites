@@ -18,17 +18,12 @@
  */
 import { create } from 'zustand'
 import { DEFAULT_LOCALE, LOCALE_INFO, isLocale, type Locale } from '../../api/_lib/i18n/locales'
+import { ns, nsKey } from './ns'
 
 /** A whole translation: namespace key → that namespace's messages (typed against English in each file). */
 export type Bundle = Record<string, object>
 
-const KEYS = new WeakMap<object, string>()
-
-/** Declare an English namespace: the object is the English copy and the type every translation must match. */
-export function ns<T extends object>(key: string, english: T): T {
-  KEYS.set(english, key)
-  return english
-}
+export { ns }
 
 /** The localStorage key the switcher writes and index.html's boot script reads. */
 export const LANG_KEY = 'watched.lang'
@@ -49,7 +44,7 @@ export const currentLocale = (): Locale => active
 /** The active language's messages for an English namespace (English when it has none). Read it at call time. */
 export function msgs<T extends object>(english: T): T {
   if (!bundle) return english
-  const key = KEYS.get(english)
+  const key = nsKey(english)
   return ((key && (bundle[key] as T | undefined)) || english) as T
 }
 
