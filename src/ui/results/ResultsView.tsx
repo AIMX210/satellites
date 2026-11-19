@@ -569,8 +569,9 @@ export function ResultsView({ onBack, onRetry, onSearch }: ResultsViewProps) {
       if (!frame) return
       const foot = body.nextElementSibling as HTMLElement | null
       const cap = frame.parentElement?.querySelector('figcaption') as HTMLElement | null
-      // A plate set beside the square (short landscape phones, U-3) takes no height under it.
-      const capBeside = !!cap && cap.offsetLeft > frame.offsetLeft + 1
+      // A plate set beside the square (short landscape phones, U-3) takes no height under it: on its right, or on its
+      // left right to left (Arabic: counted under it, the square shrank to 132 px against 175).
+      const capBeside = !!cap && Math.abs(cap.offsetLeft - frame.offsetLeft) > 1
       const caption = cap && !capBeside ? cap.offsetHeight + 8 : 0
       const offset = frame.getBoundingClientRect().top - inner.getBoundingClientRect().top
       const vh = window.innerHeight
