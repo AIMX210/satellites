@@ -4,6 +4,7 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { loadFallbackAsset } from './fallbackFonts.js'
+import type { SatoriFont } from './fonts.js'
 
 afterEach(() => vi.unstubAllGlobals())
 
@@ -22,7 +23,7 @@ describe('fallback fonts', () => {
       }),
     )
     const fonts = await loadFallbackAsset('ja-JP', '東京')
-    expect(fonts).toEqual([{ name: 'Noto Sans JP (fallback)', data: TTF, weight: 400, style: 'normal', lang: 'ja-JP' }])
+    expect(fonts).toEqual([{ name: expect.stringMatching(/^Noto Sans JP \(fallback \d+\)$/), data: TTF, weight: 400, style: 'normal', lang: 'ja-JP' }])
     expect(seen[0].url).toBe(`https://fonts.googleapis.com/css2?family=Noto+Sans+JP&text=${encodeURIComponent('東京')}`)
     expect(seen[0].ua).toMatch(/Safari\/533/) // an old browser gets TTF, which satori reads (not WOFF2)
     expect(seen[1].url).toBe('https://fonts.gstatic.com/s/notosansjp/x.ttf')
@@ -35,7 +36,22 @@ describe('fallback fonts', () => {
         url.startsWith('https://fonts.googleapis.com/') ? new Response("src: url(https://f/x.ttf) format('truetype')") : new Response(TTF),
       ),
     )
-    expect(await loadFallbackAsset('unknown', 'ŉ')).toEqual([{ name: 'Noto Sans (fallback)', data: TTF, weight: 400, style: 'normal' }])
+    expect(await loadFallbackAsset('unknown', 'ŉ')).toEqual([{ name: expect.stringMatching(/^Noto Sans \(fallback \d+\)$/), data: TTF, weight: 400, style: 'normal' }])
+  })
+
+  it('gives every subset a name of its own, so a later card’s characters are not drawn as boxes', async () => {
+    // satori keeps every font it was handed for the instance and asks only the first one under a name.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) =>
+        url.startsWith('https://fonts.googleapis.com/') ? new Response("src: url(https://f/x.ttf) format('truetype')") : new Response(TTF),
+      ),
+    )
+    const first = (await loadFallbackAsset('ja-JP|zh-CN|zh-TW|zh-HK', '大阪')) as SatoriFont[]
+    const second = (await loadFallbackAsset('ja-JP|zh-CN|zh-TW|zh-HK', '京都')) as SatoriFont[]
+    expect(first.map((f) => f.lang)).toEqual(['ja-JP', 'zh-CN', 'zh-TW', 'zh-HK'])
+    const names = [...first, ...second].map((f) => f.name)
+    expect(new Set(names).size).toBe(names.length)
   })
 
   it('draws an emoji from Twemoji', async () => {

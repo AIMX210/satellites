@@ -6,6 +6,10 @@
  * browser's user agent (satori cannot read WOFF2). The cards relied on @vercel/og's loader for this before; this is
  * the same idea written for our renderer, so it runs on any host with `fetch`. A failure returns no font: satori then
  * draws the missing characters as boxes rather than failing the card.
+ *
+ * Every subset is registered under a name of its own. satori keeps the fonts it is handed for the life of the instance
+ * and asks only the first face registered under a name (and weight and style): under one shared name, a second card's
+ * subset would never be asked, and every character the first card did not print would be drawn as a box.
  */
 import type { SatoriFont } from './fonts.js'
 
@@ -59,13 +63,16 @@ async function emojiDataUri(emoji: string): Promise<string | SatoriFont[]> {
   return `data:image/svg+xml;base64,${btoa(await res.text())}`
 }
 
+/** Subsets loaded so far in this instance: each one's name (see above). */
+let loaded = 0
+
 async function load(code: string, text: string): Promise<string | SatoriFont[]> {
   if (code === 'emoji') return emojiDataUri(text)
   const out: SatoriFont[] = []
   for (const script of code.split('|')) {
     for (const family of NOTO[script] ?? []) {
       const data = await notoSubset(family, text)
-      if (data) out.push({ name: `${family} (fallback)`, data, weight: 400, style: 'normal', ...(script === 'unknown' ? {} : { lang: script }) })
+      if (data) out.push({ name: `${family} (fallback ${++loaded})`, data, weight: 400, style: 'normal', ...(script === 'unknown' ? {} : { lang: script }) })
     }
   }
   return out
