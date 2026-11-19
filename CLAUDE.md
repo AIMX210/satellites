@@ -27,10 +27,12 @@
 
 **Production, data and permissions**
 - Cloudflare is the only host (Workers Builds): a push to `main` runs `npm run build` and `wrangler deploy`; a push
-  to any other branch runs `npm run build` and `wrangler versions upload`, which gives that commit a preview URL on
-  `workers.dev` (find it with the Cloudflare API: the Worker `watched`, its versions). Previews are `noindex` and
-  write no events. Vercel no longer builds: `vercel.json` is only the switch that tells it not to. Don't delete the
-  Vercel project: it is what redirects the launch address (`overflight-psi.vercel.app`) to the site.
+  to any other branch runs `npm run build` and `wrangler versions upload`, which gives that branch a preview at
+  `https://<branch, "/" as "-">-watched.<subdomain>.workers.dev` (the subdomain: Cloudflare API,
+  `/accounts/<id>/workers/subdomain`; a build takes about two minutes:
+  `/accounts/<id>/builds/workers/<tag>/builds`). Previews are `noindex` and write no events. Vercel no longer builds:
+  `vercel.json` is only the switch that tells it not to. Don't delete the Vercel project: it is what redirects the
+  launch address (`overflight-psi.vercel.app`) to the site.
 - Supabase project `etiebfmgepkcewkkbxwi`: use the Management API
   (`POST https://api.supabase.com/v1/projects/etiebfmgepkcewkkbxwi/database/query`; the session proxy adds the token).
   Do NOT use the Supabase MCP connector: it points at an unrelated project (`xcinlndzgpzjmvmeujor`).
