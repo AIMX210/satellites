@@ -88,9 +88,9 @@ const timelapse: typeof en = {
   tooCloudy: 'Trop de nuages ici pour remonter les années.',
   tooFew: (count: number, since: number, needed: number) =>
     `${count === 0 ? 'Aucune vue dégagée' : looks(count)} depuis ${String(since)} · ${f.plural(needed, {
-      one: `${f.int(needed)} nécessaire`,
-      many: `${f.int(needed)} nécessaires`,
-      other: `${f.int(needed)} nécessaires`,
+      one: `${f.int(needed)}\u00a0nécessaire`,
+      many: `${f.int(needed)}\u00a0nécessaires`,
+      other: `${f.int(needed)}\u00a0nécessaires`,
     })}`,
   noAnswer: 'Les archives n’ont pas répondu.',
   unreachable: 'Planetary Computer est injoignable',

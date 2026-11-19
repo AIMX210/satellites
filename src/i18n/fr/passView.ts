@@ -48,7 +48,7 @@ const passView: typeof en = {
     }),
   showMore: (n: number) => `Voir ${f.int(n)} de plus`,
   // Agrees with the hidden *lignes* (f pl), never with a satellite.
-  left: (n: number) => f.plural(n, { one: `${f.int(n)} restante`, many: `${f.int(n)} restantes`, other: `${f.int(n)} restantes` }),
+  left: (n: number) => f.plural(n, { one: `${f.int(n)}\u00a0restante`, many: `${f.int(n)}\u00a0restantes`, other: `${f.int(n)}\u00a0restantes` }),
   showFewer: 'Voir moins',
   tag: {
     mosaic: 'Mosaïque',

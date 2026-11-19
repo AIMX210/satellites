@@ -9,6 +9,7 @@
  */
 import type { Locale } from '../../api/_lib/i18n/locales.ts'
 import es from './es/boot.ts'
+import fr from './fr/boot.ts'
 import it from './it/boot.ts'
 import nl from './nl/boot.ts'
 import id from './id/boot.ts'
@@ -29,6 +30,7 @@ export interface BootText {
 export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   en: { loading: 'Loading Watched', slow: 'Slow connection, still loading', title: 'Watched · Something watched you this week' },
   es,
+  fr,
   it,
   nl,
   id,
