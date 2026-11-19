@@ -243,13 +243,16 @@ const results: typeof en = {
     /** "1.84 秒" (§6.9: time units in Han) */
     seconds: (s: number) => `${f.dec(s, 2)} 秒`,
     /**
-     * "[7 天時段 · ]11月1日 05:47 → 11月8日 05:47 UTC": the rest reads alone on phones. zh-Hant-HK overlay (§1.4): the
-     * strong part `${f.int(days)} 日時段 · `
+     * "[7 天 · ]11月1日 05:47 → 8日 05:47 UTC": the rest reads alone on phones. One nowrap mono row beside the
+     * percentage (352 px): 時段 adds nothing next to the dates, and the end's month is written only when it changes, as
+     * dayRange does, or the row is cut at a month's turn. zh-Hant-HK overlay (§1.4): the strong part `${f.int(days)} 日 · `
      */
-    window: (days: number, from: UtcWhen, to: UtcWhen): Rich => [
-      strong(`${f.int(days)} 天時段 · `),
-      `${dayMonth(from.ms, 'UTC')} ${from.time} → ${dayMonth(to.ms, 'UTC')} ${to.time} UTC`,
-    ],
+    window: (days: number, from: UtcWhen, to: UtcWhen): Rich => {
+      const a = localParts(from.ms, 'UTC')
+      const b = localParts(to.ms, 'UTC')
+      const end = a.month === b.month && a.year === b.year ? `${b.day}日` : dayMonth(to.ms, 'UTC')
+      return [strong(`${f.int(days)} 天 · `), `${dayMonth(from.ms, 'UTC')} ${from.time} → ${end} ${to.time} UTC`]
+    },
     percent: (pct: number) => `${f.int(pct)}%`,
     /** 收到請求才產生, never 即時 (that is "Live") */
     slow: 'Planetary Computer 和 NASA 的影像都是收到請求才產生的，這一步可能需要幾秒。',

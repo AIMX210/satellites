@@ -110,12 +110,21 @@ const subject = (sat: SatName) => sat ?? A_SATELLITE_SUBJECT
 
 /** The headline's lead, with the gap to the place that follows it */
 const lead = (text: string, place: string) => `${text}${cjkGap(text, place)}`
-/** "有 7 顆衛星注視過" / "我們追蹤的衛星沒有一顆注視過" (the results headline's words) */
-const watched = (n: number) => (n > 0 ? `有 ${f.int(n)} 顆衛星注視過` : '我們追蹤的衛星沒有一顆注視過')
+/**
+ * The card's lead as phrases (the results headline's words), one line each where a typesetter breaks a display
+ * headline; the card never breaks inside a part: "有 7 顆衛星" "注視過 ", or "我們追蹤的衛星" "沒有一顆注視過 ".
+ * Flattened with no gap they read as the sentence.
+ */
+const watched = (n: number, place: string) =>
+  n > 0 ? [`有 ${f.int(n)} 顆衛星`, lead('注視過', place)] : ['我們追蹤的衛星', lead('沒有一顆注視過', place)]
 /** The place as the accent block, with its 。 as its own part unless the place was cut short */
 const placeBlock = (place: string, cut: boolean) => (cut ? accent(place) : accent(place, '。'))
-/** The satellite's own headline: "Sentinel-2C 注視過 | Waterloo。" */
-const byName = (sat: SatName, verb: string, place: string, cut: boolean): Rich => [lead(withName('', subject(sat), verb), place), placeBlock(place, cut)]
+/** The satellite's own headline: "Sentinel-2C " | "注視過 " | "Waterloo。", the name and the verb a line each */
+const byName = (sat: SatName, verb: string, place: string, cut: boolean): Rich => [
+  `${subject(sat)}${cjkGap(subject(sat), verb)}`,
+  lead(verb, place),
+  placeBlock(place, cut),
+]
 
 const COMPASS = ['北', '東北', '東', '東南', '南', '西南', '西', '西北']
 const compass = (heading?: number) => (heading !== undefined ? COMPASS[heading] : undefined)
@@ -132,19 +141,24 @@ const clauses = (...parts: string[]) => parts.filter(Boolean).reduce((out, p) =>
 const card: CardMessages = {
   // ── The headline (rich: text blocks in the condensed face, the accent block in the serif) ─────────────────────────
 
-  headline: (satellites: number, place: string, cut: boolean): Rich => [lead(watched(satellites), place), placeBlock(place, cut)],
+  headline: (satellites: number, place: string, cut: boolean): Rich => [...watched(satellites, place), placeBlock(place, cut)],
   headlineBy: {
     imaged: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '注視過', place, cut),
     likely: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '掃過', place, cut),
-    /** Place first: "Waterloo | 曾在 Capella-14 的可視範圍內。" (its 。 is in the text block, so a cut never drops it) */
+    /**
+     * Place first: "Waterloo" | " 曾在" | "Capella-14 " | "的可視範圍內。" (its 。 is in the text block, so a cut never
+     * drops it). A Latin name takes a line of its own, as in the other verdicts' headlines, so a long one does not shrink
+     * the card; a Han one stays with 曾在 ("曾在一顆衛星")
+     */
     could: (sat: SatName, place: string, _cut: boolean): Rich => {
-      const rest = withName('曾在', named(sat), '的可視範圍內。')
-      return [accent(place), `${cjkGap(place, rest)}${rest}`]
+      const name = named(sat)
+      const by = cjkGap('曾在', name) ? ['曾在', `${name}${cjkGap(name, '的')}`] : [`曾在${name}`]
+      return [accent(place), `${cjkGap(place, by[0])}${by[0]}`, ...by.slice(1).map((p) => ` ${p}`), '的可視範圍內。']
     },
     overhead: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '飛越', place, cut),
   },
-  /** Chinese cannot put "this week" after the place: 這星期 leads the lead block */
-  headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [lead(`這星期，${watched(satellites)}`, place), placeBlock(place, cut)],
+  /** Chinese cannot put "this week" after the place: 這星期， is the first line */
+  headlineWeek: (satellites: number, place: string, cut: boolean): Rich => ['這星期，', ...watched(satellites, place), placeBlock(place, cut)],
 
   // ── The line under the headline ───────────────────────────────────────────────────────────────────────────────────
 

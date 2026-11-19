@@ -136,9 +136,9 @@ Kong sees all over the web), and the overlay carries the Hong Kong word.
 | glyph forms | 衛, 著, 裡, 線 | 衞, 着, 裏, 綫 (HK standard; 衞生署) | TW forms | none |
 
 **Glyph forms.** Both regions get the Taiwan MOE forms (衛 not 衞, 著 not 着, 裡 not 裏, 線 not 綫). Hong Kong readers see
-these on most of the web and read them as standard. The one place a Hong Kong reviewer will notice them is the hero's
-著. That is accepted for v1. If the owner ever wants Hong Kong forms, they come from a reviewed word list applied to the
-overlay at build time (著 → 着 only as the aspect particle, never in 著名 or 著作), never from a runtime conversion,
+these on most of the web and read them as standard; the hero (注視過) has none of the split characters, and 衛 in the
+results headline is accepted for v1. If the owner ever wants Hong Kong forms, they come from a reviewed word list
+applied to the overlay at build time (著 → 着 only as the aspect particle, never in 著名 or 著作), never from a runtime conversion,
 which is context-sensitive and makes errors.
 
 **How the overlay works** (zero cost; details in Appendix B.1):
@@ -188,8 +188,9 @@ never picks a neighbour, so it waits for the owner (open question). `yue-Hans` w
 - End on the fact: `…注視過 Waterloo。`, `…原圖整體雲量：25%。`
 - Never three 的 in one phrase (`你選的地點的像素的雲量` → `地點上的雲量`).
 - Four-character idioms only when they are the plain word (日夜皆可, yes; 一目了然, no).
-- Aspect: **過** for "has watched / has crossed" over a period (the default); **著** only for the hero's ongoing gaze;
-  **了** only for one completed act at a named moment (`取得了 Waterloo 的影像`, the post's `注視了`).
+- Aspect: **過** for "has watched / has crossed" over a period (the default, the hero included); never **著** (the
+  durative claims an ongoing gaze the product does not report); **了** only for one completed act at a named moment
+  (`取得了 Waterloo 的影像`, the post's `注視了`).
 - **No pro-verb.** "We can't know whether it did" never becomes 這樣做: Chinese merges the clauses
   (`…就可能注視過 Waterloo，但我們無從得知。`).
 
@@ -260,8 +261,8 @@ Final (three display lines, one accent, no comma in the display):
 - **注視過 in the hero too (lead decision, 2026-11-19).** The draft and its review chose the durative 注視著 here for its
   presence, but the English is a past report ("watched … this week"), the headline and the verdict say 注視過, and the
   Simplified edition says 注视过: the two Chinese editions now read the same, and the hero says what the results say.
-  Everywhere else the product reports a past week and says 注視過. (zh-Hans chose 注視過 for its hero; the divergence is
-  recorded as an open question for the owner, not a reason to change this line.)
+  Everywhere else the product reports a past week and says 注視過 too (owner decision: both heroes say the past
+  report).
 - **The accent is 你**, the human moment, as in English: upright serif (the accent subset, §6.10), signal orange. Chinese
   has no italic; the browser must never slant it.
 - Time first is the natural Chinese order. A Chinese line cannot end on "this week"; the human word takes the last
@@ -271,7 +272,7 @@ Final (three display lines, one accent, no comma in the display):
 |---|---|
 | 這一週， / 有東西 / 注視過*你*。 | 這一週 is Taiwanese written usage, slightly foreign to Hong Kong; line 1 is thin; the line-end comma floats. |
 | 這個星期 / 有東西 / 注視過*你*。 | Line 1 grows to 4 em and the cadence goes slack. |
-| 這星期 / 有東西 / 注視過*你*。 | Accurate, but 過 closes the act into a record. The hero is the gaze itself. |
+| 這星期 / 有東西 / 注視著*你*。 | The draft's durative: "is watching you", the stock horror line, a claim of an ongoing gaze, and a second verb form beside every other 注視過. |
 | 本週， / 有東西在 / 注視*你*。 | 本週 is a promotion; 在 stranded at a line end splits the verb. |
 | 這星期 / 有甚麼 / 在看著*你*。 | A ghost-story line, louder than "quietly"; 看著 collides with every 看看 in the UI; 甚麼 / 什麼 splits the regions on the most-seen line. |
 | 這星期 / 有東西 / 在監視*你*。 | Surveillance by an authority: an accusation, and politically loaded in both regions. |
@@ -442,24 +443,29 @@ view of the pass." becomes `上圖是這次過境的平面圖。`, never 以下�
 
 ### 3.5 Share card, share page and post
 
-**Card headlines** (`api/_lib/i18n/card/zh-Hant.ts`). A headline is blocks in the order the message returns them: a text
-part is a block in the condensed display face (at most three lines), the accent part a block in the serif (at most two
-lines). The place is the accent block. 。 sits inside the place's block (dropped when the place was cut) when the place
-is last.
+**Card headlines** (`api/_lib/i18n/card/zh-Hant.ts`). A headline is blocks in the order the message returns them. Each
+text part is one line in the condensed display face, never broken inside, so the lead is split into phrases where a
+typesetter breaks a display headline (4–7 em each; the card's size is the largest at which every text part fits one
+line of the 466 px column, `headlineSizeCjk`). The accent part is the place, in the serif (at most two lines). 。 sits
+inside the place's block (dropped when the place was cut) when the place is last.
 
-| Message | Blocks | Reads |
+| Message | Blocks (a line each; the place may take two) | Reads |
 |---|---|---|
-| `headline` (N ≥ 1) | `有 [NUM] 顆衛星注視過` + `[PLACE]。` | 有 7 顆衛星注視過 Waterloo。 |
-| `headlineWeek` (N ≥ 1) | `這星期，有 [NUM] 顆衛星注視過` + `[PLACE]。` | 這星期，有 31 顆衛星注視過 Waterloo。 |
-| `headlineWeek` (zero) | `這星期，我們追蹤的衛星沒有一顆注視過` + `[PLACE]。` | 這星期，我們追蹤的衛星沒有一顆注視過 Waterloo。 |
-| `headlineBy.imaged` | `[SAT] 注視過` + `[PLACE]。` | Sentinel-2C 注視過 Waterloo。 |
-| `headlineBy.likely` | `[SAT] 掃過` + `[PLACE]。` | Landsat 9 掃過 Waterloo。 |
-| `headlineBy.could` | `[PLACE]` + `曾在 [SAT] 的可視範圍內。` (place first) | Waterloo 曾在 Capella-14 的可視範圍內。 |
-| `headlineBy.overhead` | `[SAT] 飛越` + `[PLACE]。` | ISS (ZARYA) 飛越 Waterloo。 |
-| nameless satellite | `有一顆衛星注視過` + `[PLACE]。` (and 有一顆衛星掃過, 有一顆衛星飛越; could: `曾在一顆衛星的可視範圍內。`) | 有一顆衛星注視過 Waterloo。 |
+| `headline` (N ≥ 1) | `有 [NUM] 顆衛星` · `注視過` · `[PLACE]。` | 有 7 顆衛星注視過 Waterloo。 |
+| `headline` (zero) | `我們追蹤的衛星` · `沒有一顆注視過` · `[PLACE]。` | |
+| `headlineWeek` (N ≥ 1) | `這星期，` · `有 [NUM] 顆衛星` · `注視過` · `[PLACE]。` | 這星期，有 31 顆衛星注視過 Waterloo。 |
+| `headlineWeek` (zero) | `這星期，` · `我們追蹤的衛星` · `沒有一顆注視過` · `[PLACE]。` | 這星期，我們追蹤的衛星沒有一顆注視過 Waterloo。 |
+| `headlineBy.imaged` | `[SAT]` · `注視過` · `[PLACE]。` | Sentinel-2C 注視過 Waterloo。 |
+| `headlineBy.likely` | `[SAT]` · `掃過` · `[PLACE]。` | Landsat 9 掃過 Waterloo。 |
+| `headlineBy.could` | `[PLACE]` · `曾在` · `[SAT]` · `的可視範圍內。` (place first) | Waterloo 曾在 Capella-14 的可視範圍內。 |
+| `headlineBy.overhead` | `[SAT]` · `飛越` · `[PLACE]。` | ISS (ZARYA) 飛越 Waterloo。 |
+| nameless satellite | `有一顆衛星` · `注視過` · `[PLACE]。` (and 掃過, 飛越; could: `曾在一顆衛星` · `的可視範圍內。`) | 有一顆衛星注視過 Waterloo。 |
 
-- **The gap.** zh joins blocks with nothing (`sentenceGap: ''`), so the lead block ends with `cjkGap(lead, place)` (and a
-  block after a place starts with `cjkGap(place, next)`). The share page's `<title>`, og:title and the post's first
+Sizes (measured with `headlineSizeCjk`, Waterloo): `headline` 74 px, `headlineWeek` 72, the zero forms 66, a nameless
+satellite 74, a long name (WorldView Legion 4) 52, could 52 (its Latin name on its own line).
+
+- **The gap.** zh joins blocks with nothing (`sentenceGap: ''`), so each text part ends with the gap to what follows it
+  (`cjkGap`), and a block after a place starts with `cjkGap(place, next)`. The share page's `<title>`, og:title and the post's first
   sentence then read `Sentinel-2C 注視過 Waterloo。` and `Sentinel-2C 注視過九龍。`. On the card the trailing space is
   invisible.
 - **Could, place first.** `經過時可看到 Waterloo` reads like a claim that it saw; the place-first frame states exactly
