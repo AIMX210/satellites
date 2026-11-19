@@ -30,7 +30,7 @@ phrase. "HK:" marks the overlay's form.
 | Question | Decision |
 |---|---|
 | Address | **你** on every surface, both regions. Never 您, 妳, 閣下. The product speaks as **我們**. **請** only when the reader must act outside the app (a browser setting, their connection). |
-| Product verb ("watched") | **注視**. **注視過** by default. **注視著** only in the hero and its share hook. **注視了** only in the post, where the moment is named. Never 監視, 監控, 看見, 拍攝 as the verdict. |
+| Product verb ("watched") | **注視**. **注視過** by default, the hero and its share hook included. **注視了** only in the post, where the moment is named. Never 監視, 監控, 看見, 拍攝 as the verdict. |
 | "this week" / "that week" | **這星期** / **那個星期**. Never 本週, 這一週, 上週. Intl's weekday 週日 stays inside dates. |
 | "Last 7 days" | **過去 7 天** (HK: 過去 7 日). |
 | "pass" (noun) | **過境**, counted with **次**. |
@@ -58,7 +58,7 @@ phrase. "HK:" marks the overlay's form.
 
 | Surface | Register | Example | Why |
 |---|---|---|---|
-| Display headlines (hero, results headline, About title, card headline) | Plain 書面語, declarative, ends with 。 | 這星期，有東西注視著*你*。 | The headline is the human moment. 你 is close and level: the line lands as a quiet fact, not a greeting. |
+| Display headlines (hero, results headline, About title, card headline) | Plain 書面語, declarative, ends with 。 | 這星期，有東西注視過*你*。 | The headline is the human moment. 你 is close and level: the line lands as a quiet fact, not a greeting. |
 | Sentences and prose (pass detail, notes, time-lapse note, footnotes) | Plain 書面語, short clauses, 你 / 我們, numbers and names in slots | 當時這裡天黑。氣象成像儀夜間仍以紅外線持續掃描，所以它看到的是你頭上的雲，不是你的街道。 | An instrument talking: exact, unhurried, no hedging adverbs. |
 | UI labels and buttons | Verb + object or bare noun; no 請; no 你 (except "my", 我的, where the English has it) | 複製連結, 再試一次, 使用我的位置 | Buttons are commands the person gives. 請 on a button reads like a form at a government counter. |
 | Mono caps labels (lanes, readouts, chips, kicker) | Nouns, 2 to 4 characters, no 的, no punctuation | 高度, 側視角, 像素, 過去 7 天 | Instrument legends. A particle or a verb in a legend is noise. |
@@ -76,7 +76,7 @@ Everything else that suggests a next step says it as a possibility, not a reques
 
 您 lost on every surface.
 
-- **The hero dies with it.** 這星期，有東西注視著您。 is a bank notification. The uncanny line needs the intimacy of 你; 您
+- **The hero dies with it.** 這星期，有東西注視過您。 is a bank notification. The uncanny line needs the intimacy of 你; 您
   puts a counter between the reader and the thing watching them.
 - **Hong Kong does not write 您 in everyday copy.** Cantonese has no 您; in Hong Kong it reads Mandarin-imported or stiffly
   official. Hong Kong is the larger audience.
@@ -86,7 +86,7 @@ Everything else that suggests a next step says it as a possibility, not a reques
   something breaks.
 
 Also rejected: **妳** (Taiwan writes it for a female "you"; we cannot know who is reading), **閣下** (letters and legal
-notices), and **no pronoun in the hero** (有東西注視著。 is not a sentence; the object is the point).
+notices), and **no pronoun in the hero** (有東西注視過。 is not a sentence; the object is the point).
 
 ### 1.3 Which written Chinese
 
@@ -212,7 +212,7 @@ never picks a neighbour, so it waits for the owner (open question). `yue-Hans` w
 
 1. "Something watched you this week."
    - Before: 本週有某物正在監視您！
-   - After: 這星期 / 有東西 / 注視著*你*。
+   - After: 這星期 / 有東西 / 注視過*你*。
    - 本週 is a supermarket flyer, 某物 a calque, 監視 an accusation, 您 a bank, ！ a shout.
 2. "No satellite we track watched Waterloo this week."
    - Before: 很遺憾，本週我們所追蹤的衛星中，沒有任何一顆衛星對 Waterloo 進行了注視。
@@ -242,22 +242,24 @@ Final (three display lines, one accent, no comma in the display):
 ```
 這星期
 有東西
-注視著*你*。
+注視過*你*。
 ```
 
-`landing.hero` and `card.hero`: `[['這星期'], ['有東西'], ['注視著', accent('你'), '。']]`
+`landing.hero` and `card.hero`: `[['這星期'], ['有東西'], ['注視過', accent('你'), '。']]`
 
 - **Plain text** wherever the sentence stands alone (`<title>` after the brand, `page.title`, og and card alt, the
-  default card's description): `這星期，有東西注視著你。` The h1's accessible text is the three lines run together,
-  `這星期有東西注視著你。`, which is also grammatical.
-- **Share hook** (`share.hookWatched`), kept in step: `這星期，也有東西注視著你。`
+  default card's description): `這星期，有東西注視過你。` The h1's accessible text is the three lines run together,
+  `這星期有東西注視過你。`, which is also grammatical.
+- **Share hook** (`share.hookWatched`), kept in step: `這星期，也有東西注視過你。`
 - **Line lengths** 3 / 3 / 5 em. At 102 px every line has the same density; 這一週 made line 1 look gappy (一 is one
   hairline stroke) and reads slightly foreign in Hong Kong, which writes the week as 周 or 星期. 這星期 is the everyday
   written form in both regions and sidesteps the 週 / 周 split.
 - **No comma at the line break.** In the team's own specimen the full-width comma at the end of line 1 is a floating
   blob, and it cannot hang (`hanging-punctuation` is Safari-only). On a Chinese poster the break is the pause. The 。 is
   kept: it is the brand's full stop, set in the display face in `--bone`.
-- **注視著, here and only here.** The durative 著 makes the gaze present, which is the uncanny part of the line.
+- **注視過 in the hero too (lead decision, 2026-11-19).** The draft and its review chose the durative 注視著 here for its
+  presence, but the English is a past report ("watched … this week"), the headline and the verdict say 注視過, and the
+  Simplified edition says 注视过: the two Chinese editions now read the same, and the hero says what the results say.
   Everywhere else the product reports a past week and says 注視過. (zh-Hans chose 注視過 for its hero; the divergence is
   recorded as an open question for the owner, not a reason to change this line.)
 - **The accent is 你**, the human moment, as in English: upright serif (the accent subset, §6.10), signal orange. Chinese
@@ -267,8 +269,8 @@ Final (three display lines, one accent, no comma in the display):
 
 | Alternate | Why it lost |
 |---|---|
-| 這一週， / 有東西 / 注視著*你*。 | 這一週 is Taiwanese written usage, slightly foreign to Hong Kong; line 1 is thin; the line-end comma floats. |
-| 這個星期 / 有東西 / 注視著*你*。 | Line 1 grows to 4 em and the cadence goes slack. |
+| 這一週， / 有東西 / 注視過*你*。 | 這一週 is Taiwanese written usage, slightly foreign to Hong Kong; line 1 is thin; the line-end comma floats. |
+| 這個星期 / 有東西 / 注視過*你*。 | Line 1 grows to 4 em and the cadence goes slack. |
 | 這星期 / 有東西 / 注視過*你*。 | Accurate, but 過 closes the act into a record. The hero is the gaze itself. |
 | 本週， / 有東西在 / 注視*你*。 | 本週 is a promotion; 在 stranded at a line end splits the verb. |
 | 這星期 / 有甚麼 / 在看著*你*。 | A ghost-story line, louder than "quietly"; 看著 collides with every 看看 in the UI; 甚麼 / 什麼 splits the regions on the most-seen line. |
@@ -497,7 +499,7 @@ is last.
 | `hero` | §3.1 |
 | `enterAnyPlace` | 輸入地球上任何地點 |
 | `defaultPlace` | 朱美拉棕櫚島 |
-| `defaultAlt` | 一張真實的 Sentinel-2 衛星照片，拍的是杜拜的朱美拉棕櫚島，旁邊寫著：這星期，有東西注視著你。輸入地球上任何地點。 |
+| `defaultAlt` | 一張真實的 Sentinel-2 衛星照片，拍的是杜拜的朱美拉棕櫚島，旁邊寫著：這星期，有東西注視過你。輸入地球上任何地點。 |
 
 `invite` is never 看看誰注視過你: 誰 turns satellites into people, and 看看誰… is the stock line of "see who viewed your
 profile", the cheap stalker register §8 rules out. The hero's 有東西 is deliberately not a person; 是什麼 keeps it so.
@@ -506,7 +508,7 @@ profile", the cheap stalker register §8 rules out. The hero's 有東西 is deli
 
 | Key | zh-Hant |
 |---|---|
-| `page.title` | 這星期，有東西注視著你。 |
+| `page.title` | 這星期，有東西注視過你。 |
 | `page.description` | the sub line (§3.2) |
 | `page.placeTitle` | 這星期，是什麼注視過 [PLACE] (a heading: no 。, no ？) |
 | `page.placeDescription` | 過去 7 天從 [PLACE] 上空飛過的每一顆衛星，以及它們實際拍下的影像。這星期，是什麼注視過你？ |
@@ -538,7 +540,7 @@ local", so the clock carries no zone and 當地時間 leads the time phrase. [DA
 | likely | Landsat 9 於當地時間 11月1日（週日）10:21 從 705 km 高空掃過 Waterloo，這個地點在它的掃描帶內。 |
 | could | WorldView Legion 4 於當地時間 11月1日（週日）10:52 經過，Waterloo 在它的可視範圍內。它可能對準過這裡，但營運商不會透露。 |
 | overhead | ISS (ZARYA) 於當地時間 11月1日（週日）21:14 從 Waterloo 上空 420 km 處經過。 |
-| `hookWatched` | 這星期，也有東西注視著你。 |
+| `hookWatched` | 這星期，也有東西注視過你。 |
 | `hookPassed` | 這星期，有什麼從你頭上飛過？ (HK 甚麼: the post is app copy, so the overlay applies) |
 | `credit` | `via @armaangupt0` (unchanged: via reads on X in both regions) |
 
@@ -610,7 +612,7 @@ Counters (量詞) are given with each noun. HK forms are in §1.4.
 | satellite | 衛星 | Counter 顆 (`256 顆衛星`). Never 人造衛星 (long), 枚 (literary). Unknown: 一顆衛星; as a subject 有一顆衛星. |
 | pass (noun) | 過境 | Counter 次 (`31 次過境`). At airports 過境 is transit: always in a satellite context. |
 | to pass, to cross | 經過, 飛過 | 飛越 for "fly over" in compact copy and the overhead card. |
-| to watch (product verb) | 注視 | 注視過 default; 注視著 hero only; 注視了 post only. Never 監視, 監控, 盯, 凝視 (too literary), 看見 (claims success), 拍攝 / 拍下 as the verdict. |
+| to watch (product verb) | 注視 | 注視過 default; 注視過 hero only; 注視了 post only. Never 監視, 監控, 盯, 凝視 (too literary), 看見 (claims success), 拍攝 / 拍下 as the verdict. |
 | likely watched | 很可能注視過 | Lane 很可能. |
 | could have pointed here | 或許曾對準這裡 | Lane 或許. |
 | passed overhead | 從上空經過 | Lane 上空. |
@@ -1257,7 +1259,7 @@ watching.
 ### 9.2 Reviewer's checklist (run it on every string)
 
 1. Address is 你 (or no pronoun). No 您, 妳, 閣下. 請 only for the two outside-the-app strings.
-2. The product verb is 注視: 注視過; 注視著 only in the hero and its hook; 注視了 only in the post. No 監視, 監控, 看見,
+2. The product verb is 注視: 注視過; 注視過 only in the hero and its hook; 注視了 only in the post. No 監視, 監控, 看見,
    拍攝 as the verdict.
 3. "this week" is 這星期, "that week" 那個星期.
 4. Every count is `[NUM]` + the right counter + noun: 顆衛星, 張影像, 次過境, 個物體, 項, 條軌道. One form; a zero case only
@@ -1292,7 +1294,7 @@ HK overlay forms in brackets where they differ.
 
 | English | zh-Hant |
 |---|---|
-| Something / watched you / this week. | 這星期 / 有東西 / 注視著*你*。 |
+| Something / watched you / this week. | 這星期 / 有東西 / 注視過*你*。 |
 | Enter any place on Earth. See every satellite… | 輸入地球上任何一個地方，看看過去 7 天從上空飛過的每一顆衛星，以及它們實際拍下的影像。 [7 日] |
 | LAST 7 DAYS · 1 → 8 NOV 2026 UTC | 過去 7 天 · 2026年11月1日 → 8日 UTC [過去 7 日] |
 | Search a place / 01 / Place | 搜尋地點 / 01 / 地點 |
@@ -1324,7 +1326,7 @@ HK overlay forms in brackets where they differ.
 | <1 MIN / 5 H | <1 分鐘 / 5 小時 |
 | Catalog unavailable / Loading catalog | 目錄無法使用 / 正在載入目錄 |
 | Language / Language: 繁體中文. Change | 語言 / 語言：繁體中文。更改 |
-| Loading Watched / Slow connection, still loading / tab title | 正在載入 Watched / 網速較慢，仍在載入 / Watched · 這星期，有東西注視著你 |
+| Loading Watched / Slow connection, still loading / tab title | 正在載入 Watched / 網速較慢，仍在載入 / Watched · 這星期，有東西注視過你 |
 
 **Globe**
 
@@ -1594,7 +1596,7 @@ The critique's 49 items: 38 accepted, 11 partly accepted, 0 rejected.
 | 18 | 圖片 for satellite data | Partly accepted: fixed, but 不會以我們能顯示的形式公開 instead of the critique's wording, which repeated 影像 (§3.4). |
 | 19 | 太陽從未升起 overstates | Partly accepted: 一直沒有升起 / 幾乎沒有升起, without 這星期, because the window can be an older week (§3.4). |
 | 20 | 即時產生影像 | Accepted: 收到請求才產生 (Appendix A). |
-| 21 | Hero 這星期, no line-end comma | Accepted: 這星期 / 有東西 / 注視著*你*。; plain text keeps the comma; 那一週 → 那個星期 everywhere (§3.1). |
+| 21 | Hero 這星期, no line-end comma | Accepted: 這星期 / 有東西 / 注視過*你*。; plain text keeps the comma; 那一週 → 那個星期 everywhere (§3.1). |
 | 22 | 看看誰注視過你 | Accepted: 看看是什麼注視過你 (§3.5). |
 | 23 | Lift the 什麼 / 甚麼 ban | Accepted: base 什麼, HK 甚麼; the four card strings written (§1.4, §3.5). |
 | 24 | 這樣做 calque | Accepted: merged 但我們無從得知 in every could line, About and `couldHave` (§2.2, §3.4–3.6). |
