@@ -223,7 +223,7 @@ const card: CardMessages = {
    * time, the altitude, the heading) drops its clause and the sentence stays whole.
    */
   crossed: (o: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) => {
-    const height = o.altitudeKm !== undefined ? `在 ${Math.round(o.altitudeKm)} km 高空` : ''
+    const height = o.altitudeKm !== undefined ? `在 ${Math.round(o.altitudeKm)}${NB}km 高空` : ''
     const verb = o.verdict === 'overhead' ? withName('从', o.place, '上空经过') : withName('飞越', o.place, '')
     return `${clauses(named(o.sat), at(o.when), height, verb)}${moving(o.heading)}。`
   },
