@@ -25,6 +25,8 @@ import {
 } from './cardSpec.js'
 import { supabaseConfig } from './env.js'
 import { cardMessages, type CardWhen } from './i18n/card/index.js'
+// Every language's card copy for the server's cards and pages (the app never imports this module).
+import './i18n/card/server.js'
 import { DEFAULT_LOCALE, LOCALE_INFO, isLocale, type Locale } from './i18n/locales.js'
 import type { Rich } from './i18n/parts.js'
 

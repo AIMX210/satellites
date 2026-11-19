@@ -13,8 +13,8 @@
  * what the app's bundle speaks, the dev pseudo-locale included, and the server's card for the same link matches them.
  * Until a language is translated, its locale reads English (never a blank or a key).
  *
- * The browser imports this module too: when translations are added to TABLE, give the server its own module for them,
- * so the app never downloads every language's card (it has its own in its bundle).
+ * The browser imports this module too, so the server's translations live in ./server.ts, which only server code imports
+ * (api/_lib/share.ts): the app never downloads every language's card (it has its own in its bundle).
  */
 import type { Locale } from '../locales.js'
 import en from './en.js'
@@ -26,6 +26,11 @@ export type CardMessages = typeof en
 
 /** The translated card copy, by locale, as the server prints it (English is the fallback for any locale not listed). */
 const TABLE: Partial<Record<Locale, CardMessages>> = { en }
+
+/** The server's translations (./server.ts registers them; the browser never imports that module). */
+export function provideServerCards(cards: Partial<Record<Locale, CardMessages>>): void {
+  Object.assign(TABLE, cards)
+}
 
 /** Where the app's own language bundle answers for the card (undefined: not that language, or nothing loaded). */
 export type CardMessageSource = (locale: Locale) => CardMessages | undefined
