@@ -309,7 +309,8 @@ const results: typeof en = {
     // Nominal, so the satellite's name and the place never touch (ar.md §5.2); a shared ISS pass is the station's.
     shared: (sat: string, place: string) => `تمت مشاركته معك · ${satWatched(sat)} ${place}`,
     passWhen: (ms: number, timeZone: string, p: DateFields, clock: string, zone: string, approx: boolean) =>
-      `${time.day(ms, timeZone, p)} · ${approx ? `≈${nb}` : ''}${clock}${nb}${zone}`,
+      // The clock and its zone are one left-to-right island (LRI…PDI), or they read «UTC-5 11:21» after the day.
+      `${time.day(ms, timeZone, p)} · \u2066${approx ? `≈${nb}` : ''}${clock}${nb}${zone}\u2069`,
   },
 
   // ── the computing readout ────────────────────────────────────────────────────────────────

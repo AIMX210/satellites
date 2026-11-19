@@ -79,7 +79,8 @@ const time: typeof en = {
   },
   daySpoken: (ms: number, timeZone: string) => formatDate('ar', ms, timeZone, DAY),
   stamp: (ms: number, timeZone: string, _p: DateFields, clock: string, zone: string) =>
-    `${formatDate('ar', ms, timeZone, DAY)} · ${clock}\u00a0${zone}`,
+    // The clock and its zone are one left-to-right island (LRI…PDI): after Arabic words «11:21 EST» read «EST 11:21».
+    `${formatDate('ar', ms, timeZone, DAY)} · \u2066${clock}\u00a0${zone}\u2069`,
   relative: (ms: number, now: number) => relative(ms, now, false),
   relativeSpoken: (ms: number, now: number) => relative(ms, now, true),
   durationSeconds: (s: number) => `${s}\u00a0ث`,

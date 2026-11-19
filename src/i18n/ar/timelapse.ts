@@ -76,7 +76,8 @@ const timelapse: typeof en = {
   note: (km: number) => `${square(km)} يستهدف كل عام موسمًا مختلفًا؛ ويُستبعد العام الذي لا نظرة صافية فيه.`,
   noteOneSeason: (km: number) =>
     `${square(km)} كل الأعوام من الموسم نفسه؛ ويُستبعد العام الذي لا نظرة صافية فيه في ذلك الموسم.`,
-  source: 'Copernicus Sentinel-2، عبر Planetary Computer',
+  // The service's name never breaks (it wrapped inside the 248 px side column)
+  source: 'Copernicus Sentinel-2، عبر Planetary\u00a0Computer',
 
   // ── The waiting screen ────────────────────────────────────────────────────────────────────
   listing: 'جارٍ البحث في الأرشيف',

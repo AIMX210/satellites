@@ -37,12 +37,12 @@ const globe: typeof en = {
     imaged,
   ],
   calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, '\u00a0كم'],
-  imaged: (clock: string, zone: string) => `التقاط ${clock}\u00a0${zone}`,
-  imagedAbout: (clock: string, zone: string) => `التقاط ≈ ${clock}\u00a0${zone}`,
+  imaged: (clock: string, zone: string) => `التقاط ${LRI}${clock}\u00a0${zone}${PDI}`,
+  imagedAbout: (clock: string, zone: string) => `التقاط ${LRI}≈ ${clock}\u00a0${zone}${PDI}`,
 
   // ── The capture line ──
-  acquired: (clock: string, zone: string, resolution: string) => `التُقطت ${clock}\u00a0${LRI}${zone}${PDI} · ${resolution}`,
-  acquiredAbout: (clock: string, zone: string, resolution: string) => `التُقطت ≈ ${clock}\u00a0${LRI}${zone}${PDI} · ${resolution}`,
+  acquired: (clock: string, zone: string, resolution: string) => `التُقطت ${LRI}${clock}\u00a0${zone}${PDI} · ${resolution}`,
+  acquiredAbout: (clock: string, zone: string, resolution: string) => `التُقطت ${LRI}≈ ${clock}\u00a0${zone}${PDI} · ${resolution}`,
   resolutionM: (metres: number) => `${f.int(metres)}\u00a0م`,
   resolutionKm: (km: number) => `${f.int(km)}\u00a0كم`,
 
