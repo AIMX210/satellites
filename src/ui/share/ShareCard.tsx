@@ -17,10 +17,10 @@
  * as blocks in the order the language gives them, as the PNG and the server card set them; CSS uppercases the mono
  * rows in the page's language.
  */
-import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { Fragment, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { cx, Wordmark } from '@/ui/system'
 import { cardMessages } from '../../../api/_lib/i18n/card/index'
-import type { Locale } from '../../../api/_lib/i18n/locales'
+import { LOCALE_INFO, type Locale } from '../../../api/_lib/i18n/locales'
 import { isAccent, plain } from '../../../api/_lib/i18n/parts'
 import { decodedPhoto, loadPhoto } from '../results/images'
 import {
@@ -38,10 +38,13 @@ import {
   type Prim,
   type ScaleBar,
 } from '../../../api/_lib/cardSpec'
+import { isolateSpec } from './bidi'
 import { CARD_H, CARD_W, PLATE, type CardSpec } from './card'
 import s from './ShareCard.module.css'
 
-export function ShareCard({ spec }: { spec: CardSpec }) {
+export function ShareCard({ spec: given }: { spec: CardSpec }) {
+  // Right to left, the words with their clocks, percentages and Latin names isolated, as the PNG draws them (bidi.ts)
+  const spec = useMemo(() => (LOCALE_INFO[given.locale].dir === 'rtl' ? isolateSpec(given) : given), [given])
   const wrapRef = useRef<HTMLDivElement>(null)
   const [k, setK] = useState(0.5)
   useLayoutEffect(() => {

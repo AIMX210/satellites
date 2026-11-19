@@ -20,6 +20,7 @@
  * separated by spaces (Chinese, Japanese: Intl.Segmenter), and text that a shaping engine must join (Arabic) always
  * drawn as one run, untracked, in its own direction. Latin text is drawn exactly as it always was.
  */
+import { isolateIslands, outsideIsolates } from './bidi'
 import { geoCaptureFromItem, gibsWmsUrl, pcCropUrl, radarCropUrl, radarPolOfItemId } from '@/imagery'
 import { bboxAround } from '@/lib/geo'
 import type { Capture, Pass, Report } from '@/types'
@@ -361,7 +362,8 @@ const SHAPED = /[\u0590-\u08FF\u0900-\u0DFF\u0E00-\u0FFF\u1000-\u109F\u1780-\u17
 const RTL = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
 export const needsShaping = (text: string) => SHAPED.test(text)
 const rtlRun = (text: string) => {
-  const first = /\p{L}/u.exec(text)
+  // read outside its isolates, as the preview's unicode-bidi: plaintext reads it (bidi.ts)
+  const first = /\p{L}/u.exec(outsideIsolates(text))
   return !!first && RTL.test(first[0])
 }
 
@@ -383,8 +385,12 @@ function textWidth(ctx: Ctx, text: string, tracking: number): number {
   return ctx.measureText(text).width + (needsShaping(text) ? 0 : tracking * Array.from(text).length)
 }
 
-/** One run of text at its left edge, in its own direction (a right-to-left run keeps its left edge at x). */
-function drawRun(ctx: Ctx, text: string, x: number, y: number) {
+/**
+ * One run of text at its left edge, in its own direction (a right-to-left run keeps its left edge at x). In Arabic text,
+ * clocks, percentages and Latin names are isolated first, so they keep their order ("81%", "11:21 EST": bidi.ts).
+ */
+function drawRun(ctx: Ctx, line: string, x: number, y: number) {
+  const text = isolateIslands(line)
   if (!rtlRun(text)) {
     ctx.fillText(text, x, y)
     return

@@ -16,10 +16,17 @@
   border: 1px solid var(--line-strong);
   background: var(--ink-0);
 }
-/* The preview is the picture card.ts and api/og.tsx draw, and they lay the card out left to right in every language
-   (an Arabic run keeps its own direction inside its box): so does this, or the preview and the shared image differ. */
+/* The preview is the picture card.ts and api/og.tsx draw, and they lay the card out left to right in every language:
+   so does this, or the preview and the shared image differ. Inside its box each text is one paragraph in its own
+   direction, read from its first letter outside isolates (card.ts rtlRun; ShareCard.tsx isolates clocks, percentages
+   and Latin names as the PNG does, bidi.ts), and starts at the box's left edge, as the canvas draws it. unicode-bidi
+   is not inherited: each box that holds text, the chip's segments and the scale's label included, takes it. */
 :root[dir='rtl'] .wrap {
   direction: ltr;
+}
+:root[dir='rtl'] .wrap :is(.row, .cell, .lead, .place, .sub, .valueNum, .unit, .chip > span:not(.bar)) {
+  unicode-bidi: plaintext;
+  text-align: left;
 }
 .card {
   position: absolute;
