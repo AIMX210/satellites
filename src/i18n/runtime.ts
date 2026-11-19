@@ -19,6 +19,7 @@
 import { create } from 'zustand'
 import { DEFAULT_LOCALE, LOCALE_INFO, isLocale, type Locale } from '../../api/_lib/i18n/locales'
 import { ns, nsKey } from './ns'
+import { installAccentFont, type AccentFont } from './accentFont'
 
 /** A whole translation: namespace key → that namespace's messages (typed against English in each file). */
 export type Bundle = Record<string, object>
@@ -58,23 +59,28 @@ export function useMsgs<T extends object>(english: T): T {
 export const useLocale = (): Locale => useLocaleStore((s) => s.locale)
 
 // One bundle per locale, each its own chunk. English has none: its namespaces ship with the code that uses them.
-const loaders = import.meta.glob<{ default: Bundle }>(['./*/index.ts', '!./en/**'])
+/** A language's chunk: its messages, and for CJK the serif accent face (src/i18n/accentFont.ts). */
+interface LocaleModule {
+  default: Bundle
+  accentFont?: AccentFont
+}
+const loaders = import.meta.glob<LocaleModule>(['./*/index.ts', '!./en/**'])
 
-function loaderFor(locale: Locale): (() => Promise<{ default: Bundle }>) | undefined {
+function loaderFor(locale: Locale): (() => Promise<LocaleModule>) | undefined {
   return loaders[`./${locale}/index.ts`]
 }
 
-/** Fetch a locale's bundle (the boot script has usually started it already). Never rejects: English on failure. */
-async function fetchBundle(locale: Locale): Promise<Bundle | null> {
+/** Fetch a locale's chunk (the boot script has usually started it already). Never rejects: English on failure. */
+async function fetchModule(locale: Locale): Promise<LocaleModule | null> {
   if (locale === DEFAULT_LOCALE) return null
   const load = loaderFor(locale)
   if (!load) return null
   try {
-    return (await load()).default
+    return await load()
   } catch {
     // A stale tab after a deploy, or offline: one more try, then English rather than a broken page.
     try {
-      return (await load()).default
+      return await load()
     } catch {
       return null
     }
@@ -98,9 +104,10 @@ function applyToDocument(locale: Locale) {
 export async function startLocale(): Promise<void> {
   if (import.meta.env.DEV && /[?&]hl=pseudo(?:&|$)/.test(location.search)) return startPseudo()
   const want = htmlLocale()
-  const b = await fetchBundle(want)
-  const locale = b || want === DEFAULT_LOCALE ? want : DEFAULT_LOCALE
-  bundle = b
+  const mod = await fetchModule(want)
+  const locale = mod || want === DEFAULT_LOCALE ? want : DEFAULT_LOCALE
+  await installAccentFont(mod?.accentFont)
+  bundle = mod?.default ?? null
   active = locale
   applyToDocument(locale)
   useLocaleStore.setState({ locale, version: useLocaleStore.getState().version + 1 })
@@ -114,9 +121,10 @@ export async function setLocale(locale: Locale): Promise<void> {
     /* storage blocked: the choice lasts for this page */
   }
   if (locale === active) return
-  const b = await fetchBundle(locale)
-  if (!b && locale !== DEFAULT_LOCALE) return
-  bundle = b
+  const mod = await fetchModule(locale)
+  if (!mod && locale !== DEFAULT_LOCALE) return
+  await installAccentFont(mod?.accentFont)
+  bundle = mod?.default ?? null
   active = locale
   applyToDocument(locale)
   useLocaleStore.setState({ locale, version: useLocaleStore.getState().version + 1 })
