@@ -209,7 +209,7 @@ describe('summary copy matches the results headline: N watched, K made public (R
     const spec = summaryCardSpec(report, 'Waterloo', meta, 'America/Toronto', 'www.watched.earth')
     expect(`${spec.lead} ${spec.place}${spec.tail}`).toBe(lead)
     expect(spec.sub).toBe(photos)
-    expect(spec.readouts[0]).toEqual({ label: 'Photo', value: String(f.counts.imaged) })
+    expect(spec.readouts[0]).toEqual({ label: 'Image', value: String(f.counts.imaged) })
     const link = summaryFromParams(new URL(summaryLink('https://www.watched.earth', f)).searchParams)
     expect(summaryTitle(link as { satellites: number; placeLabel: string })).toBe(lead)
     expect(summaryDescription(link)).toMatch(new RegExp(`^${photos.replace(/\./g, '\\.')} The closest look is from \\S.+\\. What watched you this week\\?$`))

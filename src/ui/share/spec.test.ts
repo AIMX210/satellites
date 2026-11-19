@@ -105,7 +105,7 @@ describe('share card spec', () => {
     expect(`${client.place}${client.tail}`).toBe('Waterloo this week.')
     expect(client.sub).toMatch(/^\d+ images were made public\.$/)
     expect(client.plate.kind === 'image' && client.plate.chip.segs[0].text).toMatch(/^Closest look · Sentinel-2C · 10 m$/)
-    expect(client.readouts.map((r) => r.label)).toEqual(['Photo', 'Likely', 'Could', 'Overhead'])
+    expect(client.readouts.map((r) => r.label)).toEqual(['Image', 'Likely', 'Could', 'Overhead'])
     expect(summaryPostText({ placeLabel: 'Waterloo', satellites: 7, photos: 12 })).toBe(
       '7 satellites watched Waterloo this week. 12 images were made public.\n\nSomething watched you this week too.\nvia @armaangupt0',
     )
