@@ -1,11 +1,11 @@
 /**
  * In-app event telemetry: a small queue that batches events and sends them to the same-origin relay
- * (`/api/e`, which forwards them to the `log_events` RPC with the visitor's country from the host's edge: Vercel's or Cloudflare's header).
+ * (`/api/e`, which forwards them to the `log_events` RPC with the visitor's country from Cloudflare's edge header).
  *
  * Privacy (README, About page):
  *  - No cookies, nothing persistent: the session id is random per TAB, in sessionStorage.
  *  - Never coordinates: a search is a city-level label ("Waterloo, Ontario, Canada") and its 0.1° (~10 km) cell.
- *  - Never an IP (the relay reads only Vercel's derived country header), never a full referrer (host only).
+ *  - Never an IP (the relay reads only the country Cloudflare's edge derives from it), never a full referrer (host only).
  *  - Error messages lose URLs and decimal numbers before they leave the browser (the server masks them again).
  *
  * Off (nothing is queued or sent) under automation (`navigator.webdriver`), on dev builds, on any host but the
@@ -52,13 +52,13 @@ export interface TelemetryEnv {
   search?: string
   /** `?noanalytics=1` was seen earlier in this tab (sessionStorage, written at boot) */
   optedOut?: boolean
-  /** Build-time VITE_TELEMETRY_E2E=1 (end-to-end checks of a local build only; never set on Vercel): ignore webdriver + host. */
+  /** Build-time VITE_TELEMETRY_E2E=1 (end-to-end checks of a local build only; never set for a deployed build): ignore webdriver + host. */
   e2e?: boolean
 }
 
 // ── Opt-outs ────────────────────────────────────────────────────────────────────────────────
 
-/** Only the production site counts: Vercel previews and local builds never write into the stats. */
+/** Only the production site counts: previews and local builds never write into the stats. */
 export const PRODUCTION_HOSTS: readonly string[] = ['www.watched.earth', 'watched.earth']
 export const OPT_OUT_KEY = 'watched.noanalytics'
 export const OPT_OUT_RE = /[?&]noanalytics=1(?:&|$)/

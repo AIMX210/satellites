@@ -16,7 +16,7 @@
     "directory": "./dist",
     "binding": "ASSETS",
     // The router (worker/router.ts) decides these; every other static file is served without running the Worker,
-    // and a request no file matches reaches the Worker too (the app fallback and 404s, as on Vercel).
+    // and a request no file matches reaches the Worker too (the app fallback and 404s).
     "run_worker_first": ["/", "/s/*", "/api/*"],
   },
   // The Meteosat frame cache (api/_lib/geoFill.ts): each frame is fetched from EUMETSAT once, by the timer below, and

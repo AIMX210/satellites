@@ -23,9 +23,9 @@ describe('opt-outs', () => {
   it('sends from the live site', () => expect(telemetryAllowed(live)).toBe(true))
   it('never under automation (navigator.webdriver)', () => expect(telemetryAllowed({ ...live, webdriver: true })).toBe(false))
   it('never on dev builds', () => expect(telemetryAllowed({ ...live, dev: true })).toBe(false))
-  it('only on the production hosts: never local builds or Vercel previews', () => {
+  it('only on the production hosts: never local builds or previews', () => {
     expect(telemetryAllowed({ ...live, hostname: 'watched.earth' })).toBe(true)
-    for (const hostname of ['localhost', '127.0.0.1', '[::1]', 'mac.local', 'overflight-git-x-dev-armaans-projects.vercel.app', 'evil.watched.earth.example'])
+    for (const hostname of ['localhost', '127.0.0.1', '[::1]', 'mac.local', 'abc12345-watched.example.workers.dev', 'next.watched.earth', 'evil.watched.earth.example'])
       expect(telemetryAllowed({ ...live, hostname })).toBe(false)
   })
   it('a tab opened with ?noanalytics=1 stays out after the URL changes', () => expect(telemetryAllowed({ ...live, search: '?q=1,2&n=x', optedOut: true })).toBe(false))
