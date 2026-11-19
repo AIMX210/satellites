@@ -374,9 +374,10 @@ closing full stop as its own part; when the place was cut (`cut`, it ends with "
 - Every German pass-card lead is over 24 characters, so the card sets it at 72 px against English's 84. Accepted. The
   zero lead (39 characters) renders at 62 px; English's is 72.
 
-**Line under the headline** (`card.photos`, one line, 24 px sans): *1.715 Bilder wurden veröffentlicht.* / *Mindestens
-1.715 Bilder wurden veröffentlicht.* / `one` *… Bild wurde …* / zero *Es wurden keine Bilder veröffentlicht.*
-(the headline already says *diese Woche*). `archiveDown`: *Die Bildarchive haben nicht geantwortet, darum können wir
+**Line under the headline** (`card.photos`, one line, 24 px sans): *1.715 Bilder wurden veröffentlicht.* / partial
+*Mindestens 1.715 Bilder sind öffentlich.* (*… wurden veröffentlicht.* would be 505 px in the 466 px column; this is
+423 px, 456 for 123.456) / `one` *… Bild wurde …*, partial *Mindestens 1 Bild wurde veröffentlicht.* (426 px) / zero
+*Es wurden keine Bilder veröffentlicht.* (the headline already says *diese Woche*). `archiveDown`: *Die Bildarchive haben nicht geantwortet, darum können wir
 die öffentlichen Bilder gerade nicht zählen.* `archiveDownShort`: *Die Bildarchive haben nicht geantwortet.*
 
 **Cloud words** (`card.cloud`; the German Weather Service's terms, which lay readers know from every forecast):
@@ -534,7 +535,7 @@ English), not the archive's *Szene*.
 | bar | Info |
 | title | `Wie das` / `*funktioniert*.` (the full stop outside the accent) |
 | lede | Suche dir einen Ort auf der Erde aus. Wir berechnen, welche Satelliten in der letzten Woche darüber hinweggezogen sind, und suchen dann die Bilder, die sie gemacht haben. Alles läuft in deinem Browser, mit öffentlichen Daten. |
-| sections | Kurz gesagt · Wie wir die Überflüge finden · Was die Bezeichnungen bedeuten · Was wir nicht sehen · Datenschutz · Quellen · Tastatur |
+| sections | Kurz gesagt · Wie wir Überflüge finden · Was die Begriffe bedeuten · Was wir nicht sehen · Datenschutz · Quellen · Tastatur (the index column, §7: no article before *Überflüge*, *Begriffe* not *Bezeichnungen*) |
 | seeMe | *Kann es mich sehen?* Nein. Ein Pixel ist hier bestenfalls 10 m breit. Ein Auto ist ein Pixel. Du bist darin nicht zu sehen. |
 | everySatellite | *Sind das alle Satelliten?* Nein. Militär- und Spionagesatelliten tauchen in öffentlichen Katalogen meist nicht auf, und Firmen sagen nicht, wohin sie ihre Kameras richten. |
 | tilting cameras | Viele kommerzielle Satelliten können sich um 30 bis 45 Grad neigen. Warst du in Reichweite, nennen wir das „Konnte hierher blicken“. |
@@ -590,11 +591,11 @@ words with `toLocaleUpperCase('de')`, which writes ß as SS: correct. The licenc
 | nothingMatches | Nichts passt zu „Watrloo“. Versuche eine Stadt, ein Wahrzeichen oder Koordinaten. |
 | useMyLocation / locateMe / nearMe / locating | Meinen Standort verwenden / Standort / Bei mir / Ortung … |
 | cancelSearch / cancelLocate / cancelLocating | Abbrechen / Abbrechen / Ortung abbrechen |
-| requestingPosition / namingPlace / elapsed | Position wird abgefragt / Ort wird benannt / 04 s |
+| requestingPosition / namingPlace / elapsed | Positionsabfrage / Ort wird bestimmt / 04 s (the phone's field row; *Ort wird bestimmt* as on the globe's pin card, never *benannt*, which reads as giving the place a name) |
 | locatingNote | Deine Position geht an den Geocoder Photon, um den Ort zu benennen. Wir speichern nur ein Feld von etwa 10 km. |
 | locationLabel / dismiss | Standort / Ausblenden |
 | locateErrors | denied *Der Standortzugriff ist blockiert. Erlaube ihn in den Browsereinstellungen oder suche nach einem Ort.* · unavailable / other *Deine Position ist gerade nicht verfügbar. Suche stattdessen nach einem Ort.* · timeout *Die Ortung hat zu lange gedauert. Versuche es erneut oder suche nach einem Ort.* · unsupported *Dieser Browser kann seinen Standort nicht teilen. Suche stattdessen nach einem Ort.* · insecure *Die Ortung braucht eine sichere Verbindung (https). Suche stattdessen nach einem Ort.* |
-| orTry / pinHint / dropPin | Oder / Oder klicke auf den Globus, um einen Pin zu setzen / Pin setzen |
+| orTry / pinHint / dropPin | Oder / Oder klicke auf den Globus für einen Pin / Pin setzen |
 | surprise / surpriseName | Überrasch mich / Überrasch mich: ein bekannter Ort, zufällig gewählt |
 | builtBy | Von @armaangupt0 |
 
@@ -613,7 +614,7 @@ The example coordinates in `searchDown` keep the decimal point: they are input s
 | done | 412 Überflüge · 31 Bilder |
 | stages (idle / done) | Bahnkatalog / Katalog geladen · Bahnberechnung · 7 Tage / Bahnen berechnet · Archive Sentinel-2 + Landsat / Archive durchsucht · Szenen zuordnen / Szenen zugeordnet |
 | ready / ok / seconds | Bericht fertig / OK / 1,84 s |
-| window (strong part hidden ≤ 420 px) | **7-Tage-Fenster · **01.11. 05:47 → 08.11. 05:47 UTC |
+| window (strong part hidden ≤ 420 px) | **7 Tage · **01.11. 05:47 → 08.11. 05:47 UTC (as `head.windowSpan` writes the span; one day *1 Tag · …*. *7-Tage-Fenster* overran the dock, §7) |
 | slow | Planetary Computer und die NASA berechnen Bilder auf Anfrage; dieser Schritt kann einige Sekunden dauern. |
 | verySlow | Die Bildarchive antworten langsam. Bleibt die Antwort aus, zeigen wir die Überflüge trotzdem aus der Bahngeometrie und sagen das dazu. |
 | sharedAlt / sharedCaption | Bild von Sentinel-2C: Waterloo, mit dir geteilt. / **Mit dir geteilt** · Sentinel-2C beobachtete Waterloo · So 01.11., 11:21 |
@@ -631,8 +632,10 @@ The example coordinates in `searchDown` keep the decimal point: they are input s
 - elementsOld: *Die Bahnelemente sind 4 Tage alt, daher können die Überflugzeiten um einige Minuten abweichen.*
   elementsNewer: *Diese Überflüge sind aus neueren Bahnelementen rekonstruiert, daher können ihre Zeiten um einige
   Minuten abweichen.*
-- gibsUnconfirmed: *NASA GIBS hat ein VIIRS-Bild zu spät bestätigt; VIIRS nimmt jeden Tag die ganze Erde auf, also
-  zählt dieser Überflug als beobachtet.* / *… 3 VIIRS-Bilder …, also zählen diese Überflüge als beobachtet.*
+- gibsUnconfirmed: *NASA GIBS hat ein VIIRS-Bild nicht rechtzeitig bestätigt; VIIRS nimmt jeden Tag die ganze Erde
+  auf, also zählt dieser Überflug als beobachtet.* / *… 3 VIIRS-Bilder nicht rechtzeitig bestätigt, also zählen diese
+  Überflüge als beobachtet.* While the note shows, the images are still unconfirmed: never *zu spät bestätigt*, which
+  says the confirmation came.
 - gibsSlowAll / gibsDownAll: *NASA GIBS hat nicht rechtzeitig geantwortet, darum werden keine Bilder von
   Wettersatelliten gezeigt.* / *NASA GIBS war nicht erreichbar, darum …*
 - gibsSlowSome / gibsDownSome: *NASA GIBS hat 3 von 35 Bildern von Wettersatelliten nicht rechtzeitig geliefert; diese
@@ -670,8 +673,8 @@ America/Toronto · EST*; daylight *Tageslicht hier*; keysHint *… Mit den Pfeil
 Überflüge.*; now *Jetzt*; geometry *5,4° Off-Nadir · 61 km*; markMosaic *Tagesmosaik, 375 m · ●*; markRadar *Radarbild,
 20 m · ◆*; markKind *offene Kamera · ◇*, *kommerziell · □*, *Radar · ▣*, *Wetter · ○*, *Raumstation · ✛*, *sonstige*.
 Replay: scrubLabel *Szenenzeit im Überflug*; play / pause *Wiedergabe starten* / *Wiedergabe anhalten*; speed
-*Wiedergabetempo*; inView *In Sicht 4 min 12 s*; closest *Am nächsten*; spaceKey *Leertaste*; playPause *Abspielen /
-Pause*; stepKind *voriger / nächster Überflug dieser Art*. Plan: label *Draufsicht, Sentinel-2C: Bodenspur, 61 km vom
+*Wiedergabetempo*; inView *In Sicht 4 min 12 s*; closest *Am nächsten*; spaceKey *Leertaste*; playPause *Start /
+Pause*; stepKind *Überflüge dieser Art* (after the ← → caps, which say back and forth; the row never wraps, §7). Plan: label *Draufsicht, Sentinel-2C: Bodenspur, 61 km vom
 Ort bei größter Annäherung.*; northUp *Draufsicht · Norden oben*; fieldOfRegard *Schwenkbereich ±45°*; swath *Streifen
 290 km*; groundTrack *Bodenspur*; closest *Abstand 61 km* (*Abstand < 1 km*).
 
@@ -683,7 +686,7 @@ Ort bei größter Annäherung.*; northUp *Draufsicht · Norden oben*; fieldOfReg
 | Key | German |
 |---|---|
 | empty | Kein uns bekannter Satellit überflog diesen Ort im Zeitfenster. Das ist selten; die Hinweise oben sagen, ob eine Datenquelle ausgefallen war. |
-| imagedOrder | erst aus nächster Nähe, dann die neuesten |
+| imagedOrder | nach Nähe, dann neueste (the group head is one `nowrap` line: *Beobachtet · nach Nähe, dann neueste* 275 px at 10.5 px, 288 at 11 px, English 267 / 280; *erst aus nächster Nähe, dann die neuesten* was 413 / 433 and overran every panel) |
 | sats / showAllSats / showAllRows / showMore / left / showFewer | 12 Satelliten (never *Sat*) / Alle 12 Satelliten zeigen / Alle 31 Zeilen zeigen / 12 weitere zeigen / noch 12 / Weniger zeigen |
 | tag | Mosaik · Radar · Bewölkt · 81 % · Bewölkt · am Ort |
 | offNadir / cloudPct | 5,4° Off-Nadir / Wolken 25 % |
@@ -697,7 +700,7 @@ Ort bei größter Annäherung.*; northUp *Draufsicht · Norden oben*; fieldOfReg
 | noImage (others) | Kein öffentliches Bild: Das Archiv dieses Radarbetreibers ist privat. · Kein öffentliches Bild: Kommerzielle Archive sind privat. · Für diesen Überflug gibt es kein Bild zu zeigen. · Das Archiv ließ sich gerade nicht durchsuchen. · Zu diesem Überflug gibt es keine Szene. (each then *Draufsicht des Überflugs.*) · notYet *Noch keine veröffentlichte Szene passt zu diesem Überflug. Szenen von Sentinel-2 und Landsat erscheinen meist innerhalb eines Tages.* · crewed *Raumstationen haben Kameras an Bord, aber ihre Fotos werden nicht nach Ort und Zeit veröffentlicht.* · unavailable *Das Bild zu diesem Überflug ist nicht verfügbar.* |
 | links | Bild öffnen, um es zu speichern · Wird heruntergeladen … · Bild herunterladen · Quelle ansehen · Planetary Computer |
 | spot | Pixel an deinem Ort wird gelesen … · Klare Sicht auf deinen Ort. · Dünne Zirren über deinem Ort; sie können das Bild weicher machen. · Wolken über deinem Ort. · Dein Ort lag im Wolkenschatten. |
-| strip labels | Höhe · Höhenwinkel · Off-Nadir · Pixel · Kanal · Sonne · Wolken · Wolken am Ort |
+| strip labels | Höhe · Elevation · Off-Nadir · Pixel · Kanal · Sonne · Wolken · Wolken am Ort (*Elevation*, Duden's word, is 71.4 px at 11 px, the English width; *Höhenwinkel*, 87.5 px, crosses the hairline of a ~67 px cell on a 375 px phone) |
 | band / spotValue | Infrarot · Sichtbar · Farbe / Klar · Zirren · Wolken · Schatten |
 | unit | km · m · km/s · hoch · Mosaik · Szene · Tag / Dämmerung / Nacht |
 | geo grid | Am nächsten · UTC · Am nächsten · Ortszeit · Bodenabstand · Höhenwinkel bei dir · Tempo über Grund · Kurs · Sonnenhöhe · Schwenkbereich · Streifenbreite · Im Streifen · In Sicht · Zeitfenster · NORAD · Überflug · Scan hier · UTC · Scan hier · Ortszeit · Über dem Äquator bei · An deinem Himmel · Scanrichtung · Linientempo hier · Abdeckung · Dieser Scan · NORAD · Scan |
@@ -728,7 +731,7 @@ phone); droppedAt *Pin gesetzt bei 43.4723°N 80.5449°W.*; droppedIn *Pin geset
 Pfeil, um zu sehen, was darüber hinwegzog.*; droppedUnnamed *Pin gesetzt. Drücke Enter oder den Pfeil, um zu sehen,
 was darüber hinwegzog.*; noGl *3D-Ansicht nicht verfügbar* / *WebGL 2 ist in diesem Browser aus*.
 
-**Boot screen** (`boot.ts`): *Wird geladen …* / *Langsame Verbindung, lädt noch* / the tab title (§3.1).
+**Boot screen** (`boot.ts`): *Watched wird geladen …* (the brand stays: it is the only name a screen reader hears) / *Langsame Verbindung, lädt noch* / the tab title (§3.1).
 
 ## 4. Glossary
 
@@ -758,7 +761,7 @@ Gender: m, f, n. "Pl." gives the plural. **Never** marks a banned word.
 | orbit | die Umlaufbahn; short: die Bahn; *im Orbit* | *Bahndaten*, *Bahnkatalog*, *Bahnberechnung*. |
 | orbital elements (TLE) | die Bahnelemente (TLE) | HUD `TLE-EPOCHE`. |
 | altitude | die Höhe | Label `HÖHE`; prose *in 786 km Höhe*. **Never** for an angle. |
-| elevation (in your sky) | der Höhenwinkel | Label `HÖHENWINKEL`; grid `HÖHENWINKEL BEI DIR`; unit *hoch*. Not *Erhebung*. |
+| elevation (in your sky) | der Höhenwinkel | Label `HÖHENWINKEL`; grid `HÖHENWINKEL BEI DIR`; unit *hoch*. The pass view's readout strip (a narrow cell, geostationary only) says `ELEVATION` (§3.9). Not *Erhebung*. |
 | sun elevation | die Sonnenhöhe | Label `SONNENHÖHE`. |
 | speed (card) / ground speed (grid) | `GESCHWINDIGKEIT` / `TEMPO ÜBER GRUND` | Prose needs no noun: *mit 7,46 km/s*. Line speed: `LINIENTEMPO HIER`. |
 | ground distance / closest (card) | der Bodenabstand / `ABSTAND` | |
@@ -866,13 +869,14 @@ headline always match. Chips stay under ~14 characters. Countries in sublabels a
 links and shares keep the English label, so counts never split by language.
 
 The last column is the article table (§5.1): the accusative article and the *von* form, for the headline's object slot.
-"—" means no article.
+"—" means no article. A plural place takes the genitive *der* after *in Sichtweite* (*in Sichtweite der Niagarafälle*):
+*von den* before an uninflected plural label is ungrammatical, so api/_lib/i18n/card/deNames.ts writes *der*.
 
 | id | label (chip) | sublabel | article / von |
 |---|---|---|---|
 | area51 | Area 51 (chip *Area 51*) | Groom Lake, Nevada, USA | die / von der |
 | centralPark | Central Park (chip *Central Park*) | New York, USA | den / vom |
-| giza | Pyramiden von Gizeh (chip *Gizeh*) | Gizeh, Ägypten | die / von den |
+| giza | Pyramiden von Gizeh (chip *Gizeh*) | Gizeh, Ägypten | die / der |
 | uluru | Uluru | Northern Territory, Australien | den / vom |
 | palmJumeirah | Palm Jumeirah | Dubai, Vereinigte Arabische Emirate | — |
 | worldIslands | Inselgruppe The World | Dubai, Vereinigte Arabische Emirate | die / von der |
@@ -881,11 +885,11 @@ The last column is the article table (§5.1): the accusative article and the *vo
 | lowerManhattan | Lower Manhattan | New York, USA | — |
 | lasVegasStrip | Las Vegas Strip | Nevada, USA | den / vom |
 | hooverDam | Hoover-Damm und Lake Mead | Nevada und Arizona, USA | den / vom |
-| goldenGate | Golden Gate | San Francisco, USA | das / vom |
+| goldenGate | Golden Gate | San Francisco, USA | — (a town in Florida, see below) |
 | kennedySpaceCenter | Kennedy Space Center | Florida, USA | das / vom |
 | washingtonDc | Washington, D.C. | National Mall, USA | — |
 | mountStHelens | Mount St. Helens | Bundesstaat Washington, USA | den / vom |
-| niagaraFalls | Niagarafälle | Ontario, Kanada | die / von den |
+| niagaraFalls | Niagarafälle | Ontario, Kanada | die / der |
 | panamaCanal | Panamakanal | Gatún-Schleusen, Panama | den / vom |
 | rioDeJaneiro | Rio de Janeiro | Zuckerhut und Copacabana, Brasilien | — |
 | paris | Paris | Île-de-France, Frankreich | — |
@@ -900,33 +904,42 @@ The last column is the article table (§5.1): the accusative article and the *vo
 | singapore | Singapur | Marina Bay, Singapur | — |
 | hongKong | Hongkong | Victoria Harbour, Hongkong | — |
 | tokyo | Tokio | Tokio, Japan | — |
-| fuji | Fuji | Shizuoka, Japan | den / vom |
+| fuji | Fuji | Shizuoka, Japan | — (cities in Shizuoka and Sichuan, see below) |
 | sydneyHarbour | Hafen von Sydney | Sydney, Australien | den / vom |
 | richat | Richat-Struktur | Sahara, Mauretanien | die / von der |
 | greatBlueHole | Great Blue Hole | Lighthouse Reef, Belize | das / vom |
 | boraBora | Bora Bora | Gesellschaftsinseln, Französisch-Polynesien | — |
 | hardyReef | Hardy Reef | Great Barrier Reef, Australien | das / vom |
 | male | Malé | Nord-Malé-Atoll, Malediven | — |
-| deadSea | Salzbecken am Toten Meer | Südbecken, Israel und Jordanien | die / von den |
+| deadSea | Salzbecken am Toten Meer | Südbecken, Israel und Jordanien | die / der |
 | binghamCanyon | Bingham-Canyon-Mine | Utah, USA | die / von der |
 | mountWhaleback | Mount-Whaleback-Mine | Pilbara, Australien | die / von der |
 | etna | Ätna | Sizilien, Italien | den / vom |
 | santorini | Santorin | Kykladen, Griechenland | — |
 | teide | Teide | Teneriffa, Spanien | den / vom |
-| kilauea | Kīlauea | Hawaii, USA | den / vom |
+| kilauea | Kīlauea | Hawaii, USA | — (a town on Kauai, see below) |
 | craterLake | Crater Lake | Oregon, USA | den / vom |
 | glenCanyonDam | Glen-Canyon-Talsperre | Page, Arizona, USA | die / von der |
-| gardenCity | Bewässerungskreise von Garden City | Kansas, USA | die / von den |
-| almeria | Gewächshäuser von Almería | Andalusien, Spanien | die / von den |
+| gardenCity | Bewässerungskreise von Garden City | Kansas, USA | die / der |
+| almeria | Gewächshäuser von Almería | Andalusien, Spanien | die / der |
 | gibraltar | Gibraltar | Straße von Gibraltar | — |
 | suezCanal | Suezkanal | Ismailia, Ägypten | den / vom |
 | aswanDam | Assuan-Staudamm | Nassersee, Ägypten | den / vom |
 | wadiRum | Wadi Rum | Akaba, Jordanien | das / vom |
 | sossusvlei | Sossusvlei | Namib, Namibia | das / vom |
-| victoriaFalls | Victoriafälle | Sambia und Simbabwe | die / von den |
+| victoriaFalls | Victoriafälle | Sambia und Simbabwe | die / der |
 | threeGorges | Drei-Schluchten-Talsperre | Hubei, China | die / von der |
 | shanghai | Shanghai | Huangpu-Fluss, China | — |
 | itaipu | Itaipú-Talsperre | Brasilien und Paraguay | die / von der |
+
+**Labels a town shares.** The article table matches the label alone, so it cannot tell a chip from a search result
+with the same name. A curated label that a town in the offline list also carries, far from the curated place, gets no
+article and takes the residue (§5.1): *Golden Gate* (a town of about 25,000 in Florida), *Fuji* (cities in Shizuoka
+and Sichuan), *Kīlauea* (a town on Kauai). With the article, *… beobachteten 256 Satelliten das Golden Gate.* would
+name the strait for a search of the Florida town. *Central Park* (a town in Washington) and *Grand Canyon* (the
+village on the rim) keep theirs: the name reads as the park or the canyon with or without it. Check every new entry
+against `public/places/<version>/s/` first. A flag for "this place came from the curated pool" would remove the
+residue; it needs the shared message signature, so it is the owner's call.
 
 *Garden City*'s circles are centre-pivot irrigation: **never** *Kornkreise* (the mystery patterns). *Kīlauea* keeps its
 macron as English does. *Mount St. Helens* gets *Bundesstaat* so the state is not read as the city. *Tschernobyl* is the
@@ -970,7 +983,8 @@ form (§4.3). The headline frames look the place up; on a match they put the art
 only the name goes in the serif, the way English puts "the " before seas: *In den letzten 7 Tagen beobachteten 256
 Satelliten den *Central Park*.* · *… kam in Sichtweite vom *Central Park*.* A test checks that every key of the table
 is a label in `de/places.ts`. Nothing outside the German catalog changes, and it costs no request. Gazetteer labels are
-never looked up or guessed: they stay bare.
+never looked up or guessed: they stay bare. Because the lookup sees only the label, a curated label that a town in the
+offline list also carries (*Golden Gate*, *Fuji*, *Kīlauea*) is left out of the table (§4.3).
 
 **Known residue, accepted:** a gazetteer label that German would use with an article (*Schweiz*, *Türkei*, *Pazifik*)
 reads without it: *… beobachteten 256 Satelliten Schweiz.* A German reader sees this as an error, not a convention. It
@@ -1246,10 +1260,15 @@ character count. A reviewer who changes a constrained string measures it the sam
 | Pass strip values (21 px) | the English band value's width | *Schatten* 121 px = *Infrared* 121; *Infrarot* 121, *Sichtbar* 121 |
 | Geometry grid labels | no longer than the English longest (22 characters, 168 px at 10.5 px) | *Am nächsten · Ortszeit* 168, *Scan hier · Ortszeit* 152, *Höhenwinkel bei dir* 145, *Tempo über Grund* 122 |
 | Computing rows | about 40 characters on a 390 px phone | longest *Abgleich · 31 Szenen mit 412 Überflügen* (39) |
+| Computing window line (under the bar, one `nowrap` line with the percentage; first span ellipsised) | desktop dock 382 px at 10.5 px | *7 Tage · 01.11. 05:47 → 08.11. 05:47 UTC* + *42 %* 353 px, 369 at 11 px (English 375–384, 401); *7-Tage-Fenster · …* was 414 and lost *UTC* |
+| Replay key hints (laptops: key caps and words in one `nowrap` row, 10 px, clipped without an ellipsis) | about 406 px visible | *Leertaste* cap + *Start / Pause* + ← → caps + *Überflüge dieser Art* 391 px (English 449); *Abspielen / Pause* + *voriger / nächster Überflug dieser Art* was 547 |
 | Time-lapse waiting steps | about 280 px, one line with its counter | *Entwicklung der Bilder · 03 / 12* 244, *Auswahl klarer Blicke · 03 / 12* 237 |
+| About section index (3 of 12 columns, shown above 1100 px; after `00` and a 14 px gap; the CSS hides it rather than wrap) | about 204 px at 1101 px, 10.5 px | *Was die Begriffe bedeuten* 191, *Wie wir Überflüge finden* 183, *Was wir nicht sehen* 145 (*How we find the passes* 168; *Was die Bezeichnungen bedeuten* 229 and *Wie wir die Überflüge finden* 214 wrapped up to 1200 / 1140 px) |
 | Header button box (Cancel / New search / Close) | as wide as the longest | *Neue Suche* 79 px = *New search* 79 |
 | Landing chips and locate button (phones) | the English short forms | *Bei mir* 55 (= *Near me*), *Ortung …* 63 (*Locating…* 71), *Standort* 63 (*Locate me* 71), *Pin setzen* 79, *Überrasch mich* 112 (the last chip; the row scrolls) |
 | Landing kicker | one `nowrap` line | *Letzte 7 Tage · 29.10. → 05.11.2026 UTC* (39 characters, 37 in English across months) |
+| Landing pin hint (right of `02 / Oder`, 10.5 px, after an 18 px glyph; clipped, not ellipsised) | `--search-w` minus about 85 px: 394 px at 1280 px | *Oder klicke auf den Globus für einen Pin* 306 px, clips only below 940 px (*Or click the globe to drop a pin* 244, below 848); the *um … zu setzen* form (382 px) clipped at 1200–1296 px |
+| Locating status on phones (`01 / Ort`, then dot, text and seconds in one clipped row) | 304 px on a 360 px phone, 319 on 375; dot, gaps and `04 S` take 58 px | *Positionsabfrage* 128 px, *Ort wird bestimmt* 136 px (*Requesting position* 152, *Naming the place* 128) |
 | Pin card name line | 156 px, sans 13 px | *Kein Ort in der Nähe* 120 px (*No named place nearby* 141) |
 | Pin move hint | one line on a 320 px phone | *Pin versetzen: Globus gedrückt halten* 283 px (260) |
 | Timeline lane words | about 10 characters | `VERMUTLICH`, `ÜBERFLOGEN` |

@@ -13,6 +13,12 @@
  *    it takes after *in Sichtweite*. The article is plain text before the name, never inside the serif. Gazetteer labels
  *    are never looked up or guessed: a name that is not in the table stays bare (*… beobachteten 256 Satelliten
  *    Waterloo.*), and code never adds an article to one.
+ *  - The table matches the label alone and cannot tell a chip from a search result, so a curated label that a town
+ *    in the offline list also carries, far from the curated place, is left out and stays bare: *Golden Gate* (a town
+ *    in Florida), *Fuji* (cities in Shizuoka and Sichuan), *Kīlauea* (a town on Kauai). With the article the headline
+ *    would name the strait, the mountain or the volcano instead of the town searched. *Central Park* (a town in
+ *    Washington) and *Grand Canyon* (the village on the rim) keep theirs: the name reads as the park or the canyon
+ *    either way. Check a new entry against `public/places/<version>/s/` before adding it (de.md §4.3).
  *  - After *in Sichtweite* a plural place takes the genitive *der* (*in Sichtweite der Niagarafälle*): the dative *von
  *    den* would need the uninflected label to end in -n (*von den Niagarafällen*), which only some of them do. Singular
  *    places take *vom* / *von der*, which leave the name as it is.
@@ -33,7 +39,10 @@ const F: Article = { acc: 'die', von: 'von der' }
 const N: Article = { acc: 'das', von: 'vom' }
 const PL: Article = { acc: 'die', von: 'der' }
 
-/** German curated labels (src/i18n/de/places.ts, de.md §4.3) that take an article. Labels without one are absent. */
+/**
+ * German curated labels (src/i18n/de/places.ts, de.md §4.3) that take an article. Labels without one are absent, and so
+ * are the three a town shares (see above).
+ */
 const ARTICLES: Record<string, Article> = {
   'Area 51': F,
   'Central Park': M,
@@ -44,7 +53,6 @@ const ARTICLES: Record<string, Article> = {
   'Barringer-Krater': M,
   'Las Vegas Strip': M,
   'Hoover-Damm und Lake Mead': M,
-  'Golden Gate': N,
   'Kennedy Space Center': N,
   'Mount St. Helens': M,
   Niagarafälle: PL,
@@ -53,7 +61,6 @@ const ARTICLES: Record<string, Article> = {
   Tafelberg: M,
   Kilimandscharo: M,
   'Mount Everest': M,
-  Fuji: M,
   'Hafen von Sydney': M,
   'Richat-Struktur': F,
   'Great Blue Hole': N,
@@ -63,7 +70,6 @@ const ARTICLES: Record<string, Article> = {
   'Mount-Whaleback-Mine': F,
   Ätna: M,
   Teide: M,
-  Kīlauea: M,
   'Crater Lake': M,
   'Glen-Canyon-Talsperre': F,
   'Bewässerungskreise von Garden City': PL,
