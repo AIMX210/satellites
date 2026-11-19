@@ -420,8 +420,8 @@
 .waitHead {
   margin: 0;
   font-size: var(--fs-h3);
-  font-stretch: 75%;
-  font-weight: 560;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-display);
   letter-spacing: var(--track-display);
   color: var(--bone);
 }

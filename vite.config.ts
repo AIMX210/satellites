@@ -67,7 +67,7 @@ function overflightHtml(): Plugin {
       order: 'post',
       handler(html, ctx) {
         html = html.replaceAll('__SITE_ORIGIN__', origin).replaceAll('__APP_VERSION__', appVersion())
-        html = withLocaleBoot(html, ctx.bundle ? localePreloads(ctx.bundle, base) : undefined)
+        html = withLocaleBoot(html, ctx.bundle ? localePreloads(ctx.bundle, base) : undefined, ctx.bundle ? scriptFonts(ctx.bundle, base) : undefined)
         const bundle = ctx.bundle
         if (!bundle) return html
         const tags: { tag: string; attrs: Record<string, string | boolean>; injectTo: 'head' }[] = []
@@ -113,13 +113,30 @@ function localePreloads(bundle: OutputBundle, base: string): Record<string, stri
 }
 
 /**
+ * A script's faces the first screen paints (src/styles/scripts.css), preloaded by the boot script only for that
+ * script: the hero is the largest paint, and its Cyrillic or Arabic face would otherwise be discovered late. The Arabic
+ * accent (one word) and every Latin page's fonts are not on this list.
+ */
+const SCRIPT_FONTS: Record<string, RegExp> = {
+  cyrillic: /^(?:.*\/)?(noto-sans-cyrillic-wdth-normal|noto-serif-display-cyrillic-wdth-italic)-[\w-]+\.woff2$/,
+  arabic: /^(?:.*\/)?noto-sans-arabic-wght400-700-wdth75-100-[\w-]+\.woff2$/,
+}
+function scriptFonts(bundle: OutputBundle, base: string): Record<string, string[]> {
+  const out: Record<string, string[]> = {}
+  for (const o of Object.values(bundle))
+    for (const [script, re] of Object.entries(SCRIPT_FONTS)) if (o.type === 'asset' && re.test(o.fileName)) (out[script] ??= []).push(base + o.fileName)
+  return out
+}
+
+/**
  * index.html with the boot language script after <meta charset> and the loading screen's words after it. The script
  * is src/i18n/boot.ts's function itself (serialised), so the build and the tests run the same code.
  */
-function withLocaleBoot(html: string, preload: Record<string, string[]> | undefined): string {
+function withLocaleBoot(html: string, preload: Record<string, string[]> | undefined, fonts: Record<string, string[]> | undefined): string {
   const data: BootData = {
     locales: Object.fromEntries(Object.values(LOCALE_INFO).map((l) => [l.code, [l.script, l.dir, l.listed ? 1 : 0]])),
     ...(preload ? { preload } : {}),
+    ...(fonts ? { fonts } : {}),
   }
   const json = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c')
   const min = (code: string) => minifySync('boot.js', code, {}).code.trim().replace(/;$/, '')

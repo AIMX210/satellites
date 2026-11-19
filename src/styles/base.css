@@ -66,15 +66,15 @@ img {
 /* utility type styles */
 .t-display {
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 560;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-display);
   font-size: var(--fs-display);
   letter-spacing: var(--track-display);
   line-height: calc(0.92 * var(--lh-k));
 }
 .t-h1 {
-  font-stretch: 75%;
-  font-weight: 560;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-display);
   font-size: var(--fs-h1);
   letter-spacing: var(--track-display);
   line-height: calc(0.95 * var(--lh-k));

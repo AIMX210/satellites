@@ -112,8 +112,9 @@
   flex-direction: column;
   align-items: flex-start;
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 560;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-display);
+  font-feature-settings: var(--feat-display);
   /* never taller than the viewport allows */
   font-size: calc(min(var(--fs-display), 11.4vh) * var(--display-k));
   line-height: calc(0.92 * var(--lh-k));
@@ -130,9 +131,9 @@
 .serif {
   /* The one serif accent, in the signal colour: "you" is the subject, the same colour as the reticle on your spot. */
   color: var(--signal);
-  font-family: var(--font-serif);
+  font-family: var(--font-accent);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--w-serif);
   font-stretch: 100%;
   font-size: calc(1.08em * var(--accent-k));
   line-height: 0;
@@ -145,7 +146,7 @@
   margin: var(--gap-sub) 0 0;
   max-width: min(var(--search-w), 34em);
   font-size: clamp(15px, 1.22vw, 18px);
-  line-height: 1.45;
+  line-height: calc(1.45 * var(--lh-text-k));
   color: var(--bone-2);
   text-wrap: pretty;
 }

@@ -72,6 +72,14 @@ const SHARP_MAP_WAIT_MS = 1200
 const LOGO_MIN_MS = 650
 /** The three faces the first screens use; loading them explicitly makes fonts.ready wait for them (no fallback flash). */
 const FIRST_FONTS = ['500 16px "Instrument Sans Variable"', '400 16px "Martian Mono Variable"', 'italic 400 16px "Instrument Serif"']
+/**
+ * …and a script's own faces (src/styles/scripts.css), asked for with a letter of that script: their unicode-range
+ * would never be fetched for the space a bare load() measures, and the hero would swap fonts after boot.
+ */
+const SCRIPT_FONTS: Record<string, [font: string, text: string][]> = {
+  cyrillic: [['560 16px "Watched Cyrillic"', 'щ'], ['italic 400 16px "Watched Cyrillic Serif"', 'т']],
+  arabic: [['600 16px "Watched Arabic"', 'ب'], ['italic 400 16px "Watched Arabic Serif"', 'أ']],
+}
 /** Boot never waits longer than this for the faces (system fallbacks are fine on a very slow link). */
 const FONTS_CAP_MS = 4000
 /** Results never land sooner than this after a search (the readout needs a beat to read). */
@@ -226,7 +234,8 @@ async function loadFirstFonts(): Promise<void> {
   const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
   if (!fonts) return
   try {
-    await Promise.all(FIRST_FONTS.map((f) => fonts.load(f)))
+    const own = SCRIPT_FONTS[document.documentElement.getAttribute('data-script') ?? ''] ?? []
+    await Promise.all([...FIRST_FONTS.map((f) => fonts.load(f)), ...own.map(([f, text]) => fonts.load(f, text))])
     await fonts.ready
   } catch {
     /* system fallbacks */

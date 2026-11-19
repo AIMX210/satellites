@@ -175,8 +175,8 @@
 }
 .lead {
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 560;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-display);
   color: var(--bone);
 }
 /* The serif place sits on its own line box with clear space above it: descenders of the condensed

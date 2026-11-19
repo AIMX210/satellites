@@ -56,6 +56,23 @@
   --lh-k: 1;
   --display-k: 1;
   --accent-k: 1;
+  /* Running text (the landing's sub, prose): CJK reads best at 1.75 where Latin sets 1.5. */
+  --lh-text-k: 1;
+  /* The condensed display width. Cyrillic narrows further (its fallback face condenses on its own axis; Instrument's
+     stops at 75%, so Latin and digits never change). */
+  --stretch-display: 75%;
+  /* Weights by role. System CJK fonts round any weight from 501 to 599 up to Semibold or Bold, which would erase the
+     difference between a headline and its strong phrase: scripts.css moves those roles to 500 / 600 there. */
+  --w-display: 560;
+  --w-panel-h: 540;
+  --w-strong: 560;
+  --w-panel-sub: 500;
+  --w-serif: 400;
+  /* OpenType features of the hero and the results headline (CJK: proportional punctuation, 'palt'). */
+  --feat-display: normal;
+  --feat-heading: normal;
+  /* The static serif accents (the hero's "you", the About title): a script may add a subset face for them alone. */
+  --font-accent: var(--font-serif);
 
   /* space (4px base) */
   --s-1: 4px;

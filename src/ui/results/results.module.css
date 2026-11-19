@@ -682,8 +682,8 @@
 .passName {
   margin: 0;
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 560;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-display);
   font-size: 30px;
   line-height: calc(0.95 * var(--lh-k));
   letter-spacing: var(--track-display);
@@ -811,8 +811,9 @@
 .headline {
   margin: 0;
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 540;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-panel-h);
+  font-feature-settings: var(--feat-heading);
   font-size: var(--fs-panel-h, 34px);
   line-height: calc(0.98 * var(--lh-k));
   letter-spacing: var(--track-display);
@@ -821,14 +822,14 @@
 }
 .headline strong,
 .mHeadline strong {
-  font-weight: 560;
+  font-weight: var(--w-strong);
   color: var(--bone);
 }
 .headline .serif,
 .mHeadline .serif {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--w-serif);
   font-stretch: 100%;
   letter-spacing: -0.01em;
   font-size: calc(1.16em * var(--accent-k));
@@ -843,8 +844,9 @@
 .headlineMore {
   margin: 10px 0 0;
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 500;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-panel-sub);
+  font-feature-settings: var(--feat-heading);
   font-size: var(--fs-panel-sub, 22px);
   line-height: calc(1.05 * var(--lh-k));
   letter-spacing: -0.01em;
@@ -1097,7 +1099,7 @@
 .prose {
   margin: 0;
   font-size: var(--fs-body);
-  line-height: 1.5;
+  line-height: calc(1.5 * var(--lh-text-k));
   color: var(--bone);
   text-wrap: pretty;
 }
@@ -1114,7 +1116,7 @@
 .blurb {
   margin: 0;
   font-size: var(--fs-small);
-  line-height: 1.5;
+  line-height: calc(1.5 * var(--lh-text-k));
   color: var(--bone-3);
 }
 
@@ -1150,8 +1152,9 @@
 .mHeadline {
   margin: 0;
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 540;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-panel-h);
+  font-feature-settings: var(--feat-heading);
   font-size: clamp(25px, 7.4vw, 30px);
   line-height: var(--lh-k);
   letter-spacing: var(--track-display);
@@ -1161,8 +1164,9 @@
 .mMore {
   margin: 8px 0 0;
   font-family: var(--font-sans);
-  font-stretch: 75%;
-  font-weight: 500;
+  font-stretch: var(--stretch-display);
+  font-weight: var(--w-panel-sub);
+  font-feature-settings: var(--feat-heading);
   font-size: 17px;
   line-height: calc(1.1 * var(--lh-k));
   letter-spacing: -0.005em;
