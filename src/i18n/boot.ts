@@ -18,7 +18,7 @@ export interface BootData {
   locales: Record<string, [string, string, number]>
   /** locale → module URLs to modulepreload (its messages chunk and what that imports); absent in dev */
   preload?: Record<string, string[]>
-  /** script → font URLs to preload (woff2) for a non-Latin script */
+  /** script or locale → font URLs to preload (woff2): a non-Latin script's faces, a Latin language's latin-ext ones */
   fonts?: Record<string, string[]>
 }
 
@@ -118,6 +118,6 @@ export function bootLocale(d: BootData): void {
   }
   var mods = (d.preload && d.preload[chosen]) || []
   for (var m = 0; m < mods.length; m++) add('modulepreload', mods[m])
-  var fonts = (d.fonts && d.fonts[info[0]]) || []
+  var fonts = ((d.fonts && d.fonts[info[0]]) || []).concat((d.fonts && d.fonts[chosen]) || [])
   for (var f = 0; f < fonts.length; f++) add('preload', fonts[f], 'font')
 }

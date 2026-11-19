@@ -235,7 +235,10 @@ async function loadFirstFonts(): Promise<void> {
   if (!fonts) return
   try {
     const own = SCRIPT_FONTS[document.documentElement.getAttribute('data-script') ?? ''] ?? []
-    await Promise.all([...FIRST_FONTS.map((f) => fonts.load(f)), ...own.map(([f, text]) => fonts.load(f, text))])
+    // With the page's own words (the tab title is the hero line in the visitor's language: src/i18n/bootText.ts), so a
+    // latin-ext face (Polish ł, Turkish ş) is fetched before the hero shows, not swapped in under its wipe.
+    const words = `${document.title} `
+    await Promise.all([...FIRST_FONTS.map((f) => fonts.load(f, words)), ...own.map(([f, text]) => fonts.load(f, text))])
     await fonts.ready
   } catch {
     /* system fallbacks */

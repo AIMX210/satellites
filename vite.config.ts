@@ -117,9 +117,13 @@ function localePreloads(bundle: OutputBundle, base: string): Record<string, stri
  * script: the hero is the largest paint, and its Cyrillic or Arabic face would otherwise be discovered late. The Arabic
  * accent (one word) and every Latin page's fonts are not on this list.
  */
+const LATIN_EXT = /^(?:.*\/)?(instrument-sans-latin-ext-standard-normal|martian-mono-latin-ext-standard-normal|instrument-serif-latin-ext-400-italic)-[\w-]+\.woff2$/
 const SCRIPT_FONTS: Record<string, RegExp> = {
   cyrillic: /^(?:.*\/)?(noto-sans-cyrillic-wdth-normal|noto-serif-display-cyrillic-wdth-italic)-[\w-]+\.woff2$/,
   arabic: /^(?:.*\/)?noto-sans-arabic-wght400-700-wdth75-100-[\w-]+\.woff2$/,
+  // Latin languages whose own letters (ł ż ś, ş ğ ı) live in the brand faces' latin-ext files (keyed by locale)
+  pl: LATIN_EXT,
+  tr: LATIN_EXT,
 }
 function scriptFonts(bundle: OutputBundle, base: string): Record<string, string[]> {
   const out: Record<string, string[]> = {}
