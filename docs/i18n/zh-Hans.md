@@ -344,29 +344,33 @@ Why these choices:
 
 ### 3.6 Share card, share page and post
 
-**Card headlines** (`api/_lib/i18n/card/zh-Hans.ts`). A headline is blocks: the text part is a block in the condensed
-display face (at most three lines), the accent part a block in the serif (at most two lines). The place is always the
-accent block and always last, with 。 inside it (dropped when the place was cut). Every card leads with the week's count
-(`headline`); the per-verdict leads are only for older shares that never stored it.
+**Card headlines** (`api/_lib/i18n/card/zh-Hans.ts`). A headline is blocks. Each text part is one line in the condensed
+display face, never broken inside, so the lead is split into phrases where a typesetter breaks a display headline
+(4–7 em each; the card's size is the largest at which every text part fits one line of the 466 px column,
+`headlineSizeCjk`). The accent part is the place, in the serif (at most two lines), always last, with 。 inside it
+(dropped when the place was cut). Every card leads with the week's count (`headline`); the per-verdict leads are only
+for older shares that never stored it.
 
-| Message | Lead block | Accent block | Reads |
+| Message | Text parts (a line each) | Accent block | Reads |
 |---|---|---|---|
-| `headline` (N ≥ 1) | `有 [NUM] 颗卫星注视过` | `[PLACE]。` | 有 7 颗卫星注视过 Waterloo。 |
-| `headlineWeek` (N ≥ 1) | `这一周，有 [NUM] 颗卫星注视过` | `[PLACE]。` | 这一周，有 31 颗卫星注视过 Waterloo。 |
-| `headlineWeek` (zero) | `这一周，我们追踪的卫星没有一颗注视过` | `[PLACE]。` | |
-| `headlineBy.imaged` | `[SAT] 注视过` | `[PLACE]。` | Sentinel-2C 注视过 Waterloo。 |
-| `headlineBy.likely` | `[SAT] 扫过` | `[PLACE]。` | Landsat 9 扫过 Waterloo。 |
-| `headlineBy.could` | `[SAT] 经过时能对准` | `[PLACE]。` | WorldView Legion 4 经过时能对准 Waterloo。 |
-| `headlineBy.overhead` | `[SAT] 飞越` | `[PLACE]。` | ISS (ZARYA) 飞越 Waterloo。 |
+| `headline` (N ≥ 1) | `有 [NUM] 颗卫星` · `注视过` | `[PLACE]。` | 有 7 颗卫星注视过 Waterloo。 |
+| `headline` (zero) | `我们追踪的卫星` · `没有一颗注视过` | `[PLACE]。` | |
+| `headlineWeek` (N ≥ 1) | `这一周，` · `有 [NUM] 颗卫星` · `注视过` | `[PLACE]。` | 这一周，有 31 颗卫星注视过 Waterloo。 |
+| `headlineWeek` (zero) | `这一周，` · `我们追踪的卫星` · `没有一颗注视过` | `[PLACE]。` | |
+| `headlineBy.imaged` | `[SAT]` · `注视过` | `[PLACE]。` | Sentinel-2C 注视过 Waterloo。 |
+| `headlineBy.likely` | `[SAT]` · `扫过` | `[PLACE]。` | Landsat 9 扫过 Waterloo。 |
+| `headlineBy.could` | `[SAT]` · `经过时能对准` | `[PLACE]。` | WorldView Legion 4 经过时能对准 Waterloo。 |
+| `headlineBy.overhead` | `[SAT]` · `飞越` | `[PLACE]。` | ISS (ZARYA) 飞越 Waterloo。 |
 
-- The lead block ends with `cjkGap(lead, place)`, so the share page title (the blocks joined with nothing,
-  `sentenceGap: ''`) reads `有 7 颗卫星注视过 Waterloo。` and `有 7 颗卫星注视过北京。`. On the card the trailing space
-  is invisible.
+- Each text part ends with the gap to what follows it (`cjkGap`: `Sentinel-2C ` before 注视过, `注视过 ` before
+  Waterloo), so the share page title and the post (the parts joined with nothing, `sentenceGap: ''`) read
+  `有 7 颗卫星注视过 Waterloo。` and `有 7 颗卫星注视过北京。`. On the card a trailing space is invisible.
+- Sizes (measured with `headlineSizeCjk`, Waterloo): `headline` 74 px, `headlineWeek` 72, the zero forms 66, a
+  nameless satellite 74, a long name (WorldView Legion 4) 52.
 - 飞越 is the established news verb for a station crossing a city (空间站飞越北京上空). A frame with the place in the
   middle (从 [PLACE] 上空经过, [PLACE] 在它的视野内) would leave the lead dangling on 从 and spread the serif over the
   predicate.
-- Chinese cannot put "this week" after the object, as English `headlineWeek` does; 这一周 leads the lead block.
-- Budgets for these leads are in §7; the zero lead is 18 em and needs the 72 px size.
+- Chinese cannot put "this week" after the object, as English `headlineWeek` does; 这一周， is the first line.
 
 **The rest of the card**
 

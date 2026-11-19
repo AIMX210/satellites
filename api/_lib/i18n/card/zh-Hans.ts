@@ -94,10 +94,20 @@ const iso = (ms: number, timeZone: string) => {
 const A_SATELLITE = '一颗卫星'
 const named = (sat: SatName) => sat ?? A_SATELLITE
 
-/** The headline's lead, with the gap to the place that follows it */
+/** The headline's last text part, with the gap to the place that follows it */
 const lead = (text: string, place: string) => `${text}${cjkGap(text, place)}`
-/** "有 7 颗卫星注视过" / "我们追踪的卫星没有一颗注视过" */
-const watched = (n: number) => (n > 0 ? `有 ${f.int(n)}${NB}颗卫星注视过` : '我们追踪的卫星没有一颗注视过')
+/**
+ * The card's lead as phrases, one line each where a typesetter breaks a display headline (the card never breaks inside
+ * a part): "有 7 颗卫星" "注视过 ", or "我们追踪的卫星" "没有一颗注视过 ". Flattened with no gap they read as the sentence.
+ */
+const watched = (n: number, place: string) =>
+  n > 0 ? [`有 ${f.int(n)}${NB}颗卫星`, lead('注视过', place)] : ['我们追踪的卫星', lead('没有一颗注视过', place)]
+/** "Sentinel-2C " "注视过 ": the satellite on its own line, then the verb, each with the gap to what follows */
+const byName = (sat: SatName, verb: string, place: string, cut: boolean): Rich => [
+  `${named(sat)}${cjkGap(named(sat), verb)}`,
+  lead(verb, place),
+  placeBlock(place, cut),
+]
 /** The place as the accent block, with its 。 as its own part unless the place was cut short */
 const placeBlock = (place: string, cut: boolean) => (cut ? accent(place) : accent(place, '。'))
 
@@ -115,16 +125,17 @@ const clauses = (...parts: string[]) => parts.filter(Boolean).reduce((out, p) =>
 const card: CardMessages = {
   // ── The headline (rich: text blocks in the condensed face, the accent block in the serif) ─────────────────────────
 
-  headline: (satellites: number, place: string, cut: boolean): Rich => [lead(watched(satellites), place), placeBlock(place, cut)],
+  headline: (satellites: number, place: string, cut: boolean): Rich => [...watched(satellites, place), placeBlock(place, cut)],
   headlineBy: {
-    imaged: (sat: SatName, place: string, cut: boolean): Rich => [lead(withName('', named(sat), '注视过'), place), placeBlock(place, cut)],
-    likely: (sat: SatName, place: string, cut: boolean): Rich => [lead(withName('', named(sat), '扫过'), place), placeBlock(place, cut)],
-    could: (sat: SatName, place: string, cut: boolean): Rich => [lead(withName('', named(sat), '经过时能对准'), place), placeBlock(place, cut)],
-    overhead: (sat: SatName, place: string, cut: boolean): Rich => [lead(withName('', named(sat), '飞越'), place), placeBlock(place, cut)],
+    imaged: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '注视过', place, cut),
+    likely: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '扫过', place, cut),
+    could: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '经过时能对准', place, cut),
+    overhead: (sat: SatName, place: string, cut: boolean): Rich => byName(sat, '飞越', place, cut),
   },
-  /** Chinese cannot put "this week" after the place: 这一周 leads the lead block */
+  /** Chinese cannot put "this week" after the place: 这一周， is the first line */
   headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [
-    lead(satellites > 0 ? `这一周，有 ${f.int(satellites)}${NB}颗卫星注视过` : '这一周，我们追踪的卫星没有一颗注视过', place),
+    '这一周，',
+    ...watched(satellites, place),
     placeBlock(place, cut),
   ],
 
