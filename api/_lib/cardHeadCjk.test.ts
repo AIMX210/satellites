@@ -16,6 +16,7 @@ const week = (placeLabel: string): SummaryInput => ({
   counts: { imaged: 40, likely: 210, could: 1565, overhead: 68 },
   windowEnd: Date.UTC(2026, 10, 3, 4),
   timeZone: 'Asia/Tokyo',
+  host: '',
 })
 
 describe('a CJK card headline', () => {
