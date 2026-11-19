@@ -11,6 +11,8 @@
  * initial and final values.
  */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { fmt as fmtFor } from '../../../api/_lib/i18n/format'
+import { currentLocale } from '@/i18n/runtime'
 import { DUR, EASE, easeInOut, easeOut } from '@/lib/ease'
 import { legDone, retarget, sampleLeg, type CountLeg } from './count'
 import s from './motion.module.css'
@@ -48,7 +50,8 @@ export function useOnce(key: string): boolean {
 
 // ── Num ──────────────────────────────────────────────────────────────────────────────────
 
-const intFmt = (n: number) => Math.round(n).toLocaleString('en-US')
+/** Counts in the visitor's language ("1,715" / "1.715" / "1 715"), read at call time. */
+const intFmt = (n: number) => fmtFor(currentLocale()).int(n)
 
 export interface NumProps {
   value: number

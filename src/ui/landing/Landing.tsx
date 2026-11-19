@@ -20,9 +20,14 @@
  * headline lines mask-wipe in on a 60 ms stagger, then the copy, the field and the chips. Later visits
  * (back from results) get one short rise of the whole column. Leaving (the app starts computing) plays
  * on a clone of the last frame, so the next view is live at once.
+ *
+ * Copy: the 'landing' namespace (src/i18n/en/landing.ts), and the curated places' names from 'places' (./curated.ts).
  */
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { flushSync } from 'react-dom'
+import { Rich } from '@/i18n/Rich'
+import enLanding from '@/i18n/en/landing'
+import { useMsgs } from '@/i18n/runtime'
 import { DUR, EASE } from '@/lib/ease'
 import { SHORT_LANDSCAPE_QUERY, isStacked } from '@/lib/layout'
 import { useBackLayer } from '@/lib/backStack'
@@ -45,6 +50,7 @@ import {
 } from '@/ui/system'
 import { useSecondClock, useSecondDerived } from '@/ui/hud/clock'
 import { balancePad } from './balance'
+import { localizedPlace } from './curated'
 import { EXAMPLE_PLACES, surprisePlace, type ExamplePlace } from './places'
 import { SearchBox } from './SearchBox'
 import { useLocate, type LocateState } from './useLocate'
@@ -84,6 +90,7 @@ interface LandingProps {
 export const Landing = memo(LandingImpl, (a, b) => a.enterDelay === b.enterDelay)
 
 function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
+  const m = useMsgs(enLanding)
   const submitRef = useRef(onSubmitProp)
   submitRef.current = onSubmitProp
   const onSubmit = useCallback((p: Place) => submitRef.current(p), [])
@@ -290,22 +297,18 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
               curtain's wordmark slides along on its way to the HUD (PH-05: at 1280×800 it crossed the kicker mid-wipe). */}
           <Kicker delay={delay + 260} skip={!first} />
 
+          {/* One sentence as display lines, each its own mask-wipe on a 60 ms stagger (the language decides the lines). */}
           <h1 ref={headlineRef} id="landing-headline" className={s.headline} data-hero-copy>
-            <Reveal as="span" className={s.hl} delay={delay + 140} skip={!first}>
-              Something
-            </Reveal>
-            <Reveal as="span" className={s.hl} delay={delay + 200} skip={!first}>
-              watched <em className={s.serif}>you</em>
-            </Reveal>
-            <Reveal as="span" className={s.hl} delay={delay + 260} skip={!first}>
-              this week.
-            </Reveal>
+            {m.hero.map((line, i) => (
+              <Reveal key={i} as="span" className={s.hl} delay={delay + 140 + 60 * i} skip={!first}>
+                <Rich parts={line} classes={{ accent: s.serif }} accentAs="em" />
+              </Reveal>
+            ))}
           </h1>
 
           <Reveal as="p" className={s.sub} delay={delay + 420} duration={720} skip={!first}>
             <span data-hero-copy>
-              Enter any place on Earth. See every satellite that passed over it in the last {WINDOW_DAYS}&nbsp;days, and the actual
-              pictures they took.
+              <Rich parts={m.sub(WINDOW_DAYS)} />
             </span>
           </Reveal>
 
@@ -352,12 +355,12 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
                       className={cx(s.locateInline, s.locateGlyphOnly)}
                       onPointerDown={(e) => e.preventDefault()}
                       onClick={locate.start}
-                      aria-label="Use my location"
+                      aria-label={m.useMyLocation}
                     >
                       <Glyph name="locate" size={14} />
                     </button>
                     <button type="button" className={s.searchCancel} onPointerDown={(e) => e.preventDefault()} onClick={cancelSearch}>
-                      Cancel
+                      {m.cancelSearch}
                     </button>
                   </>
                 ) : locating ? (
@@ -366,9 +369,9 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
                     className={s.locateInline}
                     onPointerDown={(e) => e.preventDefault()}
                     onClick={locate.cancel}
-                    aria-label="Cancel locating"
+                    aria-label={m.cancelLocating}
                   >
-                    Cancel
+                    {m.cancelLocate}
                   </button>
                 ) : (
                   // The visible label is the accessible name: "Locate me" on phones; where the button is
@@ -376,8 +379,8 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
                   // it. At ≤ 400 px it gives way to the "Near me" chip.
                   <button type="button" className={s.locateInline} onPointerDown={(e) => e.preventDefault()} onClick={locate.start}>
                     <Glyph name="locate" size={14} />
-                    <span className={s.locateLabel}>Use my location</span>
-                    <span className={s.locateLabelShort}>Locate me</span>
+                    <span className={s.locateLabel}>{m.useMyLocation}</span>
+                    <span className={s.locateLabelShort}>{m.locateMe}</span>
                   </button>
                 )
               }
@@ -393,7 +396,7 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
               are a nicety: they step aside while a locate note needs the room. */}
           <div className={cx(s.foot, s.rise, s.riseExamples)} data-hero-copy>
             <a className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer">
-              Built by {CREDIT_HANDLE}
+              {m.builtBy(CREDIT_HANDLE)}
             </a>
           </div>
         </div>
@@ -499,12 +502,13 @@ function useBalance(
 /** "── LAST 7 DAYS · 1 → 8 NOV 2026 UTC" — the exact window "this week" means. */
 function Kicker({ delay, skip }: { delay: number; skip: boolean }) {
   // Live: a page left open past midnight UTC shows the window a search would actually use. The label
-  // re-renders only when the day changes, not every second.
+  // re-renders only when the day changes (or the language), not every second.
+  const m = useMsgs(enLanding)
   const label = useSecondDerived(windowLabel)
   return (
     <Reveal axis="x" duration={600} delay={delay} skip={skip} className={s.kicker}>
       <span className={s.kickerRule} aria-hidden />
-      <span className={s.kickerIdx}>Last {WINDOW_DAYS} days</span>
+      <span className={s.kickerIdx}>{m.lastDays(WINDOW_DAYS)}</span>
       <span className={s.kickerSep} aria-hidden>
         ·
       </span>
@@ -515,14 +519,14 @@ function Kicker({ delay, skip }: { delay: number; skip: boolean }) {
 
 /** Under the field: what happens to your position while locating, or why it failed. */
 function LocateNotes({ state, onDismiss }: { state: LocateState; onDismiss: () => void }) {
-  if (state.kind === 'locating')
-    return <p className={s.footnote}>Your position goes to the Photon geocoder to name the place. We store only a ~10&nbsp;km cell.</p>
+  const m = useMsgs(enLanding)
+  if (state.kind === 'locating') return <p className={s.footnote}>{m.locatingNote}</p>
   if (state.kind === 'error')
     return (
       <p className={s.error} role="alert">
-        <span className={s.errorLabel}>Location</span>
-        <span className={s.errorText}>{state.message}</span>
-        <button type="button" className={s.errorClose} onClick={onDismiss} aria-label="Dismiss">
+        <span className={s.errorLabel}>{m.locationLabel}</span>
+        <span className={s.errorText}>{m.locateErrors[state.code]}</span>
+        <button type="button" className={s.errorClose} onClick={onDismiss} aria-label={m.dismiss}>
           <Glyph name="close" size={12} />
         </button>
       </p>
@@ -531,6 +535,7 @@ function LocateNotes({ state, onDismiss }: { state: LocateState; onDismiss: () =
 }
 
 function LocatingStatus({ state }: { state: Extract<LocateState, { kind: 'locating' }> }) {
+  const m = useMsgs(enLanding)
   useSecondClock() // re-render each second for the elapsed readout
   const ref = useRef<HTMLSpanElement>(null)
   useWallSecondSync(ref)
@@ -538,20 +543,23 @@ function LocatingStatus({ state }: { state: Extract<LocateState, { kind: 'locati
   return (
     <span ref={ref} className={s.locStatus}>
       <span className={s.locDot} aria-hidden data-blink />
-      {state.step === 'position' ? 'Requesting position' : 'Naming the place'}
-      <span className={s.locTime}>{secs.toFixed(0).padStart(2, '0')} S</span>
+      {state.step === 'position' ? m.requestingPosition : m.namingPlace}
+      <span className={s.locTime}>{m.elapsed(secs)}</span>
     </span>
   )
 }
 
-/** The last "Surprise me" place this visit (the landing remounts after each search): the next one is somewhere else. */
+/** The last "Surprise me" place this visit, in English (the landing remounts after each search): the next one is somewhere else. */
 let lastSurprise: Place | undefined
 
 /** Touch screens: a finger can't hover the globe to discover the pin, so a chip drops one (see Examples). */
 const TOUCH_QUERY = '(hover: none) and (pointer: coarse)'
 
 function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; disabled?: boolean; locate: ReturnType<typeof useLocate> }) {
+  // Re-renders on a language switch, which also rewords the places' names (localizedPlace reads them at render).
+  const m = useMsgs(enLanding)
   const locating = locate.state.kind === 'locating'
+  // The English example: translated where it is shown, so a language switch mid-hover rewords the hint.
   const [hover, setHover] = useState<ExamplePlace | null>(null)
   // A pin dropped on the globe searches too (globe/PinMarker.tsx), once the 3D globe is up: with a mouse, the
   // header's idle hint says so (a click on the planet drops it); on touch, a chip drops one in the middle of the globe.
@@ -583,7 +591,7 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
       {/* Wide: label left, live detail right, the same row structure as the field's "01 / Place" line. */}
       <div className={s.examplesHead}>
         <span>
-          <span className={s.exIdx}>02</span> / Or try
+          <span className={s.exIdx}>02</span> / {m.orTry}
         </span>
         <span className={s.exHint} aria-hidden>
           {hover ? (
@@ -592,20 +600,20 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
                 {fmtLat(hover.lat, 4)} {fmtLon(hover.lon, 4)}
               </span>
               <span className={s.exSep}>·</span>
-              {hover.sublabel}
+              {localizedPlace(hover).sublabel}
             </>
           ) : pinReady && !touch ? (
             <span className={s.pinHint}>
               <Glyph name="reticle" size={11} />
-              Or click the globe to drop a pin
+              {m.pinHint}
             </span>
           ) : null}
         </span>
       </div>
-      <ul ref={listRef} className={s.chips} aria-label="Example places" onScroll={markEnd} onPointerLeave={() => setHover(null)}>
+      <ul ref={listRef} className={s.chips} aria-label={m.examplesLabel} onScroll={markEnd} onPointerLeave={() => setHover(null)}>
         {/* Stacked: the label leads the swipeable row instead of taking a line of its own. */}
         <li className={s.chipLead} aria-hidden>
-          Or try
+          {m.orTry}
         </li>
         {/* Narrow phones (≤ 400 px, CSS): "Use my location" as the first chip, labelled, in the chips' own
             box and type. Locating, it reads "Locating…" and a second tap cancels. Always in the DOM, so
@@ -615,36 +623,39 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
             type="button"
             className={cx(s.chip, s.chipLocate)}
             onClick={locating ? locate.cancel : locate.start}
-            aria-label={locating ? 'Cancel locating' : 'Use my location'}
+            aria-label={locating ? m.cancelLocating : m.useMyLocation}
           >
             <Glyph name="locate" size={12} />
-            {locating ? 'Locating…' : 'Near me'}
+            {locating ? m.locating : m.nearMe}
           </button>
         </li>
         {pinReady && touch ? (
           <li>
             <button type="button" className={cx(s.chip, s.chipLocate)} disabled={disabled} onClick={() => useApp.getState().dropPinAtCentre()}>
               <Glyph name="reticle" size={12} />
-              Drop a pin
+              {m.dropPin}
             </button>
           </li>
         ) : null}
-        {EXAMPLE_PLACES.map((p) => (
-          <li key={p.chip}>
-            <button
-              type="button"
-              className={s.chip}
-              disabled={disabled}
-              onClick={() => onPick(p)}
-              onPointerEnter={(e) => e.pointerType === 'mouse' && setHover(p)}
-              onFocus={() => setHover(p)}
-              onBlur={() => setHover(null)}
-              aria-label={`${p.label}, ${p.sublabel}`}
-            >
-              {p.chip}
-            </button>
-          </li>
-        ))}
+        {EXAMPLE_PLACES.map((p) => {
+          const t = localizedPlace(p)
+          return (
+            <li key={p.chip}>
+              <button
+                type="button"
+                className={s.chip}
+                disabled={disabled}
+                onClick={() => onPick(localizedPlace(p))}
+                onPointerEnter={(e) => e.pointerType === 'mouse' && setHover(p)}
+                onFocus={() => setHover(p)}
+                onBlur={() => setHover(null)}
+                aria-label={m.chipName(t.label, t.sublabel ?? '')}
+              >
+                {t.chip}
+              </button>
+            </li>
+          )
+        })}
         {/* A famous place picked at random (places.ts SURPRISE_PLACES), never the one it picked last. */}
         <li className={s.surpriseItem}>
           <button
@@ -653,11 +664,11 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
             disabled={disabled}
             onClick={() => {
               lastSurprise = surprisePlace(lastSurprise)
-              onPick(lastSurprise)
+              onPick(localizedPlace(lastSurprise))
             }}
-            aria-label="Surprise me: a famous place picked at random"
+            aria-label={m.surpriseName}
           >
-            Surprise me
+            {m.surprise}
           </button>
         </li>
       </ul>
