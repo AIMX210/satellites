@@ -21,7 +21,8 @@
  * `sublabel` is where it is ("Ontario, Canada"), with no part repeated. Both are data, in English whatever the
  * visitor's language (the geocoders are asked in English, the offline list is English): the usage stats and the
  * lookups count them, so one town is one row in every language. Only on screen does the sublabel's country follow the
- * visitor's language (`displaySublabel`).
+ * visitor's language (`displaySublabel`). A geocoder that names Russia for a point in Crimea is read, when its answer
+ * is parsed, as naming Ukraine (CRIMEA below), as the offline list (GeoNames) names it.
  */
 import { haversineKm } from '@/lib/geo'
 import type { LatLon, Place } from '@/types'
@@ -138,8 +139,66 @@ export function sublabelOf(label: string, parts: (string | undefined)[]): string
   return joinUnique(kept, [label])
 }
 
+// ── Crimea ─────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * The Crimean peninsula and Sevastopol, [lon, lat, lon, lat, …]: OpenStreetMap's boundaries of the Autonomous Republic
+ * of Crimea and of Sevastopol (relations 72639 and 1574364, Nominatim, 2026-11-19), their territorial sea included,
+ * simplified to ~5 km at sea and on the Perekop isthmus and kept as mapped in the Kerch Strait: there the line runs
+ * between Kerch and Tuzla Island (Crimea) and the Chushka spit, Port Kavkaz and the Taman peninsula (Russia), ~3 km
+ * apart at the ferry. Checked against every GeoNames point of Ukraine and Russia around the peninsula: each Crimean
+ * town is inside, each Russian place and each town of Kherson Oblast outside. Its own copy, not seasonRegions.ts's
+ * outline, which ships only in the time-lapse's chunk.
+ */
+const CRIMEA = [
+  32.202, 45.397, 32.362, 45.171, 32.831, 45.151, 33.028, 45.007, 33.295, 44.941, 33.091, 44.575, 33.28, 44.344,
+  33.697, 44.191, 34.238, 44.232, 34.736, 44.585, 35.177, 44.597, 35.632, 44.849, 35.84, 44.792, 36.415, 44.853,
+  36.61, 44.941, 36.568, 45.051, 36.543, 45.134, 36.53, 45.199, 36.594, 45.253, 36.594, 45.282, 36.603, 45.309,
+  36.664, 45.36, 36.682, 45.457, 36.668, 45.627, 35.802, 45.645, 35.575, 45.49, 35.233, 45.792, 34.96, 45.757,
+  34.629, 45.986, 34.476, 45.944, 34.32, 46.068, 33.647, 46.23, 33.541, 46.012, 32.773, 45.827, 32.322, 45.597,
+]
+
+/** Is the point on the Crimean peninsula (or in its waters)? Even–odd rule, after a bounding-box test. */
+export function inCrimea(lat: number, lon: number): boolean {
+  if (lat < 44.19 || lat > 46.23 || lon < 32.2 || lon > 36.69) return false
+  let inside = false
+  for (let i = 0, j = CRIMEA.length - 2; i < CRIMEA.length; j = i, i += 2) {
+    const [x1, y1, x2, y2] = [CRIMEA[i], CRIMEA[i + 1], CRIMEA[j], CRIMEA[j + 1]]
+    if (y1 > lat !== y2 > lat && lon < ((x2 - x1) * (lat - y1)) / (y2 - y1) + x1) inside = !inside
+  }
+  return inside
+}
+
+const namesRussia = (country: string | undefined, code: string | undefined) =>
+  code?.toUpperCase() === 'RU' || /^(russia|russian federation)$/i.test(country?.trim() ?? '')
+
+/**
+ * A geocoder's country for a point, with Crimea in Ukraine: an answer that names Russia for a point on the peninsula
+ * is read as Ukraine (in every language: this is the place's data, as the offline list has it from GeoNames, and what
+ * the stats and lookups keep). Anything else is returned as it came.
+ */
+function crimeaCountry(country: string | undefined, code: string | undefined, lat: number, lon: number): { country?: string; code?: string } | undefined {
+  if (!namesRussia(country, code) || !inCrimea(lat, lon)) return undefined
+  return { country: 'Ukraine', code: code === undefined ? undefined : code === code.toLowerCase() ? 'ua' : 'UA' }
+}
+
+/** Photon's (or Nominatim's) properties for a point, with Crimea in Ukraine (crimeaCountry). */
+export function withCrimeaInUkraine(p: PhotonProperties, lat: number, lon: number): PhotonProperties {
+  const fixed = crimeaCountry(p.country, p.countrycode, lat, lon)
+  return fixed ? { ...p, country: fixed.country, countrycode: fixed.code } : p
+}
+
+/** A forward-search feature with Crimea in Ukraine, at the feature's own point. */
+function featureWithCrimea(f: PhotonFeature): PhotonFeature {
+  const [lon, lat] = f.geometry?.coordinates ?? []
+  if (!finite(lat) || !finite(lon) || !f.properties) return f
+  const properties = withCrimeaInUkraine(f.properties, lat, lon)
+  return properties === f.properties ? f : { ...f, properties }
+}
+
 /** A forward-search result → Place. Undefined if the feature has no usable position or a junk name. */
-export function photonToPlace(f: PhotonFeature, source: Place['source'] = 'search'): Place | undefined {
+export function photonToPlace(feature: PhotonFeature, source: Place['source'] = 'search'): Place | undefined {
+  const f = featureWithCrimea(feature)
   const [lon, lat] = f.geometry?.coordinates ?? []
   if (!finite(lat) || !finite(lon)) return undefined
   const p = f.properties ?? {}
@@ -171,7 +230,7 @@ const NAMED_LAND = new Set(['natural', 'waterway', 'place', 'mountain_pass'])
  * settlement (city / district / locality), then a named natural feature, then the region.
  */
 export function photonReverseToPlace(f: PhotonFeature, lat: number, lon: number, source: Place['source'] = 'geolocation'): Place {
-  const p = f.properties ?? {}
+  const p = withCrimeaInUkraine(f.properties ?? {}, lat, lon)
   const city = p.city && !/^unorganized\b/i.test(p.city) ? p.city : undefined
   const label =
     (p.osm_key === 'place' && p.osm_value && SETTLEMENT.has(p.osm_value) ? p.name : undefined) ||
@@ -369,12 +428,13 @@ export function openMeteoToPlaces(results: OpenMeteoPlace[] | undefined, query: 
     const all = [...own, ...words(r.admin1 ?? ''), ...words(r.country ?? '')]
     if (!own.some((w) => w.startsWith(first)) || !rest.every((q) => all.some((w) => w.startsWith(q)))) continue
     const label = r.name.trim()
+    const fixed = crimeaCountry(r.country, r.country_code, r.latitude, r.longitude)
     out.push({
       lat: r.latitude,
       lon: r.longitude,
       label,
-      sublabel: sublabelOf(label, [r.admin1, r.country]),
-      countryCode: r.country_code?.toLowerCase() || undefined,
+      sublabel: sublabelOf(label, [r.admin1, fixed?.country ?? r.country]),
+      countryCode: (fixed?.code ?? r.country_code)?.toLowerCase() || undefined,
       source: 'search',
     })
   }
@@ -393,7 +453,7 @@ async function photonSearch(query: string, signal: AbortSignal): Promise<Place[]
     if (err instanceof HttpError && err.status === 400) return [] // e.g. a query Photon can't parse
     throw err
   }
-  const hits = (res.features ?? []).flatMap((f): Hit[] => {
+  const hits = (res.features ?? []).map(featureWithCrimea).flatMap((f): Hit[] => {
     const place = photonToPlace(f)
     return place ? [{ place, props: f.properties ?? {} }] : []
   })

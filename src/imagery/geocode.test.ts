@@ -30,6 +30,7 @@ import {
   sublabelOf,
   timeZoneAt,
   ensureTz,
+  inCrimea,
   tzReady,
   nauticalZone,
   type PhotonResponse,
@@ -363,6 +364,78 @@ describe('Nominatim reverse labels', () => {
 
   it('has nothing at sea', () => {
     expect(nominatimToPhoton({ error: 'Unable to geocode' }, 1, 2)).toBeNull()
+  })
+})
+
+describe('Crimea', () => {
+  /** A Photon feature at (lat, lon) whose country is `country` */
+  const feature = (name: string, lat: number, lon: number, country: string, countrycode: string, state?: string): PhotonResponse['features'][number] => ({
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [lon, lat] },
+    properties: { name, state, country, countrycode, osm_key: 'place', osm_value: 'city' },
+  })
+
+  it('is the peninsula and Sevastopol, up to the middle of the Kerch Strait', () => {
+    for (const [lat, lon] of [
+      [44.9521, 34.1025], // Simferopol
+      [44.6054, 33.522], // Sevastopol
+      [44.4988, 34.169], // Yalta
+      [45.3563, 36.4671], // Kerch, on the strait
+      [45.2716, 36.5463], // Tuzla Island, in it
+      [46.1109, 33.6922], // Armyansk, on the Perekop isthmus
+      [45.2957, 35.4788], // the Arabat fortress, at the Arabat Spit's Crimean end
+      [45.4299, 35.8225], // Shcholkine, on the Sea of Azov
+    ])
+      expect(inCrimea(lat, lon), `${lat}, ${lon}`).toBe(true)
+    for (const [lat, lon] of [
+      [45.333, 36.6662], // Chushka, on the Chushka spit (Russia), 3 km across the strait from Crimea
+      [45.3402, 36.6746], // Port Kavkaz
+      [45.3601, 36.7137], // the Chushka spit
+      [45.1954, 36.598], // Cape Tuzla, the Taman peninsula's tip
+      [45.2117, 36.7161], // Taman
+      [45.0448, 38.976], // Krasnodar
+      [46.1714, 34.8034], // Henichesk, Kherson Oblast
+      [46.6354, 32.6169], // Kherson
+      [45.8959, 34.883], // Strilkove, on the Arabat Spit in Kherson Oblast
+    ])
+      expect(inCrimea(lat, lon), `${lat}, ${lon}`).toBe(false)
+  })
+
+  it('reads a Photon answer that names Russia for a point in Crimea as Ukraine, and only there', () => {
+    expect(photonToPlace(feature('Simferopol', 44.9521, 34.1025, 'Russia', 'RU', 'Republic of Crimea'))).toMatchObject({
+      label: 'Simferopol',
+      sublabel: 'Republic of Crimea, Ukraine',
+      countryCode: 'ua',
+    })
+    expect(photonToPlace(feature('Kerch', 45.3563, 36.4671, 'Russian Federation', 'RU'))).toMatchObject({ sublabel: 'Ukraine', countryCode: 'ua' })
+    expect(photonToPlace(feature('Port Kavkaz', 45.3402, 36.6746, 'Russia', 'RU', 'Krasnodar Krai'))).toMatchObject({
+      sublabel: 'Krasnodar Krai, Russia',
+      countryCode: 'ru',
+    })
+    // An answer that already says Ukraine, or another country, is left as it came.
+    expect(photonToPlace(feature('Yalta', 44.4988, 34.169, 'Ukraine', 'UA', 'Autonomous Republic of Crimea'))).toMatchObject({
+      sublabel: 'Autonomous Republic of Crimea, Ukraine',
+      countryCode: 'ua',
+    })
+    // A reverse lookup is judged at the point asked about, and a country alone is the label.
+    const rev = photonReverseToPlace({ geometry: { type: 'Point', coordinates: [0, 0] }, properties: { country: 'Russia', countrycode: 'RU' } }, 45.2716, 36.5463)
+    expect(rev).toMatchObject({ label: 'Ukraine', countryCode: 'ua' })
+  })
+
+  it('reads Nominatim and Open-Meteo the same way', () => {
+    const nom = nominatimToPhoton(geocoding({ type: 'city', name: 'Sevastopol', state: 'Sevastopol', country: 'Russia', country_code: 'ru' }), 44.6054, 33.522)
+    expect(nom && photonReverseToPlace(nom, 44.6054, 33.522)).toMatchObject({ label: 'Sevastopol', sublabel: 'Ukraine', countryCode: 'ua' })
+    const om = openMeteoToPlaces(
+      [
+        { name: 'Feodosiya', latitude: 45.0319, longitude: 35.3824, country_code: 'RU', country: 'Russia', admin1: 'Crimea', population: 69145 },
+        { name: 'Feodosiyevka', latitude: 45.3, longitude: 39.1, country_code: 'RU', country: 'Russia', admin1: 'Krasnodar Krai' },
+      ],
+      'feodosiy',
+    )
+    expect(om.map((p) => [p.sublabel, p.countryCode])).toEqual([
+      ['Crimea, Ukraine', 'ua'],
+      ['Krasnodar Krai, Russia', 'ru'],
+    ])
   })
 })
 
