@@ -244,9 +244,10 @@ function ImagePlateView({ plate, locale }: { plate: ImagePlate; locale: Locale }
   )
 }
 
+/** lang="en" on the licence credit (Chip.lang): English in every language, so text-transform cases it as English. */
 function ChipView({ chip }: { chip: Chip }) {
   return (
-    <span className={s.chip} style={{ ...chip.pos, fontSize: chip.size } as CSSProperties}>
+    <span className={s.chip} lang={chip.lang} style={{ ...chip.pos, fontSize: chip.size } as CSSProperties}>
       {chip.segs.map((seg, i) => (
         <span key={i} style={{ color: TONE_COLOR[seg.tone] }}>
           {seg.text}

@@ -519,11 +519,21 @@ function drawPrims(ctx: Ctx, prims: Prim[]) {
 /** Uppercase in the card's language (canvas has no CSS text-transform): Turkish i → İ. */
 type Caps = (text: string) => string
 
+/**
+ * How a chip is uppercased: in the card's language, except the licence credit (Chip.lang 'en'), which is English in
+ * every language and so is uppercased as English ("CONTAINS", never Turkish "CONTAİNS").
+ */
+export function chipCaps(chip: Pick<Chip, 'lang'>, caps: Caps): Caps {
+  const lang = chip.lang
+  return lang ? (t) => t.toLocaleUpperCase(lang) : caps
+}
+
 /** A flat ink chip: padding, 1px line-strong border, mono segments separated by CHIP_BOX.gap. */
 function drawChip(ctx: Ctx, chip: Chip, caps: Caps, plateSize = PLATE) {
   const f = monoFace(chip.size)
   setFace(ctx, f)
-  const segs = chip.segs.map((s) => ({ ...s, text: caps(s.text) }))
+  const up = chipCaps(chip, caps)
+  const segs = chip.segs.map((s) => ({ ...s, text: up(s.text) }))
   const widths = segs.map((s) => textWidth(ctx, s.text, f.tracking!))
   const lineH = chip.size * CHIP_BOX.lineH
   const w = widths.reduce((a, b) => a + b, 0) + CHIP_BOX.gap * (segs.length - 1) + CHIP_BOX.padX * 2 + 2

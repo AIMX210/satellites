@@ -29,6 +29,7 @@
 import { ArrayBufferTarget, Muxer } from 'mp4-muxer'
 import enTimelapse from '@/i18n/en/timelapse'
 import { currentLocale, msgs } from '@/i18n/runtime'
+import { SPELLED } from '@/imagery/placeKey'
 import type { Frame } from '@/imagery/timelapse'
 import { LOCALE_INFO } from '../../../api/_lib/i18n/locales'
 import { WORDMARK_BOX, WORDMARK_DOT, WORDMARK_PATH } from '../../../api/_lib/wordmark'
@@ -86,15 +87,22 @@ export function planVideo(n: number): VideoPlan {
   return { steps }
 }
 
-/** A name's Latin letters and digits as a file-name slug ("São Paulo" → "sao-paulo"); empty when it has none. */
+/**
+ * A name's Latin letters and digits as a file-name slug ("São Paulo" → "sao-paulo"); empty when it has none. Letters
+ * with no decomposition are spelled as the place search spells them (placeKey's SPELLED: "Łódź" → "lodz",
+ * "Kırıkkale" → "kirikkale"), not dropped into a hyphen. Cut at 40 characters, and a hyphen the cut leaves at the end
+ * goes too, so the name never reads "…drobwll--2015".
+ */
 const slugOf = (label: string) =>
   label
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
+    .replace(/[^a-z0-9]/g, (c) => SPELLED[c] ?? c)
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 40)
+    .replace(/-+$/, '')
 
 /**
  * "watched-groom-lake-2015-2026.mp4". A place named in another script (東京) takes the catalog's word for a place

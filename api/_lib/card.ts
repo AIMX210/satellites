@@ -141,7 +141,8 @@ function chip(locale: Locale, c: Chip): ReactElement {
       background: C.chip,
       border: `1px solid ${C.lineStrong}`,
     },
-    c.segs.map((s) => mono(locale, s.text, c.size, TONE_COLOR[s.tone])),
+    // The licence credit is English in every language, so it is uppercased as English (Chip.lang).
+    c.segs.map((s) => mono(c.lang ?? locale, s.text, c.size, TONE_COLOR[s.tone])),
   )
 }
 
@@ -422,7 +423,7 @@ export function defaultCard({ host, plateDataUri, locale = DEFAULT_LOCALE }: { h
   const P = DEFAULT_PLATE
   const m = cardMessages(locale)
   const source: Chip = { segs: [{ text: [m.defaultPlace, P.satName, m.pixelSize(P.gsdM)].join(' · '), tone: 'bone' }], size: CARD_FS.chipLead, pos: { left: 24, top: 24 } }
-  const credit: Chip = { segs: [{ text: creditFor({ collection: P.collection, datetime: P.datetime }), tone: 'bone2' }], size: CARD_FS.micro, pos: { left: 24, bottom: 24 } }
+  const credit: Chip = { segs: [{ text: creditFor({ collection: P.collection, datetime: P.datetime }), tone: 'bone2' }], size: CARD_FS.micro, pos: { left: 24, bottom: 24 }, lang: 'en' }
   const scale: ScaleBar = { px: 100, label: m.scale(1) }
   const left = plateDataUri
     ? abs(

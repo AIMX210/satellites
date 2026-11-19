@@ -27,7 +27,8 @@
  *   │                             │ SEE WHAT WATCHED YOU  www.watched.earth│
  *   └─────────────────────────────┴─────────────────────────────────────┘
  *
- * Text is stored in sentence case; mono rows are uppercased by the renderers, in the card's language (as CSS does).
+ * Text is stored in sentence case; mono rows are uppercased by the renderers, in the card's language (as CSS does),
+ * except the licence credit, which is English and uppercased as English (Chip.lang).
  */
 import { cardMessages, type CardMessages } from './i18n/card/index.js'
 import { fmt } from './i18n/format.js'
@@ -125,6 +126,11 @@ export interface Chip {
   segs: ChipSeg[]
   size: number
   pos: { left?: number; right?: number; top?: number; bottom?: number }
+  /**
+   * 'en' on the licence credit only: its words are English in every language (creditFor), so each renderer
+   * uppercases it with English rules, not the card's (Turkish would print "CONTAİNS MODİFİED").
+   */
+  lang?: 'en'
 }
 
 export interface ScaleBar {
@@ -619,6 +625,11 @@ function plateChip(text: string, pos: Chip['pos'], tone: Tone = 'bone', size: nu
   return { segs: [{ text, tone }], size, pos }
 }
 
+/** The licence credit at the plate's bottom left: English in every language, and cased as English (Chip.lang). */
+function creditChip(c: Pick<CardCaptureInput, 'collection' | 'datetime'>, fallbackMs?: number): Chip {
+  return { ...plateChip(creditFor(c, fallbackMs), { left: INSET, bottom: INSET }, 'bone2', CARD_FS.micro), lang: 'en' }
+}
+
 /** The place reticle: thin ring, four ticks, centre dot, in signal (DESIGN §6). Strokes ≥ 2px so it survives a 600px unfurl. */
 export function reticlePrims(cx: number, cy: number, r = 26, width = 2): Prim[] {
   const t0 = r + 9
@@ -840,7 +851,7 @@ export function buildCardSpec(input: CardInput, locale: Locale = DEFAULT_LOCALE)
     const crop = cardCrop(c)
     const gsd = c.gsdM ?? NATIVE_GSD_M[c.collection] ?? crop.metresPerPx
     const chip = plateChip(`${input.satName ?? m.aSatellite} · ${sensorName(c)} · ${m.pixelSize(gsd)}`, { left: INSET, top: INSET }, 'bone', CARD_FS.chipLead)
-    const credit = plateChip(creditFor(c, input.tClosest), { left: INSET, bottom: INSET }, 'bone2', CARD_FS.micro)
+    const credit = creditChip(c, input.tClosest)
     const scale = scaleFor(m, crop.metresPerPx)
     plate = {
       kind: 'image',
@@ -976,7 +987,7 @@ export function buildSummarySpec(i: SummaryInput, locale: Locale = DEFAULT_LOCAL
   if (c && i.best) {
     const crop = cardCrop(c)
     const chip = plateChip(summaryLookChip(i.best, i.timeZone, locale), { left: INSET, top: INSET }, 'bone', CARD_FS.chipLead)
-    const credit = plateChip(creditFor(c, i.best.tClosest), { left: INSET, bottom: INSET }, 'bone2', CARD_FS.micro)
+    const credit = creditChip(c, i.best.tClosest)
     const scale = scaleFor(m, crop.metresPerPx)
     plate = { kind: 'image', crop, chip, credit, scale, overlay: imageOverlay([chip, credit], scale), fallback: emptyPlate(planNote(m, 'imaged', 'transient')) }
   } else {

@@ -285,16 +285,40 @@ function disambiguate(hits: Hit[]): Place[] {
   })
 }
 
+/** Two numbers with decimal points, apart by a comma, a semicolon or a space. */
+const POINT_PAIR = /^([+-]?\d{1,2}(?:\.\d+)?)\s*([NS])?\s*[,;\s]\s*([+-]?\d{1,3}(?:\.\d+)?)\s*([EW])?$/
+/**
+ * Two numbers that may have decimal commas, apart by a semicolon or a space, or by a comma only after a hemisphere
+ * letter (where it cannot be a decimal one).
+ */
+const COMMA_PAIR = /^([+-]?\d{1,2}(?:[.,]\d+)?)\s*(?:([NS])\s*[,;\s]|[;\s])\s*([+-]?\d{1,3}(?:[.,]\d+)?)\s*([EW])?$/
+
 /**
  * Coordinates typed into the search box: "43.4723, -80.5449", "43.4723 -80.5449",
  * "43.4723°N 80.5449°W", "43.4723N,80.5449W". Null if it isn't a coordinate pair.
+ *
+ * The minus may be the true minus sign (U+2212, as the search hint prints "43.47, −80.54") or an en dash, which
+ * keyboards and word processors put in its place. Most of Europe writes decimal commas ("41,01 28,98", "43,47;
+ * −80,54"): those are read only when the two numbers are apart by a space or a semicolon (or by a comma after a
+ * hemisphere letter, "41,01N, 28,98E"), so that "41,01" stays latitude 41, longitude 1 as before and "41,01,28,98"
+ * stays no pair at all. Hemisphere letters are only N/S/E/W: the other languages' letters clash (O is west in
+ * French, Spanish and Italian, east in German).
+ * Bidirectional marks are dropped, so coordinates copied out of right-to-left text still read, and full-width digits
+ * and punctuation (a Chinese, Japanese or Korean input method's "４３．４７，−８０．５４") read as their ASCII forms
+ * (NFKC, after the degree signs go: it would turn "º" into the letter o).
  */
 export function parseCoordinates(q: string): LatLon | null {
-  const s = q.trim().toUpperCase().replace(/[°º]/g, ' ')
-  const m = /^([+-]?\d{1,2}(?:\.\d+)?)\s*([NS])?\s*[,;\s]\s*([+-]?\d{1,3}(?:\.\d+)?)\s*([EW])?$/.exec(s)
+  const s = q
+    .replace(/[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '')
+    .replace(/[°º]/g, ' ')
+    .normalize('NFKC')
+    .trim()
+    .toUpperCase()
+    .replace(/[\u2212\u2013]/g, '-')
+  const m = POINT_PAIR.exec(s) ?? COMMA_PAIR.exec(s)
   if (!m) return null
-  let lat = Number(m[1])
-  let lon = Number(m[3])
+  let lat = Number(m[1].replace(',', '.'))
+  let lon = Number(m[3].replace(',', '.'))
   if (m[2] === 'S') lat = -Math.abs(lat)
   if (m[4] === 'W') lon = -Math.abs(lon)
   if (!(Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) return null

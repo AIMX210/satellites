@@ -40,8 +40,10 @@
   src: url('../../node_modules/@fontsource-variable/noto-sans/files/noto-sans-cyrillic-wdth-normal.woff2') format('woff2-variations');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
-/* The accent: one instance (wght 320, wdth 62.5) that matches Instrument Serif italic's measure and colour; the .serif
-   rules still ask for 400 / 100% and the variation is clamped to these descriptors. */
+/* The accent: one instance of Noto Serif Display italic (wght 320, wdth 62.5) that matches Instrument Serif italic's
+   measure and colour, generated as a static font by scripts/build-cyrillic-fonts.py (11 kB; the variable file it is
+   cut from is 65 kB). The .serif rules still ask for 400 / 100%: this is the family's only face, so it is the one
+   drawn, as it is, with nothing synthesised. */
 @font-face {
   font-family: 'Watched Cyrillic Serif';
   font-style: italic;
@@ -49,7 +51,7 @@
   font-weight: 320;
   font-stretch: 62.5%;
   size-adjust: 98.5%;
-  src: url('../../node_modules/@fontsource-variable/noto-serif-display/files/noto-serif-display-cyrillic-wdth-italic.woff2') format('woff2-variations');
+  src: url('../assets/fonts/noto-serif-display-cyrillic-italic-320-62.woff2') format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 :root[data-script='cyrillic'] {

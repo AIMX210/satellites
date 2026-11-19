@@ -119,7 +119,7 @@ function localePreloads(bundle: OutputBundle, base: string): Record<string, stri
  */
 const LATIN_EXT = /^(?:.*\/)?(instrument-sans-latin-ext-standard-normal|martian-mono-latin-ext-standard-normal|instrument-serif-latin-ext-400-italic)-[\w-]+\.woff2$/
 const SCRIPT_FONTS: Record<string, RegExp> = {
-  cyrillic: /^(?:.*\/)?(noto-sans-cyrillic-wdth-normal|noto-serif-display-cyrillic-wdth-italic)-[\w-]+\.woff2$/,
+  cyrillic: /^(?:.*\/)?(noto-sans-cyrillic-wdth-normal|noto-serif-display-cyrillic-italic-320-62)-[\w-]+\.woff2$/,
   arabic: /^(?:.*\/)?noto-sans-arabic-wght400-700-wdth75-100-[\w-]+\.woff2$/,
   // Latin languages whose own letters (ł ż ś, ş ğ ı) live in the brand faces' latin-ext files (keyed by locale)
   pl: LATIN_EXT,

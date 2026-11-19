@@ -197,6 +197,52 @@ describe('coordinates', () => {
     expect(parseCoordinates('waterloo')).toBeNull()
     expect(parseCoordinates('10 Downing St')).toBeNull()
   })
+  it('reads the true minus and an en dash wherever a hyphen is read', () => {
+    // The search hint, as every language prints it.
+    expect(parseCoordinates('43.47, \u221280.54')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('\u221233.8688 151.2093')).toEqual({ lat: -33.8688, lon: 151.2093 })
+    expect(parseCoordinates('\u221233.8688;\u2212151.2093')).toEqual({ lat: -33.8688, lon: -151.2093 })
+    expect(parseCoordinates('43.47, \u201380.54')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('\u2212 33, 151')).toBeNull() // a sign apart from its number, as for '-'
+    // Copied out of the Arabic hint, isolates and all, or with an Arabic letter mark.
+    expect(parseCoordinates('\u206643.47, \u221280.54\u2069')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('\u061c43.47, \u221280.54')).toEqual({ lat: 43.47, lon: -80.54 })
+  })
+  it('reads full-width digits and punctuation, as a Chinese, Japanese or Korean input method types them', () => {
+    expect(parseCoordinates('43.47\uff0c\u221280.54')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('\uff14\uff13\uff0e\uff14\uff17\uff0c\u3000\uff0d\uff18\uff10\uff0e\uff15\uff14')).toEqual({
+      lat: 43.47,
+      lon: -80.54,
+    })
+    expect(parseCoordinates('\uff14\uff13\uff0e\uff14\uff17\uff2e \uff18\uff10\uff0e\uff15\uff14\uff37')).toEqual({
+      lat: 43.47,
+      lon: -80.54,
+    })
+    // The ordinal sign some keyboards give for a degree is still a degree, not the letter o.
+    expect(parseCoordinates('43.47\u00baN 80.54\u00baW')).toEqual({ lat: 43.47, lon: -80.54 })
+  })
+  it('reads decimal commas only when a space or a semicolon parts the numbers', () => {
+    expect(parseCoordinates('41,01 28,98')).toEqual({ lat: 41.01, lon: 28.98 })
+    expect(parseCoordinates('43,47; \u221280,54')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('43,47;-80,54')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('33,8688°S 151,2093°E')).toEqual({ lat: -33.8688, lon: 151.2093 })
+    expect(parseCoordinates('41,01   28')).toEqual({ lat: 41.01, lon: 28 })
+    // Where the comma could be the separator, it is read as one, as before.
+    expect(parseCoordinates('41,01')).toEqual({ lat: 41, lon: 1 })
+    expect(parseCoordinates('41, 28')).toEqual({ lat: 41, lon: 28 })
+    expect(parseCoordinates('41,01,28,98')).toBeNull()
+    expect(parseCoordinates('41,01, 28,98')).toBeNull()
+    // After a hemisphere letter a comma can only part the numbers.
+    expect(parseCoordinates('41,01N, 28,98E')).toEqual({ lat: 41.01, lon: 28.98 })
+    expect(parseCoordinates('33,8688°S,151,2093°E')).toEqual({ lat: -33.8688, lon: 151.2093 })
+    expect(parseCoordinates('41,01N28,98E')).toBeNull() // no separator at all, as with points
+    expect(parseCoordinates('91,5 0')).toBeNull()
+  })
+  it('reads no hemisphere letters but N, S, E and W', () => {
+    // O is west in French, Spanish and Italian but east (Ost) in German: never guessed.
+    expect(parseCoordinates('43.47N 80.54O')).toBeNull()
+    expect(parseCoordinates('41,01N 28,98E')).toEqual({ lat: 41.01, lon: 28.98 })
+  })
 })
 
 describe('time zones', () => {

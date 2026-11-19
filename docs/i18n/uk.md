@@ -894,9 +894,10 @@ study, `scratchpad/i18n/type/cyrillic/index.md`):
 - **Accent: Noto Serif Display Italic**, the only candidate that matches Instrument Serif's narrow, high-contrast italic
   in measure (density 5.53 vs 5.59), with true Cyrillic italic forms (т, и, д, б). Declared as its own family pinned to
   `font-weight: 320; font-stretch: 62.5%; size-adjust: 98.5%`, appended to `--font-serif`, with `font-synthesis: none`.
-  Shipped as a static instance at those settings, subset to U+0400–045F and U+0490–0491 (built once with fontTools'
-  instancer and subsetter, committed with its OFL licence, like the card's lockup font): budget ≤ 25 kB. Until that
-  file exists, Fontsource's `-wdth-italic` Cyrillic file (65.4 kB) ships.
+  Shipped as a static instance at those settings (`src/assets/fonts/noto-serif-display-cyrillic-italic-320-62.woff2`,
+  11.4 kB against the variable file's 65.4 kB), built by `scripts/build-cyrillic-fonts.py` with fontTools' instancer:
+  every glyph and layout feature (ccmp, locl, kern, mark, mkmk) and the source's coverage (U+0301, U+0400–045F,
+  U+0490–0491, U+04B0–04B1, U+2116) are kept, and it is committed with its OFL licence (`src/assets/fonts/OFL.txt`).
 - **Mono: Martian Mono's Cyrillic subset** (17.2 kB) is already declared with a `unicode-range` in `fonts.css`.
 - **Speed:** boot's per-script font list preloads the three files for `cyrillic` only; `FIRST_FONTS` for a Cyrillic
   page adds the two Cyrillic faces with sample text («Цього тижня щось дивилося на тебе») so the hero never re-flows

@@ -37,6 +37,23 @@ describe('the file’s name', () => {
     expect(videoFileName('Groom Lake, Nevada', frames)).toBe('watched-groom-lake-nevada-2015-2026.mp4')
     expect(videoFileName('São Paulo', frames.slice(0, 1))).toBe('watched-sao-paulo-2015.mp4')
   })
+  it('spells letters that have no decomposition as the place search does, never as a hyphen', () => {
+    expect(videoFileName('Łódź', frames)).toBe('watched-lodz-2015-2026.mp4')
+    expect(videoFileName('Kırıkkale', frames)).toBe('watched-kirikkale-2015-2026.mp4')
+    expect(videoFileName('Ørsted', frames)).toBe('watched-orsted-2015-2026.mp4')
+    expect(videoFileName('Þingvellir, Ísland', frames)).toBe('watched-thingvellir-island-2015-2026.mp4')
+    expect(videoFileName('Straße des 17. Juni', frames)).toBe('watched-strasse-des-17-juni-2015-2026.mp4')
+    expect(videoFileName('İstanbul', frames)).toBe('watched-istanbul-2015-2026.mp4')
+    // English names, as before.
+    expect(videoFileName('St. John’s, Newfoundland', frames)).toBe('watched-st-john-s-newfoundland-2015-2026.mp4')
+  })
+  it('cuts a long name at 40 characters, never leaving a hyphen at the cut', () => {
+    const welsh = 'Llanfairpwllgwyngyllgogerychwyrndrobwll Llantysiliogogogoch' // 39 letters, then the space
+    expect(videoFileName(welsh, frames)).toBe('watched-llanfairpwllgwyngyllgogerychwyrndrobwll-2015-2026.mp4')
+    expect(videoFileName('Taumatawhakatangihangakoauauotamateaturipukakapikimaungahoronukupokaiwhenuakitanatahu', frames)).toBe(
+      'watched-taumatawhakatangihangakoauauotamateaturi-2015-2026.mp4',
+    )
+  })
   it('still has a name for a place written in another script, or with no frames', () => {
     expect(videoFileName('東京', frames)).toBe('watched-place-2015-2026.mp4')
     expect(videoFileName('Oslo', [])).toBe('watched-oslo.mp4')
