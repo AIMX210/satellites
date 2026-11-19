@@ -1,7 +1,8 @@
 /**
- * Which fonts a card reads, and what they draw: an English card reads and renders exactly what it always did, and a
- * card that speaks Ukrainian or prints Cyrillic adds the faces the web gives Cyrillic, each role its own, drawing every
- * letter without asking Google Fonts; a Chinese, Japanese or Korean card tells satori its language. Rendered offline
+ * Which fonts a card reads, and what they draw: an English card reads and renders exactly what it always did; Turkish
+ * and Polish letters come from each role's latin-ext file; a card that speaks Ukrainian or prints Cyrillic adds the
+ * faces the web gives Cyrillic, each role its own; none of them asks Google Fonts for a letter. A Chinese, Japanese or
+ * Korean card tells satori its language. Rendered offline
  * with satori itself, since the point is how satori resolves them.
  */
 import { readFile } from 'node:fs/promises'
@@ -54,10 +55,10 @@ const LATIN_LIST = [
   ['sans-latin.ttf', 'Overflight Sans', 400, 'normal'],
   ['mono-latin.ttf', 'Overflight Mono', 400, 'normal'],
   ['serif-italic-latin.ttf', 'Overflight Serif', 400, 'italic'],
-  ['display-latin-ext.ttf', 'Overflight Display', 600, 'normal'],
-  ['sans-latin-ext.ttf', 'Overflight Sans', 400, 'normal'],
-  ['mono-latin-ext.ttf', 'Overflight Mono', 400, 'normal'],
-  ['serif-italic-latin-ext.ttf', 'Overflight Serif', 400, 'italic'],
+  ['display-latin-ext.ttf', 'Overflight Display Ext', 600, 'normal'],
+  ['sans-latin-ext.ttf', 'Overflight Sans Ext', 400, 'normal'],
+  ['mono-latin-ext.ttf', 'Overflight Mono Ext', 400, 'normal'],
+  ['serif-italic-latin-ext.ttf', 'Overflight Serif Ext', 400, 'italic'],
   ['mono-medium-latin.ttf', 'Overflight Mono', 500, 'normal'],
 ] as const
 
@@ -65,7 +66,7 @@ const fontFile = async (file: string) => new Uint8Array(await readFile(new URL(`
 const same = (a: ArrayBuffer, b: Uint8Array) => a.byteLength === b.byteLength && Buffer.from(a).equals(Buffer.from(b))
 
 describe('card fonts', () => {
-  it('reads the very list it always did for a card with no Cyrillic, in any language', async () => {
+  it('reads the Latin files, and only those, for a card with no Cyrillic, in any language', async () => {
     const latin = await loadFonts()
     expect(latin.map((f) => [f.name, f.weight, f.style])).toEqual(LATIN_LIST.map(([, name, weight, style]) => [name, weight, style]))
     for (const [i, [file]] of LATIN_LIST.entries()) expect(same(latin[i].data, await fontFile(file))).toBe(true)
@@ -93,6 +94,23 @@ describe('card fonts', () => {
     ])
     expect(await cardFonts('en', 'Sentinel-2C watched Київ.')).toBe(uk)
     expect(LOCALES.filter((l) => needsCyrillic(l, ''))).toEqual(['uk'])
+  })
+
+  it('draws Turkish and Polish letters in each role’s own face, offline', async () => {
+    const latin = await loadFonts()
+    const roles = [
+      ['display', { fontFamily: FAMILY.display, fontWeight: 600 }],
+      ['sans', { fontFamily: FAMILY.sans }],
+      ['mono', { fontFamily: FAMILY.mono }],
+      ['serif', { fontFamily: FAMILY.serif, fontStyle: 'italic' }],
+    ] as const
+    for (const [role, style] of roles) {
+      // With only that role's two files registered, the same words draw the same outlines: no other face was asked.
+      const own = latin.filter((f) => f.name === FONT[role] || f.name === `${FONT[role]} Ext`)
+      for (const words of ['ALTİTUDE İstanbul Şişli Ğ', 'Łódź Gdańsk Kraków źdźbło']) {
+        expect(await svg(line(words, style), latin)).toBe(await svg(line(words, style), own))
+      }
+    }
   })
 
   it('draws Cyrillic in each role’s own cut, offline', async () => {

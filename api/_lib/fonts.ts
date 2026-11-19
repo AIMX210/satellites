@@ -5,12 +5,16 @@
  * file tracer follows, and vercel.json `includeFiles` ships the folder regardless. The cwd-based
  * path is a second chance for runtimes that relocate the compiled module.
  *
- * Cyrillic has its own files, the faces the web gives Ukrainian (src/styles/scripts.css), and they are read only for a
- * card that prints Cyrillic or speaks Ukrainian (cardFonts): any other card gets the very list it always had, so it
- * costs nothing more to render. They are registered under their own names, `<role> Cyrillic`, because satori keeps one
- * face per name, weight and style (a second file under a name it already has is never asked for a glyph); each role
- * then names both families, brand face first (FAMILY), as the web's stacks do. A family a card did not register is
- * skipped, so a card without Cyrillic resolves every glyph exactly as before.
+ * Every role's text is split over several files: fontsource's latin and latin-ext subsets of the brand face, and for
+ * Cyrillic the faces the web gives Ukrainian (src/styles/scripts.css). satori keeps one face per name, weight and style
+ * (a second file under a name it already has is never asked for a glyph), so each file has a name of its own: `<role>`
+ * (latin), `<role> Ext` (latin-ext: İ Ş Ğ, Ł ą ę ś ź ż …) and `<role> Cyrillic`. Each role's `fontFamily` names its
+ * files in that order (FAMILY), as the web's stacks and unicode-ranges do, and a family a card did not register is
+ * skipped. A glyph none of them has is drawn from any other registered font that has it, else from a Noto subset
+ * fetched for the card (fallbackFonts.ts).
+ *
+ * The Cyrillic files are read only for a card that prints Cyrillic or speaks Ukrainian (cardFonts): any other card
+ * gets the very list it always had, so it costs nothing more to render.
  */
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -25,15 +29,20 @@ export const FONT = {
   serif: 'Overflight Serif', //     Instrument Serif italic
 } as const
 
+/** The latin-ext files' names (the same faces as the latin ones). */
+const EXT_NAME = (name: string) => `${name} Ext`
 /** The Cyrillic faces' names: Noto Sans wdth 67.5 / 100, Martian Mono's own Cyrillic, Noto Serif Display italic. */
 const CYRILLIC_NAME = (name: string) => `${name} Cyrillic`
 
-/** What the card's text is set in (its `fontFamily`): each role's face, then its Cyrillic cut. */
+/** A role's files, in the order a glyph is looked for in them. */
+const stack = (name: string) => `${name}, ${EXT_NAME(name)}, ${CYRILLIC_NAME(name)}`
+
+/** What the card's text is set in (its `fontFamily`): each role's face, its latin-ext file, then its Cyrillic cut. */
 export const FAMILY = {
-  display: `${FONT.display}, ${CYRILLIC_NAME(FONT.display)}`,
-  sans: `${FONT.sans}, ${CYRILLIC_NAME(FONT.sans)}`,
-  mono: `${FONT.mono}, ${CYRILLIC_NAME(FONT.mono)}`,
-  serif: `${FONT.serif}, ${CYRILLIC_NAME(FONT.serif)}`,
+  display: stack(FONT.display),
+  sans: stack(FONT.sans),
+  mono: stack(FONT.mono),
+  serif: stack(FONT.serif),
 } as const
 
 type Weight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
@@ -67,8 +76,11 @@ const SUBSETS = ['latin', 'latin-ext'] as const
  */
 const EXTRA: FontFile[] = [{ file: 'mono-medium-latin.ttf', name: FONT.mono, weight: 500, style: 'normal' }]
 
-/** Every card's fonts, in order: Latin first so it wins over latin-ext. */
-const LATIN: FontFile[] = [...SUBSETS.flatMap((subset) => FILES.map((f) => ({ ...f, file: `${f.stem}-${subset}.ttf` }))), ...EXTRA]
+/** Every card's fonts: each role's latin file under its name, its latin-ext file under `<role> Ext`. */
+const LATIN: FontFile[] = [
+  ...SUBSETS.flatMap((subset) => FILES.map((f) => ({ ...f, file: `${f.stem}-${subset}.ttf`, name: subset === 'latin' ? f.name : EXT_NAME(f.name) }))),
+  ...EXTRA,
+]
 /** Added for a card that prints Cyrillic: each role's Cyrillic cut, registered as the role asks for it. */
 const CYRILLIC: FontFile[] = FILES.map((f) => ({ ...f, file: `${f.stem}-cyrillic.ttf`, name: CYRILLIC_NAME(f.name) }))
 
