@@ -12,6 +12,7 @@
  */
 import { startTransition, useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import { DUR, EASE } from '@/lib/ease'
+import { useLocale } from '@/i18n/runtime'
 import { useApp } from '@/state/store'
 import { prefersReducedMotion } from '@/ui/system'
 import { snapshot } from './snapshot'
@@ -239,6 +240,9 @@ export function useSheetGeometry(
  * (see `publishSheetInset`): the visible height, live while dragged or settling.
  */
 export function useInsets(sectionRef: RefObject<HTMLElement | null>, timelineRef: RefObject<HTMLElement | null>, mobile: boolean, deps: unknown[]) {
+  // A language switch can move the dock to the other side (right to left) without resizing anything the observers
+  // watch: publish again then, once the new direction is in place (setLocale sets <html dir> before it re-renders).
+  const locale = useLocale()
   useLayoutEffect(() => {
     const section = sectionRef.current
     if (!section || mobile) return
@@ -274,7 +278,7 @@ export function useInsets(sectionRef: RefObject<HTMLElement | null>, timelineRef
       window.removeEventListener('resize', publish)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sectionRef, timelineRef, mobile, ...deps])
+  }, [sectionRef, timelineRef, mobile, locale, ...deps])
 }
 
 /** The desktop dock sits in the viewport's left half (a right-to-left page): its layout box, not the language. */

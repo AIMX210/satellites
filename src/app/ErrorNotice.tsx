@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import enApp from '@/i18n/en/app'
-import { useMsgs } from '@/i18n/runtime'
+import { useLocale, useMsgs } from '@/i18n/runtime'
 import { isStacked } from '@/lib/layout'
 import { useApp } from '@/state/store'
 import type { MessageRef } from '@/types'
@@ -22,6 +22,7 @@ import s from './ErrorNotice.module.css'
  */
 export function ErrorNotice({ message, onRetry, onBack }: { message?: MessageRef; onRetry?: () => Promise<void> | void; onBack: () => void }) {
   const m = useMsgs(enApp)
+  const locale = useLocale()
   const ref = useRef<HTMLDivElement>(null)
   const [busy, setBusy] = useState(false)
   const alive = useRef(true)
@@ -63,7 +64,8 @@ export function ErrorNotice({ message, onRetry, onBack }: { message?: MessageRef
       ro?.disconnect()
       window.removeEventListener('resize', publish)
     }
-  }, [])
+    // the language: a switch to or from Arabic moves the notice to the other side without resizing it
+  }, [locale])
 
   return (
     <div ref={ref} className={s.wrap} role="alert">
