@@ -49,7 +49,7 @@ const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
   empty:
     'Nessun satellite che seguiamo ha attraversato questo luogo in questa finestra temporale. Succede di rado: se una fonte di dati non funzionava, lo dicono le note qui sopra.',
-  imagedOrder: 'ripresa più vicina, poi le più recenti',
+  imagedOrder: 'la più vicina, poi le recenti',
   count: (n: number, _verdict: Verdict) => passCount(n),
   countStack: (n: number, _verdict: Verdict): NumPart => num(count(n), passes(n)),
   // *sat* is invariable (§3.7); *di* before it only for exact millions, like every count.

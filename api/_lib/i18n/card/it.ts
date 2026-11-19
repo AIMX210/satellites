@@ -9,7 +9,9 @@
  *  - The headline leads with the results headline's words, the verb inside each plural form: *1 satellite ha
  *    osservato* / *256 satelliti hanno osservato* / *1.000.000 di satelliti hanno osservato*; zero is its own
  *    sentence, *Nessun satellite che seguiamo ha osservato*. The place is the serif block, the bare object of a
- *    transitive verb, so no article, contraction or agreement is ever needed (§5.1).
+ *    transitive verb, so no article, contraction or agreement is ever needed (§5.1). A no-break space holds the
+ *    auxiliary to its participle (*hanno osservato*), so the card's lead breaks as *256 satelliti* / *hanno osservato*,
+ *    never *256 satelliti hanno* / *osservato*.
  *  - A satellite's name is the bare subject of an *avere* perfect or an imperfetto (*ha osservato*, *ha inquadrato*,
  *    *aveva a portata*, *ha sorvolato*, *guardava*), never *essere* + participle, never an article; after a preposition
  *    only a simple one (*di Sentinel-2B*). A nameless satellite is written by each sentence: *Un satellite* as a
@@ -53,9 +55,9 @@ const proseDay = (ms: number, timeZone: string) => day(ms, timeZone, { weekday: 
 const watched = (n: number) =>
   n > 0
     ? f.plural(n, {
-        one: `${f.int(n)} satellite ha osservato`,
-        many: `${f.int(n)} di satelliti hanno osservato`,
-        other: `${f.int(n)} satelliti hanno osservato`,
+        one: `${f.int(n)} satellite ha osservato`,
+        many: `${f.int(n)} di satelliti hanno osservato`,
+        other: `${f.int(n)} satelliti hanno osservato`,
       })
     : 'Nessun satellite che seguiamo ha osservato'
 /**
@@ -101,16 +103,16 @@ const card: CardMessages = {
 
   // ── The line under the headline ───────────────────────────────────────────────────────────────────────────────────
 
-  // The card's headline already says the week, so zero has no *questa settimana* (§3.3). *Almeno* comes and goes
-  // without changing another word.
+  // The card's headline already says the week, so zero has no *questa settimana* (§3.3). *almeno* comes and goes
+  // after the verb without changing another word, as on the results screen.
   photos: (count: number, atLeast: boolean) => {
-    if (count <= 0) return 'Nessuna immagine è stata resa pubblica.'
+    if (count <= 0) return 'Nessuna immagine è stata pubblicata.'
     const n = f.int(count)
-    const lead = atLeast ? 'Almeno ' : ''
+    const least = atLeast ? 'almeno ' : ''
     return f.plural(count, {
-      one: `${lead}${n} immagine è stata resa pubblica.`,
-      many: `${lead}${n} di immagini sono state rese pubbliche.`,
-      other: `${lead}${n} immagini sono state rese pubbliche.`,
+      one: `È stata pubblicata ${least}${n} immagine.`,
+      many: `Sono state pubblicate ${least}${n} di immagini.`,
+      other: `Sono state pubblicate ${least}${n} immagini.`,
     })
   },
   archiveDown: 'Gli archivi delle immagini non hanno risposto: per ora non possiamo contare le immagini pubbliche.',
@@ -175,10 +177,11 @@ const card: CardMessages = {
   noPublicPhoto: 'Nessuna foto pubblica questa settimana',
   noPhoto: 'Nessuna foto da mostrare',
   // The week card's lead chip (14 px mono, top left) ends before the picture's scale chip: the glossary's short
-  // *Più vicina* (to x ≈ 363 with Sentinel-2B · 10 m), where *Ripresa più vicina* ran into it (x ≈ 445 against 436).
+  // *Più vicina* (to x ≈ 363 with Sentinel-2B · 10 m), where *Ripresa più vicina* ran into it (x ≈ 445 against 436);
+  // *Ultima limpida* likewise (the English length; *Ultima ripresa limpida* is 7 characters longer, before a day).
   look: {
     closest: 'Più vicina',
-    lastClear: 'Ultima ripresa limpida',
+    lastClear: 'Ultima limpida',
     clouded: 'Coperto',
     radar: 'Radar',
   },

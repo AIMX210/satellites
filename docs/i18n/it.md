@@ -81,7 +81,7 @@ standard Italian (*ti ha osservato* is correct for any reader).
 |---|---|---|---|
 | Display headlines (hero, results, About title, time-lapse) | tu, declarative | *Qualcosa, questa settimana, ha osservato te.* | The poster talks to one reader. |
 | Sentences and prose (pass sentences, footnotes, captions) | tu where English says *you*; *noi* for the product | *Il suo ha visto le tue nuvole, non le tue strade.* | Mirrors English: *we* is Watched, *you* is the reader. |
-| UI labels and buttons | Imperative 2nd singular | *Condividi*, *Cerca un luogo*, *Usa la mia posizione*, *Riprova* | Standard modern Italian UI. The infinitive (*Condividere*) reads as a manual. |
+| UI labels and buttons | Imperative 2nd singular | *Condividi*, *Cerca un luogo*, *Salva PNG*, *Riprova* | Standard modern Italian UI. The infinitive (*Condividere*) reads as a manual. |
 | Status words (loading, retrying, locating) | Nouns, never a verb in the 1st person | *Caricamento…*, *Nuovo tentativo…*, *Posizione…* | The product is *noi*; *Carico…*, *Riprovo…*, *Localizzo…* would make it *io*. |
 | Mono caps labels | No address: nouns or noun phrases | *QUOTA*, *ULTIMI 7 GIORNI*, *NEL TUO CIELO* | Labels name things. *tuo* appears only where English says *your*. |
 | Error notices | tu + *noi*, declarative, subject first | *Non siamo riusciti a caricare il catalogo delle orbite. Controlla la connessione e riprova.* | Says what happened, then what to do. Never *Si è verificato un errore*. |
@@ -130,7 +130,7 @@ Never write an adjective or participle that agrees with the reader.
 - Verbs, not nominalisations. ✗ *effettuazione del calcolo*, ✗ *procedere alla condivisione*; ✓ *calcoliamo*,
   ✓ *condividi*. Status labels are the exception (*Caricamento…*, *Propagazione delle orbite*): they name a process.
 - Active voice in sentences addressed to the reader. No *viene effettuato*, *viene mostrato*. Two passives are kept:
-  the owner's *sono state rese pubbliche* ("were made public"), and *essere* passives in footnotes where English uses a
+  the second line's *sono state pubblicate* (the owner's "were made public"), and *essere* passives in footnotes where English uses a
   passive and the agent doesn't matter (*I passaggi sono calcolati solo dalla geometria orbitale.*).
 - Put the new or heavy information last. Italian end-weight is natural: the place ends the headline, *te* ends the
   hero.
@@ -163,9 +163,9 @@ Never write an adjective or participle that agrees with the reader.
    - ✓ *Qui era buio. Di notte gli strumenti meteo continuano a scandire nell’infrarosso: il suo ha visto le tue
      nuvole, non le tue strade.*
 3. *Can it see me? No. At best a pixel here is 10 m across. A car is one pixel. You’re not in it.*
-   - ✗ *Può vedermi? No. Nel migliore dei casi, un pixel qui è largo 10 metri. Una macchina corrisponde a un pixel. Non
+   - ✗ *Mi può vedere? No. Nel migliore dei casi, un pixel qui è largo 10 metri. Una macchina corrisponde a un pixel. Non
      sei presente nell’immagine.* (padding, *presente*)
-   - ✓ *Può vedermi? No. Nel migliore dei casi un pixel misura 10 m. Un’auto è un pixel. Tu lì dentro non ci sei.*
+   - ✓ *Un satellite può vedermi? No. Nel migliore dei casi un pixel misura 10 m. Un’auto è un pixel. Tu lì dentro non ci sei.*
 4. *See every satellite that passed over it in the last 7 days, and the actual pictures they took.*
    - ✗ *Scopri tutti i satelliti che sono passati sopra di esso negli ultimi 7 giorni e le foto attuali che hanno
      scattato!* (marketing verb, *esso*, false friend *attuali*, exclamation)
@@ -305,20 +305,22 @@ the place; Italian resumes it with *questo luogo*, never a pronoun (§5.1).
 
 | Case | Italian |
 |---|---|
-| `one` | `1` immagine è stata resa pubblica. |
-| `other` | `31` immagini sono state rese pubbliche. |
-| `many` | `1.000.000` di immagini sono state rese pubbliche. |
-| Partial, `one` | Almeno `1` immagine è stata resa pubblica. |
-| Partial, `other` | Almeno `31` immagini sono state rese pubbliche. |
-| Zero, results | Nessuna immagine è stata resa pubblica questa settimana. (old window: *quella settimana*) |
-| Zero, card (its headline already says the week) | Nessuna immagine è stata resa pubblica. |
+| `one` | È stata pubblicata `1` immagine. |
+| `other` | Sono state pubblicate `31` immagini. |
+| `many` | Sono state pubblicate `1.000.000` di immagini. |
+| Partial, `one` | È stata pubblicata almeno `1` immagine. |
+| Partial, `other` | Sono state pubblicate almeno `31` immagini. |
+| Zero, results | Nessuna immagine è stata pubblicata questa settimana. (old window: *quella settimana*) |
+| Zero, card (its headline already says the week) | Nessuna immagine è stata pubblicata. |
 | Archive outage | Gli archivi delle immagini non hanno risposto: per ora non possiamo contare le immagini pubbliche. |
 | Outage, card short form | Gli archivi delle immagini non hanno risposto. |
 
-*Almeno* appears and disappears in place while the count settles; the sentence reads correctly with and without it.
-*rese pubbliche* keeps the owner's "made public" and its edge (*rendere pubblico* = to disclose). Alternates: *`31`
-immagini pubblicate.* (not a sentence; *Almeno* reads badly before it); *`31` immagini sono pubbliche.* (loses the
-event).
+*almeno* appears and disappears in place after the verb while the count settles; the sentence reads correctly with
+and without it. The line sits beside Share and must hold one line there, as the English does (about 36 characters on a
+1280 px screen, fewer on a phone): *`31` immagini sono state rese pubbliche.* (38) wrapped on every screen in visual
+QA, so the verb leads and *pubblicate* says "made public" (the Spanish line is *Se publicaron 31 imágenes.*).
+Alternates: *`31` immagini pubblicate.* (not a sentence); *`31` immagini sono pubbliche.* (loses the event); *`31`
+immagini sono state rese pubbliche.* (two lines beside Share).
 
 ### 3.4 Pass sentences
 
@@ -484,7 +486,7 @@ nuvoloso · `82%`*, post and desc *Ha visto soprattutto nuvole (`82%`).*; spot: 
 | `note` | L’immagine è nell’app · Immagine non disponibile ora · Archivio commerciale, non pubblico · Nella fascia, ancora nessuna immagine pubblica · Traccia al suolo al massimo avvicinamento |
 | `acquiring` | Acquisizione… |
 | `noPublicPhoto` / `noPhoto` | Nessuna foto pubblica questa settimana / Nessuna foto da mostrare |
-| `look` | Più vicina · Ultima ripresa limpida · Coperto · Radar (the lead chip must end before the picture's scale chip: *Ripresa più vicina · Landsat 9 · 30 m* does not) |
+| `look` | Più vicina · Ultima limpida · Coperto · Radar (the lead chip must end before the picture's scale chip: *Ripresa più vicina · Landsat 9 · 30 m* does not) |
 | `lookDay` | 3 nov |
 | `aSatellite` | Un satellite |
 | `invite` | Vedi cosa ti ha osservato |
@@ -496,7 +498,7 @@ nuvoloso · `82%`*, post and desc *Ha visto soprattutto nuvole (`82%`).*; spot: 
 | Verdict | Title | Lane (mono caps) | Count unit | Definition | Headline / post verb | Pass sentence | aria `rowLabel` verb |
 |---|---|---|---|---|---|---|---|
 | imaged | **Osservato** | Foto | `1` passaggio / `31` passaggi / `1.000.000` di passaggi | In un archivio pubblico c’è un’immagine reale di questo luogo. | ha osservato | ha attraversato il cielo… | osservato |
-| likely | **Probabilmente osservato** | Probabile | passaggio / passaggi | Questo luogo era nella fascia di ripresa di una fotocamera fissa. Nessuna sua immagine è pubblicata. | ha inquadrato | ha attraversato il cielo… | inquadrato |
+| likely | **Probabilmente osservato** | Probabile | passaggio / passaggi | Questo luogo era nella fascia di ripresa di una fotocamera fissa. Non ne è stata pubblicata nessuna immagine. | ha inquadrato | ha attraversato il cielo… | inquadrato |
 | could | **Poteva puntare qui** | Possibile | passaggio / passaggi | Era a portata una fotocamera orientabile o privata. Il suo operatore non dice se ha puntato qui. | aveva a portata | era a portata | a portata |
 | overhead | **Nel tuo cielo** | In cielo | passaggio / passaggi | Ha attraversato il tuo cielo. Stazioni spaziali e tutto il resto. | ha sorvolato | ha attraversato il cielo… | sorvolato |
 
@@ -552,7 +554,7 @@ giorno, quindi quei passaggi contano come osservati.*
 | `searchDown` | La ricerca dei luoghi non risponde. Le coordinate funzionano ancora, per esempio 43.47, −80.54. (the example exactly as English writes it, minus sign included) |
 | `nothingMatches` | Nessun risultato per «[query]». Prova una città, un luogo famoso o delle coordinate. |
 | `go` (aria) | Mostra cosa è passato sopra questo luogo |
-| `useMyLocation` / `locateMe` / `nearMe` / `locating` | Usa la mia posizione / Trovami / Vicino a me / Posizione… |
+| `useMyLocation` / `locateMe` / `nearMe` / `locating` | La mia posizione / Trovami / Vicino a me / Posizione… |
 | `requestingPosition` / `namingPlace` | Richiesta della posizione / Ricerca del nome |
 | `locatingNote` | La tua posizione va al geocoder Photon per dare un nome al luogo. Conserviamo solo una cella di circa 10&nbsp;km. |
 | `orTry` / `pinHint` / `dropPin` / `surprise` | Oppure prova / Oppure clicca sul globo per mettere un segnaposto / Metti un segnaposto / Sorprendimi |
@@ -566,7 +568,7 @@ spostarlo* · droppedAt *Segnaposto inserito in 43.4723°N 80.5449°W.* · dropp
 Invio o la freccia per vedere cosa è passato sopra questo luogo.* · noGl *Vista 3D non disponibile* / *WebGL 2 è
 disattivato in questo browser*.
 
-**Pass list and pass view.** sats *`31` sat* (invariable) · imagedOrder *ripresa più vicina, poi le più recenti* ·
+**Pass list and pass view.** sats *`31` sat* (invariable) · imagedOrder *la più vicina, poi le recenti* ·
 latest *Ultimo* · closest *Più vicino* · cloudChip *Nuvole* · tag *Mosaico*, *Radar*, *Nuvoloso · `82%`*, *Nuvoloso · sul
 punto* · offNadir *`4,8°` off-nadir* · noImage notes end with *Vista dall’alto del passaggio.* · crewed *Le stazioni con
 equipaggio hanno fotocamere, ma le loro foto non sono pubblicate per luogo e ora.* · spot *Lettura del pixel sul tuo
@@ -621,7 +623,7 @@ Gender: m. / f.; inv. = invariable in the plural.
 | last clear look | ultima ripresa limpida | 22 characters: fits the cover chip (about 169 px at 10.5 px); check on a 320 px phone. |
 | photo | foto, f. inv. | *la foto*, *le foto*. Filters agree: *Tutte*, *Nitide*. Never *fotografia* in UI. |
 | image | immagine, f. | pl. *immagini*. Default for anything that may be radar, a mosaic or a full disc. |
-| made public | reso pubblico | *sono state rese pubbliche*. |
+| made public | pubblicato | *Sono state pubblicate `31` immagini.* (§3.3). |
 | published | pubblicato | |
 | archive | archivio, m. | *gli archivi delle immagini*. |
 | scene | scena, f. | One archive product. Never *inquadratura*, *scenario*. |
@@ -714,7 +716,7 @@ Gender: m. / f.; inv. = invariable in the plural.
 | place / spot | luogo, m. / punto, m. | *il tuo punto*. Never *spot*. |
 | pin | segnaposto, m. inv. | *Metti un segnaposto*. |
 | globe | globo, m. | |
-| use my location | Usa la mia posizione | Short *Trovami*; chip *Vicino a me*; locating *Posizione…* |
+| use my location | La mia posizione | Beside the search field on wide screens: *Usa la mia posizione* (20) cut the placeholder to *Cerca un luo…* at 1024 px. Short *Trovami*; chip *Vicino a me*; locating *Posizione…* |
 | surprise me | Sorprendimi | |
 | or try | Oppure prova | |
 | how this works | Come funziona | |
@@ -845,7 +847,7 @@ outside the mono span.
 | risultato | `1` risultato | `5` risultati | `1.000.000` di risultati |
 | minuto / ora / giorno | `1` minuto / `1` ora / `1` giorno | `12` minuti / `41` ore / `3` giorni | `1.000.000` di … |
 
-- Verbs agree with the category: `one` singular (*è stata resa pubblica*, *ha osservato*); `other` and `many` plural.
+- Verbs agree with the category: `one` singular (*è stata pubblicata*, *ha osservato*); `other` and `many` plural.
 - **Zero** always has its own sentence with *Nessun / Nessuna / Nessuno* + singular: *Nessun satellite*, *Nessuna
   immagine*, *Nessuna ripresa limpida* (no elision to *nessun’*); *Nessuno* before *s* + consonant, *z*, *gn*, *ps*.
 - **Always digits** for counts, including 1. Exceptions where English writes a word: *una volta* (once), *e un altro
@@ -1064,10 +1066,10 @@ the data shows.
   intent to monitor that the data doesn't show. *spia* appears only as a fixed term (*satelliti militari e spia*).
 - *inquadrare* (likely) says the place was in frame, nothing about intent or a published picture. *aveva a portata*
   (could) says it was in reach, nothing about whether it looked.
-- *rese pubbliche* states a fact; don't escalate it (✗ *esposte*, ✗ *diffuse*).
+- *pubblicate* states a fact; don't escalate it (✗ *esposte*, ✗ *diffuse*).
 - Privacy copy says exactly what the English says, in plain words: *Conserviamo solo una cella di circa 10 km.*, *Non
   lo leggiamo mai.* No GDPR legalese (*trattamento*, *titolare*) unless the English has it.
-- Reassurance stays factual: *Può vedermi? No.* Never *Tranquillo* or *Niente paura* (gendered, and condescending).
+- Reassurance stays factual: *Un satellite può vedermi? No.* Never *Tranquillo* or *Niente paura* (gendered, and condescending).
 
 **War zones in the time-lapse** (Gaza Strip, West Bank, Ukraine, Lebanon).
 - Names: *Striscia di Gaza*, *Cisgiordania*, *Ucraina*, *Libano*, *Israele*. Never *Territori occupati*, *Giudea e
@@ -1224,6 +1226,20 @@ accepted, R = rejected.
 | M13 | About strings | A | *Ritocchi*, *Fotocamere orientabili*, *Dov’è il nord*, the quoted verdict in « ». |
 | M14 | Satellite blurb glossary | A | All terms added to §4, plus the pan-sharpening tooltip. |
 | M15 | Lightbox strings | A | *10 m / pixel*, *2,5×* through `fmt('it').dec`, *Sereno qui*. |
+
+Visual QA on every screen (2026-11-19, desktop 1280×800, 1024×768 and 1440×900, phones 390 and 360 px):
+
+| # | Finding | Change |
+|---|---|---|
+| Q1 | The second line (*40 immagini sono state rese pubbliche.*) wrapped beside Share on desktop and phone | *Sono state pubblicate 40 immagini.*, on the card too (§3.3) |
+| Q2 | *Usa la mia posizione* cut the search placeholder to *Cerca un luo…* at 1024 px | *La mia posizione* (§4) |
+| Q3 | The Watched group's order (*ripresa più vicina, poi le più recenti*) ran off a 390 px phone | *la più vicina, poi le recenti* |
+| Q4 | Computing rows *Abbinamento delle scene ai passaggi* and *Propagazione delle orbite · 7 giorni* cut on a phone | *Abbinamento scene e passaggi*, *Propagazione orbite · 7 giorni* (the engine's running line keeps *Propagazione delle orbite · 120 / 412*) |
+| Q5 | *Può vedermi?* with no subject reads as the formal *Lei* ("can you see me?") | *Un satellite può vedermi?*, as the Spanish |
+| Q6 | About's foot said *Realizzato* twice in a row (*Realizzato da…* / *Realizzato con dati pubblici.*) | *Fatto con dati pubblici.* |
+| Q7 | `likely` definition *Nessuna sua immagine è pubblicata.* (*sua*: of the camera or the place?) | *Non ne è stata pubblicata nessuna immagine.* |
+| Q8 | The card's lead broke *256 satelliti hanno* / *osservato* | a no-break space in *hanno osservato* |
+| Q9 | The week card's chip *Ultima ripresa limpida* runs 7 characters past the English before the day and satellite | *Ultima limpida*, like *Più vicina* (§3.5) |
 
 Additions not raised by the critique: the card fonts lack → ≈ ± (card copy must not use them, which changed `weekTo`);
 the share page's `crossed` uses *ha sorvolato* to keep [PLACE] a bare object; curated place labels written as map

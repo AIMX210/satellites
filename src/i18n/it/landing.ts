@@ -84,7 +84,7 @@ const landing: typeof en = {
   suggestions: 'Luoghi',
 
   // ── Use my location ──────────────────────────────────────────────────────────────────────
-  useMyLocation: 'Usa la mia posizione',
+  useMyLocation: 'La mia posizione',
   locateMe: 'Trovami',
   nearMe: 'Vicino a me',
   locating: 'Posizione…',

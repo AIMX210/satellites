@@ -12,8 +12,9 @@
  *    ottobre al 5 novembre*, *Dall’8 al 15 novembre*, *Dal 1 all’8 novembre*), the month written once, the years only
  *    when the range crosses one.
  *  - Counts take all three CLDR forms; exact millions (`many`) put *di* after the number as plain text
- *    (*1.000.000 di immagini*). The second line keeps the owner's "made public" (*sono state rese pubbliche*) and reads
- *    with and without *Almeno*, which appears and disappears in place.
+ *    (*1.000.000 di immagini*). The second line is *Sono state pubblicate 40 immagini.*: one line beside Share, as the
+ *    English is (*40 immagini sono state rese pubbliche.* wrapped on every screen); it reads with and without
+ *    *almeno*, which appears and disappears in place after the verb.
  *  - Sentences under an empty headline resume the place as *questo luogo*, never a pronoun; footnotes say *questo
  *    luogo* where English names the place after a preposition. Labels put a place after a colon (*Condividi questa
  *    settimana: Waterloo*). Satellite names stay bare and agree with nothing (*Sentinel-2C ha osservato…*, *di
@@ -119,17 +120,14 @@ const results: typeof en = {
 
   // ── the second line ───────────────────────────────────────────────────────────────────────────
   imagesPublic: (k: number): Rich => [
-    strong('Almeno '),
+    f.plural(k, { one: 'È stata pubblicata ', many: 'Sono state pubblicate ', other: 'Sono state pubblicate ' }),
+    strong('almeno '),
     num(f.int(k)),
-    f.plural(k, {
-      one: ' immagine è stata resa pubblica.',
-      many: ' di immagini sono state rese pubbliche.',
-      other: ' immagini sono state rese pubbliche.',
-    }),
+    f.plural(k, { one: ' immagine.', many: ' di immagini.', other: ' immagini.' }),
   ],
   noImages: {
-    thisWeek: 'Nessuna immagine è stata resa pubblica questa settimana.',
-    thatWeek: 'Nessuna immagine è stata resa pubblica quella settimana.',
+    thisWeek: 'Nessuna immagine è stata pubblicata questa settimana.',
+    thatWeek: 'Nessuna immagine è stata pubblicata quella settimana.',
   },
   archiveDown: 'Gli archivi delle immagini non hanno risposto: per ora non possiamo contare le immagini pubbliche.',
   tryAgain: 'Riprova',
@@ -265,9 +263,9 @@ const results: typeof en = {
   computing: {
     stages: {
       catalog: { idle: 'Catalogo delle orbite', done: 'Catalogo caricato' },
-      propagate: { idle: (n: number) => `Propagazione delle orbite · ${days(n)}`, done: 'Orbite propagate' },
+      propagate: { idle: (n: number) => `Propagazione orbite · ${days(n)}`, done: 'Orbite propagate' },
       archive: { idle: 'Archivi Sentinel-2 + Landsat', done: 'Archivi consultati' },
-      match: { idle: 'Abbinamento delle scene ai passaggi', done: 'Scene abbinate' },
+      match: { idle: 'Abbinamento scene e passaggi', done: 'Scene abbinate' },
     },
     ready: 'Risultati pronti',
     ok: 'OK',

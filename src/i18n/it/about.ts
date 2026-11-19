@@ -5,7 +5,8 @@
  *
  * Why it reads this way: the page talks to one reader in tu, and the product is *noi* (*Calcoliamo*, *Conserviamo*),
  * plain and conversational as the owner's English is; nothing agrees with the reader (*Se eri a portata*, never *Sei
- * stato…*). The questions are the reader's own (*Può vedermi?*), answered plainly (*No.*), never with *Tranquillo*.
+ * stato…*). The questions are the reader's own (*Un satellite può vedermi?*: with no subject, *Può vedermi?* reads as
+ * the formal *Lei*), answered plainly (*No.*), never with *Tranquillo*.
  * The title is *Come / funziona.*, the accent on the verb, the full stop outside it. The quoted verdict is the results'
  * own title in « » (*«poteva puntare qui»*), lowercase mid-sentence as English writes it. *foto* only where the item is
  * certainly a Sentinel-2 or Landsat photograph; anything that may be radar or a weather frame is *immagine*. Swath is
@@ -53,7 +54,7 @@ const about: typeof en = {
     },
     /** it.md §2, example 3, word for word */
     seeMe: {
-      term: 'Può vedermi?',
+      term: 'Un satellite può vedermi?',
       text: 'No. Nel migliore dei casi un pixel misura 10 m. Un’auto è un pixel. Tu lì dentro non ci sei.',
     },
     every: {
@@ -196,7 +197,7 @@ const about: typeof en = {
 
   /** "Built by", as the landing's credit says it (landing.builtBy): one phrase for the same credit */
   builtBy: (handle: string): AboutPart[] => ['Realizzato da ', link(handle)],
-  footerNote: 'Realizzato con dati pubblici. Non abbiamo scattato nessuna di queste foto.',
+  footerNote: 'Fatto con dati pubblici. Non abbiamo scattato nessuna di queste foto.',
 }
 
 export default about

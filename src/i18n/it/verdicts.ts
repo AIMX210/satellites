@@ -34,7 +34,7 @@ const verdicts: typeof en = {
     title: 'Probabilmente osservato',
     short: 'Probabile',
     unit: passes,
-    definition: 'Questo luogo era nella fascia di ripresa di una fotocamera fissa. Nessuna sua immagine è pubblicata.',
+    definition: 'Questo luogo era nella fascia di ripresa di una fotocamera fissa. Non ne è stata pubblicata nessuna immagine.',
     verb: 'inquadrato',
   },
   could: {
