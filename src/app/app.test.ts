@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Pass } from '@/types'
 import type { PagePlace } from '@/lib/placePage'
+import { headFor } from './head'
 import { passLinkOpts, pickPreselect, readUrlTarget } from './links'
 import { isSettled, raceTimeout, settleWaitMs } from './timing'
 
@@ -108,5 +109,32 @@ describe('first results paint (R-M1)', () => {
     // Due too late (beyond the grace), or unknown: the race.
     expect(settleWaitMs(1000, 1500, 600, 4000)).toBe(1500)
     expect(settleWaitMs(1000, 1500, 600)).toBe(1500)
+  })
+})
+
+describe('headFor: the tab title and the canonical link', () => {
+  const page: PagePlace = { path: '/place/paris', label: 'Paris', lat: 48.8566, lon: 2.3522 }
+  const paris = { label: 'Paris', lat: 48.8566, lon: 2.3522 }
+  const tokyo = { label: 'Tokyo', lat: 35.6812, lon: 139.7671 }
+  const HOME = { title: 'Watched · See every satellite that passed over you this week', canonical: '/' }
+
+  it('names the place from the moment its search starts', () => {
+    for (const phase of ['computing', 'results', 'error'] as const) {
+      expect(headFor(phase, tokyo, undefined)).toEqual({ title: 'Tokyo: this week’s satellite images and passes · Watched', canonical: '/' })
+    }
+  })
+
+  it('is the landing\'s everywhere else', () => {
+    expect(headFor('idle', undefined, undefined)).toEqual(HOME)
+    expect(headFor('locating', undefined, page)).toEqual(HOME)
+    expect(headFor('idle', paris, page)).toEqual(HOME) // a place left in the store is not on screen
+    expect(headFor('error', undefined, undefined)).toEqual(HOME) // the catalog failed: no place
+  })
+
+  it('calls a place page canonical only while its own place is on screen', () => {
+    expect(headFor('results', paris, page).canonical).toBe('/place/paris')
+    expect(headFor('results', tokyo, page).canonical).toBe('/')
+    expect(headFor('results', { ...paris, lat: 48.85 }, page).canonical).toBe('/') // another Paris, or another spot in it
+    expect(headFor('results', paris, undefined).canonical).toBe('/')
   })
 })

@@ -33,6 +33,7 @@ import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/cata
 import { ensureTz } from '@/imagery'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
 import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
+import { installHeadSync } from './head'
 import { createLateShareGate } from './lateShare'
 import { passLinkOpts, sharedGeoItem, pickPreselect, readUrlTarget, type RunOpts } from './links'
 import { isSettled, raceTimeout, settleWaitMs, sleep } from './timing'
@@ -157,6 +158,7 @@ export async function boot() {
   booted = true
   const bootStart = performance.now()
   mark('boot')
+  installHeadSync()
   const target = readUrlTarget(location.search, Date.now(), bootPlace())
   // A place link that carries `tl` opens the time-lapse over its results (ui/results/TimelapseEntry.tsx).
   if (target?.kind === 'q') useTimelapseUi.getState().request(timelapseParam(location.search))
