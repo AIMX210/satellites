@@ -52,7 +52,7 @@ card is cached per link (§6.8).
 | Numbers | 1,715 · 7.46 km/s · 786 km · 25% · 98.6°. Half-width digits, comma grouping, never 만 / 억. |
 | Dates | The `day` slot and prose: 11월 1일(일). Dotted only with a year: 2026.11.1(일), kicker 2026.11.12 → 11.19 UTC. Spoken: 11월 6일 금요일. 24 h clock. |
 | Ranges | Prose 10~30 m (물결표, no spaces). Mono spans and directions →. |
-| Card headline | lead / *place* / tail phrases, a line each: Sentinel-2C 위성이 / *Waterloo* / 일대를 / 지켜봤다. Each phrase is its own text part, with no leading space. |
+| Card headline | Phrase parts, one card line each: 위성 7기가 / *Waterloo* / 일대를 / 지켜봤다. (§3.6). No part has a leading space; flat text joins them with a space. |
 | Type | System fonts (scripts.css stacks and CJK tokens). Upright Myeongjo accent (embedded subset), never slanted. `word-break: keep-all` + `overflow-wrap: break-word` on the root. |
 | Country names | `Intl.DisplayNames('ko', { type: 'region' })`, never typed by hand. Place names are data, shown as they come (§8 for the four contested names). |
 
@@ -436,41 +436,41 @@ the idiom is fine in a rhetorical hook, §3.6); 감시 or 촬영 in any form.
 ### 3.6 Share card, share page and post
 
 **Card headline (`card.headline`, `headlineBy`, `headlineWeek`).** The renderers set the headline's parts as blocks in
-their order: a text part in the condensed display face, the accent part in the serif. Each text part is ONE line of the
-card, never broken inside (cardSpec.ts `HEAD_CJK`), and the size is the largest at which every part fits the 466 px
-column (`headlineSizeCjk`), so Korean splits its lead and tail into phrases between eojeol, where a typesetter breaks a
-display headline; the place keeps its words whole (`keep-all`) on every renderer. The blocks join with a space in the
-page title and the post (`sentenceGap: ' '`), so they read as the sentence:
+their order: a text part in the condensed display face, the accent part in the serif. Each text part is ONE line of
+the card, never broken inside, and the size is the largest at which every text part fits the 466 px column
+(cardSpec `headlineSizeCjk`). So Korean splits lead and tail into display phrases of about 4–8 syllables, cut at word
+(어절) boundaries where a typesetter breaks a display headline, never between a modifier and its noun (보이는 / 곳을):
 
 ```ts
 const named = (sat: SatName) => sat ?? '이름 미상'
 
 headline:   (n, place, cut) => [`위성 ${f.int(n)}기가`, accent(place), '일대를', '지켜봤다.']
 headlineBy: {
-  imaged:   (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대를', '지켜봤다.'],
-  likely:   (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대를', '훑고 지나갔다.'],
-  could:    (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '일대가 보이는', '곳을 지나갔다.'],
-  overhead: (sat, place, cut) => [`${named(sat)} 위성이`, accent(place), '상공을', '지나갔다.'],
+  imaged:   (sat, place, cut) => [named(sat), '위성이', accent(place), '일대를 지켜봤다.'],
+  likely:   (sat, place, cut) => [named(sat), '위성이', accent(place), '일대를 훑고', '지나갔다.'],
+  could:    (sat, place, cut) => [named(sat), '위성이', accent(place), '일대가', '보이는 곳을', '지나갔다.'],
+  overhead: (sat, place, cut) => [named(sat), '위성이', accent(place), '상공을 지나갔다.'],
 }
 headlineWeek: (n, place, cut) =>
-  n > 0 ? ['지난 일주일,', `위성 ${f.int(n)}기가`, accent(place), '일대를', '지켜봤다.']
-        : ['지난 일주일,', '추적 중인', '어떤 위성도', accent(place), '일대를', '지켜보지 않았다.']
+  n > 0 ? ['지난 일주일,', `위성 ${f.int(n)}기가`, accent(place), '일대를 지켜봤다.']
+        : ['지난 일주일,', '추적 중인 어떤 위성도', accent(place), '일대를 지켜보지', '않았다.']
 ```
 
-Measured: the week's card 52 px (it was 40 with the long lead), a pass card 74.
+| Card | lines (/ between text parts; *place* the accent) | Size (Waterloo) |
+|---|---|---|
+| a pass, the week's N known | 위성 7기가 / *Waterloo* / 일대를 / 지켜봤다. | 74 px |
+| an older share, imaged | Sentinel-2C / 위성이 / *Waterloo* / 일대를 지켜봤다. | 60 px |
+| likely | MetOp-B / 위성이 / *Waterloo* / 일대를 훑고 / 지나갔다. | 58 px |
+| could | WorldView Legion 4 / 위성이 / *Waterloo* / 일대가 / 보이는 곳을 / 지나갔다. | 48 px |
+| overhead | ISS / 위성이 / *Waterloo* / 상공을 지나갔다. | 60 px |
+| the week, n ≥ 1 | 지난 일주일, / 위성 1,715기가 / *Waterloo* / 일대를 지켜봤다. | 60 px |
+| the week, n = 0 | 지난 일주일, / 추적 중인 어떤 위성도 / *Waterloo* / 일대를 지켜보지 / 않았다. | 48 px |
 
-| Card | lead / *place* / tail |
-|---|---|
-| a pass, the week's N known | 위성 7기가 / *Waterloo* / 일대를 지켜봤다. |
-| an older share, imaged | Sentinel-2C 위성이 / *Waterloo* / 일대를 지켜봤다. |
-| likely | Sentinel-2C 위성이 / *Waterloo* / 일대를 훑고 지나갔다. |
-| could | WorldView Legion 4 위성이 / *Waterloo* / 일대가 보이는 곳을 지나갔다. |
-| overhead | ISS 위성이 / *Waterloo* / 상공을 지나갔다. |
-| the week, n ≥ 1 | 지난 일주일, 위성 31기가 / *Waterloo* / 일대를 지켜봤다. |
-| the week, n = 0 | 지난 일주일, 추적 중인 어떤 위성도 / *Waterloo* / 일대를 지켜보지 않았다. |
+Each split was chosen as the one with the largest size among natural breaks (measured with `headlineSizeCjk`, with the
+week's sub line): one long text part ('지난 일주일, 위성 256기가') forced the week's card down to 40 px.
 
-- **The tail is its own text part, with no leading space.** `headText()` joins blocks with the locale's sentence gap
-  (a space for ko), so the share page's title reads 위성 7기가 Waterloo 일대를 지켜봤다. A leading space would double it
+- **No text part has a leading or trailing space.** `headText()` joins blocks with the locale's sentence gap (a space
+  for ko), so the share page's title reads 위성 7기가 Waterloo 일대를 지켜봤다. A space inside a part would double it
   and indent the canvas block.
 - **Never put the tail inside `accent(...)`:** it would be set in the serif at 1.06 ×, which breaks the accent rule.
 - **`cut`:** when the place is cut short (`Waterl…`), keep the tail and its full stop unchanged. The stop sits in the
@@ -1740,8 +1740,8 @@ them there, and only after a Korean specimen check.
 10. **[SAT]:** never transliterated, never with 호, never replaced by a pronoun; 위성이 in headlines, 위성은 opening a
     paragraph; undefined → 이름 미상 in the slot.
 11. **Verdict words** match §3.5 exactly (titles, lanes, unit 회, definitions, verbs), quoted in ‘ ’ in footnotes.
-12. **Card headline:** three parts, the tail its own text part with no leading space, never inside the accent; `cut`
-    keeps the tail and its full stop.
+12. **Card headline:** phrase parts of about 4–8 syllables cut at word boundaries (each is one card line, §3.6), no
+    leading space, nothing inside the accent but the place; `cut` keeps the tail and its full stop.
 13. **Glossary traps** (§9.1): no 영상, 모자이크, 전구, 고정 카메라, 최근접 for "closest look", 현지 시간, 패스, 지오코더,
     상용 / 상업 mixed.
 14. **Punctuation:** Western and half-width. No !. … only after 중. Ranges ~ in prose, → in mono. · only as the mono

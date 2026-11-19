@@ -7,9 +7,10 @@
  *  - A particle that changes with the last sound (이/가, 을/를, 은/는) never follows a name: code cannot choose it for
  *    Latin names (Paris takes 를, London 을). So every frame puts a buffer noun after the slot, which carries a fixed
  *    particle: [SAT] 위성이, [PLACE] 일대를, [PLACE] 상공을 (§5.1).
- *  - The headline is three parts, lead / place / tail ("위성 7기가 / *Waterloo* / 일대를 지켜봤다."): Korean ends on its
- *    verb, so words follow the place. The tail is its own text part with no leading space (the renderers join blocks
- *    with the locale's space), and never inside the accent, which would set it in the serif. The full stop sits in the
+ *  - The headline is phrase parts around the place ("위성 7기가 / *Waterloo* / 일대를 / 지켜봤다."): Korean ends on its
+ *    verb, so words follow the place. Each text part is one card line, never broken inside, so parts are display
+ *    phrases cut at word boundaries; none has a leading space (the renderers join blocks with the locale's space), and
+ *    none sits inside the accent, which would set it in the serif. The full stop sits in the
  *    tail, so a place cut short (`cut`) changes nothing.
  *  - A nameless satellite writes 이름 미상 into the [SAT] slot (이름 미상 위성이); the label alone is 이름 미상 위성.
  *  - ko has one plural category, so every count is one string; a zero has its own sentence, never 위성 0기. Counters
@@ -71,23 +72,23 @@ const card: CardMessages = {
   // ── The headline (rich: text blocks in the condensed face, the accent block in the serif) ─────────────────────────
 
   /**
-   * "위성 7기가 / *Waterloo* / 일대를 / 지켜봤다.": each text part is one line of the card, never broken inside (cardSpec
-   * HEAD_CJK), so the tail is split where a Korean typesetter breaks a display headline, between eojeol. Flattened with
-   * the locale's space (the page title, the post) they read as the sentence. The tail keeps its stop when the place is cut.
+   * "위성 7기가 / *Waterloo* / 일대를 / 지켜봤다." (n ≥ 1; the tail keeps its stop when the place is cut). Each text part
+   * is one line of the card, never broken inside (cardSpec headlineSizeCjk), so the parts are display phrases of about
+   * 4–8 syllables cut at word (어절) boundaries; flat text joins them with a space and reads as the one sentence.
    */
   headline: (satellites: number, place: string, _cut: boolean): Rich => [`위성 ${f.int(satellites)}기가`, accent(place), '일대를', '지켜봤다.'],
   /** 이 in headlines (the satellite is the news), with 이름 미상 in the slot when the share kept no name */
   headlineBy: {
-    imaged: (sat: SatName, place: string, _cut: boolean): Rich => [satIs(sat), accent(place), '일대를', '지켜봤다.'],
-    likely: (sat: SatName, place: string, _cut: boolean): Rich => [satIs(sat), accent(place), '일대를', '훑고 지나갔다.'],
-    could: (sat: SatName, place: string, _cut: boolean): Rich => [satIs(sat), accent(place), '일대가 보이는', '곳을 지나갔다.'],
-    overhead: (sat: SatName, place: string, _cut: boolean): Rich => [satIs(sat), accent(place), '상공을', '지나갔다.'],
+    imaged: (sat: SatName, place: string, _cut: boolean): Rich => [named(sat), '위성이', accent(place), '일대를 지켜봤다.'],
+    likely: (sat: SatName, place: string, _cut: boolean): Rich => [named(sat), '위성이', accent(place), '일대를 훑고', '지나갔다.'],
+    could: (sat: SatName, place: string, _cut: boolean): Rich => [named(sat), '위성이', accent(place), '일대가', '보이는 곳을', '지나갔다.'],
+    overhead: (sat: SatName, place: string, _cut: boolean): Rich => [named(sat), '위성이', accent(place), '상공을 지나갔다.'],
   },
   /** Both week frames open on the hero's time topic, 지난 일주일, ; a zero has its own sentence */
   headlineWeek: (satellites: number, place: string, _cut: boolean): Rich =>
     satellites > 0
-      ? ['지난 일주일,', `위성 ${f.int(satellites)}기가`, accent(place), '일대를', '지켜봤다.']
-      : ['지난 일주일,', '추적 중인', '어떤 위성도', accent(place), '일대를', '지켜보지 않았다.'],
+      ? ['지난 일주일,', `위성 ${f.int(satellites)}기가`, accent(place), '일대를 지켜봤다.']
+      : ['지난 일주일,', '추적 중인 어떤 위성도', accent(place), '일대를 지켜보지', '않았다.'],
 
   // ── The line under the headline (it rhymes with the headline: 지켜봤다. / 공개됐다.) ─────────────────────────────────
 
