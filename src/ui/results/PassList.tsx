@@ -14,6 +14,7 @@ import type { Capture, Pass } from '@/types'
 import { Glyph, Tag, cx } from '@/ui/system'
 import { msgs, useMsgs } from '@/i18n/runtime'
 import enPassView from '@/i18n/en/passView'
+import { withUnits } from '@/i18n/Rich'
 import { Ago, reportNow } from './Ago'
 import { Mark } from './Mark'
 import { prefetchPassImage } from './actions'
@@ -226,7 +227,7 @@ const PassRow = memo(function PassRow({
             {/* …and the ground distance before the cloud, which is what a photograph is judged by. */}
             <span className={capture?.cloudCoverPct !== undefined ? s.km : undefined} data-shed={capture?.cloudCoverPct !== undefined ? '1' : undefined}>
               {' '}
-              · {m.distanceKm(p.groundDistanceKm)}
+              · {withUnits(m.distanceKm(p.groundDistanceKm))}
             </span>
             {capture?.cloudCoverPct !== undefined ? <span className={s.dim}> · {m.cloudPct(capture.cloudCoverPct)}</span> : null}
           </span>
@@ -315,7 +316,7 @@ const SatRow = memo(function SatRow({
               {m.closest}
             </span>
             {m.offNadir(closest.offNadirDeg)}
-            <span data-shed="3"> · {m.distanceKm(closest.groundDistanceKm)}</span>
+            <span data-shed="3"> · {withUnits(m.distanceKm(closest.groundDistanceKm))}</span>
           </span>
         </span>
         <span className={s.count}>
@@ -351,7 +352,7 @@ const SatRow = memo(function SatRow({
                   </span>
                 </span>
                 <span className={s.subGeo}>
-                  {m.offNadirShort(p.offNadirDeg)} · {m.distanceKm(p.groundDistanceKm)}
+                  {m.offNadirShort(p.offNadirDeg)} · {withUnits(m.distanceKm(p.groundDistanceKm))}
                 </span>
               </button>
             </li>

@@ -21,7 +21,7 @@ import type { Pass } from '@/types'
 import { Glyph, cx, prefersReducedMotion } from '@/ui/system'
 import { msgs, useMsgs } from '@/i18n/runtime'
 import enGallery from '@/i18n/en/gallery'
-import { Rich } from '@/i18n/Rich'
+import { Rich, withUnits } from '@/i18n/Rich'
 import { Ago } from './Ago'
 import { Mark } from './Mark'
 import { PhotoFrame, coordsOf } from './PhotoFrame'
@@ -553,8 +553,8 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
       <figcaption className={s.cap}>
         <span className={s.capRow}>
           <span className={s.capMain}>
-            {productLabel(capture)}
-            <span className={s.capKm}> · {m.cropKm(km)}</span>
+            {withUnits(productLabel(capture))}
+            <span className={s.capKm}> · {withUnits(m.cropKm(km))}</span>
           </span>
           {status ? <span className={cx(s.status, photo.clouded && s.warn)}>{status}</span> : null}
         </span>
@@ -586,7 +586,7 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
           </span>
           <span className={s.mLine} data-fit-line="">
             <span data-fit="clock2">{`${t.time} · `}</span>
-            <span data-fit="rest">{pixelLabel(capture)}</span>
+            <span data-fit="rest">{withUnits(pixelLabel(capture))}</span>
             <span className={s.dim} data-fit="ago">
               {' · '}
               <Ago t={when} base={model.clock} />

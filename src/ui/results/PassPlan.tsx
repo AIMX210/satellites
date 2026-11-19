@@ -6,6 +6,7 @@
  */
 import { useId, useMemo, useRef } from 'react'
 import enResults from '@/i18n/en/results'
+import { withUnits } from '@/i18n/Rich'
 import { useMsgs } from '@/i18n/runtime'
 import { sceneClock } from '@/state/sceneClock'
 import { useAfterSceneFrame } from './capture'
@@ -107,12 +108,12 @@ export function PassPlan({ pass: p, meta, lat, lon, live = true, className, labe
       {labels ? (
         <>
           <span className={cx(s.label, s.tl)}>{m.northUp}</span>
-          <span className={cx(s.label, s.tr)}>{g.half ? (prof?.maxOffNadirDeg ? m.fieldOfRegard(prof.maxOffNadirDeg) : m.swath(prof?.swathKm ?? 0)) : m.groundTrack}</span>
+          <span className={cx(s.label, s.tr)}>{g.half ? (prof?.maxOffNadirDeg ? m.fieldOfRegard(prof.maxOffNadirDeg) : withUnits(m.swath(prof?.swathKm ?? 0))) : m.groundTrack}</span>
           <span className={s.scale} style={{ width: `${(bar / (2 * R)) * 100}%` }}>
             <span className={s.bar} />
-            <span className={s.scaleText}>{m.scale(bar)}</span>
+            <span className={s.scaleText}>{withUnits(m.scale(bar))}</span>
           </span>
-          <span className={cx(s.label, s.br)}>{m.closest(p.groundDistanceKm)}</span>
+          <span className={cx(s.label, s.br)}>{withUnits(m.closest(p.groundDistanceKm))}</span>
         </>
       ) : null}
     </div>

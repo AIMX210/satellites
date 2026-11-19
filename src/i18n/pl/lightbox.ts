@@ -29,7 +29,7 @@ const lightbox: typeof en = {
   zoom: (k: number) => `${f.dec(k, 1)}×`,
   close: 'Zamknij podgląd zdjęć',
   closeTitle: 'Zamknij (Esc)',
-  // `pixel` arrives written («10 m»): «10 M NA PIKSEL».
+  // `pixel` arrives written («10 m»): «10 m NA PIKSEL».
   perPixel: (pixel: string) => `${pixel} na piksel`,
   panTitle: 'Wyostrzone kanałem panchromatycznym 15\u00a0m z\u00a0satelity Landsat',
   panProduct: (pixel: string) => `Landsat C2 L2 + L1 pan · ${pixel}`,

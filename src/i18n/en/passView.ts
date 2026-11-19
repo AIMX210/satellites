@@ -13,7 +13,8 @@
  * international and never translated.
  *
  * Readout labels and units are mono caps (uppercased by CSS) in narrow cells: the strip's four cells share a phone's
- * width, the geometry grid is two columns. Keep them short.
+ * width, the geometry grid is two columns. Keep them short. A unit symbol ("km", "m", "km/s") keeps its case in the
+ * capitals; a word in the unit slot ("day", "scene") does not.
  */
 import { ns } from '../ns'
 import { fmt } from '../../../api/_lib/i18n/format'

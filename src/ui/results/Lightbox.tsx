@@ -26,6 +26,7 @@ import { Button, Glyph, cx, prefersReducedMotion, useMediaQuery } from '@/ui/sys
 import { msgs, useLocale, useMsgs } from '@/i18n/runtime'
 import enGallery from '@/i18n/en/gallery'
 import enLightbox from '@/i18n/en/lightbox'
+import { withUnits, writeUnits } from '@/i18n/Rich'
 import { Ago } from './Ago'
 import { credit, galleryCtl, useClockFit } from './Gallery'
 import { Mark } from './Mark'
@@ -182,7 +183,7 @@ function Viewer({ id, model, mobile, startKey, from, onReplay, onShare, covered 
       barRef.current.style.width = `${Math.round((km / visKm) * side)}px`
       // Written per frame, outside React: the messages are read now (the active language).
       const txt = msgs(enGallery).scaleKm(km)
-      if (barTextRef.current.textContent !== txt) barTextRef.current.textContent = txt
+      writeUnits(barTextRef.current, txt)
     }
     if (zoomTextRef.current) zoomTextRef.current.textContent = msgs(enLightbox).zoom(k)
     const box = boxRef.current
@@ -681,7 +682,7 @@ function Viewer({ id, model, mobile, startKey, from, onReplay, onShare, covered 
           {meta.name} · {sensorName(photo.capture)}
         </span>
         <span className={cx(s.chip, s.tr)} title={panKeys.has(photo.key) ? lm.panTitle : undefined}>
-          {lm.perPixel(pixelLabel(panKeys.has(photo.key) ? PAN_PIXEL : photo.capture))}
+          {withUnits(lm.perPixel(pixelLabel(panKeys.has(photo.key) ? PAN_PIXEL : photo.capture)))}
         </span>
         <span className={s.scale}>
           <span ref={barRef} className={s.scaleBar} />
@@ -871,8 +872,8 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
   const w = cropWidthKm(capture)
   // A daily mosaic says so once, in the product line ('Daily mosaic · 250 m'), not again as its status (PH-11).
   const status = photo.kind === 'mosaic' ? undefined : photo.clouded ? lm.status.clouded(capture.cloudCoverPct) : capture.spot === 'clear' ? lm.status.clearAtSpot : capture.spot === 'cirrus' ? gm.status.cirrus : undefined
-  const km = gm.cropKm(w)
-  const product = pan ? lm.panProduct(pixelLabel(PAN_PIXEL)) : productLabel(capture)
+  const km = withUnits(gm.cropKm(w))
+  const product = withUnits(pan ? lm.panProduct(pixelLabel(PAN_PIXEL)) : productLabel(capture))
   const when = pass?.tClosest ?? capture.datetime
   const ago = <Ago t={when} base={model.clock} />
   const linesRef = useRef<HTMLDivElement>(null)

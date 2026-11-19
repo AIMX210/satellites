@@ -20,7 +20,7 @@
  */
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { fmt } from '../../../api/_lib/i18n/format'
-import { Rich } from '@/i18n/Rich'
+import { Rich, withUnits } from '@/i18n/Rich'
 import enResults from '@/i18n/en/results'
 import enVerdicts from '@/i18n/en/verdicts'
 import { useLocale, useMsgs } from '@/i18n/runtime'
@@ -528,9 +528,9 @@ function Tooltip({ pass, x, w, model }: { pass: Pass; x: number; w: number; mode
         {meta.name}
       </div>
       <div className={s.tipLine}>{fmtLocalStamp(pass.tClosest, model.tz, true)}</div>
-      <div className={s.tipLine}>{m.geometry(pass.offNadirDeg, pass.groundDistanceKm)}</div>
+      <div className={s.tipLine}>{withUnits(m.geometry(pass.offNadirDeg, pass.groundDistanceKm))}</div>
       <div className={cx(s.tipLine, pass.verdict === 'imaged' && markColorVar(pass.verdict, meta.category) === 'var(--signal)' && s.signal)}>
-        {markWords(pass, model, m, title)}
+        {withUnits(markWords(pass, model, m, title))}
       </div>
     </div>
   )

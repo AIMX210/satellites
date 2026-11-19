@@ -13,6 +13,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { cx, fmtLat, fmtLon, useReducedMotion } from '@/ui/system'
+import { withUnits } from '@/i18n/Rich'
 import { useMsgs } from '@/i18n/runtime'
 import enGallery from '@/i18n/en/gallery'
 import { useCaptureMoment } from './capture'
@@ -185,7 +186,7 @@ export function PhotoFrame({ photo, model, view, load, current, reveal, chips, e
           </span>
           <span className={s.scale} style={{ width: `${(bar / widthKm) * 100}%` }}>
             <span className={s.scaleBar} />
-            <span className={s.scaleText}>{m.scaleKm(bar)}</span>
+            <span className={s.scaleText}>{withUnits(m.scaleKm(bar))}</span>
           </span>
           <span className={cx(s.chip, s.br)}>
             {/* True north, turned from the photo's up (grid north on a native crop) by the meridian convergence. */}

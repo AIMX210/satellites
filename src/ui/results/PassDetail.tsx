@@ -21,6 +21,7 @@ import { msgs, useLocale, useMsgs } from '@/i18n/runtime'
 import enPassView from '@/i18n/en/passView'
 import enSats from '@/i18n/en/sats'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { isUnitSymbol } from '../../../api/_lib/i18n/units'
 import { reportNow } from './Ago'
 import { decodedPhoto } from './images'
 import { cardUrl } from './lib/photos'
@@ -273,7 +274,12 @@ function ReadoutStrip({ pass: p, meta, capture, cloud }: { pass: Pass; meta: Sat
           <span className={s.stripLabel}>{c.label}</span>
           <span className={s.stripValue}>
             {c.value}
-            {c.unit ? <span className={s.stripUnit}>{c.unit}</span> : null}
+            {/* A word in the unit slot ("day", "scene") is in caps with its label; a unit symbol ("km") never is. */}
+            {c.unit ? (
+              <span className={s.stripUnit} data-unit={isUnitSymbol(c.unit) ? '' : undefined}>
+                {c.unit}
+              </span>
+            ) : null}
           </span>
         </div>
       ))}

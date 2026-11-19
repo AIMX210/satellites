@@ -27,7 +27,7 @@ const passView: typeof en = {
   imagedOrder: '가장 자세한 모습부터, 이후 최신순',
   /** Every verdict counts passes (DESIGN §7): one unit, 회, for all */
   count: (n: number, _verdict: Verdict) => `${f.int(n)}회`,
-  /** A stacked readout: here the counter is the num unit, like 786 KM */
+  /** A stacked readout: here the counter is the num unit, like 786 km */
   countStack: (n: number, _verdict: Verdict): NumPart => num(f.int(n), '회'),
   sats: (n: number) => `위성 ${f.int(n)}기`,
   showAllSats: (n: number) => `위성 ${f.int(n)}기 모두 보기`,
