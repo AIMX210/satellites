@@ -1659,8 +1659,10 @@ them there, and only after a Korean specimen check.
   | Paektu-san / Changbai Mountain | 백두산 |
   | Yellow Sea | 황해 |
 
-  It changes I18N.md's "names are data" rule for one language, so it ships only with the owner's sign-off; until then
-  the data shows as returned and translators write nothing for it.
+  It changes I18N.md's "names are data" rule for one language, so it shipped with the owner's sign-off (2026-11-19):
+  `src/i18n/ko/exonyms.ts`, keyed on the English label and the country the data gives it rather than a bounding box
+  (a sea has no country, so a restaurant called *Sea of Japan* in Tokyo keeps its name), with the spellings the data
+  uses (`Dokdo`, `Paektu Mountain`, `Baekdu Mountain`, …). Translators write nothing for it.
 - **Romanised Korean towns.** Korean visitors will mostly see Seongnam-si, Seogwipo, Seoraksan with a where line like
   Gyeonggi-do, 대한민국, because the offline list holds GeoNames' romanised names. **Decision for launch:** accept it
   (honest, free). Showing GeoNames' `ko` alternate names for KR rows (display only, stats in English) is an owner

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { setBundleForTests } from '@/i18n/runtime'
 import enGeo from '@/i18n/en/geo'
+import koExonyms from '@/i18n/ko/exonyms'
 import { exonym, parseExonyms } from './exonyms'
 import { displayLabel, displaySublabel } from './geocode'
 
@@ -42,6 +43,22 @@ describe('exonyms', () => {
     expect(exonym('Lviv', 'ua', 'label')).toBe('Львів')
     expect(exonym('Lviv', 'ua', 'where')).toBe('Львівська область')
     expect(exonym('Kyiv City', 'ua', 'label')).toBe('місто Київ') // only a region by that name
+  })
+
+  it('shows Korean readers 동해, 독도, 백두산 and 황해 where the data names them otherwise, and nothing else', () => {
+    setBundleForTests('ko', { exonyms: koExonyms })
+    const shown = (label: string, countryCode?: string) => displayLabel({ label, countryCode })
+    // As the offline list and Photon spell them, with the country they give.
+    expect([shown('Sea of Japan'), shown('Yellow Sea'), shown('Liancourt Rocks', 'kr'), shown('Dokdo', 'KR')]).toEqual(['동해', '황해', '독도', '독도'])
+    expect([shown('Paektu-san', 'cn'), shown('Paektu Mountain', 'kp'), shown('Changbai Mountain', 'cn'), shown('Baekdu Mountain')]).toEqual(['백두산', '백두산', '백두산', '백두산'])
+    // A restaurant in Tokyo, a bar in Greece, the town of Changbai and the islands of Japan called Takeshima keep their names.
+    expect([shown('Sea of Japan', 'jp'), shown('Yellow Sea', 'gr'), shown('Changbai', 'cn'), shown('Takeshima', 'jp')]).toEqual([
+      'Sea of Japan',
+      'Yellow Sea',
+      'Changbai',
+      'Takeshima',
+    ])
+    expect(displaySublabel({ sublabel: 'North Gyeongsang, South Korea', countryCode: 'kr' })).toBe('North Gyeongsang, 대한민국')
   })
 
   it('shows the label and the where line in the visitor’s language, and keeps the Place English', () => {

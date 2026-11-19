@@ -34,6 +34,7 @@ import results from './results'
 import verdicts from './verdicts'
 import pass from './pass'
 import engine from './engine'
+import exonyms from './exonyms'
 import card from '../../../api/_lib/i18n/card/ko'
 
 export default {
@@ -57,6 +58,7 @@ export default {
   verdicts,
   pass,
   engine,
+  exonyms,
   card,
 } satisfies Bundle
 export { default as accentFont } from './accentFont.gen'
