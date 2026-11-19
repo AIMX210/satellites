@@ -115,8 +115,8 @@
   font-stretch: 75%;
   font-weight: 560;
   /* never taller than the viewport allows */
-  font-size: min(var(--fs-display), 11.4vh);
-  line-height: 0.92;
+  font-size: calc(min(var(--fs-display), 11.4vh) * var(--display-k));
+  line-height: calc(0.92 * var(--lh-k));
   letter-spacing: var(--track-display);
   color: var(--bone);
   font-kerning: normal;
@@ -134,7 +134,7 @@
   font-style: italic;
   font-weight: 400;
   font-stretch: 100%;
-  font-size: 1.08em;
+  font-size: calc(1.08em * var(--accent-k));
   line-height: 0;
   letter-spacing: -0.015em;
   margin-right: 0.02em;
@@ -546,7 +546,7 @@
 /* ── short desktop windows (≈ 1280 × 720 and below) ────────────── */
 @media (min-width: 761px) and (orientation: landscape) and (max-height: 760px), (min-width: 1101px) and (max-height: 760px) {
   .headline {
-    font-size: min(var(--fs-display), 10.6vh);
+    font-size: calc(min(var(--fs-display), 10.6vh) * var(--display-k));
   }
 }
 @media (min-width: 761px) and (orientation: landscape) and (max-height: 900px), (min-width: 1101px) and (max-height: 900px) {
@@ -584,7 +584,7 @@
 }
 @media (min-width: 761px) and (orientation: landscape) and (min-height: 541px) and (max-height: 600px), (min-width: 1101px) and (min-height: 541px) and (max-height: 600px) {
   .headline {
-    font-size: min(var(--fs-display), 9.4vh);
+    font-size: calc(min(var(--fs-display), 9.4vh) * var(--display-k));
   }
   .sub {
     font-size: 14px;

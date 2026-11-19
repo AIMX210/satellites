@@ -50,6 +50,12 @@
 
   --track-label: 0.08em;
   --track-display: -0.02em;
+  /* Per-script multipliers (src/styles/scripts.css), 1 for Latin: display/heading leading, display size, serif accent
+     size. Han, kana, hangul and Arabic need more leading than the condensed Latin's 0.92, and a CJK line set as tall
+     as the Latin one reads heavier, so each script scales these instead of every component special-casing it. */
+  --lh-k: 1;
+  --display-k: 1;
+  --accent-k: 1;
 
   /* space (4px base) */
   --s-1: 4px;
