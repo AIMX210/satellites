@@ -7,7 +7,9 @@
  *   /?q=…&p=…&norad=<id>&t=<ms>[&sat=…&verdict=…]       share's fallback deep link (R2K5): opens that satellite's
  *                                                       pass nearest t, with the window re-centred on t when
  *                                                       t is older than the default window
+ *   /place/<slug>[?p=<passId>]                          a place page (src/lib/placePage.ts): the place it was built for
  */
+import type { PagePlace } from '@/lib/placePage'
 import type { Place, Report } from '@/types'
 
 const DAY = 86_400_000
@@ -48,14 +50,22 @@ function positiveInt(v: string | null): number | undefined {
   return Number.isSafeInteger(n) && n > 0 ? n : undefined
 }
 
-/** What `search` (location.search) asks for; null for the landing. */
-export function readUrlTarget(search: string, now: number = Date.now()): UrlTarget | null {
+/**
+ * What `search` (location.search) asks for; null for the landing. `page` is the place of the place page the address
+ * is on, if it is one: it opens when the search names nothing else.
+ */
+export function readUrlTarget(search: string, now: number = Date.now(), page?: PagePlace): UrlTarget | null {
   const params = new URLSearchParams(search)
   if (params.has('sandbox')) return null
   const shareId = params.get('s')
   if (shareId) return { kind: 'share', id: shareId }
   const q = params.get('q')
-  if (!q) return null
+  if (!q) {
+    if (!page) return null
+    // The page says more than a link can: where the place is, as the search box would have named it.
+    const place: Place = { label: page.label, sublabel: page.sublabel, lat: page.lat, lon: page.lon, countryCode: page.cc, source: 'url' }
+    return { kind: 'q', place, opts: { selectPassId: params.get('p') ?? undefined } }
+  }
   const [lat, lon] = q.split(',').map(Number)
   if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null
   const label = params.get('n') || `${lat.toFixed(3)}, ${lon.toFixed(3)}`

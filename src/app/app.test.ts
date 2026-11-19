@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Pass } from '@/types'
+import type { PagePlace } from '@/lib/placePage'
 import { passLinkOpts, pickPreselect, readUrlTarget } from './links'
 import { isSettled, raceTimeout, settleWaitMs } from './timing'
 
@@ -54,6 +55,16 @@ describe('readUrlTarget', () => {
     const t = NOW - 2 * DAY
     const target = readUrlTarget(`?q=43.47,-80.54&n=Waterloo&p=x&norad=60989&t=${t}`, NOW)
     expect(target?.kind === 'q' && target.opts).toEqual({ now: NOW, selectNorad: 60989, selectNear: t })
+  })
+
+  it('opens a place page on the place it was built for, unless the link names something else', () => {
+    const page: PagePlace = { path: '/place/paris', label: 'Paris', sublabel: 'Île-de-France, France', lat: 48.8566, lon: 2.3522, cc: 'fr' }
+    const place = { label: 'Paris', sublabel: 'Île-de-France, France', lat: 48.8566, lon: 2.3522, countryCode: 'fr', source: 'url' }
+    expect(readUrlTarget('', NOW, page)).toEqual({ kind: 'q', place, opts: { selectPassId: undefined } })
+    expect(readUrlTarget('?p=60989-29892501&utm_source=x', NOW, page)).toEqual({ kind: 'q', place, opts: { selectPassId: '60989-29892501' } })
+    expect(readUrlTarget('?s=abcd2345', NOW, page)).toEqual({ kind: 'share', id: 'abcd2345' })
+    expect(readUrlTarget('?q=43.47,-80.54&n=Waterloo', NOW, page)).toMatchObject({ kind: 'q', place: { label: 'Waterloo' } })
+    expect(readUrlTarget('?sandbox=globe', NOW, page)).toBeNull()
   })
 
   it('falls back to the pass id when t or norad is missing or invalid', () => {

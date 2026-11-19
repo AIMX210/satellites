@@ -6,6 +6,7 @@
  *   /?q=<lat>,<lon>&n=<label>[&p=<passId>]   deep link straight to a report
  *   /?q=…&norad=<id>&t=<ms>                  share's fallback deep link: that satellite's pass nearest t
  *   /?s=<shareId>                            open a shared pass
+ *   /place/<slug>                            a place page: straight to that place's report (src/lib/placePage.ts)
  *
  * Timing contract (decision #10, one continuous instrument):
  *  - Boot waits only for the globe's first light and the fonts. The catalog loads in parallel (its points
@@ -31,6 +32,7 @@ import type { EngineReport } from '@/engine/report'
 import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/catalog'
 import { ensureTz } from '@/imagery'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
+import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
 import { createLateShareGate } from './lateShare'
 import { passLinkOpts, sharedGeoItem, pickPreselect, readUrlTarget, type RunOpts } from './links'
 import { isSettled, raceTimeout, settleWaitMs, sleep } from './timing'
@@ -155,7 +157,7 @@ export async function boot() {
   booted = true
   const bootStart = performance.now()
   mark('boot')
-  const target = readUrlTarget(location.search)
+  const target = readUrlTarget(location.search, Date.now(), bootPlace())
   // A place link that carries `tl` opens the time-lapse over its results (ui/results/TimelapseEntry.tsx).
   if (target?.kind === 'q') useTimelapseUi.getState().request(timelapseParam(location.search))
   // Everything that can overlap does: the share lookup, the catalog, the globe's first light, the fonts.
@@ -188,7 +190,7 @@ export async function boot() {
     const share = await raceTimeout(shareP, Math.max(SHARE_MIN_AFTER_LIGHT_MS, SHARE_CAP_MS - (performance.now() - bootStart)))
     if (share) run = shareRun(share)
     // Unknown, expired or invalid share (settled with null): the landing, with a clean address bar.
-    else if (shareSettled) history.replaceState(history.state, '', location.pathname)
+    else if (shareSettled) history.replaceState(history.state, '', homePath(location.pathname))
     // Still pending: the landing, keeping ?s= — it opens when it answers, if the landing is untouched.
     else adoptLateShare(shareP, bootStart)
   }
@@ -832,23 +834,19 @@ export function resetToLanding() {
   inflight = null
   useApp.getState().reset()
   // history.state is kept: it carries the back stack's stamp for this entry (src/lib/backStack.ts).
-  history.replaceState(history.state, '', location.pathname)
+  history.replaceState(history.state, '', homePath(location.pathname))
 }
 
 /** Address-bar writes so far: a deferred write is skipped when a newer one has happened since (R2K3). */
 let urlWrites = 0
 
 /**
- * Address-bar state. Coordinates are rounded to 3 decimals (~110 m): people copy the address bar far more
- * often than they press Share, and it must not leak a precise location (the share card promises ~1 km).
+ * Address-bar state (src/lib/placePage.ts addressOf): `?q=<lat>,<lon>&n=<label>`, the coordinates rounded to ~110 m,
+ * or a place page's own path while its place is the one on screen.
  */
 export function writeUrl(place: Place, passId?: string) {
   urlWrites++
-  const p = new URLSearchParams()
-  p.set('q', `${place.lat.toFixed(3)},${place.lon.toFixed(3)}`)
-  p.set('n', place.label)
-  if (passId) p.set('p', passId)
-  history.replaceState(history.state, '', `${location.pathname}?${p.toString()}`)
+  history.replaceState(history.state, '', addressOf(place, passId, pagePlace(), location.pathname))
 }
 
 // ───────────────────────────── helpers ─────────────────────────────

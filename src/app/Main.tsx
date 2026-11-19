@@ -14,6 +14,7 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState, type ComponentType } from 'react'
 import { createPortal } from 'react-dom'
 import { backStack, onBackSettled, watchLayer } from '@/lib/backStack'
+import { homePath } from '@/lib/placePage'
 import { useApp, type Phase } from '@/state/store'
 import type { Place } from '@/types'
 import type { ResultsViewProps } from '@/ui/results'
@@ -143,7 +144,7 @@ function writeUrlNow() {
   if (st.place && (st.phase === 'results' || st.phase === 'computing' || st.phase === 'error')) writeUrl(st.place, st.phase === 'results' ? st.selectedPassId : undefined)
   // The landing: a clean address, except a share link the visitor hasn't moved on from (?s=: it may still open, or a
   // reload may find it). From the controller's state, not the address: after their own search the landing is clean.
-  else if (st.phase === 'idle' && !isShareUnresolved()) history.replaceState(history.state, '', location.pathname)
+  else if (st.phase === 'idle' && !isShareUnresolved()) history.replaceState(history.state, '', homePath(location.pathname))
 }
 /** Back out of a pass to the list (as the panel's "All passes"): live time, the camera back on the place. */
 function closePass() {
