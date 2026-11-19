@@ -55,6 +55,16 @@ const GENERIC = {
   description: 'Enter any place on Earth. See every satellite that passed over it in the last 7 days, and the actual pictures they took.',
 }
 
+/**
+ * The card of a place with no pass named. An address-bar link to the place and the place's own page (/place/<slug>,
+ * scripts/build-seo.ts) both unfurl into it, so the two share one render in the edge cache. The spot is rounded to
+ * 0.01°, as every link's is.
+ */
+export function placeCardUrl(origin: string, place: { label: string; lat: number; lon: number }): string {
+  const card = new URLSearchParams({ kind: 'place', place: place.label, lat: place.lat.toFixed(2), lon: place.lon.toFixed(2), v: CARD_VERSION })
+  return `${origin}/api/og?${card.toString()}`
+}
+
 function html(body: string, status: number, cacheControl: string): Response {
   return new Response(body, {
     status,
@@ -104,17 +114,15 @@ function placePage(q: URLSearchParams, origin: string): Response {
       'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800',
     )
   }
-  const card = new URLSearchParams(
-    summary
-      ? { kind: 'summary', q: coords, n: place.label, ...Object.fromEntries(SUMMARY_KEYS.flatMap((k) => (q.get(k) ? [[k, q.get(k)!]] : []))), v: CARD_VERSION }
-      : { kind: 'place', place: place.label, lat: place.lat.toFixed(2), lon: place.lon.toFixed(2), v: CARD_VERSION },
-  )
+  const card = summary
+    ? `${origin}/api/og?${new URLSearchParams({ kind: 'summary', q: coords, n: place.label, ...Object.fromEntries(SUMMARY_KEYS.flatMap((k) => (q.get(k) ? [[k, q.get(k)!]] : []))), v: CARD_VERSION }).toString()}`
+    : placeCardUrl(origin, place)
   return html(
     sharePageHtml({
       title: summary ? summaryTitle(summary) : placeTitle(place),
       description: summary ? summaryDescription(summary) : placeDescription(place),
       canonical: `${origin}/?${app.toString()}`,
-      image: `${origin}/api/og?${card.toString()}`,
+      image: card,
       imageType: 'image/jpeg',
       imageAlt: summary ? `${summaryTitle(summary)} ${summary.best ? `The share card, with the week’s closest photo, from ${summary.best.satName}.` : 'The share card.'}` : DEFAULT_CARD_ALT,
       redirect: `/?${app.toString()}`,
