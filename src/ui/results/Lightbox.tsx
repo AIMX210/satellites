@@ -857,7 +857,9 @@ function LbPhoto({
 /**
  * Under the photo: who and when, what the picture shows at the place, the product line and the archive's credit. The
  * first row never truncates: the relative time ("· 2 days ago") is dropped whole when the row is too narrow for it
- * (it wraps into a clipped second line), so the satellite, day and time always read in full.
+ * (it wraps into a clipped second line), so the satellite, day and time always read in full. The clock with its zone
+ * and the coordinates are each one `data-num` island: in Arabic text "16:14 UTC−5" would otherwise come apart and
+ * read "UTC−5 16:14".
  */
 function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: ResultsModel; mobile: boolean; pan?: boolean }) {
   const lm = useMsgs(enLightbox)
@@ -872,15 +874,21 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
   const km = gm.cropKm(w)
   const product = pan ? lm.panProduct(pixelLabel(PAN_PIXEL)) : productLabel(capture)
   const ago = <Ago t={pass?.tClosest ?? capture.datetime} base={model.clock} />
-  if (mobile)
+  if (mobile) {
     // Phones (PH-11): one fact group per line, never wrapped like prose ('15:24 / EST', '240 / KM', a line opening on
     // a dangling '·'): who and when · how long ago (and the status) · the product · the place · the credit.
+    // Right to left, the day is words ("الأحد، 1 نوفمبر") and the first line has no room left for the clock, which
+    // the ellipsis would take whole: the clock opens the second line instead, before how long ago.
+    const clock = <span data-num>{t.time} {t.zone}</span>
+    const clockBelow = document.documentElement.dir === 'rtl'
     return (
       <div className={s.metaText}>
         <span className={s.metaLine}>
-          <b className={s.metaName}>{meta.name}</b> · {t.day} · {t.time} {t.zone}
+          <b className={s.metaName}>{meta.name}</b> · {t.day}
+          {clockBelow ? null : <> · {clock}</>}
         </span>
         <span className={cx(s.metaLine, s.dim)}>
+          {clockBelow ? <>{clock} · </> : null}
           {ago}
           {status ? (
             <>
@@ -892,16 +900,19 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
         <span className={s.metaLine}>
           {product} · {km}
         </span>
-        <span className={s.metaLine}>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
+        <span className={s.metaLine}>
+          <span data-num>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
+        </span>
         <span className={s.credit} lang="en">{credit(capture)}</span>
       </div>
     )
+  }
   return (
     <div className={s.metaText}>
       <span className={s.metaRow}>
         <span className={cx(s.metaMain, s.metaFit)}>
           <span className={s.metaKeep}>
-            <b>{meta.name}</b> · {t.day} · {t.time} {t.zone}
+            <b>{meta.name}</b> · {t.day} · <span data-num>{t.time} {t.zone}</span>
           </span>
           <span className={cx(s.dim, s.metaOpt)}>
             {'\u00a0· '}
@@ -912,7 +923,7 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
       </span>
       <span className={s.metaRow}>
         <span className={s.metaMain}>
-          {product} · {km} · <span className={s.nowrap}>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
+          {product} · {km} · <span className={s.nowrap} data-num>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
         </span>
       </span>
       <span className={s.credit} lang="en">{credit(capture)}</span>
