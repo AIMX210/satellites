@@ -125,8 +125,8 @@
 /* Each line is a mask; pad the box so descenders and the italic's overhangs (the swash of the "y"
    hangs left of the margin) are inside the clip while it wipes. */
 .hl {
-  padding: 0.05em 0.08em 0.16em 0.14em;
-  margin: -0.05em -0.08em -0.16em -0.14em;
+  padding: var(--hl-top, 0.05em) 0.08em 0.16em 0.14em;
+  margin: calc(-1 * var(--hl-top, 0.05em)) -0.08em -0.16em -0.14em;
 }
 .serif {
   /* The one serif accent, in the signal colour: "you" is the subject, the same colour as the reticle on your spot. */

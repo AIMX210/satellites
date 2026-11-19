@@ -7,7 +7,9 @@
  * "7.46 km/s" or "16:14:21" never gets reordered by the surrounding right-to-left text.
  */
 import { Fragment, type ReactNode } from 'react'
-import { isAccent, isNum, tightUnit, type Part } from '../../api/_lib/i18n/parts'
+import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
+import { isAccent, isNum, percentGapBefore, tightUnit, type Part } from '../../api/_lib/i18n/parts'
+import { useLocale } from './runtime'
 
 export interface RichClasses {
   /** a number (mono, tabular) */
@@ -24,19 +26,20 @@ export interface RichClasses {
 type AccentTag = 'em' | 'span' | 'b' | 'strong'
 
 export function Rich({ parts, classes = {}, accentAs = 'span', strongAs = 'strong' }: { parts: readonly Part[]; classes?: RichClasses; accentAs?: AccentTag; strongAs?: AccentTag }): ReactNode {
-  return parts.map((p, i) => <Fragment key={i}>{renderPart(p, classes, accentAs, strongAs)}</Fragment>)
+  const gap = LOCALE_INFO[useLocale()].percentGap
+  return parts.map((p, i) => <Fragment key={i}>{renderPart(p, classes, accentAs, strongAs, gap)}</Fragment>)
 }
 
-function renderPart(p: Part, c: RichClasses, accentAs: AccentTag, strongAs: AccentTag): ReactNode {
+function renderPart(p: Part, c: RichClasses, accentAs: AccentTag, strongAs: AccentTag, gap?: boolean): ReactNode {
   if (typeof p === 'string') return p
   if (isNum(p))
     return (
       <span className={c.num} data-num="">
         {p.n}
-        {p.u ? tightUnit(p.u) ? p.u : <span className={c.unit}>{p.u}</span> : null}
+        {p.u ? tightUnit(p.u) ? percentGapBefore(p.u, gap) + p.u : <span className={c.unit}>{p.u}</span> : null}
       </span>
     )
   const Tag = isAccent(p) ? accentAs : strongAs
   const inner = isAccent(p) ? p.accent : p.strong
-  return <Tag className={isAccent(p) ? c.accent : c.strong}>{inner.map((q, i) => <Fragment key={i}>{renderPart(q, c, accentAs, strongAs)}</Fragment>)}</Tag>
+  return <Tag className={isAccent(p) ? c.accent : c.strong}>{inner.map((q, i) => <Fragment key={i}>{renderPart(q, c, accentAs, strongAs, gap)}</Fragment>)}</Tag>
 }

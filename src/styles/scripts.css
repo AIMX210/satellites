@@ -16,6 +16,16 @@
  *   and the signal colour.
  */
 
+/* ── Every language but English: room in the hero's line masks for capital diacritics (Ü, É, Ż, İ, Ї), so a line never
+   wipes in with its accents clipped and then pops them in (the mask's padding is cancelled by a margin: no layout
+   moves). Arabic's marks rise further. ─────────────────────────────────────────────────────────────────────── */
+:root:not(:lang(en)) {
+  --hl-top: 0.16em;
+}
+:root[data-script='arabic'] {
+  --hl-top: 0.32em;
+}
+
 /* ── Cyrillic (Ukrainian) ───────────────────────────────────────────────────────────────────────── */
 
 /* Noto Sans condenses on its own width axis to Instrument's density at 67.5%; Instrument's axis stops at 75%, so the

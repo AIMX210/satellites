@@ -35,6 +35,10 @@ export interface LocaleInfo {
   listed: boolean
   /** What separates two sentences in running text: a space, or nothing (Chinese and Japanese end with 。) */
   sentenceGap: '' | ' '
+  /** A no-break space before % ("25 %": French, German), where English writes "25%" */
+  percentGap?: boolean
+  /** The digit-group separator, where the language's typography differs from Intl's default (Spanish: a no-break space) */
+  group?: string
 }
 
 const L = (
@@ -43,14 +47,14 @@ const L = (
   english: string,
   script: Script,
   plurals: readonly PluralCategory[],
-  extra: Partial<Pick<LocaleInfo, 'dir' | 'intl' | 'listed' | 'sentenceGap'>> = {},
+  extra: Partial<Pick<LocaleInfo, 'dir' | 'intl' | 'listed' | 'sentenceGap' | 'percentGap' | 'group'>> = {},
 ): LocaleInfo => ({ code, native, english, script, dir: 'ltr', intl: code, plurals, listed: true, sentenceGap: ' ', ...extra })
 
 export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
   en: L('en', 'English', 'English', 'latin', ['one', 'other']),
-  es: L('es', 'Español', 'Spanish', 'latin', ['one', 'many', 'other']),
-  fr: L('fr', 'Français', 'French', 'latin', ['one', 'many', 'other']),
-  de: L('de', 'Deutsch', 'German', 'latin', ['one', 'other']),
+  es: L('es', 'Español', 'Spanish', 'latin', ['one', 'many', 'other'], { group: '\u00a0' }),
+  fr: L('fr', 'Français', 'French', 'latin', ['one', 'many', 'other'], { percentGap: true }),
+  de: L('de', 'Deutsch', 'German', 'latin', ['one', 'other'], { percentGap: true }),
   'pt-BR': L('pt-BR', 'Português', 'Portuguese', 'latin', ['one', 'many', 'other']),
   it: L('it', 'Italiano', 'Italian', 'latin', ['one', 'many', 'other']),
   nl: L('nl', 'Nederlands', 'Dutch', 'latin', ['one', 'other']),

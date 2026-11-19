@@ -59,18 +59,22 @@ export function fmt<L extends Locale>(locale: L): Fmt<L> {
   let f = cache.get(locale) as Fmt<L> | undefined
   if (f) return f
   const intl = locale === 'en' ? 'en-US' : LOCALE_INFO[locale].intl
-  const int = new Intl.NumberFormat(intl, { maximumFractionDigits: 0 })
+  const intFmt = new Intl.NumberFormat(intl, { maximumFractionDigits: 0 })
   const decs = new Map<number, Intl.NumberFormat>()
+  // A language whose typography groups digits otherwise than Intl does (Spanish: a no-break space, from 5 digits).
+  const group = LOCALE_INFO[locale].group
+  const out = (nf: Intl.NumberFormat, n: number) =>
+    group === undefined ? nf.format(n) : nf.formatToParts(n).map((p) => (p.type === 'group' ? group : p.value)).join('')
   const rules = new Intl.PluralRules(intl)
   const list = new Intl.ListFormat(LIST_TAG[locale] ?? intl, { style: 'long', type: 'conjunction' })
   f = {
     locale,
     intl,
-    int: (n) => int.format(Math.round(n)),
+    int: (n) => out(intFmt, Math.round(n)),
     dec(n, digits) {
       let d = decs.get(digits)
       if (!d) decs.set(digits, (d = new Intl.NumberFormat(intl, { minimumFractionDigits: digits, maximumFractionDigits: digits })))
-      return d.format(n)
+      return out(d, n)
     },
     category: (n) => rules.select(n) as PluralCategory,
     plural<T>(n: number, forms: Record<PluralsOf<L>, T>): T {
