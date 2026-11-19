@@ -163,7 +163,11 @@ const FIXED_ABBR: Record<string, string> = {
   'Asia/Calcutta': 'IST',
   'Asia/Hong_Kong': 'HKT',
   'Asia/Singapore': 'SGT',
+  // Indonesia's three zones, as Indonesians write them (Bali and Makassar are WITA, Papua WIT; owner, 2026-11-19)
   'Asia/Jakarta': 'WIB',
+  'Asia/Pontianak': 'WIB',
+  'Asia/Makassar': 'WITA',
+  'Asia/Jayapura': 'WIT',
   'Europe/Moscow': 'MSK',
   'Australia/Perth': 'AWST',
 }

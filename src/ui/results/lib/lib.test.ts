@@ -663,6 +663,8 @@ describe('familiar time zones (R22) and spoken labels (R19)', () => {
   const jul = Date.parse('2026-07-01T12:00:00Z')
   it('maps the big zones the en-US locale leaves as GMT offsets', () => {
     expect(zoneAbbr(nov, 'Asia/Tokyo')).toBe('JST')
+    // Indonesia's three zones as Indonesians write them (Bali and Makassar WITA, Papua WIT)
+    expect(['Asia/Jakarta', 'Asia/Pontianak', 'Asia/Makassar', 'Asia/Jayapura'].map((z) => zoneAbbr(nov, z))).toEqual(['WIB', 'WIB', 'WITA', 'WIT'])
     expect(zoneAbbr(nov, 'Asia/Seoul')).toBe('KST')
     expect(zoneAbbr(nov, 'Asia/Kolkata')).toBe('IST')
     expect(zoneAbbr(nov, 'Europe/Paris')).toBe('CET')
