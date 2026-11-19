@@ -31,7 +31,7 @@ so a reviewer can see them; never as invisible literals, never as plain spaces.
 | Buttons | Infinitive: *Partager*, *Télécharger l’image*, *Rejouer*, *Réessayer*. |
 | Mono labels | Nouns, no articles, accents kept on capitals: `DÉPOINTAGE`, `VUE RAPPROCHÉE`, `AU FIL DES ANS`. |
 | Feature names | Time-lapse = **Au fil des ans**. Closest look = **Vue rapprochée** (closest approach stays *Au plus près*). The searched spot = *l’endroit même* in prose, *ici* in labels. |
-| Numbers | Decimal comma, U+202F for thousands, from `fmt('fr')`: `1 715`, `7,46 km/s`, `25 %`, `5,4°`. Years, NORAD IDs and pass IDs are never grouped. |
+| Numbers | Decimal comma, U+00A0 for thousands (the sans draws U+202F at 0.1 em: 2330 on screen), from `fmt('fr')`: `1 715`, `7,46 km/s`, `25 %`, `5,4°`. Years, NORAD IDs and pass IDs are never grouped. |
 | Coordinates | Readouts keep the international form, point and letters: `16.2°S 063.0°E`, `43.4723°N 80.5449°W`. Prose spells them out: *par 0,2° ouest*. |
 | Compass | Prose spells it out (*vers le sud*, *à l’ouest*). Bearing readouts use the French 16-point letters with **O**: `SSO`, `ONO`, `NO`. |
 | Units | Written lowercase in the catalog (`km`, `m`, `km/s`). A surface that sets its line in caps prints them in caps, as English does (`786 KM`); that is accepted. |
@@ -854,7 +854,8 @@ mono sentence that needs a colon keeps its U+00A0: French typography does not ch
 
 - Decimal comma everywhere a reader sees a quantity: *7,46 km/s*, *5,4°*, *1,1 km*. Format with `fmt('fr').dec`
   and `fmt('fr').int`, never by hand, never `toLocaleString('en-US')`.
-- Thousands: U+202F, as `Intl.NumberFormat('fr')` produces: *1 715*, *35 778*, *16 917*.
+- Thousands: U+00A0 (`LOCALE_INFO.fr.group`), not Intl's U+202F: the design's sans draws U+202F at 0.1 em, so *2 330*
+  read as *2330* on screen (visual QA, 2026-11-19): *1 715*, *35 778*, *16 917*.
 - One French format for every French reader: `fmt('fr')`, not the browser's region (`fr-CH` prints *1'715*, `fr-CA`
   prints *16 h 14*). One catalog, one look, deterministic cards and tests.
 - Percent: U+00A0 before `%`: *25 %*. Units: U+00A0 between number and unit: *786 km*, *10 m*, *38 s*,
@@ -948,9 +949,10 @@ string or a small pure-string change: none adds a request, a font file, storage 
    The nine TTFs in `api/_fonts/` lack U+202F, U+2009, `→`, `≈` and `≤`, and `±` outside the mono face.
    `Intl.NumberFormat('fr')` puts U+202F in every grouped number, so:
    - replace U+202F and U+2009 with U+00A0 once, in the card builders, for every locale (English cards contain
-     neither, so they do not change);
+     neither, so they do not change): done, `cardSpaces` in `api/_lib/cardSpec.ts`;
    - keep `→`, `≈`, `≤` (and `±` outside mono) out of every `card/fr.ts` string;
-   - add a unit test that every character of every `card/fr.ts` output is in the bundled fonts' cmaps.
+   - add a unit test that every character of every `card/fr.ts` output is in the bundled fonts' cmaps: done for every
+     Latin and Cyrillic language, `api/_lib/cardGlyphs.test.ts`.
 4. **One render per share.** The card's language travels in the link (`l=`), so a French card is one render per
    share, cached like English. Never key it on the crawler's Accept-Language: that would split the cache and multiply
    renders.
