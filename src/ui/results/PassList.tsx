@@ -12,6 +12,8 @@ import { memo, useEffect, useRef, useState } from 'react'
 import { useApp } from '@/state/store'
 import type { Capture, Pass } from '@/types'
 import { Glyph, Tag, cx } from '@/ui/system'
+import { msgs, useMsgs } from '@/i18n/runtime'
+import enPassView from '@/i18n/en/passView'
 import { Ago, reportNow } from './Ago'
 import { Mark } from './Mark'
 import { prefetchPassImage } from './actions'
@@ -22,9 +24,8 @@ import { thumbUrl } from './lib/photos'
 import { useGallery } from './gallery'
 import { decodedPhoto, hasPhotoElement, loadPhoto } from './images'
 import { Img } from './Img'
-import { int } from './lib/copy'
 import { visibleCount, type ListItem, type PassGroup, type PassItem, type SatItem } from './lib/groups'
-import { glyphForPass, markColorVar, VERDICT_GLYPH, VERDICT_META, VERDICT_TITLE, verdictUnit, type Verdict } from './lib/meta'
+import { glyphForPass, markColorVar, VERDICT_GLYPH, VERDICT_META, VERDICT_TITLE, type Verdict } from './lib/meta'
 import { fmtSpokenDay, spokenRelative } from './lib/time'
 import type { ResultsModel } from './model'
 import s from './PassList.module.css'
@@ -40,8 +41,8 @@ export function PassList({ model, selectedId, onSelect }: Props) {
   // A row's pointerleave never fires when the list unmounts under the pointer (a click opens the
   // detail), so drop the globe's hover highlight with the list.
   useEffect(() => () => useApp.getState().setHoveredNorad(undefined), [])
-  if (!model.groups.length)
-    return <p className={s.empty}>No satellite we track crossed this place in the window. That is rare; the notes above say if a data source was down.</p>
+  const m = useMsgs(enPassView)
+  if (!model.groups.length) return <p className={s.empty}>{m.empty}</p>
   return (
     <div className={s.list}>
       {model.groups.map((g) => (
@@ -52,13 +53,14 @@ export function PassList({ model, selectedId, onSelect }: Props) {
 }
 
 function Group({ group, model, selectedId, onSelect }: { group: PassGroup } & Props) {
+  const m = useMsgs(enPassView)
   const [pages, setPages] = useState(0)
   const [open, setOpen] = useState<Set<string>>(() => new Set())
   const total = group.items.length
   const shown = visibleCount(total, group.verdict, pages)
   const rest = total - shown
   const sats = group.items.filter((i) => i.kind === 'sat').length
-  const unit = sats === total ? (total === 1 ? 'satellite' : 'satellites') : 'rows'
+  const showAll = sats === total ? m.showAllSats : m.showAllRows
   // Keep a selected pass visible: if it lives in a collapsed satellite, open that satellite.
   useEffect(() => {
     if (!selectedId) return
@@ -90,13 +92,13 @@ function Group({ group, model, selectedId, onSelect }: { group: PassGroup } & Pr
         <span className={cx(s.groupTitle, imaged && s.signal)}>
           <Glyph name={VERDICT_GLYPH[group.verdict]} size={12} color={imaged ? 'var(--signal)' : undefined} />
           {VERDICT_TITLE[group.verdict]}
-          {imaged && group.items.some((i) => i.kind === 'pass') ? <span className={s.order}> · closest look, then newest</span> : null}
+          {imaged && group.items.some((i) => i.kind === 'pass') ? <span className={s.order}> · {m.imagedOrder}</span> : null}
         </span>
         <span className={s.groupCount}>
-          {int(group.passCount)} {verdictUnit(group.verdict, group.passCount)}
+          {m.count(group.passCount, group.verdict)}
           <span className={cx(s.dim, s.satCount, imaged && s.satCountImaged)}>
             {' '}
-            · {int(group.satCount)} {group.satCount === 1 ? 'sat' : 'sats'}
+            · {m.sats(group.satCount)}
           </span>
         </span>
       </header>
@@ -115,14 +117,14 @@ function Group({ group, model, selectedId, onSelect }: { group: PassGroup } & Pr
         <div className={s.more}>
           {rest > 0 ? (
             <button type="button" className={s.moreBtn} onClick={() => setPages((p) => p + 1)}>
-              {pages === 0 ? `Show all ${int(total)} ${unit}` : `Show ${int(Math.min(rest, 40))} more`}
-              <span className={s.dim}>{pages === 0 ? '' : ` · ${int(rest)} left`}</span>
+              {pages === 0 ? showAll(total) : m.showMore(Math.min(rest, 40))}
+              <span className={s.dim}>{pages === 0 ? '' : ` · ${m.left(rest)}`}</span>
               <Glyph name="arrow-right" size={11} className={s.down} />
             </button>
           ) : null}
           {pages > 0 ? (
             <button type="button" className={s.moreBtn} onClick={() => setPages(0)}>
-              Show fewer
+              {m.showFewer}
             </button>
           ) : null}
         </div>
@@ -133,12 +135,16 @@ function Group({ group, model, selectedId, onSelect }: { group: PassGroup } & Pr
 
 const hover = (p: Pass | undefined) => useApp.getState().setHoveredNorad(p?.norad)
 
-/** "Clouded · 86%" when the picture is mostly cloud, "Mosaic" for a daily weather mosaic, "Radar" for a radar image. */
+/**
+ * "Clouded · 86%" when the picture is mostly cloud, "Mosaic" for a daily weather mosaic, "Radar" for a radar image
+ * (read at render time, in the active language).
+ */
 function exceptionTag(c: Capture | undefined): { text: string; warn: boolean } | null {
   if (!c) return null
-  if (isDailyMosaic(c)) return { text: 'Mosaic', warn: false }
-  if (isRadar(c)) return { text: 'Radar', warn: false }
-  if (isClouded(c)) return { text: `Clouded · ${c.cloudCoverPct !== undefined ? `${int(c.cloudCoverPct)}%` : 'at spot'}`, warn: true }
+  const m = msgs(enPassView).tag
+  if (isDailyMosaic(c)) return { text: m.mosaic, warn: false }
+  if (isRadar(c)) return { text: m.radar, warn: false }
+  if (isClouded(c)) return { text: c.cloudCoverPct !== undefined ? m.cloudedPct(c.cloudCoverPct) : m.cloudedAtSpot, warn: true }
   return null
 }
 
@@ -155,22 +161,23 @@ const PassRow = memo(function PassRow({
   eager: boolean
   onSelect: (p: Pass) => void
 }) {
+  const m = useMsgs(enPassView)
   const { pass: p, meta } = item
   const capture = captureFor(model.report, p)
   const t = model.times(p)
   const tag = exceptionTag(capture)
   const clouded = !!capture && !isDailyMosaic(capture) && isClouded(capture)
   const prefetch = () => prefetchPassImage(model.report, p)
-  const label = [
-    meta.name,
-    VERDICT_META[p.verdict].verb,
-    `${fmtSpokenDay(p.tClosest, model.tz)} ${t.time} ${t.zone}`,
-    spokenRelative(p.tClosest, reportNow(model.clock)),
-    capture?.cloudCoverPct !== undefined ? `cloud ${int(capture.cloudCoverPct)} percent` : undefined,
-    tag?.warn ? 'clouded over' : undefined,
-  ]
-    .filter(Boolean)
-    .join(', ')
+  const label = m.rowLabel({
+    sat: meta.name,
+    verb: VERDICT_META[p.verdict].verb,
+    day: fmtSpokenDay(p.tClosest, model.tz),
+    time: t.time,
+    zone: t.zone,
+    ago: spokenRelative(p.tClosest, reportNow(model.clock)),
+    cloudPct: capture?.cloudCoverPct,
+    clouded: !!tag?.warn,
+  })
   const photoKey = model.photoByPass.get(p.id)
   const thumb = capture && !isDailyMosaic(capture) ? thumbUrl(capture) : undefined
   return (
@@ -208,10 +215,10 @@ const PassRow = memo(function PassRow({
             </span>
           </span>
           <span className={s.metaLine}>
-            {p.offNadirDeg.toFixed(1)}° off-nadir
+            {m.offNadir(p.offNadirDeg)}
             {/* …and the ground distance before the cloud, which is what a photograph is judged by. */}
-            <span className={capture?.cloudCoverPct !== undefined ? s.km : undefined}> · {int(p.groundDistanceKm)} km</span>
-            {capture?.cloudCoverPct !== undefined ? <span className={s.dim}> · cloud {int(capture.cloudCoverPct)}%</span> : null}
+            <span className={capture?.cloudCoverPct !== undefined ? s.km : undefined}> · {m.distanceKm(p.groundDistanceKm)}</span>
+            {capture?.cloudCoverPct !== undefined ? <span className={s.dim}> · {m.cloudPct(capture.cloudCoverPct)}</span> : null}
           </span>
         </span>
       </button>
@@ -219,8 +226,8 @@ const PassRow = memo(function PassRow({
         <button
           type="button"
           className={s.thumbBtn}
-          aria-label={`Expand the photo: ${meta.name}, ${t.day} ${t.time}`}
-          title="Expand the photo"
+          aria-label={m.expandLabel(meta.name, t.day, t.time)}
+          title={m.expandTitle}
           onClick={(e) => useGallery.getState().openLightbox(photoKey, e.currentTarget)}
           onPointerEnter={prefetch}
         >
@@ -248,11 +255,21 @@ const SatRow = memo(function SatRow({
   selectedId?: string
   onSelect: (p: Pass) => void
 }) {
+  const m = useMsgs(enPassView)
   const { meta, passes, latest, closest } = item
   const containsSelected = !!selectedId && passes.some((p) => p.id === selectedId)
   const listId = `sat-${item.key.replace(/[^a-z0-9-]/gi, '')}`
   const lt = model.times(latest)
-  const label = `${meta.name}${meta.operator ? `, ${meta.operator}` : ''}, ${int(passes.length)} ${verdictUnit(verdict, passes.length)}, latest ${fmtSpokenDay(latest.tClosest, model.tz)} ${lt.time}`
+  // The count stacked over its unit, the unit in the form the number takes in the active language.
+  const count = m.countStack(passes.length, verdict)
+  const label = m.satLabel({
+    sat: meta.name,
+    operator: meta.operator,
+    passes: passes.length,
+    verdict,
+    day: fmtSpokenDay(latest.tClosest, model.tz),
+    time: lt.time,
+  })
   return (
     <>
       <button
@@ -274,7 +291,7 @@ const SatRow = memo(function SatRow({
             {meta.operator ? <span className={s.operator}>{meta.operator}</span> : null}
           </span>
           <span className={s.metaLine}>
-            <span className={s.giveWay}>Latest </span>
+            <span className={s.giveWay}>{m.latest}</span>
             {lt.day} · {lt.time}
             <span className={s.dim}>
               {' · '}
@@ -282,13 +299,13 @@ const SatRow = memo(function SatRow({
             </span>
           </span>
           <span className={s.metaLine}>
-            <span className={s.giveWay}>Closest </span>
-            {closest.offNadirDeg.toFixed(1)}° off-nadir · {int(closest.groundDistanceKm)} km
+            <span className={s.giveWay}>{m.closest}</span>
+            {m.offNadir(closest.offNadirDeg)} · {m.distanceKm(closest.groundDistanceKm)}
           </span>
         </span>
         <span className={s.count}>
-          <span className={s.countNum}>{int(passes.length)}</span>
-          <span className={s.countUnit}>{verdictUnit(verdict, passes.length)}</span>
+          <span className={s.countNum}>{count.n}</span>
+          <span className={s.countUnit}>{count.u}</span>
         </span>
         <span className={cx(s.chev, expanded && s.chevOpen)} aria-hidden>
           <Glyph name="arrow-right" size={11} />
@@ -319,7 +336,7 @@ const SatRow = memo(function SatRow({
                   </span>
                 </span>
                 <span className={s.subGeo}>
-                  {p.offNadirDeg.toFixed(1)}° · {int(p.groundDistanceKm)} km
+                  {m.offNadirShort(p.offNadirDeg)} · {m.distanceKm(p.groundDistanceKm)}
                 </span>
               </button>
             </li>
@@ -335,6 +352,7 @@ const shownThumbs = new Set<string>()
 
 /** Thumbnail of the real crop: eager for the first rows, else loads when scrolled near. */
 function Thumb({ url, eager, clouded }: { url: string; eager: boolean; clouded: boolean }) {
+  const m = useMsgs(enPassView)
   const ref = useRef<HTMLSpanElement>(null)
   const known = shownThumbs.has(url) || hasPhotoElement('list', url)
   const [visible, setVisible] = useState(eager || known)
@@ -367,7 +385,7 @@ function Thumb({ url, eager, clouded }: { url: string; eager: boolean; clouded: 
       {clouded ? <span className={s.hatch} /> : null}
       <span className={s.thumbMark} />
       {/* The word only: the row's tag carries the number, and "CLOUD 100%" does not fit a 56 px thumb. */}
-      {clouded ? <span className={s.cloudChip}>Cloud</span> : null}
+      {clouded ? <span className={s.cloudChip}>{m.cloudChip}</span> : null}
       <span className={s.thumbExpand}>
         <Mark name="expand" size={10} />
       </span>

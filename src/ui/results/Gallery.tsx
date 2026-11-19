@@ -19,6 +19,9 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Pass } from '@/types'
 import { Glyph, cx, prefersReducedMotion } from '@/ui/system'
+import { msgs, useMsgs } from '@/i18n/runtime'
+import enGallery from '@/i18n/en/gallery'
+import { Rich } from '@/i18n/Rich'
 import { Ago } from './Ago'
 import { Mark } from './Mark'
 import { PhotoFrame, coordsOf } from './PhotoFrame'
@@ -29,7 +32,6 @@ import { warmPhoto } from './images'
 import { GALLERY_NEAR } from './warm'
 import { filterCounts, filterPhotos, cardUrl, cropWidthKm, type Photo, type PhotoFilter } from './lib/photos'
 import { isGeoFrame, pixelLabel, productLabel } from './lib/captures'
-import { dec1, int } from './lib/copy'
 import { fmtLocalDay, fmtLocalTime, zoneAbbr } from './lib/time'
 import type { ResultsModel } from './model'
 import s from './Gallery.module.css'
@@ -108,17 +110,18 @@ export function Gallery({ model, context, mobile, selectedId, onReplay, onShare 
 
   const n = items.length
   const windowItems = useMemo(() => items.filter((p) => !!p.pass), [items])
-  const week = isOldWindow(model) ? 'that week' : 'this week'
+  const oldWindow = isOldWindow(model)
+  const m = useMsgs(enGallery)
   const counterText = useCallback(
     (i: number) => {
       const p = items[i]
       if (!p) return ''
       // The last clear look from before the window is not one of the window's photos: the counter says how many
       // of those follow it ("27 this week"), never a placeholder.
-      if (!p.pass) return windowItems.length ? `${windowItems.length} ${week}` : ''
-      return `${windowItems.indexOf(p) + 1} / ${windowItems.length}`
+      if (!p.pass) return windowItems.length ? (oldWindow ? m.photosThatWeek : m.photosThisWeek)(windowItems.length) : ''
+      return m.position(windowItems.indexOf(p) + 1, windowItems.length)
     },
-    [items, windowItems, week],
+    [items, windowItems, oldWindow, m],
   )
 
   const paintChrome = useCallback(
@@ -386,17 +389,17 @@ export function Gallery({ model, context, mobile, selectedId, onReplay, onShare 
   return (
     <div className={cx(s.gallery, hero ? s.hero : s.detail, mobile && s.mobile)} data-gallery={context}>
       <div className={s.bar}>
-        {showFilter ? <FilterControl filter={filter} counts={counts} /> : <span className={s.barLabel}>{hero ? 'Photos' : null}</span>}
+        {showFilter ? <FilterControl filter={filter} counts={counts} /> : <span className={s.barLabel}>{hero ? m.barLabel : null}</span>}
         <span className={s.nav}>
           <span ref={counterRef} className={cx(s.counter, !hasLastClear && s.counterShort)} aria-live="polite" aria-atomic="true">
             {counterText(idx)}
           </span>
           {!mobile ? (
             <>
-              <button type="button" className={s.navBtn} onClick={() => goTo(idx - 1)} disabled={idx <= 0} aria-label="Previous photo" aria-keyshortcuts="ArrowLeft" title="Previous (←)">
+              <button type="button" className={s.navBtn} onClick={() => goTo(idx - 1)} disabled={idx <= 0} aria-label={m.prevPhoto} aria-keyshortcuts="ArrowLeft" title={m.prevTitle}>
                 <Mark name="chevron-left" size={12} />
               </button>
-              <button type="button" className={s.navBtn} onClick={() => goTo(idx + 1)} disabled={idx >= n - 1} aria-label="Next photo" aria-keyshortcuts="ArrowRight" title="Next (→)">
+              <button type="button" className={s.navBtn} onClick={() => goTo(idx + 1)} disabled={idx >= n - 1} aria-label={m.nextPhoto} aria-keyshortcuts="ArrowRight" title={m.nextTitle}>
                 <Mark name="chevron-right" size={12} />
               </button>
             </>
@@ -405,7 +408,7 @@ export function Gallery({ model, context, mobile, selectedId, onReplay, onShare 
       </div>
 
       <div className={s.viewport}>
-        <div ref={trackRef} className={s.track} role="group" aria-roledescription="carousel" aria-label="Photos of this place, swipe for more">
+        <div ref={trackRef} className={s.track} role="group" aria-roledescription={m.carousel} aria-label={m.trackLabel}>
           {items.map((p, i) =>
             // PH-06 / U-1: a slide far from the one on screen is an empty frame until it comes within MOUNT_NEAR (then it
             // stays): the results' arrival lays out 5 slides, not all 29 (~30 nodes each), in the frame the panel mounts.
@@ -426,7 +429,8 @@ export function Gallery({ model, context, mobile, selectedId, onReplay, onShare 
               mobile={mobile}
               index={i}
               total={n}
-              position={counterText(i)}
+              photoNo={p.pass ? windowItems.indexOf(p) + 1 : 0}
+              photoCount={windowItems.length}
               near={Math.abs(i - idx) <= NEAR}
               current={i === idx}
               cover={model.cover?.photo.key === p.key ? model.cover.why : undefined}
@@ -467,25 +471,21 @@ function nearestListed(prev: Photo[], items: Photo[], key: string | undefined): 
 
 /** All · Detailed · Weather · Radar: a hairline segmented control (owner B2). Radar only when the week has some. */
 function FilterControl({ filter, counts }: { filter: PhotoFilter; counts: Record<PhotoFilter, number> }) {
-  const opts: { f: PhotoFilter; label: string; title: string }[] = [
-    { f: 'all', label: 'All', title: 'Every photo, newest first after the closest look' },
-    { f: 'detailed', label: 'Detailed', title: 'Sentinel-2 and Landsat, 10–30 m per pixel' },
-    { f: 'weather', label: 'Weather', title: 'Daily weather mosaics, 250 m per pixel and coarser' },
-    ...(counts.radar ? [{ f: 'radar' as const, label: 'Radar', title: 'Sentinel-1 radar images, 20 m per pixel: through cloud, day or night' }] : []),
-  ]
+  const m = useMsgs(enGallery)
+  const opts: PhotoFilter[] = ['all', 'detailed', 'weather', ...(counts.radar ? (['radar'] as const) : [])]
   return (
-    <span className={s.filter} role="group" aria-label="Show photos">
-      {opts.map((o) => (
+    <span className={s.filter} role="group" aria-label={m.filterLabel}>
+      {opts.map((f) => (
         <button
-          key={o.f}
+          key={f}
           type="button"
-          className={cx(s.seg, filter === o.f && s.segOn)}
-          aria-pressed={filter === o.f}
-          disabled={!counts[o.f]}
-          title={o.title}
-          onClick={() => useGallery.getState().setFilter(o.f)}
+          className={cx(s.seg, filter === f && s.segOn)}
+          aria-pressed={filter === f}
+          disabled={!counts[f]}
+          title={m.filterTitle[f]}
+          onClick={() => useGallery.getState().setFilter(f)}
         >
-          {o.label}
+          {m.filter[f]}
         </button>
       ))}
     </span>
@@ -499,8 +499,9 @@ interface SlideProps {
   mobile: boolean
   index: number
   total: number
-  /** "3 / 27" (the counter's words for this photo) */
-  position: string
+  /** This photo's place among the window's photos (photo 3 of 27), 0 for a photo with no pass */
+  photoNo: number
+  photoCount: number
   near: boolean
   current: boolean
   cover?: 'closest' | 'lastClear' | 'clouded'
@@ -510,16 +511,16 @@ interface SlideProps {
   onShare?: (pass: Pass) => void
 }
 
-const Slide = memo(function Slide({ photo, model, context, mobile, index, total, position, near, current, cover, selected, onExpand, onReplay, onShare }: SlideProps) {
+const Slide = memo(function Slide({ photo, model, context, mobile, index, total, photoNo, photoCount, near, current, cover, selected, onExpand, onReplay, onShare }: SlideProps) {
+  const m = useMsgs(enGallery)
   const detail = context === 'detail'
   const { capture, pass } = photo
   const meta = model.meta(pass?.norad ?? capture.norad ?? 0)
   const tz = model.tz
   const t = pass ? model.times(pass) : { day: fmtLocalDay(capture.datetime, tz), time: fmtLocalTime(capture.datetime, tz), zone: zoneAbbr(capture.datetime, tz) }
   const when = pass?.tClosest ?? capture.datetime
-  const lead = cover === 'closest' ? 'Closest look' : cover === 'lastClear' ? 'Last clear look' : cover === 'clouded' ? 'Clouded over' : undefined
-  const [k, of] = position.split(' / ')
-  const label = `${lead ? `${lead}: ` : ''}${meta.name}, ${t.day} ${t.time}${pass && of ? `, photo ${k} of ${of}` : ''}`
+  const lead = cover ? m.lead[cover] : undefined
+  const label = m.slideLabel(cover, meta.name, t.day, t.time, pass && photoNo ? { k: photoNo, n: photoCount } : undefined)
   void total
   const replay = !detail && pass && onReplay ? () => onReplay(pass) : undefined
   const frameRef = useRef<HTMLDivElement>(null)
@@ -540,7 +541,7 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
         <span className={s.capRow}>
           <span className={s.capMain}>
             {productLabel(capture)}
-            <span className={s.capKm}> · {km >= 100 ? int(km) : dec1(km)} km</span>
+            <span className={s.capKm}> · {m.cropKm(km)}</span>
           </span>
           {status ? <span className={cx(s.status, photo.clouded && s.warn)}>{status}</span> : null}
         </span>
@@ -581,10 +582,11 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
           </span>
         </span>
         {replay ? (
-          <button type="button" className={s.mReplay} onClick={replay} tabIndex={current ? 0 : -1} aria-label={`Replay this pass on the globe: ${meta.name}, ${t.day} ${t.time}`}>
+          <button type="button" className={s.mReplay} onClick={replay} tabIndex={current ? 0 : -1} aria-label={m.replayLabel(meta.name, t.day, t.time)}>
             <Glyph name="play" size={10} />
             <span className={s.mReplayText}>
-              Replay<span className={s.tabletOnly}> this pass</span>
+              {/* The message's strong part is the tablet-only rest of the phrase: "Replay" + <span> this pass</span>. */}
+              <Rich parts={m.replay} classes={{ strong: s.tabletOnly }} strongAs="span" />
             </span>
           </button>
         ) : (
@@ -595,14 +597,14 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
             className={s.mReplay}
             onClick={onView}
             tabIndex={current ? 0 : -1}
-            aria-label={`View ${cover === 'lastClear' ? 'the last clear look' : 'the photo'} large: ${meta.name}, ${t.day} ${t.time}`}
+            aria-label={(cover === 'lastClear' ? m.viewLabel.lastClear : m.viewLabel.photo)(meta.name, t.day, t.time)}
           >
             <Mark name="expand" size={11} />
-            <span className={s.mReplayText}>View</span>
+            <span className={s.mReplayText}>{m.view}</span>
           </button>
         )}
         {!mobile && pass && onShare ? (
-          <button type="button" className={s.mShare} onClick={() => onShare(pass)} tabIndex={current ? 0 : -1} aria-label="Share this pass" title="Share this pass">
+          <button type="button" className={s.mShare} onClick={() => onShare(pass)} tabIndex={current ? 0 : -1} aria-label={m.sharePass} title={m.sharePass}>
             <Glyph name="share" size={13} />
           </button>
         ) : null}
@@ -611,7 +613,7 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
   }
 
   return (
-    <figure className={s.slide} role="group" aria-roledescription="slide" aria-label={label} aria-hidden={!current || undefined} data-current={current || undefined}>
+    <figure className={s.slide} role="group" aria-roledescription={m.slide} aria-label={label} aria-hidden={!current || undefined} data-current={current || undefined}>
       <div ref={frameRef} className={s.figure} data-image-end={current && detail ? '' : undefined}>
         <PhotoFrame
           photo={photo}
@@ -626,12 +628,12 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
           gateOnVisible={mobile}
           onExpand={(el) => onExpand(photo, el)}
           className={detail ? s.square : s.heroFrame}
-          tag={detail ? undefined : cover === 'closest' || cover === 'lastClear' ? { text: lead! } : photo.kind === 'radar' ? { text: 'Radar', ice: true } : undefined}
+          tag={detail ? undefined : cover === 'closest' || cover === 'lastClear' ? { text: lead! } : photo.kind === 'radar' ? { text: m.radarTag, ice: true } : undefined}
           note={
             detail
               ? undefined
               : cover === 'lastClear'
-                ? { text: model.windowPhotos ? 'This week’s passes saw mostly cloud' : 'Here’s the last clear look' }
+                ? { text: model.windowPhotos ? m.noteMostlyCloud : m.noteLastClear }
                 : photo.clouded
                   ? { text: cloudedWords(photo, cover === 'clouded'), warn: true }
                   : undefined
@@ -643,25 +645,26 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
   )
 })
 
-/** What a picture shows at the place, in the fewest words (honest about cloud, decision #2). */
+/** What a picture shows at the place, in the fewest words (honest about cloud, decision #2). Read at render time. */
 function shortStatus(p: Photo): string | undefined {
+  const m = msgs(enGallery).status
   const c = p.capture
-  if (p.clouded) return c.cloudCoverPct !== undefined && c.cloudCoverPct >= 70 ? `Clouded · ${int(c.cloudCoverPct)}%` : 'Cloud at spot'
+  if (p.clouded) return c.cloudCoverPct !== undefined && c.cloudCoverPct >= 70 ? m.cloudedPct(c.cloudCoverPct) : m.cloudAtSpot
   switch (c.spot) {
     case 'clear':
-      return 'Clear'
+      return m.clear
     case 'cirrus':
-      return 'Thin cirrus'
+      return m.cirrus
     case 'shadow':
-      return 'Cloud shadow'
+      return m.shadow
     default:
-      return c.cloudCoverPct !== undefined ? `Cloud ${int(c.cloudCoverPct)}%` : undefined
+      return c.cloudCoverPct !== undefined ? m.cloudPct(c.cloudCoverPct) : undefined
   }
 }
 
 /** Laptops' summary card, second line: a clouded picture says so on the picture itself (a chip), not here. */
 function heroStatus(p: Photo): string | undefined {
-  if (p.kind === 'mosaic') return 'Daily mosaic'
+  if (p.kind === 'mosaic') return msgs(enGallery).status.mosaic
   // A radar image's tag on the picture already says what it is.
   if (p.kind === 'radar') return undefined
   return p.clouded ? undefined : shortStatus(p)
@@ -674,12 +677,16 @@ function detailStatus(p: Photo): string | undefined {
 
 /** A clouded picture's chip: "Clouded over · 86%" / "Cloud at your spot". */
 function cloudedWords(p: Photo, cover: boolean): string {
+  const m = msgs(enGallery).clouded
   const pct = p.capture.cloudCoverPct
-  if (pct !== undefined && pct >= 70) return `Clouded over · ${int(pct)}%`
-  return cover ? 'Clouded over · cloud at your spot' : 'Cloud at your spot'
+  if (pct !== undefined && pct >= 70) return m.pct(pct)
+  return cover ? m.coverAtSpot : m.atSpot
 }
 
-/** Copyright / credit line required by each archive. */
+/**
+ * Copyright / credit line required by each archive. Not copy: legal attributions stay in English in every language
+ * (docs/I18N.md), word for word as each licensor asks, like the share card's (api/_lib/cardSpec.ts creditFor).
+ */
 export function credit(c: Photo['capture']): string {
   if (c.collection === 'sentinel-2-l2a' || c.collection === 'sentinel-1-rtc') return `Contains modified Copernicus Sentinel data ${new Date(c.datetime || Date.now()).getUTCFullYear()}`
   if (c.collection === 'landsat-c2-l2') return 'Landsat: USGS / NASA'
