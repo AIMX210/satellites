@@ -102,7 +102,8 @@ function applyToDocument(locale: Locale) {
  * falls back to English everywhere, attributes included, so glyphs and direction always match the words.
  */
 export async function startLocale(): Promise<void> {
-  if (import.meta.env.DEV && /[?&]hl=pseudo(?:&|$)/.test(location.search)) return startPseudo()
+  const pseudo = import.meta.env.DEV ? /[?&]hl=pseudo(-rtl)?(?:&|$)/.exec(location.search) : null
+  if (pseudo) return startPseudo(!!pseudo[1])
   const want = htmlLocale()
   const mod = await fetchModule(want)
   const locale = mod || want === DEFAULT_LOCALE ? want : DEFAULT_LOCALE
@@ -130,8 +131,12 @@ export async function setLocale(locale: Locale): Promise<void> {
   useLocaleStore.setState({ locale, version: useLocaleStore.getState().version + 1 })
 }
 
-/** Dev: every English namespace pseudo-translated (src/i18n/pseudo.ts). The namespace key is the file's name. */
-async function startPseudo(): Promise<void> {
+/**
+ * Dev: every English namespace pseudo-translated (src/i18n/pseudo.ts). The namespace key is the file's name.
+ * `?hl=pseudo-rtl` also lays the page out right to left, to check the mirrored layout without any one language's copy.
+ */
+async function startPseudo(rtl: boolean): Promise<void> {
+  if (rtl) document.documentElement.dir = 'rtl'
   const [{ pseudoBundle }, mods] = await Promise.all([
     import('./pseudo'),
     Promise.all(Object.entries(import.meta.glob<{ default: object }>('./en/*.ts')).map(async ([path, load]) => [path, (await load()).default] as const)),

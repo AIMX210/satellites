@@ -103,6 +103,13 @@
   --z-panel: 20;
   --z-overlay: 40;
   --z-toast: 60;
+
+  /* The sign of "forward" along the reading: a translateX that means "deeper, next, in" multiplies by it
+     (docs/I18N.md, Right to left). */
+  --dir-x: 1;
+}
+:root[dir='rtl'] {
+  --dir-x: -1;
 }
 
 /* Phone spacing and the phone type floor stay on width (not the stacked query): a portrait tablet keeps
