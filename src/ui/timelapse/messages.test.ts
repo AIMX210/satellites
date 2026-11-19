@@ -7,7 +7,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import en from '@/i18n/en/timelapse'
 import enTime from '@/i18n/en/time'
-import { setBundleForTests } from '@/i18n/runtime'
+import { msgs, setBundleForTests } from '@/i18n/runtime'
 import { GLACIER_SEASONS, SEASON_REGIONS } from '@/imagery/seasonRegions'
 import { fitText, joins, textDir, videoFileName } from './video'
 
@@ -100,12 +100,12 @@ describe('the video’s words', () => {
   it('names a place in another script with the visitor’s own word, read when the file is named', () => {
     const frames = [{ date: '2015-10-22' }, { date: '2026-09-04' }]
     setBundleForTests('es', { timelapse: { ...en, fileNamePlace: 'lugar' } })
-    expect(videoFileName('東京', frames)).toBe('watched-lugar-2015-2026.mp4')
-    expect(videoFileName('São Paulo', frames)).toBe('watched-sao-paulo-2015-2026.mp4')
+    expect(videoFileName('東京', frames, msgs(en).fileNamePlace)).toBe('watched-lugar-2015-2026.mp4')
+    expect(videoFileName('São Paulo', frames, msgs(en).fileNamePlace)).toBe('watched-sao-paulo-2015-2026.mp4')
     setBundleForTests('ja', { timelapse: { ...en, fileNamePlace: '場所' } })
-    expect(videoFileName('東京', frames)).toBe('watched-2015-2026.mp4')
+    expect(videoFileName('東京', frames, msgs(en).fileNamePlace)).toBe('watched-2015-2026.mp4')
     setBundleForTests('en', null)
-    expect(videoFileName('東京', frames)).toBe('watched-place-2015-2026.mp4')
+    expect(videoFileName('東京', frames, msgs(en).fileNamePlace)).toBe('watched-place-2015-2026.mp4')
   })
 
   it('shortens a Latin place name exactly as before', () => {

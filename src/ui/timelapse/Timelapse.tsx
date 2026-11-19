@@ -28,7 +28,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import enTimelapse from '@/i18n/en/timelapse'
-import { useMsgs } from '@/i18n/runtime'
+import { msgs, useMsgs } from '@/i18n/runtime'
 import { ARCHIVE_START, FRAME_HALF_KM, MIN_FRAMES, type Frame, type Timelapse as TimelapseData } from '@/imagery/timelapse'
 import { useBackLayer } from '@/lib/backStack'
 import { track } from '@/lib/telemetry'
@@ -593,9 +593,10 @@ function VideoButton({ frames, place, mobile, onStart }: { frames: Frame[]; plac
     try {
       const { renderVideo, videoFileName } = await import('./video')
       // A phone's frames are 640 px: 720 keeps them honest. A laptop's are the scene's own 1000.
-      const v = await renderVideo(frames, { side: mobile ? 720 : 1080, place: place.label, signal: ctl.signal, onProgress: (done) => !ctl.signal.aborted && setState({ phase: 'busy', done }) })
+      const words = msgs(enTimelapse) // read now, in the language of the press
+      const v = await renderVideo(frames, { side: mobile ? 720 : 1080, place: place.label, words, signal: ctl.signal, onProgress: (done) => !ctl.signal.aborted && setState({ phase: 'busy', done }) })
       if (ctl.signal.aborted) return
-      setState({ phase: 'ready', file: new File([v.blob], videoFileName(place.label, frames), { type: 'video/mp4' }), everywhere: v.codec === 'avc' })
+      setState({ phase: 'ready', file: new File([v.blob], videoFileName(place.label, frames, msgs(enTimelapse).fileNamePlace), { type: 'video/mp4' }), everywhere: v.codec === 'avc' })
     } catch (err) {
       if (ctl.signal.aborted) return
       console.error(err)

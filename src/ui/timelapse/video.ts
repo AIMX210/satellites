@@ -27,8 +27,10 @@
  *    joined letters apart: docs/I18N.md). Latin, Cyrillic and CJK keep the mono's tracking; English is as it was.
  */
 import { ArrayBufferTarget, Muxer } from 'mp4-muxer'
-import enTimelapse from '@/i18n/en/timelapse'
-import { currentLocale, msgs } from '@/i18n/runtime'
+// The words come from the caller, the time-lapse, which already holds its catalog: a type here, so the catalog stays in
+// the time-lapse's chunk instead of a chunk of its own that both would load.
+import type enTimelapse from '@/i18n/en/timelapse'
+import { currentLocale } from '@/i18n/runtime'
 import { SPELLED } from '@/imagery/placeKey'
 import type { Frame } from '@/imagery/timelapse'
 import { LOCALE_INFO } from '../../../api/_lib/i18n/locales'
@@ -105,11 +107,11 @@ const slugOf = (label: string) =>
     .replace(/-+$/, '')
 
 /**
- * "watched-groom-lake-2015-2026.mp4". A place named in another script (東京) takes the catalog's word for a place
- * ("watched-place-2015-2026.mp4"), read in the visitor's language when the file is named.
+ * "watched-groom-lake-2015-2026.mp4". A place named in another script (東京) takes the catalog's word for a place,
+ * `placeWord` (the time-lapse's `fileNamePlace` in the visitor's language: "watched-place-2015-2026.mp4").
  */
-export function videoFileName(label: string, frames: readonly Pick<Frame, 'date'>[]): string {
-  const slug = slugOf(label) || slugOf(msgs(enTimelapse).fileNamePlace)
+export function videoFileName(label: string, frames: readonly Pick<Frame, 'date'>[], placeWord: string): string {
+  const slug = slugOf(label) || slugOf(placeWord)
   const a = frames[0]?.date.slice(0, 4)
   const b = frames[frames.length - 1]?.date.slice(0, 4)
   return `watched${slug ? `-${slug}` : ''}${a ? `-${a}${b && b !== a ? `-${b}` : ''}` : ''}.mp4`
@@ -296,6 +298,8 @@ export interface VideoOptions {
   /** The video's side, px (even) */
   side: number
   place: string
+  /** The time-lapse's words in the visitor's language (its `readout` under each frame's year) */
+  words: Pick<typeof enTimelapse, 'readout'>
   signal?: AbortSignal
   /** 0..1 as the frames are drawn and encoded */
   onProgress?: (done: number) => void
@@ -315,7 +319,7 @@ export async function renderVideo(frames: readonly Frame[], opts: VideoOptions):
   if (!chosen) throw new Error('No video encoder in this browser')
 
   // The words, in the visitor's language and in capitals by its rules (a canvas has no CSS text-transform).
-  const m = msgs(enTimelapse)
+  const m = opts.words
   const info = LOCALE_INFO[currentLocale()]
   const upper = (s: string) => s.toLocaleUpperCase(info.intl)
   const place = upper(opts.place)
