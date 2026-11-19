@@ -419,6 +419,17 @@ export function Timeline({ model, selectedId, onSelect, compact = false, index =
                 </span>
               </span>
             ) : null}
+            {/* Hidden copies of the four labels, in the flow: the column takes the widest one's room ("VERMUTLICH 210",
+                "POSSIBILE 1.565" squeezed their glyph to a dot in English's 124 px), and keeps at least that. */}
+            <span className={s.laneSizer}>
+              {(['imaged', 'likely', 'could', 'overhead'] as const).map((v) => (
+                <span key={v} className={s.laneLabel}>
+                  <Glyph name={VERDICT_GLYPH[v]} size={10} />
+                  <span className={s.laneWord}>{vm[v].short}</span>
+                  <span className={s.laneCount}>{int(laneCount(v))}</span>
+                </span>
+              ))}
+            </span>
             {(size.h ? (['imaged', 'likely', 'could', 'overhead'] as const) : []).map((v) => (
               <span
                 key={v}
