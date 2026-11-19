@@ -10,15 +10,18 @@ exact axis positions the design system uses on the web, and write plain TTFs:
   mono     Martian Mono      wdth 87.5 wght 350   (labels, readouts)
   serif    Instrument Serif  italic 400           (the one human phrase)
 
-Each comes in two files, `latin` and `latin-ext`, mirroring fontsource's subsets; satori falls back
-per glyph across all registered fonts, so "São Paulo" and "Łódź" render with the right face.
+Each comes in two files, `latin` and `latin-ext`, mirroring fontsource's subsets. Both carry the role's family name,
+but the card registers each file under a name of its own (`<role>`, `<role> Ext`; api/_lib/fonts.ts): satori keeps one
+face per name, weight and style and never asks a second file registered under the same name. Each role's stack names
+both, so "São Paulo", "Łódź" and "İstanbul" render in the brand faces.
 
-Cyrillic (Ukrainian) gets the faces the web gives it (src/styles/scripts.css), one `-cyrillic` file per role, with
-the same family names:
+Cyrillic (Ukrainian) gets the faces the web gives it (src/styles/scripts.css), one `-cyrillic` file per role. They carry
+the role's family name too, and the card registers them as `<role> Cyrillic`, after the latin files in each stack:
 
   display  Noto Sans           wdth 67.5 wght 560         size-adjust 95 %    (Instrument's density: its axis stops at 75)
   sans     Noto Sans           wdth 100  wght 400         size-adjust 95 %
-  mono     Martian Mono        wdth 87.5 wght 350         (its own Cyrillic: the Latin's design)
+  mono     Martian Mono        wdth 87.5 wght 350         (its own Cyrillic: the Latin's design; it has no Serbian,
+                                                          Macedonian or Kazakh letters, which the card takes from sans)
   serif    Noto Serif Display  italic, wdth 62.5 wght 320  size-adjust 98.5 %  (Instrument Serif italic's measure and colour)
 
 Each is cut to the web's unicode-range for those faces, so spaces, digits and Latin letters in a Ukrainian line come
