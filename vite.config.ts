@@ -39,6 +39,22 @@ const PURE_IMAGERY_MODULES = /src[\\/]imagery[\\/](image|pixels|pixelsClient|gib
 /** lib/geo's Vector3 helpers (three's math classes): the globe's, never the first screen's (see src/lib/geo.ts). */
 const PURE_LIB_MODULES = /src[\\/]lib[\\/]geo3\.ts$/
 
+/**
+ * The i18n core and the few modules the first screen shares with the 15 locale chunks (every catalog formats with
+ * them): Rolldown cut each into its own sliver, because the locale chunks import them too, and English's first load
+ * went from 17 files to 23. Held in one chunk instead. Only zustand's own entry: its `traditional` one (and
+ * use-sync-external-store under it) is React Three Fiber's, and taking it here pulled the globe into the first load.
+ */
+const I18N_CORE =
+  /src[\\/]i18n[\\/](ns|accentFont|runtime|Rich)\.tsx?$|api[\\/]_lib[\\/]i18n[\\/](locales|parts|format)\.ts$|src[\\/]ui[\\/]system[\\/]format\.ts$|src[\\/]imagery[\\/]placeKey\.ts$|src[\\/]i18n[\\/]en[\\/]time\.ts$|src[\\/]ui[\\/]results[\\/]lib[\\/]time\.ts$|node_modules[\\/]zustand[\\/]esm[\\/](index|vanilla|react)\.mjs$/
+
+/**
+ * The verdicts' English names ride with the results' meta (the results panel and About both load it), not in a chunk
+ * of their own on the results' path. (The time-lapse's words stay in its chunk because its video module takes them from
+ * it: video.ts imports the catalog's type only.)
+ */
+const RESULTS_META = /src[\\/]ui[\\/]results[\\/]lib[\\/]meta\.ts$|src[\\/]i18n[\\/]en[\\/]verdicts\.ts$/
+
 /** The three faces the first screen paints (latin subsets): preloaded so the static boot frame and the hero never swap fonts late. */
 const CRITICAL_FONTS = /^(?:.*\/)?(instrument-sans-latin-standard-normal|martian-mono-latin-standard-normal|instrument-serif-latin-400-italic)-[\w-]+\.woff2$/
 
@@ -193,6 +209,12 @@ export default defineConfig({
             // The photos' URLs on the place's UTM grid (src/imagery/pcCrop.ts over api/_lib/toneRender.ts + utm.ts) are
             // built once a search starts: their own chunk, so they never ride with the geocoder's endpoints (CR-1).
             { name: 'grid', test: /src[\\/]imagery[\\/](pcCrop|radar)\.ts$|api[\\/]_lib[\\/](toneRender|utm|radar|infrared)\.ts$/, includeDependenciesRecursively: false },
+            // The i18n core with the first screen's shared modules (I18N_CORE), and React with its JSX runtime, which
+            // the locale chunks' imports had split apart: English's first screen loads one file more than before
+            // translations (this core), not seven.
+            { name: 'i18n', test: I18N_CORE, includeDependenciesRecursively: false },
+            { name: 'react', test: /node_modules[\\/]react[\\/]/, includeDependenciesRecursively: false },
+            { name: 'meta', test: RESULTS_META, includeDependenciesRecursively: false },
           ],
         },
       },
