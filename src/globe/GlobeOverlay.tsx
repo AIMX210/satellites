@@ -18,7 +18,7 @@
  * Departing labels stay mounted for 240 ms at opacity 0, so they fade instead of popping (M11).
  *
  * Acquisition sequence (owner request C, rt.acq): at the capture of an imaged pass a mono line snaps in under the
- * coordinates ("ACQUIRED 11:21:13 EST · 10 M"; straight away on a quiet selection), and while a live sequence runs a
+ * coordinates ("ACQUIRED 11:21:13 EST · 10 m"; straight away on a quiet selection), and while a live sequence runs a
  * countdown readout sits top-right under the HUD clock ("T−00:01:12" → "ACQUIRED"), written per frame from the
  * scene clock, never through React.
  *
@@ -30,6 +30,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode, type Re
 import { fmt } from '../../api/_lib/i18n/format'
 import { isNum, num, plain, type Part, type Rich } from '../../api/_lib/i18n/parts'
 import enGlobe from '@/i18n/en/globe'
+import { withUnits } from '@/i18n/Rich'
 import { currentLocale, msgs, useMsgs } from '@/i18n/runtime'
 import { ensureTz, timeZoneAt, tzReady } from '@/imagery'
 import { isStacked } from '@/lib/layout'
@@ -269,7 +270,7 @@ function PlaceLabel({
   lat: number
   lon: number
   leaving: boolean
-  /** "ACQUIRED 11:21:13 EST · 10 M" for the selected imaged pass */
+  /** "ACQUIRED 11:21:13 EST · 10 m" for the selected imaged pass */
   acq?: string
   passId?: string
 }) {
@@ -342,7 +343,7 @@ function PlaceLabel({
       <div ref={label} className={s.coord}>
         {fmtLat(lat, digits)} {fmtLon(lon, digits)}
         <div ref={acqEl} className={s.coordAcq} hidden>
-          {acq}
+          {acq ? withUnits(acq) : null}
         </div>
       </div>
     </div>
@@ -504,11 +505,15 @@ function SatLabel({
  */
 const ALTITUDE = num('—')
 
-/** A callout's meta line: text as it is, each value in a <b> (the altitude's with the frame loop's ref). */
+/**
+ * A callout's meta line: text as it is, each value in a <b> (the altitude's with the frame loop's ref). The unit after
+ * a value (" km") keeps its case in the line's capitals.
+ */
 function MetaLine({ parts, altRef }: { parts: Rich; altRef: RefObject<HTMLElement | null> }): ReactNode {
-  return parts.map((p: Part, i) => (
-    <Fragment key={i}>{!isNum(p) ? plain([p]) : p === ALTITUDE ? <b ref={altRef}>{p.n}</b> : <b>{p.n}</b>}</Fragment>
-  ))
+  return parts.map((p: Part, i) => {
+    if (!isNum(p)) return <Fragment key={i}>{withUnits(plain([p]), i > 0 && isNum(parts[i - 1]))}</Fragment>
+    return p === ALTITUDE ? <b key={i} ref={altRef}>{p.n}</b> : <b key={i}>{p.n}</b>
+  })
 }
 
 /**

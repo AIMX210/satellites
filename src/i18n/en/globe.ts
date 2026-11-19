@@ -4,8 +4,9 @@
  *
  * Why it reads like an instrument: the callouts and readouts are mono labels on the scene, set in capitals by CSS
  * (DESIGN §3), so a translation can be written in its own case. The English keeps the capitals the page has always had
- * in its DOM ("IMAGED", "KM"), which look the same. Readouts that are written every frame (the countdown's value, the
- * altitude) read these messages at write time, so a language switch repaints them on the next frame.
+ * in its DOM ("IMAGED"), which look the same. Units are the exception: written lowercase ("km", "m") and kept so in the
+ * capitals (api/_lib/i18n/units.ts), in every language. Readouts that are written every frame (the countdown's value,
+ * the altitude) read these messages at write time, so a language switch repaints them on the next frame.
  *
  * What is never here, in any language: coordinates ("43.4723°N 80.5449°W"), 24 h clocks ("11:21:13"), time-zone
  * abbreviations ("EST", "UTC+9", "UTC"), NORAD numbers and the "T−00:01:12" countdown are international notation;
@@ -25,13 +26,13 @@ export default ns('globe', {
   /**
    * The desktop callout's line under the name: the catalog number, then the altitude in kilometres. `norad` and
    * `altitude` are the two values, set in bold: place them as they are, never rebuild them (the altitude is rewritten
-   * live, a few times a second). "KM" is the unit.
+   * live, a few times a second). "km" is the unit, lowercase in the capitals like every unit.
    */
-  calloutMeta: (norad: Part, altitude: Part): Rich => ['NORAD ', norad, ' · ', altitude, ' KM'],
+  calloutMeta: (norad: Part, altitude: Part): Rich => ['NORAD ', norad, ' · ', altitude, ' km'],
   /** The same line for the selected pass that took a picture: `imaged` is the imaged / imagedAbout message, after the altitude. */
-  calloutMetaImaged: (norad: Part, altitude: Part, imaged: string): Rich => ['NORAD ', norad, ' · ', altitude, ' KM', ' · ', imaged],
+  calloutMetaImaged: (norad: Part, altitude: Part, imaged: string): Rich => ['NORAD ', norad, ' · ', altitude, ' km', ' · ', imaged],
   /** Phones: the one-line callout after the satellite's name (which is cut with an ellipsis first): a middle dot, the altitude, its unit. */
-  calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, ' KM'],
+  calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, ' km'],
   /**
    * When the picture was taken, at the place. `clock` is the 24 h time there ("11:21:13"), `zone` its abbreviation
    * ("EST", "CET", "UTC+9", or "UTC" before the zone is known): both international, insert them as they are. "IMAGED"
@@ -43,14 +44,14 @@ export default ns('globe', {
 
   // ── The capture line under the place's coordinates, at the moment of the picture (signal colour, one nowrap line) ──
 
-  /** "ACQUIRED 11:21:13 EST · 10 M": the picture's local time and its ground resolution (a resolution message). Slots as in `imaged`. */
+  /** "ACQUIRED 11:21:13 EST · 10 m": the picture's local time and its ground resolution (a resolution message). Slots as in `imaged`. */
   acquired: (clock: string, zone: string, resolution: string) => `ACQUIRED ${clock} ${zone} · ${resolution}`,
   /** The same for a geostationary scan (time to about a minute, no seconds; "≈" means "about"). */
   acquiredAbout: (clock: string, zone: string, resolution: string) => `ACQUIRED ≈ ${clock} ${zone} · ${resolution}`,
-  /** Ground resolution in metres: the size of one pixel on the ground ("10 M"). M is metres, not minutes or millions. */
-  resolutionM: (metres: number) => `${fmt('en').int(metres)} M`,
-  /** Ground resolution in kilometres, for coarse pictures (weather satellites: "1 KM", "2 KM"). */
-  resolutionKm: (km: number) => `${fmt('en').int(km)} KM`,
+  /** Ground resolution in metres: the size of one pixel on the ground ("10 m"; the unit keeps its case). */
+  resolutionM: (metres: number) => `${fmt('en').int(metres)} m`,
+  /** Ground resolution in kilometres, for coarse pictures (weather satellites: "1 km", "2 km"). */
+  resolutionKm: (km: number) => `${fmt('en').int(km)} km`,
 
   // ── The acquisition countdown, top right under the clock while a pass replays (right-aligned; may wrap if narrow) ──
 

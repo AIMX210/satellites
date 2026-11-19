@@ -4,10 +4,11 @@
  *
  * Why it reads this way: the callouts are instrument readouts, so each is a kanji noun before its value: 撮像 ("imaged",
  * the one place the guide allows the word), 取得 for the moment of acquisition, 最接近 for closest approach (a moment,
- * never a distance). "≈" stays in mono (ごろ is for prose). Units keep the English capitals the DOM has always had (KM,
- * M); CSS uppercases them anyway. The altitude slot is handed back as the very part it was given (the frame loop finds
- * it by identity). Place and satellite names are data: particles attach straight to them, with no quotes, suffix or
- * pronoun. The spoken pin lines state what happened, then one 〜できる for what the reader can do next.
+ * never a distance). "≈" stays in mono (ごろ is for prose). Units are the lowercase Latin symbols (km, m), which the
+ * capitals leave as they are (api/_lib/i18n/units.ts). The altitude slot is handed back as the very part it was given
+ * (the frame loop finds it by identity). Place and satellite names are data: particles attach straight to them, with
+ * no quotes, suffix or pronoun. The spoken pin lines state what happened, then one 〜できる for what the reader can do
+ * next.
  */
 import type en from '../en/globe'
 import { fmt } from '../../../api/_lib/i18n/format'
@@ -21,17 +22,17 @@ const NEXT = 'Enterか矢印ボタンで、上空を通ったものを表示で�
 const globe: typeof en = {
   // ── Satellite callouts ──
   noradName: (id: string) => `NORAD ${id}`,
-  calloutMeta: (norad: Part, altitude: Part): Rich => ['NORAD ', norad, ' · ', altitude, ' KM'],
-  calloutMetaImaged: (norad: Part, altitude: Part, imaged: string): Rich => ['NORAD ', norad, ' · ', altitude, ' KM', ' · ', imaged],
-  calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, ' KM'],
+  calloutMeta: (norad: Part, altitude: Part): Rich => ['NORAD ', norad, ' · ', altitude, ' km'],
+  calloutMetaImaged: (norad: Part, altitude: Part, imaged: string): Rich => ['NORAD ', norad, ' · ', altitude, ' km', ' · ', imaged],
+  calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, ' km'],
   imaged: (clock: string, zone: string) => `撮像 ${clock} ${zone}`,
   imagedAbout: (clock: string, zone: string) => `撮像 ≈ ${clock} ${zone}`,
 
   // ── The capture line ──
   acquired: (clock: string, zone: string, resolution: string) => `取得 ${clock} ${zone} · ${resolution}`,
   acquiredAbout: (clock: string, zone: string, resolution: string) => `取得 ≈ ${clock} ${zone} · ${resolution}`,
-  resolutionM: (metres: number) => `${f.int(metres)} M`,
-  resolutionKm: (km: number) => `${f.int(km)} KM`,
+  resolutionM: (metres: number) => `${f.int(metres)} m`,
+  resolutionKm: (km: number) => `${f.int(km)} km`,
 
   // ── The acquisition countdown ──
   acquisitionOf: (satellite: string) => `取得 · ${satellite}`,

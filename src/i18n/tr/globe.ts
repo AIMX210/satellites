@@ -3,11 +3,12 @@
  * callouts, the capture line, the acquisition countdown, the dropped pin's card and the note shown with no 3D view.
  *
  * Why it reads like this: the callouts and readouts are mono labels uppercased by CSS under `lang="tr"`, so they are
- * written in sentence case, units as lowercase symbols after a no-break space (`786 km`, printed `786 KM`, §6.3). The
- * words are the glossary's and keep the English pair apart: `Görüntülendi` is the callout's instrument verb (IMAGED),
- * `Alındı` the capture line's and the countdown's moment of the picture (ACQUIRED), `Görüntü alımı` the acquisition
- * (never bare *alım*, which reads "purchase", §9.1), `En yakın an` the closest approach (§4). Every clock, zone,
- * NORAD number and satellite name is a label value after a word or a middle dot, so none takes a suffix (§5).
+ * written in sentence case, units as lowercase symbols after a no-break space (`786 km`, still lowercase in the
+ * capitals, §6.3). The words are the glossary's and keep the English pair apart: `Görüntülendi` is the callout's
+ * instrument verb (IMAGED), `Alındı` the capture line's and the countdown's moment of the picture (ACQUIRED),
+ * `Görüntü alımı` the acquisition (never bare *alım*, which reads "purchase", §9.1), `En yakın an` the closest approach
+ * (§4). Every clock, zone, NORAD number and satellite name is a label value after a word or a middle dot, so none
+ * takes a suffix (§5).
  *
  * The pin card's place is a geocoder name or coordinates, never inflected: it stands before the invariant *üzerinden*
  * (`Waterloo üzerinden ne geçtiğini göster`) or after a colon (`Raptiye bırakıldı: Waterloo.`, §5.1), and the spoken

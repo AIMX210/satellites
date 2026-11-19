@@ -5,11 +5,11 @@
  *
  * Why it reads this way: the callouts are instrument readouts, so each is a Sino-Korean noun before its value: 포착 for
  * the moment a picture is acquired (the one place the guide allows it, mono readouts only, never in a sentence) and
- * 최근접 for closest approach (a moment, never a distance). "≈" stays in mono (쯤 is for prose). The resolution's unit
- * is written in lowercase as Korean writes it (10 m, 2 km) and the callout lines keep the English " KM" unchanged: CSS
- * uppercases the Latin in both, as it does in English. The altitude slot is handed back as the very part it was given
- * (the frame loop finds it by identity). A place or coordinates in a sentence take only invariant particles (에, 상공을 after
- * the buffer 상공), so no particle has to agree with a name in any script. The spoken pin lines say what happened, then
+ * 최근접 for closest approach (a moment, never a distance). "≈" stays in mono (쯤 is for prose). Units are written in
+ * lowercase as Korean writes them (10 m, 2 km, 786 km) and stay so in the capitals CSS gives the Latin, as in English
+ * (api/_lib/i18n/units.ts). The altitude slot is handed back as the very part it was given (the frame loop finds it by
+ * identity). A place or coordinates in a sentence take only invariant particles (에, 상공을 after the buffer 상공), so
+ * no particle has to agree with a name in any script. The spoken pin lines say what happened, then
  * what pressing Enter does as a conditional (-면 … 보인다), never a command.
  */
 import type en from '../en/globe'
@@ -24,9 +24,9 @@ const NEXT = 'Enter나 화살표를 누르면 그 상공을 지나간 위성이 
 const globe: typeof en = {
   // ── Satellite callouts ──
   noradName: (id: string) => `NORAD ${id}`,
-  calloutMeta: (norad: Part, altitude: Part): Rich => ['NORAD ', norad, ' · ', altitude, ' KM'],
-  calloutMetaImaged: (norad: Part, altitude: Part, imaged: string): Rich => ['NORAD ', norad, ' · ', altitude, ' KM', ' · ', imaged],
-  calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, ' KM'],
+  calloutMeta: (norad: Part, altitude: Part): Rich => ['NORAD ', norad, ' · ', altitude, ' km'],
+  calloutMetaImaged: (norad: Part, altitude: Part, imaged: string): Rich => ['NORAD ', norad, ' · ', altitude, ' km', ' · ', imaged],
+  calloutMetaCompact: (altitude: Part): Rich => ['· ', altitude, ' km'],
   imaged: (clock: string, zone: string) => `포착 ${clock} ${zone}`,
   imagedAbout: (clock: string, zone: string) => `포착 ≈ ${clock} ${zone}`,
 

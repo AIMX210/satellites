@@ -3,12 +3,12 @@
  * callouts, the capture line, the acquisition countdown, the dropped pin's card and the note shown with no 3D view.
  *
  * Why it reads like this: the callouts and readouts are mono labels uppercased by CSS, so they are written in sentence
- * case, with units as lowercase SI symbols after a no-break space (`786 km`, printed `786 KM`, §6.5). The words are the
- * guide's: `Erfasst` for the capture line and the countdown's moment of the picture, `Aufnahme` for the acquisition,
- * `Größte Annäherung` for closest approach (never *nächster …*, which reads as "next", §9.1), and `Aufgenommen` for the
- * callout's moment of the picture, the instrument's verb, kept apart from the capture line's word as the English keeps
- * IMAGED apart from ACQUIRED. A participle or a noun before a clock agrees with nothing, so no satellite needs a gender
- * (§5.2). Every `zone` slot goes through zoneDe (CET reads MEZ, §6.3); `≈` stays (DOM only, §6.7).
+ * case, with units as lowercase SI symbols after a no-break space (`786 km`, still lowercase in the capitals, §6.5).
+ * The words are the guide's: `Erfasst` for the capture line and the countdown's moment of the picture, `Aufnahme` for
+ * the acquisition, `Größte Annäherung` for closest approach (never *nächster …*, which reads as "next", §9.1), and
+ * `Aufgenommen` for the callout's moment of the picture, the instrument's verb, kept apart from the capture line's word
+ * as the English keeps IMAGED apart from ACQUIRED. A participle or a noun before a clock agrees with nothing, so no
+ * satellite needs a gender (§5.2). Every `zone` slot goes through zoneDe (CET reads MEZ, §6.3); `≈` stays (DOM only, §6.7).
  *
  * The pin card's place is a geocoder name, often English and never inflected (§5.1), so it only follows a colon
  * (`Überflüge anzeigen: Waterloo`, `Pin gesetzt: Waterloo.`), and the spoken hint refers back with the gender-free

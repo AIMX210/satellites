@@ -1,6 +1,6 @@
 /**
  * Indonesian copy for the globe's own words (see docs/i18n/id.md §4.1, §7). The callouts and readouts are mono labels
- * uppercased by CSS, so they are stored in sentence case and units in their SI symbols (*km*, *m*, shown "KM", "M").
+ * uppercased by CSS, so they are stored in sentence case and units in their SI symbols (*km*, *m*, never uppercased).
  *
  * The instrument keeps the English pair apart: the satellite's callout labels the picture with a noun, *Citra
  * 11:21:13 WIB* ("IMAGED", the imaged lane's `CITRA`, §3.7), because *Merekam* is the gallery's live "Acquiring"
@@ -32,7 +32,7 @@ const globe: typeof en = {
   imagedAbout: (clock: string, zone: string) => `Citra ≈ ${clock} ${zone}`,
 
   // ── The capture line ──
-  /** "TEREKAM 11:21:13 WIB · 10 M" */
+  /** "TEREKAM 11:21:13 WIB · 10 m" */
   acquired: (clock: string, zone: string, resolution: string) => `Terekam ${clock} ${zone} · ${resolution}`,
   acquiredAbout: (clock: string, zone: string, resolution: string) => `Terekam ≈ ${clock} ${zone} · ${resolution}`,
   resolutionM: (metres: number) => `${f.int(metres)} m`,

@@ -3,7 +3,7 @@
  * line, the acquisition countdown, the dropped pin's card and the no-3D note.
  *
  * Why these words: the callouts are instrument readouts, so they are nouns with no verb. "Imaged", "acquired" and
- * "acquisition" are all *Captura* (the glossary's word, as in *CAPTURA 11:21:21 EST · 10 M*); the moment itself is
+ * "acquisition" are all *Captura* (the glossary's word, as in *CAPTURA 11:21:21 EST · 10 m*); the moment itself is
  * *Imagen captada*, so it does not repeat the label over it. Closest approach is *Máxima aproximación*. The pin is a
  * *marcador*, and the arrow says *Ver los satélites que pasaron sobre…*, never *qué pasó* (which means "what
  * happened"). Place names and coordinates go after *sobre* or *en*, bare: no article, no contraction, nothing that
