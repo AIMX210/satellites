@@ -15,6 +15,7 @@
  *   variant=empty   no passes at all          variant=broken   image renders fail (error + retry state)
  */
 import { Component, useEffect, useState, type ComponentType, type ReactNode } from 'react'
+import { COMPUTE_FAULT } from '@/app/messageRefs'
 import { computeReport, loadCatalog } from '@/engine'
 import { useApp } from '@/state/store'
 import type { Pass, ProgressEvent, Report } from '@/types'
@@ -201,7 +202,7 @@ async function runLive() {
     await show(final)
   } catch (e) {
     console.error(e)
-    useApp.getState().setPhase('error', String(e))
+    useApp.getState().setPhase('error', COMPUTE_FAULT, String(e))
   }
 }
 
