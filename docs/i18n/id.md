@@ -556,7 +556,7 @@ The ladder reads image > covered > maybe > passed, in titles and lanes alike.
 - **Title** (two lines): *Cara* / *\*kerjanya\*.* Bar: *Tentang*. Close: *Tutup*.
 - **Lede:** *Pilih satu titik di Bumi. Kami menghitung satelit mana saja yang melintas di atasnya dalam seminggu
   terakhir, lalu mencari citra yang direkamnya. Semuanya berjalan di perangkatmu, dengan data publik.*
-- **Sections:** *Versi singkat* · *Cara kami menemukan lintasan* · *Arti label* · *Yang tidak bisa kami lihat* ·
+- **Sections:** *Versi singkat* · *Cara kami mencari lintasan* · *Arti label* · *Yang tidak bisa kami lihat* ·
   *Privasi* · *Kredit* · *Papan ketik*.
 - **Q&A:**
   - *Apakah ini langsung?* → *Tidak sepenuhnya. Foto masuk ke arsip beberapa jam hingga dua hari setelah diambil, jadi

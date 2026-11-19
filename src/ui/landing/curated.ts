@@ -20,6 +20,7 @@ export function localizedPlace<P extends Place | ExamplePlace>(place: P): P {
   const english = curatedPlace(id)
   // English: the curated object itself (a copy made in another language goes back to it).
   if (m === enPlaces) return (place.canonicalLabel === undefined ? place : english) as P
-  const t: { chip?: string; label: string; sublabel: string } = m[id]
+  // A stale translation bundle (an older deploy's) may lack a newer id: its English names, never a crash.
+  const t: { chip?: string; label: string; sublabel: string } = m[id] ?? enPlaces[id]
   return { ...place, ...(t.chip !== undefined ? { chip: t.chip } : null), label: t.label, sublabel: t.sublabel, canonicalLabel: english.label }
 }

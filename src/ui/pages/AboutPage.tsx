@@ -21,13 +21,14 @@ import { LOCALE_INFO } from '../../../api/_lib/i18n/locales'
 import { isAccent, isNum, isStrong, numText } from '../../../api/_lib/i18n/parts'
 import { Rich } from '@/i18n/Rich'
 import enAbout, { type AboutPart, type LinkPart } from '@/i18n/en/about'
+import enVerdicts from '@/i18n/en/verdicts'
 import { useLocale, useMsgs } from '@/i18n/runtime'
 import { useBackLayer } from '@/lib/backStack'
 import { DUR, EASE } from '@/lib/ease'
 import { useApp } from '@/state/store'
 import { Bezel, Glyph, Kbd, Reveal, cx, useExitClone, Wordmark } from '@/ui/system'
 // Only the vocabulary table (plain data, type-only imports), not the results UI: this chunk stays small.
-import { VERDICTS, VERDICT_GLYPH, VERDICT_META } from '@/ui/results/lib/meta'
+import { VERDICTS, VERDICT_GLYPH } from '@/ui/results/lib/meta'
 import { VERSION } from '@/ui/hud/Hud'
 import { useCatalogStatus } from '@/ui/hud/catalogStatus'
 import { fmtStampZ } from '@/ui/hud/readouts'
@@ -442,11 +443,11 @@ function aboutPart(p: AboutPart, href: string | undefined): ReactNode {
 
 /**
  * About's longer word on each verdict (`more`), after the one-sentence definition. The names and definitions come
- * from the product's one vocabulary table (DESIGN §7), so About always says what the results say. That table
- * (results/lib/meta.ts VERDICT_META) is still English constants: until the results move it into a namespace, the
- * names and definitions here are English in every language (then read them here at render, like `more`).
+ * from the product's one vocabulary (the 'verdicts' namespace, DESIGN §7), read here at render in the visitor's
+ * language, so About always says what the results say.
  */
 function Terms({ more, gap }: { more: Messages['verdictMore']; gap: string }) {
+  const vm = useMsgs(enVerdicts)
   return (
     <dl className={s.terms}>
       {VERDICTS.map((v) => (
@@ -455,10 +456,10 @@ function Terms({ more, gap }: { more: Messages['verdictMore']; gap: string }) {
             <span className={cx(s.termGlyph, v === 'imaged' && s.signal)}>
               <Glyph name={VERDICT_GLYPH[v]} size={14} />
             </span>
-            {VERDICT_META[v].title}
+            {vm[v].title}
           </dt>
           <dd>
-            {VERDICT_META[v].definition}
+            {vm[v].definition}
             {more[v] ? `${gap}${more[v]}` : null}
           </dd>
         </div>

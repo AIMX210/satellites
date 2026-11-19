@@ -44,6 +44,7 @@ import { cardSpec, cardUrl, cropWidthKm, filterPhotos, HIRES_INTENT_ZOOM, hiResH
 import { pixelLabel, productLabel, scaleBarKm, sensorName } from './lib/captures'
 import { fmtDayMonth, fmtLocalDay, fmtLocalTime, fmtWeekdayShort, zoneAbbr } from './lib/time'
 import type { ResultsModel } from './model'
+import { placeName } from './placeName'
 import { wasSeen } from './once'
 import s from './Lightbox.module.css'
 
@@ -824,7 +825,7 @@ function LbPhoto({
   useEffect(() => {
     if (hiShown && hi && decodedPhoto(hi)?.dataset.pan === '15') onPanShown?.(photo.key)
   }, [hiShown, hi, photo.key, onPanShown])
-  const alt = gm.photoAlt(model.meta(photo.pass?.norad ?? photo.capture.norad ?? 0).name, model.report.place.label)
+  const alt = gm.photoAlt(model.meta(photo.pass?.norad ?? photo.capture.norad ?? 0).name, placeName(model.report.place))
   const dim = photo.clouded ? ((photo.capture.cloudCoverPct ?? 0) >= 90 ? s.dimOvercast : s.dimCloud) : undefined
   const hiLayer = hiOk && hi ? <Img view="lightbox-hi" url={hi} alt="" ariaHidden className={cx(s.img, dim)} fadeClass={hiFade ? s.hiFade : undefined} /> : null
   if (reveal && photo.pass)
@@ -892,7 +893,7 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
           {product} · {km}
         </span>
         <span className={s.metaLine}>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
-        <span className={s.credit}>{credit(capture)}</span>
+        <span className={s.credit} lang="en">{credit(capture)}</span>
       </div>
     )
   return (
@@ -914,7 +915,7 @@ function MetaStrip({ photo, model, mobile, pan }: { photo: Photo; model: Results
           {product} · {km} · <span className={s.nowrap}>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
         </span>
       </span>
-      <span className={s.credit}>{credit(capture)}</span>
+      <span className={s.credit} lang="en">{credit(capture)}</span>
     </div>
   )
 }

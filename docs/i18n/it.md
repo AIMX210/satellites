@@ -480,11 +480,11 @@ nuvoloso · `82%`*, post and desc *Ha visto soprattutto nuvole (`82%`).*; spot: 
 | `lastWeek` | Ultimi 7 giorni |
 | `readout` | Quota · Elevazione · Velocità · Off-nadir · Pixel · Pixel mosaico · Più vicino |
 | `lane` | Foto · Probabile · Possibile · In cielo |
-| `geometry` | Geometria del passaggio · nord in alto |
-| `note` | L’immagine è nell’app · Immagine non disponibile ora · Archivio commerciale, non pubblico · Nella fascia, nessuna immagine pubblica · Traccia al suolo al massimo avvicinamento |
+| `geometry` | Geometria · nord in alto (top left of the plan plate: *Geometria del passaggio…* runs into the scale bar's chip) |
+| `note` | L’immagine è nell’app · Immagine non disponibile ora · Archivio commerciale, non pubblico · Nella fascia, ancora nessuna immagine pubblica · Traccia al suolo al massimo avvicinamento |
 | `acquiring` | Acquisizione… |
 | `noPublicPhoto` / `noPhoto` | Nessuna foto pubblica questa settimana / Nessuna foto da mostrare |
-| `look` | Ripresa più vicina · Ultima ripresa limpida · Coperto · Radar |
+| `look` | Più vicina · Ultima ripresa limpida · Coperto · Radar (the lead chip must end before the picture's scale chip: *Ripresa più vicina · Landsat 9 · 30 m* does not) |
 | `lookDay` | 3 nov |
 | `aSatellite` | Un satellite |
 | `invite` | Vedi cosa ti ha osservato |
@@ -579,7 +579,7 @@ tablets *Rivedi il passaggio*. The long form must begin with the short one, and 
 **Time-lapse.** title *Time-lapse* · captionYearly *`11` riprese limpide · una all’anno* · captionSeason *`11` riprese
 limpide · una ogni autunno* · captionGathering *Una ripresa limpida all’anno · dal 2015* · tooFew *Nessuna ripresa
 limpida dal 2015 · ne servono `3`* (`one`: *`1` ripresa limpida…*) · listing *Lettura dell’archivio* · choosing *Scelta
-delle riprese limpide* · developing *Sviluppo dei fotogrammi* · tooCloudy *Qui è troppo nuvoloso per un time-lapse.* ·
+riprese limpide* (one nowrap line with its count) · developing *Sviluppo dei fotogrammi* · tooCloudy *Qui è troppo nuvoloso per un time-lapse.* ·
 noAnswer *L’archivio non ha risposto.* · unreachable *Planetary Computer non è raggiungibile* (never *Impossibile
 raggiungere…*) · source *Copernicus Sentinel-2, via Planetary Computer* · shareTitle *[PLACE] · anno
 dopo anno* · share *Condividi* · linkCopied *Link copiato* · video *Video* · rendering *Rendering `42%`* · videoFailed
@@ -593,7 +593,7 @@ limpida* · scanLine *Riga **0412** → 1024* · awaiting *In attesa del passagg
 
 **About.** lede *Scegli un punto sulla Terra. Calcoliamo quali satelliti l’hanno sorvolato nell’ultima settimana, poi
 andiamo a cercare le foto che hanno ripreso. Funziona tutto nel tuo browser, con dati pubblici.* · sections *La
-versione breve*, *Come troviamo i passaggi*, *Cosa significano le etichette*, *Cosa non possiamo vedere*, *Privacy*,
+versione breve*, *Come troviamo i passaggi*, *Cosa dicono le etichette*, *Cosa non possiamo vedere*, *Privacy*,
 *Crediti*, *Tastiera* · facts *Dritto verso il basso*, *Fotocamere orientabili* (*Se eri a portata, lo chiamiamo
 «poteva puntare qui».*), *Luce del giorno*, *Radar*, *Satelliti meteo*, *Ritocchi*, *Dov’è il nord*.
 
@@ -1006,7 +1006,7 @@ Italian runs about **15–25% longer** than English in sentences and **30–80% 
 | landing hero (span-6 column) | three lines + `--display-k: 0.9` | QA at 1024×768 first |
 | `gallery.filter` (four segments plus the counter in a 350 / 263 px bar) | Tutte · Nitide · Meteo · Radar | 21 characters against English's 23. *Dettagliate* (11) and *Dettaglio* (9) push the bar past English's width. |
 | `gallery.photosThisWeek` / `ThatWeek` (counter box about 12) | Settimana: `12` / Settimana: `12` | One form for both: the label needs no demonstrative, and *Quella settimana: 12* (20) does not fit. |
-| `gallery.lead` / `card.look` (cover chip ≤ ~20) | Ripresa più vicina (18) · Ultima ripresa limpida (22) · Coperto | the 22 measures 169 px and fits; check on a 320 px phone |
+| `gallery.lead` (cover chip ≤ ~20) | Ripresa più vicina (18) · Ultima ripresa limpida (22) · Coperto | the 22 measures 169 px and fits; check on a 320 px phone. `card.look` uses *Più vicina* (§3.5) |
 | `gallery.status` (≤ ~14) | Nuvoloso · `82%` · Nuvole qui · Sereno · Cirri sottili · Ombra di nubi · Nuvole `82%` · Mosaico meteo | |
 | `lightbox.status` (box ~14) | Nuvoloso · `82%` · Sereno qui | *Sereno sul tuo punto* (20) is too long |
 | `landing.locating` (about as wide as *Vicino a me*) | Posizione… (10) | never *Localizzazione…* (15), never *Localizzo…* (1st person) |
@@ -1025,6 +1025,7 @@ Italian runs about **15–25% longer** than English in sentences and **30–80% 
 | `share.linkLabel` / `postLabel` (48 px column, ~5) | Link · Post | |
 | `engine.progress.*` (about 40) | §3.7 | *Ricerca archivi Sentinel-2 + Landsat* (36) |
 | `bootText.slow` (one centred mono line) | Rete lenta, ancora in caricamento (33) | |
+| `about.sections` (index: mono caps, 3 of 12 columns, about 233 px at 1101 px) | 24 characters at most: *Cosa dicono le etichette* | *Cosa significano le etichette* (29) wraps up to about 1240 px |
 
 | English | Italian | Short form (only where the code has a slot) | Chars en → it |
 |---|---|---|---|

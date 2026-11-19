@@ -34,6 +34,7 @@ import type { SatMeta } from './lib/meta'
 import { replayWindow } from './lib/replay'
 import { fmtDuration } from './lib/time'
 import type { ResultsModel } from './model'
+import { placeName } from './placeName'
 import r from './results.module.css'
 import s from './PassDetail.module.css'
 
@@ -101,7 +102,7 @@ function PassBody({ model, pass, entering }: { model: ResultsModel; pass: Pass; 
   const place = report.place
   const cloud = useSpotCloud(capture, place)
   const now = reportNow(model.clock)
-  const sentences = passSentences({ pass, meta, capture, timeZone: tz, placeLabel: place.label, archiveFailed: model.archiveFailed, now })
+  const sentences = passSentences({ pass, meta, capture, timeZone: tz, placeLabel: placeName(place), archiveFailed: model.archiveFailed, now })
   // PERF-04: the words commit first; geometry and replay a frame later, interruptibly.
   const [rest, setRest] = useState(false)
   useEffect(() => {

@@ -25,7 +25,7 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import enLanding from '@/i18n/en/landing'
 import { useMsgs } from '@/i18n/runtime'
-import { isAbortError, searchPlaces } from '@/imagery'
+import { displaySublabel, isAbortError, searchPlaces } from '@/imagery'
 import type { Place } from '@/types'
 import { Field, Glyph, Kbd, cx, fmtLat, fmtLon, useIsMobile } from '@/ui/system'
 import { canSubmitQuery, clampActive, enterTarget, isTypingTarget, stepActive } from './listNav'
@@ -496,7 +496,8 @@ export function SearchBox({
                 >
                   <span className={s.optText}>
                     <span className={s.optLabel}>{p.label}</span>
-                    {p.sublabel ? <span className={s.optSub}>{p.sublabel}</span> : null}
+                    {/* The "where" line with its country in the visitor's language (the Place keeps the English one). */}
+                    {p.sublabel ? <span className={s.optSub}>{displaySublabel(p)}</span> : null}
                   </span>
                   {/* a place named by its own coordinates (open sea, geocoder offline) doesn't repeat them */}
                   {p.label.includes('°') ? null : (

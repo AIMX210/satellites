@@ -27,6 +27,7 @@ import { scaleBarKm, sensorName } from './lib/captures'
 import { motionVector } from './lib/pushbroom'
 import { markSeen, wasSeen } from './once'
 import type { ResultsModel } from './model'
+import { placeName } from './placeName'
 import s from './Gallery.module.css'
 
 export interface PhotoFrameProps {
@@ -112,7 +113,7 @@ export function PhotoFrame({ photo, model, view, load, current, reveal, chips, e
   const bar = scaleBarKm(widthKm)
   const northDeg = chips ? northInCropDeg(url) : 0
   const dim = photo.clouded ? ((capture.cloudCoverPct ?? 0) >= 90 ? s.dimOvercast : s.dimCloud) : undefined
-  const alt = m.photoAlt(model.meta(pass?.norad ?? capture.norad ?? 0).name, model.report.place.label)
+  const alt = m.photoAlt(model.meta(pass?.norad ?? capture.norad ?? 0).name, placeName(model.report.place))
   const expand = () => frameRef.current && onExpand?.(frameRef.current)
 
   return (

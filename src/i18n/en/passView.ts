@@ -3,11 +3,12 @@
  * one pass (PassDetail.tsx): its readout strip, the notes under its picture or plan view, its links and the 01 /
  * GEOMETRY readouts.
  *
- * The verdict vocabulary (group titles, verbs) is not here: it has one table, lib/meta.ts VERDICT_META (DESIGN §7), and
- * arrives in these messages as a slot. A count of passes is different: its unit must agree with the number in each
- * language's own plural forms, so those messages take the raw count and the verdict, and English writes its unit with
- * lib/meta verdictUnit. Days and times at the place arrive as slots too, written by the app's time formatter ("Sun 1
- * Nov", "Friday 6 November", "16:14"), and so do how long ago ("41 hours ago"), compass points ("SSW") and durations
+ * The verdict vocabulary (group titles, verbs) is not here: it has one table, the 'verdicts' namespace (./verdicts.ts,
+ * DESIGN §7), and arrives in these messages as a slot. A count of passes is different: its unit must agree with the
+ * number in each language's own plural forms, so those messages take the raw count and the verdict, and English writes
+ * its unit with the English verdict table's plural (enVerdicts[verdict].unit, never the active language's). Days and
+ * times at the place arrive as slots too, written by the app's time formatter ("Sun 1 Nov", "Friday 6 November",
+ * "16:14"), and so do how long ago ("41 hours ago"), compass points ("SSW", from the 'pass' namespace) and durations
  * ("4 min 12 s"). Satellite and operator names, NORAD ids, pass ids, coordinates, UTC stamps and zone abbreviations are
  * international and never translated.
  *
@@ -17,7 +18,8 @@
 import { ns } from '../ns'
 import { fmt } from '../../../api/_lib/i18n/format'
 import { num, type NumPart } from '../../../api/_lib/i18n/parts'
-import { verdictUnit, type Verdict } from '@/ui/results/lib/meta'
+import type { Verdict } from '@/ui/results/lib/meta'
+import enVerdicts from './verdicts'
 
 const en = fmt('en')
 
@@ -32,12 +34,12 @@ export default ns('passView', {
    * 'likely', 'could', 'overhead'); every verdict counts passes today (DESIGN §7), so a translation may ignore it and
    * choose the unit's form for `n` with its own plural rules.
    */
-  count: (n: number, verdict: Verdict) => `${en.int(n)} ${verdictUnit(verdict, n)}`,
+  count: (n: number, verdict: Verdict) => `${en.int(n)} ${enVerdicts[verdict].unit(n)}`,
   /**
    * The same count at a satellite row's right edge, stacked: the number (`n`, mono, 15 px) over its unit (`u`, mono
    * caps, 9.5 px, in the form the number takes). Give both.
    */
-  countStack: (n: number, verdict: Verdict): NumPart => num(en.int(n), verdictUnit(verdict, n)),
+  countStack: (n: number, verdict: Verdict): NumPart => num(en.int(n), enVerdicts[verdict].unit(n)),
   /** After a group's pass count: how many satellites (mono caps; "sat" is short for satellite) */
   sats: (n: number) => `${en.int(n)} ${en.plural(n, { one: 'sat', other: 'sats' })}`,
   /** Expand a long group whose rows are all satellites */
@@ -87,7 +89,7 @@ export default ns('passView', {
    * time.
    */
   satLabel: (o: { sat: string; operator?: string; passes: number; verdict: Verdict; day: string; time: string }) =>
-    `${o.sat}${o.operator ? `, ${o.operator}` : ''}, ${en.int(o.passes)} ${verdictUnit(o.verdict, o.passes)}, latest ${o.day} ${o.time}`,
+    `${o.sat}${o.operator ? `, ${o.operator}` : ''}, ${en.int(o.passes)} ${enVerdicts[o.verdict].unit(o.passes)}, latest ${o.day} ${o.time}`,
   /**
    * Before a satellite row's latest pass day and time; dropped on narrow lists, so the line must read without it (mono
    * caps; keep the trailing space, or none in a language written without spaces)

@@ -546,7 +546,7 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
           {status ? <span className={cx(s.status, photo.clouded && s.warn)}>{status}</span> : null}
         </span>
         <span className={cx(s.capRow, s.capCoords)}>{coordsOf(model.report.place.lat, model.report.place.lon)}</span>
-        <span className={s.credit}>{credit(capture)}</span>
+        <span className={s.credit} lang="en">{credit(capture)}</span>
       </figcaption>
     )
   } else {
@@ -685,7 +685,8 @@ function cloudedWords(p: Photo, cover: boolean): string {
 
 /**
  * Copyright / credit line required by each archive. Not copy: legal attributions stay in English in every language
- * (docs/I18N.md), word for word as each licensor asks, like the share card's (api/_lib/cardSpec.ts creditFor).
+ * (docs/I18N.md), word for word as each licensor asks, like the share card's (api/_lib/cardSpec.ts creditFor). Its
+ * element carries lang="en", so the caption's text-transform cases it as English ("CONTAINS", never "CONTAİNS").
  */
 export function credit(c: Photo['capture']): string {
   if (c.collection === 'sentinel-2-l2a' || c.collection === 'sentinel-1-rtc') return `Contains modified Copernicus Sentinel data ${new Date(c.datetime || Date.now()).getUTCFullYear()}`

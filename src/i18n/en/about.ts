@@ -7,7 +7,8 @@
  *   { link: [...] }      the paragraph's one link (the page knows where it goes: CelesTrak, or the maker on X)
  *   num('16,893')        a number set in the mono face
  * Nothing else in a paragraph is styled. The verdict names and their one-line definitions are the results'
- * vocabulary (VERDICT_META), shown here as they are there; verdictMore adds the About page's longer word after each.
+ * vocabulary (the 'verdicts' namespace, ./verdicts.ts), shown here as they are there; verdictMore adds the About page's
+ * longer word after each.
  *
  * Left in English on purpose, in the page itself: the data licences' attribution lines (Copernicus, EUMETSAT, USGS),
  * product and agency names, the maker's handle, the version, and key symbols (/ ↑ ↓ ← → F + − 0 ?).

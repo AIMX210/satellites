@@ -65,7 +65,8 @@ const yearSpan = (frames: readonly Frame[]) => {
 }
 
 export interface TimelapseProps {
-  place: { label: string; lat: number; lon: number }
+  /** `label` as shown; `canonicalLabel`: a curated place's English name, which the share link carries */
+  place: { label: string; canonicalLabel?: string; lat: number; lon: number }
   from: TimelapseFrom
   mobile: boolean
   onClose: () => void
@@ -215,7 +216,9 @@ function Player({ place, from, mobile, onClose }: TimelapseProps) {
       {/* A single-season loop (war zones, glaciers) must not say the years turn through the seasons. */}
       {frame ? <span className={s.noteText}>{data?.season ? m.noteOneSeason(FRAME_HALF_KM * 2) : m.note(FRAME_HALF_KM * 2)}</span> : null}
       {/* The licence credit stays as the Copernicus data policy words it, in English, in every language. */}
-      <span className={s.credit}>{frames?.length ? `Contains modified Copernicus Sentinel data ${yearSpan(frames)}` : m.source}</span>
+      <span className={s.credit} lang={frames?.length ? 'en' : undefined}>
+        {frames?.length ? `Contains modified Copernicus Sentinel data ${yearSpan(frames)}` : m.source}
+      </span>
     </p>
   )
   return (
