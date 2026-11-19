@@ -1,14 +1,19 @@
 /**
  * The language of what is shared: the card, the post and the links are in the sharer's language, the links carry it
  * as `l=` (never for English, whose links stay exactly as they were), and the server reads it back to print the same
- * card and a share page in that language. Until a language has its card translation, its words are English; these
- * tests hold the plumbing (and the PNG's line breaking and shaping rules), not the words.
+ * card and a share page in that language. These tests hold the plumbing (and the PNG's line breaking and shaping
+ * rules), not the words: a stand-in German says what the tests need, and the real translations are only compared by
+ * identity.
  */
 import { afterEach, describe, expect, it } from 'vitest'
 import enCard from '@/i18n/en/card'
 import { setBundleForTests } from '@/i18n/runtime'
 import { accentText, buildCardSpec, buildSummarySpec, headlineSize, type CardInput, type CardSpec, type SummaryInput } from '../../../api/_lib/cardSpec'
 import { cardMessages, type CardMessages } from '../../../api/_lib/i18n/card/index'
+// The server's table of every language's card, as the share modules load it: tests see the same answers in any order.
+import '../../../api/_lib/i18n/card/server'
+import deCard from '../../../api/_lib/i18n/card/de'
+import frCard from '../../../api/_lib/i18n/card/fr'
 import { accent, plain, type Rich } from '../../../api/_lib/i18n/parts'
 import { EXAMPLE_PLACES } from '../landing/places'
 import { waterlooReport } from '../results/__fixtures__/waterloo'
@@ -147,9 +152,15 @@ describe('the PNG’s line breaking and shaping (canvas has no CSS)', () => {
   })
 
   it('keeps the headline’s blocks, in order, for every renderer', () => {
-    const spec = buildCardSpec({ verdict: 'imaged', satName: 'Sentinel-2C', placeLabel: 'Waterloo', satellites: 7, lat: 0, lon: 0, pass: {}, host: '' }, 'de')
-    expect(spec.locale).toBe('de')
-    expect(spec.head.map((p) => (typeof p === 'string' ? p : 'accent' in p ? `*${plain(p.accent)}*` : '?'))).toEqual(['7 satellites watched', '*Waterloo.*'])
+    const de: CardMessages = { ...enCard, headline: (n: number, place: string, cut: boolean): Rich => [`${n} Satelliten beobachteten`, accent(place, ' von oben', ...(cut ? [] : ['.']))] }
+    setBundleForTests('de', { card: de })
+    try {
+      const spec = buildCardSpec({ verdict: 'imaged', satName: 'Sentinel-2C', placeLabel: 'Waterloo', satellites: 7, lat: 0, lon: 0, pass: {}, host: '' }, 'de')
+      expect(spec.locale).toBe('de')
+      expect(spec.head.map((p) => (typeof p === 'string' ? p : 'accent' in p ? `*${plain(p.accent)}*` : '?'))).toEqual(['7 Satelliten beobachteten', '*Waterloo von oben.*'])
+    } finally {
+      setBundleForTests('en', null)
+    }
   })
 })
 
@@ -231,10 +242,10 @@ describe('the app’s bundle speaks for the card', () => {
     expect(cardMessages('de')).toBe(de)
     expect(buildCardSpec(input, 'de').lead).toBe('Ein Satellit beobachtete')
     expect(buildCardSpec({ ...input, satName: 'Sentinel-2C' }, 'de').lead).toBe('Sentinel-2C beobachtete')
-    // Another language than the app's, or a bundle without a card: the card catalog answers, as on the server.
-    expect(cardMessages('fr')).toBe(cardMessages('en'))
+    // Another language than the app's, or a bundle without a card: the server's table answers.
+    expect(cardMessages('fr')).toBe(frCard)
     setBundleForTests('de', {})
-    expect(buildCardSpec(input, 'de').lead).toBe('A satellite watched')
+    expect(cardMessages('de')).toBe(deCard)
   })
 
   it('sizes the headline on every word of the place’s line, never its closing full stop', () => {
