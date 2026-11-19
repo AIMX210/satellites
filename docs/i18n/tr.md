@@ -47,7 +47,7 @@ serif accent, `**…**` the bold (strong) run.
 | Numbers | Decimal comma, full-stop grouping, percent sign first: *1.715 · 7,46 km/sn · %25 · 5,3°* |
 | Coordinates | International, as code writes them: *41.0186°N 28.9784°E*, *Güneş 16.2°S 063.0°E*, *0.2°W boylamında*. Never retyped. |
 | Compass | Prose: full Turkish forms from closed tables (*güneye doğru, buranın 61 km batısından, kuzeybatıdaydı*). Readouts: Turkish 16-point letters (*K … GGB … KKB*). |
-| Dates | *1 Kas Paz · 1 Kasım Pazar · 1 Kas 2026 Paz*; ranges with the house arrow: *26 Eki → 1 Kas 2026*. |
+| Dates | *1 Kas Paz · 1 Kasım Pazar · 1 Kas 2026 Paz*; ranges with the house arrow: *26 Eki → 1 Kas 2026* (on the share card, Intl's en dash, *26 Eki – 1 Kas 2026*: the card's fonts have no arrow). |
 | Plurals | CLDR `one`, `other`. A noun after a numeral is always singular, the verb singular; the two forms are identical unless English says "one/once" as a word. |
 | Caps | Turkish rules on the whole Turkish label, names included (*SENTİNEL-2C · MSI · 10 M*). Licence credits stay English and are uppercased with English rules. |
 | Seasons (war zones, glaciers) | *her yıl kışın / ilkbaharda / yazın / sonbaharda* |
@@ -328,31 +328,32 @@ olduğunda…* (long, the same opening on every paragraph).
 | `pass.lookingDown` | *Tam aşağıya bakıyordu.* |
 | `pass.lookingOff` | `['Dikeyden ', num('5,3', '°'), ' eğik bakıyordu.']` |
 | `pass.cloudCover` | `['Sahne genelinde bulut örtüsü: ', num('%25'), '.']` |
-| `pass.mosaic` | `[SENSOR] görüntüleyicisi burayı taradı ve NASA’nın günlük gerçek renkli mozaiğine kattı; piksel başına [M] m.` |
+| `pass.mosaic` | `[SENSOR] görüntüleyicisi burayı taradı ve piksel başına [M] m çözünürlükle NASA’nın günlük gerçek renkli mozaiğine kattı.` |
 | `pass.radarImaged` | `Radarı [DEG]° yana bakarak burayı piksel başına [M] m çözünürlükle görüntüledi.` / dark: `… burayı karanlıkta, piksel başına [M] m çözünürlükle görüntüledi.` |
 | `pass.likely.crossed` | `[TIME]. [SAT], [ALT] km irtifadan tam tepeden geçti.` + swath: ` Burası, uydunun [W] km’lik tarama şeridi içindeydi.` (offset form as in `crossed`) |
 | `likely.archiveFailed` | *Gündüzdü; uydu bu noktayı kaydetmiş olmalı. Arşiv şu an aranamadı.* |
 | `likely.noScene` | *Bu geçiş için sahne yok. Sentinel-2 yalnızca karaları ve kıyı sularını kaydeder; bu noktayı planlamamış olabilir.* |
-| `likely.notYet` | *Gündüzdü; uydu bu noktayı neredeyse kesin kaydetti. Bu geçişten henüz sahne yayımlanmadı; arşivler bir gün ya da daha fazla gecikebilir.* |
+| `likely.notYet` | *Gündüzdü; uydu bu noktayı neredeyse kesinlikle kaydetti. Bu geçişten henüz sahne yayımlanmadı; arşivler bir gün ya da daha fazla gecikebilir.* |
 | `likely.dark` | *Burada hava karanlıktı. Meteoroloji görüntüleyicileri geceleri kızılötesiyle taramayı sürdürür; yani uydu sokaklarını değil, bulutlarını gördü.* |
 | `likely.mosaicUnconfirmed` | *Bu geçişin NASA günlük mozaiği seçtiğin noktada doğrulanamadı.* |
 | `likely.notPublished` | *Uydunun görüntüleri hava tahminlerini besliyor; burada gösterilebilecek biçimde yayımlanmıyor.* |
 | `could.withinView`, offset | `[TIME]. [SAT], buranın [KM] km [DIR→of-here] geçti; burası uydunun görüş alanı içindeydi.` |
 | `could.withinView`, overhead | `[TIME]. [SAT] tam tepeden geçti; burası uydunun görüş alanı içindeydi.` |
 | `could.camera` | `Uydu, kamerasını dikeyden [DEG]° eğseydi burayı izleyebilirdi. İzleyip izlemediğini bilemeyiz.` / straight down: `Uydu, tam aşağıya bakarak burayı izleyebilirdi. İzleyip izlemediğini bilemeyiz.` |
-| `could.radar` | `Radar bulutun ve karanlığın içini görür. Uydu, [DEG]° yana bakarak burayı haritalayabilirdi.` (no angle: `Uydu burayı haritalayabilirdi.`) + open archive: ` Bu geçişten yayımlanmış bir görüntüsünü bulamadık.` / else: ` Bunu yapıp yapmadığını bilemeyiz.` |
+| `could.radar` | `Radar bulutun ve karanlığın içinden görür. Uydu, [DEG]° yana bakarak burayı haritalayabilirdi.` (no angle: `Uydu burayı haritalayabilirdi.`) + open archive: ` Bu geçişten yayımlanmış bir görüntüsünü bulamadık.` / else: ` Bunu yapıp yapmadığını bilemeyiz.` |
 | `could.insideSwath` | `[PLACE], uydunun [W] km’lik tarama şeridi içindeydi. Uydunun operatörü nereleri görüntülediğini yayımlamıyor; bu yüzden görüntüleyip görüntülemediğini bilemeyiz.` |
 | `pass.overhead` | `[TIME]. [SAT], [ALT] km irtifadan geçti; ufkunun [EL]° üzerinde, [DIR→in-past] .` → *21:14 EST. ISS, 420 km irtifadan geçti; ufkunun 62° üzerinde, kuzeybatıdaydı.* Near the zenith: *…; ufkunun 84° üzerinde, neredeyse tam tependeydi.* |
-| `pass.darkStation` | *Orada hava karanlıktı. İstasyon hâlâ güneş ışığındaysa gökyüzünden parlak, sabit bir nokta olarak geçmiş olmalı.* |
+| `pass.darkStation` | *Burada hava karanlıktı. İstasyon hâlâ güneş ışığındaydıysa gökyüzünden parlak, sabit bir nokta olarak geçmiş olmalı.* (*Burada*, the place's deictic: after *…kuzeybatıdaydı.*, *Orada* would point at where the station was) |
 | `pass.geo.sits` | `[SAT] geçip gitmez. Ekvatorun [ALT] km yukarısında, [SEAT] boylamında durur ve altındaki Dünya yüzünü her [N] dakikada bir baştan sona tarar.` → *Meteosat-12 geçip gitmez. Ekvatorun 35.778 km yukarısında, 0.2°W boylamında durur ve altındaki Dünya yüzünü her 10 dakikada bir baştan sona tarar.* (no seat: drop `, [SEAT] boylamında`; no cadence: `… baştan sona tarar.`; *dakikada* is the num part's unit) |
 | `pass.geo.reached` | `Bu taramanın çizgisi [DIR→dative] doğru ilerlerken [PLACE] üzerinden geçti; saat yaklaşık [TIME] idi.` |
-| `pass.geo.infrared` | *Burada hava karanlıktı; bu yüzden bu bir kızılötesi görüntü: bulut tepeleri sıcaklığa göre, soğuk olan daha açık renkte.* |
+| `pass.geo.infrared` | *Burada hava karanlıktı, bu yüzden görüntü kızılötesi: bulut tepeleri sıcaklığa göre, soğuk olan daha açık renkte.* |
 
 - `[SEAT]` arrives written in international notation (*0.2°W*), so the frame puts the invariant word *boylamında* after
   it and never spells the hemisphere out. The mix of *35.778 km* and *0.2°W* in one sentence is accepted: the seat is a
   coordinate, and coordinates are international (§6.3).
 - *Never *geçmez* alone* for "doesn't pass" (it also means "fails", "won't do"): *geçip gitmez*.
-- *km’lik* is allowed: the suffix sits on the fixed unit (*kilometrelik*), not on the number.
+- *km’lik* is allowed: the suffix sits on the fixed unit (*kilometrelik*), not on the number, and goes inside the number
+  part's unit (`num('290', 'km’lik')`, like *dakikada* in `geo.sits`), so it is set in the unit's face.
 - Every *Uydu* / *uydunun* above is the re-mention rule of §5.2.
 
 ### 3.5 Share headlines, cards, posts and the share page
@@ -378,7 +379,7 @@ olduğunda…* (long, the same opening on every paragraph).
 
 | Case | sub (card line) | chip | post | desc |
 |:--|:--|:--|:--|:--|
-| only (≥ 90 %) | *Tamamen bulutlu. Görüntüde yalnızca bulut var.* | *Tamamen bulutlu · %92* | *Görüntüde yalnızca bulut var.* | *Görüntüde yalnızca bulut var (%92).* |
+| only (≥ 90 %) | *Tamamen bulutlu. Yalnızca bulut var.* (one line in the 466 px panel) | *Tamamen bulutlu · %92* | *Görüntüde yalnızca bulut var.* | *Görüntüde yalnızca bulut var (%92).* |
 | mostly | *Çoğunlukla bulut: sahnede %81.* | *Çoğunlukla bulut · %81* | *Görüntünün çoğu bulut (%81).* | same as post |
 | spot | *Noktanın üzeri bulutlu.* | *Noktada bulut* | *Noktanın üzeri bulutluydu.* | same as post |
 
@@ -415,7 +416,7 @@ olduğunda…* (long, the same opening on every paragraph).
 | `page.placeDescription` | *Son 7 günde [PLACE] üzerinden geçen bütün uydular ve çektikleri gerçek görüntüler. Bu hafta seni ne izledi?* |
 | `page.opening` | `[accent('Watched'), ' açılıyor']` |
 | `crossed` | `[DATE], [CLOCK] [ZONE]. [SAT], [PLACE] üzerinden [ALT] km irtifadan geçti; kuzeye doğru ilerliyordu.` → *1 Kas 2026 Paz, 11:21 EST. Sentinel-2C, Waterloo üzerinden 795 km irtifadan geçti; kuzeye doğru ilerliyordu.* Missing parts drop cleanly: no `when` → no dateline; no altitude → *Waterloo üzerinden geçti*; no heading → no last clause; no name → *Bir uydu, …* (no comma: *Bir uydu Waterloo üzerinden …*). |
-| `withinView` | *1 Kas 2026 Paz, 10:52 EST. WorldView Legion 4 geçerken Waterloo görüş alanındaydı.* + heading: *Uydu kuzeye doğru ilerliyordu.* |
+| `withinView` | *1 Kas 2026 Paz, 10:52 EST. WorldView Legion 4 geçerken Waterloo görüş alanındaydı.*; with a heading: *… WorldView Legion 4 kuzeye doğru geçerken Waterloo görüş alanındaydı.* (`couldHave`'s *Uydu* is then the one re-mention) |
 | `couldHave` | *Uydu kamerasını buraya çevirmiş olabilir; operatörü çevirip çevirmediğini söylemiyor.* |
 | `straightDown` / `offNadir` | *Tam aşağıya bakıyordu.* / *Dikeyden 5,3° eğik bakıyordu.* |
 | `cloudCover` | *Bulut örtüsü: %25.* |
@@ -500,7 +501,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `sections` | *Özet · Geçişler · Sürekli izleyenler* (*01 / ÖZET*) |
 | `invite.text` / `invite.checkPlace` | *Bu hafta bir şey seni de izledi.* / *Kendi yerini ara* |
 | `footer.checkPlace` | `[strong('Kendi '), 'yerini ara']` (phones: *YERİNİ ARA*) |
-| `footer.replay` / `replayLabel` / `replayTitle` | *Yeniden oynat* / *Geçişi yeniden oynat* / *Geçişi kürede yeniden oynat* |
+| `footer.replay` / `replayLabel` / `replayTitle` | *Oynat* (the narrow replay word: *Yeniden oynat* beside *Bu geçişi paylaş* overflows the row on 401–470 px phones) / *Geçişi yeniden oynat* / *Geçişi kürede yeniden oynat* |
 | `footer.shareButton` | `[strong('Bu geçişi '), 'paylaş']`, `[strong('Bu görüntüyü '), 'paylaş']` (phones: *PAYLAŞ*) |
 | `footer.clearest` / `clearestLabel` | `['En net görüntü']` (no strong part) / *En net görüntüyü gör* |
 | `searchAnother` / `allPasses` | *Başka bir yer ara* / *Tüm geçişler* |
@@ -513,16 +514,16 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `checkingArchives` / `computingPasses` / `sheetLabel` | *Arşivler kontrol ediliyor* / *Geçişler hesaplanıyor* / *[PLACE] üzerindeki uydular* |
 | `shareWeekLabel` | *[PLACE] için bu haftayı paylaş* / *… o haftayı paylaş* |
 | `verdictGroup` | *Etikete göre geçişler. Her biri kendi listesine atlar.* |
-| `notes.counted` | `[strong('12'), ' ayrıntılı görüntü (Sentinel-2, Landsat, 10–30 m)', ' · ', strong('4'), ' günlük meteoroloji mozaiği (250–375 m)', ' · ', strong('3'), ' radar görüntüsü (Sentinel-1, 20 m)', ' · ', strong('4'), ' yerdurağan meteoroloji uydularından tam disk görüntüsü (2–5 km; her birinin en yenisi gösteriliyor)', '. ', checked]` |
+| `notes.counted` | `[strong('12'), ' ayrıntılı görüntü (Sentinel-2, Landsat, 10–30 m)', ' · ', strong('4'), ' günlük meteoroloji mozaiği (250–375 m)', ' · ', strong('3'), ' radar görüntüsü (Sentinel-1, 20 m)', ' · ', strong('4'), ' tam disk görüntüsü (yerdurağan meteoroloji uyduları, 2–5 km; her birinin en yenisi gösteriliyor)', '. ', checked]` (the noun right after each count, the source in the parentheses) |
 | `notes.checked` | *250 görüntüleme ve insanlı uydunun 1.234 geçişi kontrol edildi.* |
 | `notes.passTimes` | *Geçiş saati, uydunun buraya en yakın olduğu an; kamuya açık yörünge elemanlarından hesaplandı (indirildi: 2026-11-08 03:31Z). Yerel saatler: America/Toronto.* |
 | computing stages (idle / done) | *Yörünge kataloğu / Katalog yüklendi · Yörünge hesabı · 7 gün / Yörüngeler hesaplandı · Sentinel-2 + Landsat arşivleri / Arşivler arandı · Sahne ve geçiş eşleştirmesi / Sahneler eşleştirildi* |
 | `computing.ready` / `ok` / `seconds` / `percent` | *Rapor hazır* / *OK* / *1,84 sn* / *%62* |
 | `computing.window` | `[strong('7 günlük aralık · '), '1 Kas 05:47 → 8 Kas 05:47 UTC']` |
-| `computing.slow` | *Planetary Computer ve NASA görüntüleri istek üzerine işliyor; bu adım birkaç saniye sürebilir.* |
+| `computing.slow` | *Planetary Computer ve NASA, görüntüleri istek üzerine işliyor; bu adım birkaç saniye sürebilir.* (the comma keeps *NASA görüntüleri* from reading as "NASA images") |
 | `computing.verySlow` | *Görüntü arşivleri geç yanıt veriyor. Yanıt gelmezse geçişler yine de yörünge geometrisinden gösterilir; bunu da belirtiriz.* |
 | `computing.sharedAlt` / `sharedCaption` | *[SAT] görüntüsü: [PLACE]. Seninle paylaşıldı.* / `[strong('Seninle paylaşıldı'), ' · [PLACE], [SAT] tarafından izlendi · 1 Kas Paz, 11:21']` (no name: *Bir uydu görüntüsü*, *bir uydu tarafından*) |
-| `geo.none` | *Bu yeri 5°’nin üzerinde gören, çalışır durumda hiçbir yerdurağan meteoroloji görüntüleyicisi yok.* (5° is fixed text) |
+| `geo.none` | *Bu yeri ufkunun 5°’den fazla üzerinden gören, çalışır durumda hiçbir yerdurağan meteoroloji görüntüleyicisi yok.* (5° is fixed text; *ufkunun* says what the angle measures) |
 | `geo.facts` | *0.0°E · 41,2° yukarıda · 10 dk’da bir* |
 | `geo.images` | `['Bu hafta ', num('412'), ' görüntü']` / `['Son 5 günde ', num('412'), ' görüntü']` |
 | `geo.replay` / `replayLabel` | *Oynat* / *[SAT]: en son görüntüsünü oynat* |
@@ -533,7 +534,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `timeline.geoLane` / `geometry` | `[strong('Yerdurağan · '), '4']` / *dikeyden 5,3° · 61 km* |
 | `timeline.mark*` | *Günlük mozaik, 375 m · ● · Radar görüntüsü, 20 m · ◆ · [title] · ◆ · açık görüntüleyici · ◇ · ticari · □ · radar · ▣ · meteoroloji · ○ · insanlı · ✛ · diğer* |
 | `replay` (scrubber) | *Tekrar zamanı* · *T−00:42, 16:14:21 UTC* · *Tekrarı oynat* · *Tekrarı duraklat* · *Tekrar hızı* · *Görüş alanında 4 dk 12 sn* · *En yakın* · *Boşluk* · *oynat / duraklat* · *bu türden önceki / sonraki geçiş* |
-| `plan` | *Kuşbakışı çizim: [SAT] yer izi, en yakın anda buraya 61 km.* · *Kuşbakışı · kuzey yukarıda* · *Görüş alanı ±45°* · *Tarama şeridi 290 km* · *Yer izi* · *En yakın 61 km* / *En yakın < 1 km* |
+| `plan` | *Kuşbakışı çizim: [SAT] yer izi, en yakın anda buraya 61 km.* · *Kuşbakışı · kuzey yukarıda* · *Görüş alanı ±45°* · *Şerit 290 km* (≤ 20 characters beside *Kuzey yukarıda*: *Tarama şeridi 3.040 km* is 22) · *Yer izi* · *En yakın 61 km* / *En yakın < 1 km* |
 | `product` | *Günlük mozaik · 375 m · Tam disk · 2 km · Kızılötesi · 2 km · Sentinel-2 L2A · 10 m · Landsat C2 L2 · 30 m · Sentinel-1 radar · 20 m* |
 | `results.timelapse` | *Zaman atlamalı* / *Bu yer, yıl yıl* |
 | `passView.empty` | *Takip ettiğimiz hiçbir uydu bu aralıkta buranın üzerinden geçmedi. Bu ender olur; bir veri kaynağı çalışmadıysa yukarıdaki notlar bunu söyler.* |
@@ -544,8 +545,8 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `passView.rowLabel` | *[SAT], [verb], [daySpoken] [TIME], [ago], bulut yüzde 25, tamamen bulutlu* |
 | `offNadir` / `offNadirShort` / `distanceKm` / `cloudPct` | *dikeyden 5,3°* / *5,3°* / *61 km* / *bulut %25* |
 | `expandLabel` / `expandTitle` | *Fotoğrafı büyüt: [SAT], [DAY] [TIME]* / *Fotoğrafı büyüt* |
-| `satLabel` | *[SAT], [OPERATOR], 3 geçiş, en sonuncusu 6 Kasım Cuma 16:14* |
-| `latest` / `closest` / `cloudChip` | *Son * / *En yakın * / *Bulut* |
+| `satLabel` | *[SAT], [OPERATOR], 3 geçiş, sonuncusu 6 Kasım Cuma 16:14* |
+| `latest` / `closest` / `cloudChip` | *En son: * / *En yakın: * / *Bulut* (a colon: *En yakın dikeyden 5,3°* reads "from the nearest vertical", *Son 6 Kas* "the last 6") |
 | `photosSection` / `planSection` / `geometry` / `replay` | *Görüntüler* / *Kuşbakışı çizim* / *Geometri* / *Tekrar* |
 | `fullDiscNote` | *Tam disk görüntüsü: uydunun görebildiği her şeyin tek bir görüntüsü; burada piksel başına 2 km. Kaba ama gerçek ve yayımlanan en yenisi; uydu bütün hafta her 10 dakikada bir buna benzer bir görüntü aldı.* (one minute: *her dakika*; unknown: *birkaç dakikada bir*) |
 | `mosaicNote` | *Günlük mozaik: NASA her günün tarama şeritlerini piksel başına 375 m çözünürlüklü tek bir görüntüde birleştirir. Kaba ama gerçek ve bu geçişin gününden.* |
@@ -556,7 +557,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `strip.*` | *İrtifa · Ufuktan açı · Bakış açısı · Piksel · Bant · Güneş · Bulut · Noktada bulut* |
 | `band.*` / `spotValue.*` | *Kızılötesi · Görünür · Renkli* / *Yok · Sirrus · Var · Gölge* (under *NOKTADA BULUT*, *YOK* means clear) |
 | `unit.*` | *km · m · km/sn · yukarıda · mozaik · sahne · gündüz · alacakaranlık · gece* |
-| `geo.*` (01 / Geometry) | *En yakın an · UTC · En yakın an · yerel · Yatay uzaklık · Ufkundan açı · Yer hızı · Yön · Güneş açısı · Görüş alanı · Tarama şeridi · Şeritte · Görüş alanında · Aralık · NORAD · geçiş · Tarama çizgisi · UTC · Tarama çizgisi · yerel · Ekvatorun üzerinde · Göğünde · Tarama yönü · Buradaki çizgi hızı · Kapsama · Bu tarama · NORAD · tarama* |
+| `geo.*` (01 / Geometry) | *En yakın an · UTC · En yakın an · yerel · Yatay uzaklık · Ufkundan açı · Yer hızı · Yön · Güneş açısı · Görüş alanı · Tarama şeridi · Şeritte · Görüş alanında · Zaman aralığı (*ARALIK* alone is also December) · NORAD · geçiş · Tarama çizgisi · UTC · Tarama çizgisi · yerel · Ekvatorun üzerinde · Göğünde · Tarama yönü · Buradaki çizgi hızı · Kapsama · Bu tarama · NORAD · tarama* |
 | `northToSouth` / `southToNorth` / `sunPhase` / `fullDisc` / `everyMin` | *Kuzey → güney* / *Güney → kuzey* / *Gündüz · Alacakaranlık · Gece* / *Tam disk* / *10 dk’da bir* |
 | `upCompass` / `heading` | *yukarıda · GGB* / *GGB · Yükselen*, *GGB · Alçalan* |
 
@@ -564,25 +565,25 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 
 | Key | Turkish |
 |:--|:--|
-| `gallery.barLabel` / `filterLabel` | *Görüntüler* / *Görüntüleri süz* |
+| `gallery.barLabel` / `filterLabel` | *Görüntüler* / *Görüntüleri filtrele* |
 | `gallery.filter` | *Tümü · Detaylı · Hava · Radar* (≤ 8 characters each; *Ayrıntılı* is 9) |
-| `gallery.filterTitle` | *Bütün görüntüler: en net görüntüden sonra en yeniden eskiye* · *Sentinel-2 ve Landsat, piksel başına 10–30 m* · *Günlük hava durumu mozaikleri, piksel başına 250 m ve daha kaba* · *Sentinel-1 radar görüntüleri, piksel başına 20 m: bulutun içinden, gece gündüz* |
+| `gallery.filterTitle` | *Bütün görüntüler: en net görüntüden sonra en yeniden eskiye* · *Sentinel-2 ve Landsat, piksel başına 10–30 m* · *Günlük hava durumu mozaikleri, piksel başına 250 m ve üzeri* · *Sentinel-1 radar görüntüleri, piksel başına 20 m: bulutun içinden, gece gündüz* |
 | `position` / `photosThisWeek` / `photosThatWeek` | *3 / 27* / *bu hafta 12* / *o hafta 12* |
 | `prevPhoto` / `nextPhoto` / titles | *Önceki görüntü* / *Sonraki görüntü* / *Önceki (←)* / *Sonraki (→)* |
 | `carousel` / `slide` / `trackLabel` | *karusel* / *slayt* / *Bu yerin görüntüleri; daha fazlası için kaydır* |
 | `lead` | *En net görüntü · Son bulutsuz görüntü · Tamamen bulutlu* |
 | `slideLabel` | *En net görüntü: Sentinel-2C, 1 Kas Paz 16:14, görüntü 3, toplam 27* |
-| `replay` / `replayLabel` | `[strong('Bu geçişi '), 'yeniden oynat']` / *Bu geçişi kürede yeniden oynat: [SAT], [DAY] [TIME]* |
+| `replay` / `replayLabel` | `[strong('Bu geçişi yeniden '), 'oynat']` (phones and laptops: *OYNAT*, the narrow replay word) / *Bu geçişi kürede yeniden oynat: [SAT], [DAY] [TIME]* |
 | `viewLabel` / `view` | *Son bulutsuz görüntüyü büyük aç: …* / *Görüntüyü büyük aç: …* / *Aç* |
 | `sharePass` / `radarTag` | *Bu geçişi paylaş* / *Radar* |
-| `noteMostlyCloud` / `noteLastClear` | *Bu haftanın geçişleri çoğunlukla bulut gördü* / *İşte son bulutsuz görüntü* |
+| `noteMostlyCloud` / `noteLastClear` | *Bu haftaki geçişlerde çoğunlukla bulut vardı* (a *geçiş* is an event: it does not see) / *İşte son bulutsuz görüntü* |
 | `clouded` | *Tamamen bulutlu · %92* · *Tamamen bulutlu · noktanda bulut* · *Noktanda bulut* |
 | `status` | *Bulutlu · %86 · Noktada bulut · Bulutsuz · İnce sirrus · Bulut gölgesi · Bulut %25 · Günlük mozaik* |
 | `photoAlt` | *[SAT] görüntüsü: [PLACE]. Yer, görüntünün ortasında.* |
 | `acquiring` / `noImage` / `retry` | *Alınıyor* / *Görüntü gelmedi* / *Yeniden dene* |
 | `north` | *K* |
 | `expandLabel` / `expandTitle` | *Görüntüyü büyüt* / *Büyüt (F)* |
-| `stillRendering` / `cropMissing` | *Hâlâ işleniyor. Büyük sahneler 10 sn ya da daha uzun sürebilir.* / *Arşiv bu kesiti göndermedi. Yoğun olabilir; görüntünün kendisi yine de var.* |
+| `stillRendering` / `cropMissing` | *Hâlâ işleniyor. Büyük sahneler en az 10 sn sürebilir.* (two lines of ≤ 30) / *Arşiv bu kesiti göndermedi. Yoğun olabilir; görüntünün kendisi yine de var.* |
 | `scanLine` / `awaiting` | `['Satır ', strong(line), ' → ' + lines]` / *Geçiş bekleniyor · Tarama bekleniyor* |
 | `lightbox.spokenPosition` | *Görüntü 3, toplam 12* / *…, en net görüntü* / *…, tamamen bulutlu* |
 | `lightbox.spokenLastClear` | *Son bulutsuz görüntü, bu haftadan önce* |
@@ -590,7 +591,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `lightbox.zoom*` / `close` | *Yakınlaştır (+) · Uzaklaştır (−) · 2,5×* / *Görüntüleyiciyi kapat*, *Kapat (Esc)* |
 | `lightbox.perPixel` / `panTitle` / `panProduct` | *10 m / piksel* / *Landsat’ın 15 m’lik pankromatik bandıyla keskinleştirildi* / *Landsat C2 L2 + L1 pan · 15 m* |
 | `lightbox.status` | *Bulutlu · %86* / *Noktanda hava açık* |
-| `lightbox.replay` / `share` / `shareLabel` | *Yeniden oynat* / *Paylaş* / *Bu görüntüyü paylaş* |
+| `lightbox.replay` / `share` / `shareLabel` | *Oynat* (the gallery's word without its tablet part) / *Paylaş* / *Bu görüntüyü paylaş* |
 | `lightbox.filmstripLabel` / `thumbLabel` | *Bütün görüntüler* / *Görüntü 3* |
 | `timelapse.dialog` / `title` / `slider` / `frameList` | *Zaman atlamalı: [PLACE]* / *Zaman atlamalı* / *Kare* / *Kareler* |
 | `timelapse.date` / `dayMonth` / `readout` | *22 Eki 2015* / *22 Eki* / *22 Eki 2015 · Sentinel-2A* |
@@ -601,13 +602,13 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `note` | *Her kare, Sentinel-2’nin aynı 10 × 10 km’lik alandan çektiği bir görüntü; renkleri buradaki bütün fotoğraflar gibi ayarlandı. Her yıl için farklı bir mevsim hedeflenir; bulutsuz görüntüsü olmayan yıl atlanır.* |
 | `noteOneSeason` | *Her kare, Sentinel-2’nin aynı 10 × 10 km’lik alandan çektiği bir görüntü; renkleri buradaki bütün fotoğraflar gibi ayarlandı. Her yıl aynı mevsimden; o mevsimde bulutsuz görüntüsü olmayan yıl atlanır.* |
 | `source` | *Copernicus Sentinel-2, Planetary Computer üzerinden* |
-| `listing` / `choosing` / `developing` | *Arşiv listeleniyor* / *Bulutsuz görüntüler seçiliyor* / *Kareler işleniyor* |
-| `choosingProgress` / `developingProgress` | *Bulutsuz görüntüler seçiliyor: 3 tamam, toplam 12* / *Kareler işleniyor: 3 tamam, toplam 12* |
+| `listing` / `choosing` / `developing` | *Arşiv listeleniyor* / *Bulutsuz görüntü seçiliyor* (the generic singular: the plural is clipped on a 280 px picture) / *Kareler işleniyor* |
+| `choosingProgress` / `developingProgress` | *Bulutsuz görüntü seçiliyor: 3 tamam, toplam 12* / *Kareler işleniyor: 3 tamam, toplam 12* |
 | `tooCloudy` / `tooFew` | *Burası zaman atlamalı görüntüler için fazla bulutlu.* / *[YEAR] yılından beri bulutsuz görüntü yok · 3 gerekli*, *[YEAR] yılından beri 2 bulutsuz görüntü · 3 gerekli* |
 | `noAnswer` / `unreachable` / `retry` | *Arşiv yanıt vermedi.* / *Planetary Computer’a ulaşılamadı* / *Yeniden dene* |
 | `share` / `linkCopied` / `shareTitle` | *Paylaş* / *Kopyalandı* / *[PLACE], yıl yıl* |
-| `video` / `rendering` / `videoFailed` / `saveVideo` | *Video* / *İşleniyor %05* / *Video hatası* / *Videoyu kaydet* (one 132 px width) |
-| `noH264` / `fileNamePlace` | *Bu tarayıcıda H.264 kodlayıcı yok: dosya Chrome ve Firefox’ta oynar* / *yer* |
+| `video` / `rendering` / `videoFailed` / `saveVideo` | *Video* / *İşleniyor %05* / *Video hatası* / *Kaydet* (one 132 px width; *Videoyu kaydet* is ~159 px, and the button said *Video* a moment before) |
+| `noH264` / `fileNamePlace` | *Bu tarayıcıda H.264 kodlayıcı yok: dosya Chrome ve Firefox’ta oynatılır* / *yer* |
 
 ### 3.10 HUD, globe, engine, app, share sheet, small namespaces
 
@@ -629,11 +630,11 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `globe.noGl` | *3B görünüm kullanılamıyor* / *Bu tarayıcıda WebGL 2 kapalı* |
 | `engine.progress` (≤ 40 characters) | *Yörünge kataloğu yükleniyor* · *Katalog · 16.912 nesne* · *412 yörünge hesaplanıyor · 7 gün* · *Yörüngeler hesaplanıyor · 210 / 412* · *Sentinel-2 + Landsat arşivleri aranıyor* · *42 sahne 31 geçişle eşleştiriliyor* · *NASA mozaikleri doğrulanıyor* · *NASA mozaikleri doğrulanıyor · 12 / 31* · *31 geçiş · 12 görüntü* |
 | `engine.note.archiveSlow` / `archiveDown` | *Sentinel-2 ve Landsat arşivleri geç yanıt verdi; geçişler yalnızca yörünge geometrisinden gösteriliyor.* / *Sentinel-2 ve Landsat arşivlerine ulaşılamadı; geçişler yalnızca yörünge geometrisinden gösteriliyor.* |
-| `sentinel2Thumbnails` / `sentinel2EarthSearch` | *Sentinel-2 Earth Search üzerinden listelendi; bazı sahneler kesit değil, sahnenin tamamının küçük resmi olarak görünüyor.* / *Sentinel-2 Earth Search üzerinden listelendi (Planetary Computer araması kullanılamıyor).* |
+| `sentinel2Thumbnails` / `sentinel2EarthSearch` | *Sentinel-2 sahneleri Earth Search üzerinden listelendi; bazıları kesit değil, sahnenin tamamının küçük resmi olarak görünüyor.* / *Sentinel-2 sahneleri Earth Search üzerinden listelendi (Planetary Computer araması kullanılamıyor).* |
 | `sentinel2Down` / `landsatDown` | *Sentinel-2 arşivine ulaşılamıyor; Sentinel-2 görüntüleri eksik olabilir.* / *Landsat arşivine ulaşılamıyor; Landsat görüntüleri eksik olabilir.* |
 | `openOcean` | *Bu nokta Sentinel-2’nin çekim planının dışında (açık deniz).* |
 | `elementsOld` / `elementsNewer` | *Yörünge elemanları 5 günlük; geçiş saatleri birkaç dakika kayabilir.* / *Bu geçişler daha yeni yörünge elemanlarıyla yeniden hesaplandı; saatleri birkaç dakika kayabilir.* |
-| `gibsUnconfirmed` | one: *NASA GIBS bir VIIRS görüntüsünü geç doğruladı; VIIRS her gün bütün dünyayı görüntülediği için bu geçiş “İzledi” sayılır.* other: *NASA GIBS, 4 VIIRS görüntüsünü geç doğruladı; VIIRS her gün bütün dünyayı görüntülediği için bu geçişler “İzledi” sayılır.* |
+| `gibsUnconfirmed` | one: *NASA GIBS bir VIIRS görüntüsünü doğrulamakta gecikti; VIIRS her gün bütün gezegeni görüntülediği için bu geçiş “İzledi” sayılır.* other: *NASA GIBS, 4 VIIRS görüntüsünü doğrulamakta gecikti; VIIRS her gün bütün gezegeni görüntülediği için bu geçişler “İzledi” sayılır.* (shown only while unconfirmed: never *geç doğruladı*, "confirmed late") |
 | `gibsSlowAll` / `gibsDownAll` | *NASA GIBS zamanında yanıt vermedi; meteoroloji uydusu görüntüleri gösterilmiyor.* / *NASA GIBS’e ulaşılamadı; meteoroloji uydusu görüntüleri gösterilmiyor.* |
 | `gibsSlowSome` / `gibsDownSome` | *NASA GIBS, 31 meteoroloji uydusu görüntüsünden 4 tanesini zamanında göndermedi; bu geçişler “Muhtemelen izledi” olarak gösteriliyor.* / *… 4 tanesini gönderemedi; …* |
 | `app.notice` | label *Arıza* · fallback *Bir sorun oluştu.* · *Yeniden dene* · *Deneniyor…* · *Geri* |
@@ -800,7 +801,7 @@ gender, so the notes cover case, plural and register.
 | multispectral / panchromatic | multispektral / pankromatik | |
 | time-lapse | zaman atlamalı (label) / zaman atlamalı görüntüler (in a sentence) | An adjective: alone only as a label. The MP4 is *video*. Never *timelapse*. |
 | frame / the ground square | kare / alan | *Kare 3 / 12*; *aynı 10 × 10 km’lik alan*. Never *kare* for the square. |
-| replay | yeniden oynat (button) / Tekrar (section, HUD) | Never *tekrar izle*, never *oynatma*. |
+| replay | yeniden oynat (accessible names, wide buttons) / Oynat (narrow buttons: pass footer, gallery card, photo viewer, geostationary row) / Tekrar (section, HUD) | Never *tekrar izle*, never *oynatma*. |
 | acquiring / acquired / acquisition | alınıyor / alındı / görüntü alımı | Never bare *alım* (purchase). |
 | imaged (instrument verb) | görüntülendi | |
 | fetched (a file) | indirildi | |
@@ -936,7 +937,7 @@ Turkish has no grammatical gender (*o* is he, she and it), so a satellite's gend
 - **No suffix on a runtime number** (never *256’sı, 7’de, 2016’dan*), never an ordinal (*3.’sü, 3’üncü*). Position on
   screen: *Kare 3 / 12*; spoken: *Kare 3, toplam 12* (Turkish screen readers read the slash as *bölü*).
 - **A runtime year** takes the suffix on *yıl*: *[YEAR] yılından beri*. A year or number written into translator text is
-  fixed copy and may take its own suffix (*1999’dan beri*, *5°’nin üzerinde*).
+  fixed copy and may take its own suffix (*1999’dan beri*, *5°’den fazla*).
 - **A suffix on a fixed unit** is allowed (*290 km’lik, 10 dk’da bir, 10 dakikada bir*); never on *%* or *°*.
 - **"At least" and "more":** *En az [NUM] …*; *[NUM] … daha*.
 - **Adjacency:** a number never follows a name without a comma or a word between them.
@@ -1161,10 +1162,10 @@ Getting this wrong is a spelling mistake (*PIKSEL* is not a word).
 | LINK / POST | ADRES / METİN | 4 → 5 | the 48 px column |
 | COPY LINK | KOPYALA | 9 → 7 | |
 | POST TO X / SAVE PNG / SHARE IMAGE | X’TE PAYLAŞ / PNG KAYDET / GÖRÜNTÜYÜ PAYLAŞ | 9 / 8 / 11 → 11 / 10 / 16 | the last is the full-width primary |
-| REPLAY | YENİDEN OYNAT (button) / TEKRAR (section) | 6 → 13 / 6 | |
+| REPLAY | OYNAT (pass footer, gallery card, photo viewer) / TEKRAR (section) | 6 → 5 / 6 | *YENİDEN OYNAT* (13) overflows the pass footer beside the share button |
 | CLOUD AT SPOT | NOKTADA BULUT | 13 → 13 | |
 | GROUND SPEED / SUN ELEVATION | YER HIZI / GÜNEŞ AÇISI | 12 / 13 → 8 / 11 | |
-| VIDEO FAILED / SAVE VIDEO / RENDERING 05% | VİDEO HATASI / VİDEOYU KAYDET / İŞLENİYOR %05 | 12 / 10 / 13 → 12 / 14 / 13 | one 132 px button |
+| VIDEO FAILED / SAVE VIDEO / RENDERING 05% | VİDEO HATASI / KAYDET / İŞLENİYOR %05 | 12 / 10 / 13 → 12 / 6 / 13 | one 132 px button |
 | SEE WHAT WATCHED YOU | SENİ NEYİN İZLEDİĞİNİ GÖR | 20 → 25 | QA at 466 px; fallback *SENİ NE İZLEDİ, GÖR* (19) |
 
 **Known tight spots to check in QA:** the readout strip's *BAKIŞ AÇISI* and *NOKTADA BULUT* cells on a 360 px phone; the
@@ -1332,7 +1333,7 @@ The critique's 53 items: 38 accepted, 15 partly accepted, 0 rejected.
 | 27 | *menzilden geçti* | Accepted: *menzile girdi*, with *1 kez* where English keeps a num part. |
 | 28 | Two terms for "within view" | Accepted: *görüş alanı* only. |
 | 29 | *çıkan / inen* | Accepted: *Yükselen / Alçalan*. |
-| 30 | Replay | Accepted: *Yeniden oynat*, section *Tekrar*; the geostationary row's narrow word is *Oynat*. |
+| 30 | Replay | Accepted: *Yeniden oynat* in accessible names, section *Tekrar*; the narrow word *Oynat* on the pass footer, the gallery card, the photo viewer and the geostationary row (*Yeniden oynat* overflowed the pass footer). |
 | 31 | *operatör* ban overstated | Accepted: *operatör* throughout. |
 | 32 | "Show 40 more" noun, *tane* | Accepted: *40 tane daha göster*, *12 kaldı*; *tane* rule in §5.3. |
 | 33 | Time phrases, semicolon | Accepted: the log stamp opens pass paragraphs; semicolon only within one subject. |

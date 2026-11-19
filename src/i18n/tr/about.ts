@@ -106,7 +106,7 @@ const about: typeof en = {
       /** A radar image is never *fotoğraf*; "through cloud and at night" as the pass view says it (§3.4 could.radar) */
       radar: {
         term: 'Radar',
-        text: 'Sentinel-1 güneş ışığı gerektirmez. Mikrodalga gönderir ve yankısını kaydeder; bu yüzden yer izinin bir yanına bakarak bulutun ve karanlığın içini görür. Görüntüleri de kamuya açık olduğu için onları gri tonlarda gösteriyoruz. Engebeli arazi ve binalar parlak, durgun su karanlık görünür.',
+        text: 'Sentinel-1 güneş ışığı gerektirmez. Mikrodalga gönderir ve yankısını kaydeder; bu yüzden yer izinin bir yanına bakarak bulutun ve karanlığın içinden görür. Görüntüleri de kamuya açık olduğu için onları gri tonlarda gösteriyoruz. Engebeli arazi ve binalar parlak, durgun su karanlık görünür.',
       },
       /** "frame" is *kare* (§4); *izler*: satellites watching places, the product's verb */
       weather: {

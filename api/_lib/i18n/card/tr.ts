@@ -18,8 +18,9 @@
  *    with no comma after it; `aSatellite` is only for the chips and the plan callout.
  *  - Dates come from Intl's parts at the place's zone in the Turkish order (`1 Kas 2026 Paz`, `3 Kas`); the share
  *    page's description opens with a dateline (`1 Kas 2026 Paz, 11:21 EST.`), so the clock never needs `’te`. The
- *    week's stamp is a range with the house arrow (`26 Eki → 1 Kas 2026`), its start six calendar days before the end
- *    at the place: a card opened a month later still names its own week (§3.5).
+ *    week's stamp is Intl's range (`26 Eki – 1 Kas 2026`, `1–7 Kas 2026`), its start six calendar days before the end
+ *    at the place: a card opened a month later still names its own week (§3.5). Not the app's house arrow: the card's
+ *    fonts have no →, and a fallback face for one glyph would be fetched for every card.
  *  - Mono labels are sentence case; each renderer uppercases them with Turkish rules (`İRTİFA`, `MOZAİK PİKSELİ`).
  *    Percentages put the sign first (`%25`), decimals take a comma (`7,46`), as fmt('tr') writes them.
  */
@@ -53,9 +54,9 @@ const dayMonth = (ms: number, timeZone: string) => {
   return `${d.day} ${d.month}`
 }
 /**
- * "26 Eki → 1 Kas 2026", "1 → 7 Kas 2026", "29 Ara 2026 → 4 Oca 2027": the seven days ending on the place's day. The
- * end's calendar day is read at the place, both ends are formatted at UTC, and Intl's range separator (an en dash)
- * becomes the house arrow (§6.4).
+ * "26 Eki – 1 Kas 2026", "1–7 Kas 2026", "29 Ara 2026 – 4 Oca 2027": the seven days ending on the place's day. The
+ * end's calendar day is read at the place and both ends are formatted at UTC, with Intl's own range separator (an en
+ * dash, which the card's fonts draw).
  */
 function weekRange(ms: number, timeZone: string): string {
   const fields = dateFormat('tr', timeZone, NUMERIC_DAY).formatToParts(ms)
@@ -64,19 +65,18 @@ function weekRange(ms: number, timeZone: string): string {
   const end = Date.UTC(y, m - 1, d)
   if (!Number.isFinite(end)) return 'Son 7 gün'
   const parts = dateFormat('tr', 'UTC', RANGE_DAY).formatRangeToParts(Date.UTC(y, m - 1, d - 6), end)
-  const sep = parts.findIndex((p) => p.source === 'endRange') - 1
-  return parts
-    .map((p, i) =>
-      i === sep && p.type === 'literal' && p.source === 'shared' ? ' → ' : p.type === 'month' ? p.value.replace(/\.$/, '') : p.value,
-    )
-    .join('')
+  return parts.map((p) => (p.type === 'month' ? p.value.replace(/\.$/, '') : p.value)).join('')
 }
 
 // ── Pieces the sentences share ──────────────────────────────────────────────────────────────────────────────────────
 
-/** "7 uydu tarafından izlendi." / "takip ettiğimiz hiçbir uydu tarafından izlenmedi." (the results headline's N) */
+/**
+ * "7 uydu tarafından izlendi." / "takip ettiğimiz hiçbir uydu tarafından izlenmedi." (the results headline's N). The
+ * count is held to its noun by a no-break space, as the results headline holds it (§6.7), so the display line breaks
+ * before *tarafından*, never between *7* and *uydu*.
+ */
 const watched = (n: number) =>
-  n > 0 ? `${f.int(n)} uydu tarafından izlendi.` : 'takip ettiğimiz hiçbir uydu tarafından izlenmedi.'
+  n > 0 ? `${f.int(n)}\u00a0uydu tarafından izlendi.` : 'takip ettiğimiz hiçbir uydu tarafından izlenmedi.'
 /** The serif block: the place, and the comma a following number or name needs, unless the place was cut short */
 const head = (place: string, cut: boolean, comma = true) => accent(place, ...(comma && !cut ? [','] : []))
 
@@ -112,9 +112,12 @@ const tr: CardMessages = {
 
   // ── The line under the headline ───────────────────────────────────────────────────────────────────────────────────
 
-  // `En az` right before the number, so it can fade out and the sentence reads without it (§3.3).
+  // `En az` right before the number, so it can fade out and the sentence reads without it (§3.3); *En az*, the number
+  // and its noun never part (no-break spaces, §6.7), as on the results panel's second line.
   photos: (count: number, atLeast: boolean) =>
-    count <= 0 ? 'Hiçbir görüntü kamuya açılmadı.' : `${atLeast ? 'En az ' : ''}${f.int(count)} görüntü kamuya açıldı.`,
+    count <= 0
+      ? 'Hiçbir görüntü kamuya açılmadı.'
+      : `${atLeast ? 'En\u00a0az\u00a0' : ''}${f.int(count)}\u00a0görüntü kamuya açıldı.`,
   archiveDown: 'Görüntü arşivleri yanıt vermedi; kamuya açık görüntüleri şu an sayamıyoruz.',
   archiveDownShort: 'Görüntü arşivleri yanıt vermedi.',
   cloud: {

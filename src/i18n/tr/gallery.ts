@@ -44,8 +44,9 @@ const gallery: typeof en = {
   filterTitle: {
     all: 'Bütün görüntüler: en net görüntüden sonra en yeniden eskiye',
     detailed: 'Sentinel-2 ve Landsat, piksel başına 10–30 m',
-    // `ve üzeri`: the idiom for "this figure and beyond"; a larger pixel is the coarser direction.
-    weather: 'Günlük hava durumu mozaikleri, piksel başına 250 m ve üzeri',
+    // `ve üzeri`: the idiom for "this figure and beyond"; a larger pixel is the coarser direction. `meteoroloji
+    // mozaikleri`, as the results' footnote counts them (*meteoroloji mozaiği*), never *hava durumu* ("forecast").
+    weather: 'Günlük meteoroloji mozaikleri, piksel başına 250 m ve üzeri',
     radar: 'Sentinel-1 radar görüntüleri, piksel başına 20 m: bulutun içinden, gece gündüz',
   },
   position: (k: number, n: number) => `${f.int(k)} / ${f.int(n)}`,

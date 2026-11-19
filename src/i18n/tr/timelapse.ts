@@ -118,8 +118,9 @@ const timelapse: typeof en = {
   // The object dropped (§7.1): the same button said `Video` a moment before and carries the download glyph, and
   // `Videoyu kaydet` (~159 px) widened the 132 px button on the second press.
   saveVideo: 'Kaydet',
-  // Media is played (`oynatılır`), it does not play (`oynar` is colloquial).
-  noH264: 'Bu tarayıcıda H.264 kodlayıcı yok: dosya Chrome ve Firefox’ta oynatılır',
+  // Media is played (`oynatılır`), it does not play (`oynar` is colloquial). A whole sentence after the colon starts
+  // with a capital (TDK, §6.1).
+  noH264: 'Bu tarayıcıda H.264 kodlayıcı yok: Dosya Chrome ve Firefox’ta oynatılır',
   // Lowercase a–z only: the file name's stand-in for a place with no Latin name.
   fileNamePlace: 'yer',
 }

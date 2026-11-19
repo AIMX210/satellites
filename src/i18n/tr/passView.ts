@@ -13,7 +13,9 @@
  *    `NOKTADA BULUT`); bearings arrive as the 'pass' namespace's Turkish letters (`GGB`). Percentages put the sign
  *    first (`%25`); a screen reader hears `bulut yüzde 25`.
  *  - The footnotes say `görüntü` for anything that can be radar or a mosaic and `sahne` for an archive's scene (§4);
- *    `fotoğraf` only for a crewed station's pictures, which are photos.
+ *    `fotoğraf` only for a crewed station's pictures, which are photos. A whole sentence after a colon starts with a
+ *    capital (TDK, §6.1: `Kamuya açık görüntü yok: Bu radar operatörünün…`, `…gösterir: Binalar…`), as the sats
+ *    blurbs write it; a phrase after one stays lowercase (`Tam disk görüntüsü: uydunun görebildiği…`).
  *  - The row thumbnail opens a radar image as well as a photo (only daily mosaics have none), so its label says
  *    `Görüntüyü büyüt`, like the gallery's, rather than `Fotoğrafı büyüt` (the honesty rule, §9.3 item 13).
  */
@@ -31,7 +33,7 @@ const passCount = (n: number) => `${f.int(n)} ${PASS}`
 const who = (sat: string, day: string, time: string) => `${sat}, ${day} ${time}`
 /** How often a geostationary satellite takes a full-disc image: `her dakika`, `her 10 dakikada bir`, `birkaç dakikada bir` */
 const cadence = (min?: number) =>
-  min ? f.plural(min, { one: 'her dakika', other: `her ${f.int(min)} dakikada bir` }) : 'birkaç dakikada bir'
+  min ? f.plural(min, { one: 'her dakika', other: `her ${f.int(min)}\u00a0dakikada bir` }) : 'birkaç dakikada bir'
 /** The footnotes' closing sentence: the drawing above is the pass's plan view */
 const PLAN = 'Geçişin kuşbakışı çizimi.'
 
@@ -93,12 +95,12 @@ const passView: typeof en = {
   mosaicNote: (gsdM: number) =>
     `Günlük mozaik: NASA her günün tarama şeritlerini piksel başına ${f.int(gsdM)} m çözünürlüklü tek bir görüntüde birleştirir. Kaba ama gerçek ve bu geçişin gününden.`,
   radarNote:
-    'Fotoğraf değil, radar görüntüsü: Sentinel-1 mikrodalga gönderir ve yankısını kaydeder; bulut ve karanlık onu durdurmaz. Parlaklık, yerin dalgaları ne kadar güçlü geri yansıttığını gösterir: binalar ve engebeli arazi parlak, durgun su karanlık görünür.',
+    'Fotoğraf değil, radar görüntüsü: Sentinel-1 mikrodalga gönderir ve yankısını kaydeder; bulut ve karanlık onu durdurmaz. Parlaklık, yerin dalgaları ne kadar güçlü geri yansıttığını gösterir: Binalar ve engebeli arazi parlak, durgun su karanlık görünür.',
   noImage: {
     // The satellite's name before the fixed noun `görüntüsü`, so it takes no suffix.
     openArchive: (sat: string) => `Bu geçişten bu noktanın ${sat} görüntüsü yok. ${PLAN}`,
-    radarPrivate: `Kamuya açık görüntü yok: bu radar operatörünün arşivi kapalı. ${PLAN}`,
-    commercialPrivate: `Kamuya açık görüntü yok: ticari arşivler kapalı. ${PLAN}`,
+    radarPrivate: `Kamuya açık görüntü yok: Bu radar operatörünün arşivi kapalı. ${PLAN}`,
+    commercialPrivate: `Kamuya açık görüntü yok: Ticari arşivler kapalı. ${PLAN}`,
     noneToShow: `Bu geçiş için gösterilecek görüntü yok. ${PLAN}`,
     archiveDown: `Arşiv şu an aranamadı. ${PLAN}`,
     noScene: `Bu geçiş için sahne yok. ${PLAN}`,

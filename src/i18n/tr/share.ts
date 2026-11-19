@@ -60,7 +60,8 @@ const share: typeof en = {
 
   // ── The link and the post preview ─────────────────────────────────────────────────────────────────────────────────
   linkLabel: 'Adres',
-  directLink: 'Doğrudan bağlantı: kısa bağlantı şu an oluşturulamadı',
+  // A whole sentence after the colon: a capital (TDK, §6.1).
+  directLink: 'Doğrudan bağlantı: Kısa bağlantı şu an oluşturulamadı',
   creatingLink: 'Bağlantı oluşturuluyor…',
   linkLater: 'Paylaşınca oluşur',
   postLabel: 'Metin',

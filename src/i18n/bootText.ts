@@ -14,6 +14,7 @@ import de from './de/boot.ts'
 import ptBR from './pt-BR/boot.ts'
 import it from './it/boot.ts'
 import nl from './nl/boot.ts'
+import tr from './tr/boot.ts'
 import id from './id/boot.ts'
 import uk from './uk/boot.ts'
 import ja from './ja/boot.ts'
@@ -38,6 +39,7 @@ export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   'pt-BR': ptBR,
   it,
   nl,
+  tr,
   id,
   uk,
   ja,
