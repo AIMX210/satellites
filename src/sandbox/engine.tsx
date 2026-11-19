@@ -240,7 +240,7 @@ function ProgressReadout({ progress }: { progress?: ProgressEvent }) {
     <div className="esb-progress" aria-live="polite">
       <div className="esb-progress-msg t-mono">
         <span className="esb-stage">{progress?.stage ?? 'catalog'}</span>
-        <span>{progress?.message ?? 'STARTING'}</span>
+        <span>{typeof progress?.message === 'object' ? progress.message.id : (progress?.message ?? 'STARTING')}</span>
         <span className="esb-progress-pct">{f === undefined ? '—' : `${Math.round(f * 100)}%`}</span>
       </div>
       <div className="esb-bar" aria-hidden>

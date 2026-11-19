@@ -83,7 +83,8 @@ export function ComputingBody({ t0, tz }: { t0: number; tz?: string }) {
           l.end ??= at
         } else if (i === idx) {
           l.start ??= at
-          l.message = e.message
+          // Until the readout renders messages (MessageRef) in the visitor's language, show the English it was given.
+          l.message = typeof e.message === 'string' ? e.message : e.message.id
         }
       }
       if (e.fraction !== undefined) h.fraction = Math.max(h.fraction, e.fraction)

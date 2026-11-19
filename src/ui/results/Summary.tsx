@@ -249,7 +249,7 @@ export function Notes({ model, enter = false }: { model: ResultsModel; enter?: b
           {notes.map((n, i) => (
             <li key={i} className={s.footnote}>
               <span>{superscript(i + 1)}</span>
-              <span>{n}</span>
+              <span>{typeof n === 'string' ? n : n.id}</span>
             </li>
           ))}
         </ul>
