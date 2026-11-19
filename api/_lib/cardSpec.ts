@@ -992,27 +992,44 @@ export const lookOfCode = (code: string | null): SummaryLook | undefined =>
 
 /**
  * The summary plate's chip, in the gallery's own words: "Closest look · Sentinel-2B · 10 m", "Last clear look · 3 Nov ·
- * Landsat 9 · 30 m" (from before the week, so its day is said), "Clouded over · …", "Radar · Sentinel-1D · 20 m".
+ * Landsat 9" (from before the week, so its day is said; its pixel size gave way to the scale chip, summaryLookFit),
+ * "Clouded over · …", "Radar · Sentinel-1D · 20 m".
  */
 export function summaryLookChip(best: NonNullable<SummaryInput['best']>, timeZone = 'UTC', locale: Locale = DEFAULT_LOCALE): string {
+  return summaryLookFit(best, timeZone, locale).text
+}
+
+/**
+ * The summary plate's chip and its scale bar, fitted together: the chip must end before the scale chip at the plate's
+ * top right ("LAST CLEAR LOOK · 3 NOV · LANDSAT 9 · 30 M" ran 72 px under it, in English). First the bar takes a
+ * shorter round length (it may be anything up to 150 px), then the chip gives up the pixel size, the satellite's
+ * name, and last the day, which says the picture is from before the week.
+ */
+export function summaryLookFit(best: NonNullable<SummaryInput['best']>, timeZone = 'UTC', locale: Locale = DEFAULT_LOCALE): { text: string; scale: ScaleBar } {
   const m = cardMessages(locale)
   const c = best.capture
-  const gsd = c.gsdM ?? NATIVE_GSD_M[c.collection] ?? cardCrop(c).metresPerPx
+  const mpp = cardCrop(c).metresPerPx
+  const gsd = c.gsdM ?? NATIVE_GSD_M[c.collection] ?? mpp
+  const look = best.look ?? 'closest'
+  const lead = look === 'closest' || look === 'lastClear' || look === 'clouded' || look === 'radar' ? m.look[look] : undefined
+  const day = look === 'lastClear' && best.tClosest !== undefined ? m.lookDay(best.tClosest, timeZone) : undefined
+  const sat = best.satName ?? m.aSatellite
   // Mono chip segments joined by the card's " · " (DESIGN: label · data · data, the same in every language).
-  const tail = [best.satName ?? m.aSatellite, m.pixelSize(gsd)]
-  switch (best.look ?? 'closest') {
-    case 'closest':
-      return [m.look.closest, ...tail].join(' · ')
-    case 'lastClear':
-      return (best.tClosest === undefined ? [m.look.lastClear, ...tail] : [m.look.lastClear, m.lookDay(best.tClosest, timeZone), ...tail]).join(' · ')
-    case 'clouded':
-      return [m.look.clouded, ...tail].join(' · ')
-    case 'radar':
-      return [m.look.radar, ...tail].join(' · ')
-    default:
-      return tail.join(' · ')
-  }
+  const texts = [[lead, day, sat, m.pixelSize(gsd)], [lead, day, sat], [lead, day], [lead]].map((t) => t.filter((x): x is string => !!x).join(' · '))
+  const fits = (text: string, scale: ScaleBar) => INSET + monoWidth(text, CARD_FS.chipLead) + 2 * CHIP_BOX.padX + 2 + 8 <= PLATE - INSET - chipWidth(scale)
+  const scales = [scaleFor(m, mpp), scaleFor(m, mpp, 80)]
+  for (const text of texts) for (const scale of scales) if (fits(text, scale)) return { text, scale }
+  return { text: texts[texts.length - 1], scale: scales[1] }
 }
+
+/**
+ * A mono caps chip's text width: the card's mono face advances 0.65 em a character, plus the label tracking (a CJK
+ * character, from a fallback face, about a full em).
+ */
+const monoWidth = (t: string, size: number) =>
+  [...t].reduce((w, ch) => w + (/[\u1100-\u11ff\u2e80-\u9fff\uac00-\ud7af\uff00-\uffef]/.test(ch) ? 1 : 0.65) * size + TRACK.label * size, 0)
+/** The scale chip's width: its bar, the gap, its label, padding and border (api/_lib/card.ts scaleBar). */
+const chipWidth = (s: ScaleBar) => s.px + CHIP_BOX.gap + monoWidth(s.label, CARD_FS.chip) + 2 * CHIP_BOX.padX + 2
 
 /**
  * The second line (owner F): "31 images were made public." / "1 image was made public." / "At least 4 images were made
@@ -1053,9 +1070,10 @@ export function buildSummarySpec(i: SummaryInput, locale: Locale = DEFAULT_LOCAL
   const c = i.best?.capture
   if (c && i.best) {
     const crop = cardCrop(c)
-    const chip = plateChip(summaryLookChip(i.best, i.timeZone, locale), { left: INSET, top: INSET }, 'bone', CARD_FS.chipLead)
+    const fit = summaryLookFit(i.best, i.timeZone, locale)
+    const chip = plateChip(fit.text, { left: INSET, top: INSET }, 'bone', CARD_FS.chipLead)
     const credit = creditChip(c, i.best.tClosest)
-    const scale = scaleFor(m, crop.metresPerPx)
+    const scale = fit.scale
     plate = { kind: 'image', crop, chip, credit, scale, overlay: imageOverlay([chip, credit], scale), fallback: emptyPlate(planNote(m, 'imaged', 'transient')) }
   } else {
     // Say "no public photo" only when K says so: with the archives down (K unknown) or a count but no picture in the link,

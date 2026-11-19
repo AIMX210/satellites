@@ -279,13 +279,16 @@ describe('the week’s card shows the gallery’s first image, labelled as the g
     const f = summaryFacts({ ...cloudy, clearCover }, 'Waterloo', meta)
     expect(f.best).toMatchObject({ itemId: LS9, satName: 'Landsat 9', tClosest: T_CLEAR, look: 'lastClear' })
     const spec = summaryCardSpec({ ...cloudy, clearCover }, 'Waterloo', meta, 'America/Toronto', 'www.watched.earth')
-    expect(spec.plate.kind === 'image' && chipText(spec.plate.chip)).toBe('Last clear look · 3 Nov · Landsat 9 · 30 m')
+    // The chip must end before the scale chip: the bar takes 1 km instead of 2, and the pixel size goes (the full
+    // "… · 30 m" ran 72 px under the scale chip).
+    expect(spec.plate.kind === 'image' && chipText(spec.plate.chip)).toBe('Last clear look · 3 Nov · Landsat 9')
+    expect(spec.plate.kind === 'image' && spec.plate.scale.label).toBe('1 km')
     const link = new URL(summaryLink('https://www.watched.earth', f))
     expect(link.searchParams.get('bw')).toBe('lc')
     const back = summaryFromParams(link.searchParams) as Parameters<typeof buildSummarySpec>[0]
     expect(back.best?.look).toBe('lastClear')
     const fromLink = buildSummarySpec({ ...back, timeZone: 'America/Toronto', host: 'www.watched.earth' }).plate
-    expect(fromLink.kind === 'image' && chipText(fromLink.chip)).toBe('Last clear look · 3 Nov · Landsat 9 · 30 m')
+    expect(fromLink.kind === 'image' && chipText(fromLink.chip)).toBe('Last clear look · 3 Nov · Landsat 9')
     expect(summaryDescription(back)).toContain('The last clear look is from Landsat 9.')
   })
 
