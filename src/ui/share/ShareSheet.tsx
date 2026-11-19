@@ -30,21 +30,26 @@
  * The overlay contract (R3-16): on stacked layouts the sheet and its scrim cover the globe, so
  * `document.documentElement.dataset.overlay = 'share'` is set while it is open and removed as it starts
  * closing (the globe rests meanwhile and draws a fresh frame for the exit). The globe owns the reader.
+ *
+ * Language: what is shared is in the app's language when the sheet builds it (the card, the PNG, the post, the file
+ * name), and the links carry it (`l=`, not for English) so the unfurl matches the post. The models are keyed by the
+ * language, so switching it while the sheet is open rebuilds everything in the new one.
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import enShare from '@/i18n/en/share'
+import { currentLocale, msgs, useLocale, useMsgs } from '@/i18n/runtime'
+import type { Locale } from '../../../api/_lib/i18n/locales'
 import { ensureTz, timeZoneAt, tzReady } from '@/imagery'
-import { cityLevelLabel } from '@/lib/backend'
 import { DUR, EASE } from '@/lib/ease'
 import { useApp } from '@/state/store'
 import { track, type ShareFrom } from '@/lib/telemetry'
 import type { Pass, Report } from '@/types'
 import { Button, Glyph, Rule, Sheet, cx, useExitClone, useIsMobile, useMediaQuery } from '@/ui/system'
 import { isClouded } from '../results/lib/bestLook'
-import { pixelLabel, captureFor, slug } from '../results/lib/captures'
+import { captureFor, slug } from '../results/lib/captures'
 import { satMeta } from '../results/sats'
-import { fmtLocalDay, fmtLocalTime } from '../results/lib/time'
 import { createShareSafe, peekShare, type CreateShareInput } from './backend'
-import { cardSpec, renderCardPng, summaryCardSpec, summaryFacts, weekSatellites, type CardSpec } from './card'
+import { cardSpec, publicLabelOf, renderCardPng, summaryCardSpec, summaryFacts, weekSatellites, type CardSpec } from './card'
 import { deepLink, postText, roundedPlace, shareLink, summaryLink, summaryPostText, xIntentUrl } from './links'
 import { ShareCard } from './ShareCard'
 import { useBackLayer } from '@/lib/backStack'
@@ -128,13 +133,11 @@ interface ShareModel {
 
 const origin = () => (typeof location !== 'undefined' ? location.origin : '')
 
-/** Shares are public: never publish a street address. Fall back to the city, then coordinates. */
-function publicLabelOf(place: Report['place']): string {
-  const r = roundedPlace(place.lat, place.lon)
-  return cityLevelLabel(place) ?? `${r.lat.toFixed(2)}, ${r.lon.toFixed(2)}`
-}
-
-function passModel(pass: Pass, report: Report, tz: string, host: string, clouded?: boolean): ShareModel {
+/**
+ * A pass's share model, in the app's language (`locale` is the active one: the messages come from it, read now).
+ */
+function passModel(pass: Pass, report: Report, tz: string, host: string, locale: Locale, clouded?: boolean): ShareModel {
+  const m = msgs(enShare)
   const place = report.place
   const meta = satMeta(pass.norad)
   const capture = captureFor(report, pass)
@@ -142,57 +145,66 @@ function passModel(pass: Pass, report: Report, tz: string, host: string, clouded
   const label = publicLabelOf(place)
   // The card leads with the week's N, as the results headline does (owner): "7 satellites watched Waterloo."
   const satellites = weekSatellites(report, satMeta)
-  const spec = cardSpec(pass, { ...report, place: { ...place, label } }, meta, tz, host, { clouded, satellites })
+  const spec = cardSpec(pass, { ...report, place: { ...place, label } }, meta, tz, host, { clouded, satellites, locale })
   return {
     // A geostationary image is a scan, not a pass.
-    title: pass.geostationary ? 'Share this image' : 'Share this pass',
+    title: pass.geostationary ? m.titleImage : m.titlePass,
     spec,
     text: postText({
       verdict: pass.verdict,
       satName: meta.name,
       placeLabel: label,
       altitudeKm: pass.altitudeKm,
-      localDay: fmtLocalDay(pass.tClosest, tz),
-      localTime: fmtLocalTime(pass.tClosest, tz),
-      resolution: capture ? pixelLabel(capture) : undefined,
+      tClosest: pass.tClosest,
+      timeZone: tz,
+      pixelM: capture?.gsdM,
       // The same words as the card (cloudWords): the card is clouded exactly when these are defined.
       cloud: capture && spec.sub !== undefined ? { pct: capture.cloudCoverPct, spot: capture.spot } : undefined,
     }),
-    fileName: `watched-${slug(meta.name)}-${slug(label)}-${new Date(pass.tClosest).toISOString().slice(0, 10)}.png`,
+    fileName: m.pngName(slug(meta.name), slug(label), new Date(pass.tClosest).toISOString().slice(0, 10)),
     input: { placeLabel: label, lat: rounded.lat, lon: rounded.lon, pass, capture, satName: meta.name, satellites },
-    fallbackUrl: deepLink(origin(), label, place.lat, place.lon, pass.id, {
-      norad: pass.norad,
-      satName: meta.name,
-      satellites,
-      verdict: pass.verdict,
-      tClosest: pass.tClosest,
-      altitudeKm: pass.altitudeKm,
-      offNadirDeg: pass.offNadirDeg,
-      headingDeg: pass.headingDeg,
-      capture: capture
-        ? { collection: capture.collection, itemId: capture.itemId, cloudCoverPct: capture.cloudCoverPct, gsdM: capture.gsdM, spot: capture.spot }
-        : undefined,
-    }),
+    fallbackUrl: deepLink(
+      origin(),
+      label,
+      place.lat,
+      place.lon,
+      pass.id,
+      {
+        norad: pass.norad,
+        satName: meta.name,
+        satellites,
+        verdict: pass.verdict,
+        tClosest: pass.tClosest,
+        altitudeKm: pass.altitudeKm,
+        offNadirDeg: pass.offNadirDeg,
+        headingDeg: pass.headingDeg,
+        capture: capture
+          ? { collection: capture.collection, itemId: capture.itemId, cloudCoverPct: capture.cloudCoverPct, gsdM: capture.gsdM, spot: capture.spot }
+          : undefined,
+      },
+      locale,
+    ),
   }
 }
 
 /**
- * Pass models by content (pass, report, zone, host, clouded variant), so a reopen is free and the one for the selected
- * pass can be built in idle time before the tap: building it (card spec, local-time formatters, links, post text)
- * was ~30 ms of the sheet's mount task on a phone at 4× CPU.
+ * Pass models by content (pass, report, zone, host, language, clouded variant), so a reopen is free and the one for
+ * the selected pass can be built in idle time before the tap: building it (card spec, local-time formatters, links,
+ * post text) was ~30 ms of the sheet's mount task on a phone at 4× CPU.
  */
 const passModels = new Map<string, ShareModel>()
 const PASS_MODELS_MAX = 16
 
 function cachedPassModel(pass: Pass, report: Report, tz: string, host: string, clouded?: boolean): ShareModel {
   const p = report.place
+  const locale = currentLocale()
   // The capture's spot class is in the key: a late spot check writes it into the shown report in place (engine
   // checkSpots), and the card's and the post's cloud words follow it.
   const spot = captureFor(report, pass)?.spot ?? ''
-  const key = [pass.id, pass.verdict, pass.captureId ?? '', spot, report.generatedAt, report.passes.length, report.captures.length, p.lat, p.lon, p.label, tz, host, clouded ? 1 : 0].join('|')
+  const key = [pass.id, pass.verdict, pass.captureId ?? '', spot, report.generatedAt, report.passes.length, report.captures.length, p.lat, p.lon, p.label, tz, host, locale, clouded ? 1 : 0].join('|')
   let m = passModels.get(key)
   if (!m) {
-    m = passModel(pass, report, tz, host, clouded)
+    m = passModel(pass, report, tz, host, locale, clouded)
     passModels.set(key, m)
     if (passModels.size > PASS_MODELS_MAX) passModels.delete(passModels.keys().next().value as string)
   }
@@ -224,15 +236,17 @@ function warmSelectedPass(): () => void {
 }
 if (typeof window !== 'undefined') warmSelectedPass()
 
-function summaryModel(report: Report, tz: string, host: string): ShareModel {
+/** The week's share model, in the app's language (`locale`, the active one). */
+function summaryModel(report: Report, tz: string, host: string, locale: Locale): ShareModel {
+  const m = msgs(enShare)
   const label = publicLabelOf(report.place)
   const facts = summaryFacts(report, label, satMeta)
   return {
-    title: 'Share this week',
-    spec: summaryCardSpec(report, label, satMeta, tz, host),
+    title: m.titleWeek,
+    spec: summaryCardSpec(report, label, satMeta, tz, host, locale),
     text: summaryPostText({ placeLabel: label, satellites: facts.satellites, photos: facts.counts.imaged, archiveDown: facts.archiveDown, partial: facts.partial }),
-    fileName: `watched-${slug(label)}-week-${new Date(report.windowEnd).toISOString().slice(0, 10)}.png`,
-    fallbackUrl: summaryLink(origin(), facts),
+    fileName: m.weekPngName(slug(label), new Date(report.windowEnd).toISOString().slice(0, 10)),
+    fallbackUrl: summaryLink(origin(), facts, locale),
   }
 }
 
@@ -255,6 +269,9 @@ function useOverlayAttr(on: boolean) {
 }
 
 export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from }: ShareSheetProps) {
+  const m = useMsgs(enShare)
+  // What is shared is in the app's language: a switch while the sheet is open rebuilds the model in the new one.
+  const locale = useLocale()
   const place = report.place
   // The card prints the place's own zone ("EST"), so make sure the zone table is in (it normally is
   // by the time a report exists; a cold deep link may still be loading it).
@@ -272,8 +289,8 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
   const host = typeof location !== 'undefined' ? location.host : 'www.watched.earth'
   const summary = kind === 'summary' || !pass
   const model = useMemo(
-    () => (summary || !pass ? summaryModel(report, tz, host) : cachedPassModel(pass, report, tz, host, clouded)),
-    [summary, pass, report, tz, host, clouded],
+    () => (summary || !pass ? summaryModel(report, tz, host, locale) : cachedPassModel(pass, report, tz, host, clouded)),
+    [summary, pass, report, tz, host, clouded, locale],
   )
   const { spec, text, fileName, input, fallbackUrl } = model
   const stacked = useIsMobile()
@@ -299,7 +316,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
   const resolveLink = useCallback(
     (id: Promise<string | null>) => {
       const p = id.then((v) => {
-        const url = v ? shareLink(origin(), v) : fallbackUrl
+        const url = v ? shareLink(origin(), v, locale) : fallbackUrl
         linkNow.current = url
         if (alive.current) setLink({ kind: 'ready', url, short: !!v })
         return url
@@ -307,7 +324,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
       linkPromise.current = p
       return p
     },
-    [fallbackUrl],
+    [fallbackUrl, locale],
   )
   /** The link to share: creates the share on first call (idempotent per pass for the session). */
   const ensureLink = useCallback((): Promise<string> => {
@@ -514,7 +531,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
   // The phone's primary: the image once it's ready; until then (≤ 2.5 s) an inert "Preparing image…";
   // after that, or if the PNG failed, the text and link alone.
   const nativeMode: 'image' | 'preparing' | 'link' = !shareFiles ? 'link' : png === 'ready' ? 'image' : png === 'busy' && patient ? 'preparing' : 'link'
-  const nativeLabel = nativeMode === 'image' ? 'Share image' : nativeMode === 'preparing' ? 'Preparing image…' : 'Share'
+  const nativeLabel = nativeMode === 'image' ? m.shareImage : nativeMode === 'preparing' ? m.preparingImage : m.share
 
   /**
    * Phones: the system share sheet with the card attached. Called synchronously in the tap: no await
@@ -546,7 +563,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
   const url = link.kind === 'ready' ? link.url : ''
   // The link is the long fallback (the short /s/ link could not be made): the field says so on hover.
   const direct = link.kind === 'ready' && !link.short && !!input
-  const pngLabel = png === 'err' ? 'Try again' : 'Save PNG'
+  const pngLabel = png === 'err' ? m.tryAgain : m.savePng
 
   const actions = nativeFirst ? (
     <div className={s.actionsTouch}>
@@ -567,10 +584,10 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
       </Button>
       <div className={s.secondary}>
         <Button onClick={copy} onPointerDown={warm} aria-live="polite">
-          {flash === 'link' ? 'Copied' : 'Copy link'}
+          {flash === 'link' ? m.copied : m.copyLink}
         </Button>
         <Button onClick={post} onPointerDown={warm}>
-          Post to X
+          {m.postToX}
         </Button>
         <Button onClick={download}>{pngLabel}</Button>
       </div>
@@ -578,16 +595,16 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
   ) : (
     <div className={s.actions}>
       <Button variant="primary" onClick={post} onPointerDown={warm}>
-        Post to X
+        {m.postToX}
       </Button>
       <Button onClick={copy} onPointerDown={warm} aria-live="polite">
         {flash === 'link' ? <Glyph name="imaged" size={10} color="var(--signal)" /> : null}
-        {flash === 'link' ? 'Copied' : 'Copy link'}
+        {flash === 'link' ? m.copied : m.copyLink}
       </Button>
       {copyImageOk ? (
         <Button onClick={copyImage} onPointerDown={() => void startPng()} aria-live="polite">
           {flash === 'image' ? <Glyph name="imaged" size={10} color="var(--signal)" /> : null}
-          {flash === 'image' ? 'Copied' : 'Copy image'}
+          {flash === 'image' ? m.copied : m.copyImage}
         </Button>
       ) : (
         <Button onClick={download}>{pngLabel}</Button>
@@ -603,7 +620,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
           phone sheet) under the pointer, by 20–27 px, so the click landed beside the button and was lost. */}
       <div className={s.linkRow} data-link={link.kind}>
         <label htmlFor="share-link" className={s.linkLabel}>
-          Link
+          {m.linkLabel}
         </label>
         <input
           id="share-link"
@@ -611,14 +628,14 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
           className={cx(s.link, link.kind !== 'ready' && s.linkPending)}
           // The long fallback link (the short /s/ link couldn't be made) says so on hover, not in a label that
           // would change width and slide the field sideways.
-          title={direct ? 'Direct link: the short link could not be made right now' : undefined}
+          title={direct ? m.directLink : undefined}
           readOnly
-          value={link.kind === 'ready' ? url : link.kind === 'pending' ? 'Creating link…' : 'Made when you share'}
+          value={link.kind === 'ready' ? url : link.kind === 'pending' ? m.creatingLink : m.linkLater}
           onFocus={(e) => link.kind === 'ready' && e.currentTarget.select()}
         />
       </div>
       <p className={s.text}>
-        <span className={s.textLabel}>Post</span>
+        <span className={s.textLabel}>{m.postLabel}</span>
         {/* Paragraphs as the post will have them (a blank line on X), set a little tighter here. */}
         <span className={s.textBody}>
           {text.split('\n\n').map((para, i) => (
@@ -630,7 +647,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
           share button for the image. Nothing else (owner: no privacy paragraph here; README "Data" says it). */}
       {png === 'err' || (!nativeFirst && copyImageOk) ? (
         <div className={s.foot}>
-          {png === 'err' ? <p className={s.privacy}>The card could not be rendered here; the link still works.</p> : null}
+          {png === 'err' ? <p className={s.privacy}>{m.renderFailed}</p> : null}
           {!nativeFirst && copyImageOk ? (
             <button type="button" className={s.textAction} onClick={download}>
               <Glyph name="download" size={12} />
@@ -648,14 +665,14 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
     <div ref={rootRef} className={s.root} role="dialog" aria-modal="true" aria-labelledby="share-title" tabIndex={-1} data-png={png}>
       <div className={s.scrim} onMouseDown={onClose} aria-hidden />
       {stacked ? (
-        <StackedShare onClose={onClose} title={title} label={model.title}>
+        <StackedShare onClose={onClose} title={title} label={model.title} closeLabel={m.close}>
           {body}
         </StackedShare>
       ) : (
         <div className={s.dialog} data-share-panel>
           <div className={s.head}>
             <Rule className={s.rule}>{title}</Rule>
-            <button type="button" className={s.close} onClick={onClose} aria-label="Close" title="Close (Esc)">
+            <button type="button" className={s.close} onClick={onClose} aria-label={m.close} title={m.closeTitle}>
               <Glyph name="close" size={14} />
             </button>
           </div>
@@ -670,7 +687,19 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
  * The stacked dialog: the shell's bottom Sheet with one snap, measured to the content (capped by the
  * Sheet below the HUD band). The grip and a swipe down close it; the body scrolls if it can't all fit.
  */
-function StackedShare({ onClose, title, label, children }: { onClose: () => void; title: React.ReactNode; label: string; children: React.ReactNode }) {
+function StackedShare({
+  onClose,
+  title,
+  label,
+  closeLabel,
+  children,
+}: {
+  onClose: () => void
+  title: React.ReactNode
+  label: string
+  closeLabel: string
+  children: React.ReactNode
+}) {
   const bodyRef = useRef<HTMLDivElement>(null)
   const [fit, setFit] = useState(0)
   useLayoutEffect(() => {
@@ -698,7 +727,7 @@ function StackedShare({ onClose, title, label, children }: { onClose: () => void
         // Start low and rise to the measured height: the first frame never overshoots the content.
         snaps={[fit || 0.4]}
         onClose={onClose}
-        closeLabel="Close"
+        closeLabel={closeLabel}
         dismissible
         className={s.sheet}
         bodyRef={bodyRef}

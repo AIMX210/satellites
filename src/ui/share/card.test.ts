@@ -135,7 +135,7 @@ describe('clouded words match the picture (R2SH3)', () => {
     host: 'overflight.app',
   })
   const post = (pct: number, spot?: string) =>
-    postText({ verdict: 'imaged', satName: 'Sentinel-2B', placeLabel: 'Waterloo', altitudeKm: 795, localDay: 'Fri 30 Oct', localTime: '12:24', resolution: '10 m', cloud: { pct, spot } })
+    postText({ verdict: 'imaged', satName: 'Sentinel-2B', placeLabel: 'Waterloo', altitudeKm: 795, tClosest: Date.UTC(2026, 9, 30, 16, 24), timeZone: 'America/Toronto', pixelM: 10, cloud: { pct, spot } })
 
   const CASES = [
     { pct: 93, spot: undefined, sub: 'Clouded over. It saw only cloud.', chip: 'Clouded over · 93%', desc: 'It saw only cloud (93%).', post: 'It saw only cloud.' },

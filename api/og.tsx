@@ -15,16 +15,19 @@
  *
  * Runs on Node (Vercel; fonts and the default plate are read from api/_fonts, api/_assets) and in the Cloudflare
  * Worker, which registers its bundled copies of them (api/_lib/bundled.ts).
+ *
+ * Every card is drawn in the language its URL names (`l=<locale>`, the sharer's: api/s.ts writes it into og:image
+ * for any language but English), English otherwise; an English card is byte for byte what it always was.
  */
 import { decode as decodePng } from 'fast-png'
 import { encode as encodeJpeg } from 'jpeg-js'
 import { CARD_H, CARD_W, PLATE, defaultCard, defaultPlateDataUri, shareCard } from './_lib/card.js'
-import { buildCardSpec, buildSummarySpec, type CardSpec } from './_lib/cardSpec.js'
+import { buildCardSpec, buildSummarySpec, type CardSpec, type Locale } from './_lib/cardSpec.js'
 import { displayHost, siteOrigin } from './_lib/env.js'
 import { loadFonts } from './_lib/fonts.js'
 import { renderCardPng } from './_lib/ogRender.js'
 import { cropPlan, fetchCropPicture } from './_lib/imagery.js'
-import { SHARE_ID_RE, cardInputFromShare, fetchShare, shareFromParams, shareTimeZone, summaryFromParams, type ShareRecord } from './_lib/share.js'
+import { SHARE_ID_RE, cardInputFromShare, fetchShare, linkLocale, shareFromParams, shareTimeZone, summaryFromParams, type ShareRecord } from './_lib/share.js'
 
 /** PC renders a 630² crop in 1–3 s, occasionally much longer; stay well inside maxDuration. */
 const IMAGE_TIMEOUT_MS = 9000
@@ -129,23 +132,24 @@ async function cardImage(share: ShareRecord): Promise<CardImage> {
 }
 
 /** A week's summary: the closest look's crop (when it has one) beside "N satellites watched … K images were made public." */
-async function renderSummary(q: URLSearchParams, host: string): Promise<Response | null> {
+async function renderSummary(q: URLSearchParams, host: string, locale: Locale): Promise<Response | null> {
   const sum = summaryFromParams(q)
   if (!sum) return null
-  const spec = buildSummarySpec({ ...sum, timeZone: shareTimeZone(sum), host })
+  const spec = buildSummarySpec({ ...sum, timeZone: shareTimeZone(sum), host }, locale)
   const cap = sum.best?.capture
   const plan = cap ? cropPlan(cap, sum.lat, sum.lon, PLATE) : null
   const pic = plan ? await fetchCropPicture(plan.url, IMAGE_TIMEOUT_MS) : null
   return render(shareCard({ spec, image: pic ? { dataUri: pic.dataUri } : null }), plan && !pic?.complete ? CACHE.degraded : CACHE.final)
 }
 
-async function renderDefault(host: string, cache: string): Promise<Response> {
-  return render(defaultCard({ host, plateDataUri: await defaultPlateDataUri() }), cache)
+async function renderDefault(host: string, cache: string, locale: Locale): Promise<Response> {
+  return render(defaultCard({ host, plateDataUri: await defaultPlateDataUri(), locale }), cache)
 }
 
 export async function handleOg(request: Request): Promise<Response> {
   const url = new URL(request.url)
   const host = displayHost(siteOrigin(request))
+  const locale = linkLocale(url.searchParams)
   try {
     let share: ShareRecord | null = null
     let degraded = false
@@ -157,7 +161,7 @@ export async function handleOg(request: Request): Promise<Response> {
         else degraded = true
       } else degraded = true
     } else if (url.searchParams.get('kind') === 'summary') {
-      const res = await renderSummary(url.searchParams, host)
+      const res = await renderSummary(url.searchParams, host, locale)
       if (res) return res
     } else if (url.searchParams.get('kind') !== 'place') {
       share = shareFromParams(url.searchParams)
@@ -165,10 +169,10 @@ export async function handleOg(request: Request): Promise<Response> {
 
     // No pass to draw (the root link, an address-bar place link, a missing share): the default card,
     // whose real photograph and invitation suit any place.
-    if (!share) return await renderDefault(host, degraded ? CACHE.degraded : CACHE.default)
+    if (!share) return await renderDefault(host, degraded ? CACHE.degraded : CACHE.default, locale)
 
     const img = await cardImage(share)
-    const spec: CardSpec = buildCardSpec(cardInputFromShare(share, host, img.kind === 'permanent' ? 'permanent' : undefined))
+    const spec: CardSpec = buildCardSpec(cardInputFromShare(share, host, img.kind === 'permanent' ? 'permanent' : undefined), locale)
     // Only a transient archive miss (or a plate toned without its cloud mask) is worth re-rendering soon; everything
     // else is final.
     const cache = degraded || img.kind === 'transient' || (img.kind === 'image' && !img.complete) ? CACHE.degraded : CACHE.final
@@ -176,7 +180,7 @@ export async function handleOg(request: Request): Promise<Response> {
   } catch (err) {
     console.error('[og] render failed', err)
     try {
-      return await renderDefault(host, CACHE.degraded)
+      return await renderDefault(host, CACHE.degraded, locale)
     } catch {
       return new Response('card unavailable', { status: 500, headers: { 'cache-control': 'no-store' } })
     }
