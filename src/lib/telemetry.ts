@@ -47,6 +47,8 @@ interface Queued {
 
 export interface TelemetryEnv {
   webdriver?: boolean
+  /** navigator.userAgent: a crawler that runs the app says who it is here */
+  userAgent?: string
   dev?: boolean
   hostname?: string
   search?: string
@@ -63,12 +65,19 @@ export const PRODUCTION_HOSTS: readonly string[] = ['www.watched.earth', 'watche
 export const OPT_OUT_KEY = 'watched.noanalytics'
 export const OPT_OUT_RE = /[?&]noanalytics=1(?:&|$)/
 
+/**
+ * Crawlers and page testers that run the app, by the name they give themselves: search engines render every place
+ * page (src/lib/placePage.ts), and each rendering would count as a visit and a search. "bot" only before `/`, `;` or
+ * `)`, as in "Googlebot/2.1": a phone maker's name ends in those letters.
+ */
+export const CRAWLER_RE = /bot[/;)]|spider|crawl|slurp|headlesschrome|lighthouse|inspectiontool|googleother|facebookexternalhit/i
+
 /** False for bots, dev builds, non-production hosts, and tabs opened with `?noanalytics=1`. */
 export function telemetryAllowed(env: TelemetryEnv = currentEnv()): boolean {
   if (env.dev) return false
   if (env.optedOut || OPT_OUT_RE.test(env.search ?? '')) return false // `search`: for tests and callers without a boot record
   if (env.e2e) return true
-  if (env.webdriver) return false
+  if (env.webdriver || CRAWLER_RE.test(env.userAgent ?? '')) return false
   return !!env.hostname && PRODUCTION_HOSTS.includes(env.hostname.toLowerCase())
 }
 
@@ -76,6 +85,7 @@ function currentEnv(): TelemetryEnv {
   if (typeof window === 'undefined') return { webdriver: true }
   return {
     webdriver: typeof navigator !== 'undefined' && navigator.webdriver === true,
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
     dev: !!import.meta.env?.DEV,
     hostname: location.hostname,
     optedOut: !!arrival?.optedOut || readOptOut(),
