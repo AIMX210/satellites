@@ -513,10 +513,10 @@ function MetaLine({ parts, altRef }: { parts: Rich; altRef: RefObject<HTMLElemen
 
 /**
  * The acquisition countdown, top-right under the HUD clock band (the top-right corner of the free area: the HUD's scrim
- * would dim it inside the band), right-aligned: "ACQUISITION · SENTINEL-2C" over
- * "T−00:01:12", snapping to "ACQUIRED" at the capture; for passes without an image "CLOSEST APPROACH". Visible while
- * a live sequence runs and for a moment after its capture. Written every frame from the runtime (text only when it
- * changes), never through React state. While it shows, callouts keep below it.
+ * would dim it inside the band), right-aligned; right to left, where the clock is top left, top-left and left-aligned.
+ * "ACQUISITION · SENTINEL-2C" over "T−00:01:12", snapping to "ACQUIRED" at the capture; for passes without an image
+ * "CLOSEST APPROACH". Visible while a live sequence runs and for a moment after its capture. Written every frame from
+ * the runtime (text only when it changes), never through React state. While it shows, callouts keep below it.
  */
 const READOUT_HOLD_MS = 2600
 /** The readout's height before its first measurement (desktop type scale; phones measure taller). */
@@ -587,19 +587,23 @@ function AcqReadout({
       st.done = captured
       d.classList.toggle(s.acqDone, captured)
     }
-    const x = Math.round(ins.right + edgeFor(stacked))
+    // Right to left the HUD's clock is top left and the results dock on the left (docs/I18N.md "Right to left"): the
+    // readout mirrors to the free area's top-left corner, measured from the left inset.
+    const rtl = document.documentElement.dir === 'rtl'
+    const x = Math.round((rtl ? ins.left : ins.right) + edgeFor(stacked))
     const y = Math.round(ins.top + 8)
     // Never wider than the globe's free band beside a side panel (a short landscape phone's pass view is ~240 px):
-    // the label wraps instead of running off the screen's left edge.
-    const maxW = Math.max(120, Math.round(W - x - ins.left - edgeFor(stacked)))
+    // the label wraps instead of running off the screen's far edge.
+    const maxW = Math.max(120, Math.round(W - x - (rtl ? ins.right : ins.left) - edgeFor(stacked)))
     if (maxW !== st.maxW) {
       st.maxW = maxW
       d.style.maxWidth = `${maxW}px`
     }
-    if (x !== st.x || y !== st.y) {
-      st.x = x
+    const tx = rtl ? x : -x // from the right edge, or right to left from the left one (CSS)
+    if (tx !== st.x || y !== st.y) {
+      st.x = tx
       st.y = y
-      d.style.transform = `translate3d(${-x}px, ${y}px, 0)`
+      d.style.transform = `translate3d(${tx}px, ${y}px, 0)`
     }
   })
   const m = useMsgs(enGlobe)

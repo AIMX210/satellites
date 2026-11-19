@@ -207,7 +207,7 @@
   }
 }
 
-/* ── acquisition countdown (top-right, under the HUD clock) ─────────────────────────────── */
+/* ── acquisition countdown (under the HUD clock: top right, top left right to left) ──────────────────────────────── */
 .acqReadout {
   position: absolute;
   right: 0;
@@ -227,13 +227,20 @@
   transition: opacity var(--d-sm) var(--ease-out);
 }
 .acqLabel {
-  /* Wraps (right-aligned) only when the free band is narrower than the line (GlobeOverlay sets max-width). */
+  /* Wraps (aligned to the readout's outer edge) only when the free band is narrower than the line (GlobeOverlay sets
+     max-width). */
   white-space: normal;
-  text-align: right;
+  text-align: end;
   font-size: var(--fs-meta, 10px);
   font-weight: 350;
   letter-spacing: var(--track-label);
   color: var(--bone-2);
+}
+/* Right to left the clock is top left (GlobeOverlay AcqReadout measures from the left inset): the readout mirrors.
+   Its lines already align to the inline end, which is the left there (flex-end in a column, text-align: end). */
+:root[dir='rtl'] .acqReadout {
+  right: auto;
+  left: 0;
 }
 .acqValue {
   font-size: var(--fs-readout, 12px);
