@@ -133,6 +133,8 @@ describe('the PNG’s line breaking and shaping (canvas has no CSS)', () => {
     expect(wrap(ctx, 'Saint-Jean-sur-Richelieu', 100, 0)).toEqual(['Saint-', 'Jean-sur-', 'Richelieu'])
     expect(wrap(ctx, '7 satellites watched', 100, 0)).toEqual(['7', 'satellites', 'watched'])
     expect(wrap(ctx, 'No satellite we track watched', 140, 0)).toEqual(['No satellite', 'we track', 'watched'])
+    // A no-break space holds a count to its noun, as the preview (and satori) keep it
+    expect(wrap(ctx, 'дивилися 256\u00a0супутників.', 140, 0)).toEqual(['дивилися', '256\u00a0супутників.'])
   })
 
   it('breaks text written without spaces between its words, never before closing punctuation', () => {

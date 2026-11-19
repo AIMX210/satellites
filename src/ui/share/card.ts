@@ -468,7 +468,9 @@ export function wrap(ctx: Pick<Ctx, 'measureText'> & Partial<Ctx>, text: string,
   // regex lookbehind: Safari before 16.4 can't parse one, and this module ships to every browser. A part written
   // without spaces is cut into its words; those join their neighbours without a space, as hyphenated parts do.
   const tokens: { text: string; spaced: boolean }[] = []
-  for (const w of text.split(/\s+/).filter(Boolean)) {
+  // Split at breaking spaces only: a no-break space holds a count to its noun ("256 супутників", "1 565 m"), as
+  // the browser and satori keep it, so the PNG breaks its lines where the preview does.
+  for (const w of text.split(/[^\S\u00a0\u202f\u2007]+/).filter(Boolean)) {
     w.replace(/-/g, '-\u0000')
       .split('\u0000')
       .filter(Boolean)
