@@ -3,16 +3,12 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'node:url'
 
 /**
- * Production origin for absolute link-preview URLs (og:url, og:image): VITE_SITE_ORIGIN, else Vercel's
- * production host, else the current deployment.
+ * Production origin for the absolute URLs search engines and link previews read (canonical, og:url, og:image, the
+ * sitemap): VITE_SITE_ORIGIN, a build variable. Every build says the production origin, a preview's too, so a
+ * preview never presents itself as the site. A fork sets its own (docs/SELF-HOSTING.md).
  */
 function siteOrigin(env: Record<string, string>): string {
-  const raw =
-    env.VITE_SITE_ORIGIN ||
-    (env.VERCEL_PROJECT_PRODUCTION_URL && `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`) ||
-    (env.VERCEL_URL && `https://${env.VERCEL_URL}`) ||
-    'https://www.watched.earth'
-  return raw.replace(/\/+$/, '')
+  return (env.VITE_SITE_ORIGIN || 'https://www.watched.earth').replace(/\/+$/, '')
 }
 
 /** SGP4 and the engine modules over it: needed by the globe and the report engine, never by the first screen. */
@@ -92,8 +88,8 @@ function overflightHtml(): Plugin {
  * the shell and the results panel again with not a line of them changed. index.html is revalidated on every visit anyway.
  */
 function appVersion(): string {
-  // The commit as each host's build names it: Vercel, then Cloudflare Workers Builds.
-  const sha = process.env.VERCEL_GIT_COMMIT_SHA || process.env.WORKERS_CI_COMMIT_SHA || ''
+  // The commit, as Cloudflare Workers Builds names it.
+  const sha = process.env.WORKERS_CI_COMMIT_SHA || ''
   const v = process.env.VITE_APP_VERSION || sha.slice(0, 7) || process.env.npm_package_version || 'dev'
   return /^[A-Za-z0-9._-]{1,24}$/.test(v) ? v : 'dev'
 }
