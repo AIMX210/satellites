@@ -6,10 +6,10 @@
  *  - Buttons are infinitives (*Partager*, *Copier*, *Enregistrer*), never *vous* imperatives, which read like an
  *    advert (fr.md §1.1). *Copié* is the one form the sheet has for both copies (the glossary's *Copiée* needs a key of
  *    its own).
- *  - Three buttons share a 360 px phone's width (about 12 characters each: the key's hard width wins, fr.md §7). The
- *    link button drops its object, the guide's first strategy (*Télécharger l’image* → *Télécharger*): *Copier*, next
- *    to the field labelled *Lien* (*Copier le lien*, 14, ran over its borders). X's own French verb gives *Poster sur
- *    X* (12; *Publier sur X* ran past its borders at 360 px).
+ *  - *Copier le lien*, not a bare *Copier* beside *Copier l’image*: two buttons named *Copier* in one row leave the
+ *    reader to guess which copies what. The row makes room for its labels (ShareSheet.tsx useFitRow): one line on a
+ *    laptop, the first button over the other two on a phone. X's own French verb gives *Poster sur X* (*Publier sur
+ *    X* ran past its borders at 360 px, before the row fitted its labels).
  *  - The post keeps the satellite as the bare subject of an *avoir* verb and the place as its object, so nothing agrees
  *    with either (*Sentinel-2C a observé Waterloo depuis 795 km d’altitude*, §1.3, §5.1); *son opérateur* and *sa
  *    caméra* carry the rest, and *elle* is the camera, never the satellite. A commercial pass says *avait [PLACE] à
@@ -46,7 +46,7 @@ const share: typeof en = {
   shareImage: 'Partager l’image',
   preparingImage: 'Préparation de l’image…',
   share: 'Partager',
-  copyLink: 'Copier',
+  copyLink: 'Copier le lien',
   copied: 'Copié',
   postToX: 'Poster sur X',
   copyImage: 'Copier l’image',

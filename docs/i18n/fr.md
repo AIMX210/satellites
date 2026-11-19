@@ -484,8 +484,8 @@ neutral for war zones and glaciers (no *évolution*, no *transformation*).
   `mosaicNote` *Une mosaïque quotidienne : la NASA assemble les fauchées de chaque jour en une image à 250 m par pixel.
   Peu détaillée, mais réelle, et du jour de ce passage.*
 - **Share sheet:** *Partager ce passage* · *Partager cette image* · *Partager cette semaine* · *Partager l’image* ·
-  *Préparation de l’image…* · *Copier* (the link, beside the field labelled *Lien*: *Copier le lien* does not fit
-  three buttons on a 360 px phone) · *Copié* · *Poster sur X* (X's own French verb; *Publier sur X* ran past its
+  *Préparation de l’image…* · *Copier le lien* (a bare *Copier* beside *Copier l’image* left the reader to guess
+  which copies what; the row now makes room for its labels, stacking on a phone) · *Copié* · *Poster sur X* (X's own French verb; *Publier sur X* ran past its
   border) · *Copier l’image* · *Enregistrer* (Save PNG)
   · *Lien* · *Texte* · *Création du lien…* · *Créé au moment du partage* · *Lien direct : le lien court n’a pas pu être
   créé pour l’instant* · *La carte n’a pas pu être générée ici ; le lien fonctionne toujours.* · *Fermer (Échap)*.
@@ -1011,7 +1011,7 @@ abbreviation (*j*, *min*, *max.*, *sat.*); move detail into the `aria-label` / `
 | PASSES (6) | PASSAGES (8) | Rule label, tiles |
 | SHARE (5) | PARTAGER (8) | Buttons |
 | DOWNLOAD IMAGE (14) | TÉLÉCHARGER L’IMAGE (19) | Pass view link |
-| COPY LINK (9) | COPIER (6) | Share sheet, three buttons on a 360 px phone; *Copier le lien* (14) ran over its border |
+| COPY LINK (9) | COPIER LE LIEN (14) | Share sheet; the row stacks on a phone where three labels do not fit one line |
 | SAVE PNG (8) | ENREGISTRER (11) | Share sheet |
 | REPLAY (6) | REJOUER (7) | Buttons; the section is RECONSTITUTION (14) |
 | TRY AGAIN (9) | RÉESSAYER (9) | Error notices |
@@ -1243,6 +1243,6 @@ What changed, and why:
 - **Line breaks.** The card's headlines tie the auxiliary to its participle with U+00A0 (*a observé*, *ont observé*,
   *a balayé*, *a survolé*, *pouvait viser*): a bare *a* closed the first line (*Sentinel-2C a / observé / Waterloo.*).
 - **Copy.** About's `tilting`: *nous classons le passage « Aurait pu viser ici »* (*l’appelons* had no antecedent).
-- **Kept after seeing them:** *Poster sur X* (X's own French verb, fits), *Copier* for the link (the only form that fits
-  three buttons on a phone), `cloudChip` *Nuage*, `namingPlace` *Recherche du nom*, the hero on the default card (it fits
+- **Kept after seeing them:** *Poster sur X* (X's own French verb, fits), *Copier le lien* for the link (once the share row
+  made room for its labels; *Copier* alone sat beside *Copier l’image*), `cloudChip` *Nuage*, `namingPlace` *Recherche du nom*, the hero on the default card (it fits
   the 466 px column with room to spare).
