@@ -83,6 +83,8 @@ function overflightHtml(): Plugin {
       order: 'post',
       handler(html, ctx) {
         html = html.replaceAll('__SITE_ORIGIN__', origin).replaceAll('__APP_VERSION__', appVersion())
+        // The app's page only: the dev server also serves admin.html (?mock=1), which has no boot language or words.
+        if (!/(^|[\\/])index\.html$/.test(ctx.filename)) return html
         html = withLocaleBoot(html, ctx.bundle ? localePreloads(ctx.bundle, base) : undefined, ctx.bundle ? scriptFonts(ctx.bundle, base) : undefined)
         const bundle = ctx.bundle
         if (!bundle) return html
