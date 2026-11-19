@@ -43,6 +43,12 @@ const BRAND = 'Watched'
 const TOP_GAP = 8
 
 /**
+ * Least clear space between "How this works · language" and the sun line beside it on a phone. Less, and the sun line
+ * steps aside (useCrowdedSun): at 320 px they overlapped in English, at 360 px German and Polish left 6 px, Turkish 13.
+ */
+const MIN_ROW_GAP = 14
+
+/**
  * After boot, the lines start wiping in this long after the loading screen starts to leave (src/app/bootCurtain.ts:
  * its wordmark glides 760 ms onto this one). The version and About lines wait for the logo to land (it passes
  * over their spot on its way in: they start at 780 / 820 ms, after the 760 ms glide, now that the wipes run on CSS
@@ -162,6 +168,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
   const topLeft = useRef<HTMLDivElement>(null)
   const topRight = useRef<HTMLDivElement>(null)
   useTopInset(topLeft, topRight)
+  useCrowdedSun(topLeft, topRight)
   // The stacked sun line gives way to the scene time during a replay and comes back after it: its
   // wipe plays with the HUD's first entrance only, never again on its return (one entrance per element).
   // Set during the render that unmounts it, so its `skip` never changes while it is mounted.
@@ -199,7 +206,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
             )}
           </span>
         </div>
-        <Reveal key={`${k}-about`} skip={booting} axis="x" duration={480} delay={at(520)} as="div" className={s.line}>
+        <Reveal key={`${k}-about`} skip={booting} axis="x" duration={480} delay={at(520)} as="div" className={cx(s.line, s.aboutLine)}>
           {onAbout ? (
             <button type="button" className={s.about} onClick={() => aboutRef.current?.()} aria-keyshortcuts="?">
               <span className={s.aboutText}>{m.about}</span>
@@ -217,7 +224,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
         {live ? null : <SceneTime />}
         {/* stacked: the sun joins the clock (bottom corners are hidden); a replay's scene time takes its place */}
         {live ? (
-          <Reveal key={`${k}-sun`} skip={booting || sunReturns.current} axis="x" duration={480} delay={at(60)} as="div" className={cx(s.line, s.mob)}>
+          <Reveal key={`${k}-sun`} skip={booting || sunReturns.current} axis="x" duration={480} delay={at(60)} as="div" className={cx(s.line, s.mob, s.sunLine)}>
             <SunValue />
           </Reveal>
         ) : null}
@@ -264,6 +271,56 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
       </CornerReadout>
     </div>
   )
+}
+
+/**
+ * On a phone the sun joins the top right, on the same line as "How this works" and the language on the left. Where the
+ * two would come closer than MIN_ROW_GAP (narrow phones, longer languages) the sun line is hidden, never the About
+ * link or the language switcher (the sun's readout is the extra one; wide screens show it in its own corner). It is
+ * hidden, not removed: it keeps its box, so it is still measured as the screen or the words change, and nothing in
+ * the corner moves (the top left's two lines set the top inset either way). Written to the DOM, not React state: the
+ * line remounts after a replay and on boot, which the observers below see.
+ */
+function useCrowdedSun(topLeft: RefObject<HTMLDivElement | null>, topRight: RefObject<HTMLDivElement | null>) {
+  useLayoutEffect(() => {
+    const tl = topLeft.current
+    const tr = topRight.current
+    if (!tl || !tr || typeof ResizeObserver === 'undefined') return
+    const watched = new WeakSet<Element>()
+    const watch = (el: Element) => {
+      if (watched.has(el)) return
+      watched.add(el)
+      ro.observe(el)
+    }
+    const check = () => {
+      const about = tl.querySelector<HTMLElement>(`.${s.aboutLine}`)
+      const sun = tr.querySelector<HTMLElement>(`.${s.sunLine}`)
+      if (!about || !sun) return
+      watch(about)
+      watch(sun)
+      const a = about.getBoundingClientRect()
+      const b = sun.getBoundingClientRect()
+      if (!a.width || !b.width) return // the sun line is not shown here (wide screens, a replay)
+      // Right to left the corners swap: the language line is at the right, the sun at the left.
+      const rtl = getComputedStyle(tr).direction === 'rtl'
+      const gap = rtl ? a.left - b.right : b.left - a.right
+      sun.toggleAttribute('data-crowded', gap < MIN_ROW_GAP)
+    }
+    const ro = new ResizeObserver(check)
+    ro.observe(tl)
+    ro.observe(tr)
+    // A remounted line (the boot entrance, the sun's return after a replay) is a new element.
+    const mo = new MutationObserver(check)
+    mo.observe(tr, { childList: true })
+    mo.observe(tl, { childList: true })
+    window.addEventListener('resize', check)
+    check()
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+      window.removeEventListener('resize', check)
+    }
+  }, [topLeft, topRight])
 }
 
 /** Publish store.uiInsets.top = the lower of the two top readouts' bottoms + TOP_GAP. */

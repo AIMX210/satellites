@@ -204,6 +204,14 @@
 .mob {
   display: none !important;
 }
+/* The About line, which the phone's sun line keeps clear of (Hud.tsx useCrowdedSun reads its box by this class). */
+.aboutLine {
+  min-width: 0;
+}
+/* The phone's sun line, where it would crowd "How this works" (Hud.tsx useCrowdedSun): kept in place, unseen. */
+.sunLine[data-crowded] {
+  visibility: hidden;
+}
 
 @media (max-width: 760px) {
   .desk {
