@@ -4,7 +4,7 @@
  * screen, so the boot script's choice of language reaches these three strings in the same parse, before first paint.
  *
  * Keep each entry short (the slow line is one centred mono line under the wordmark, uppercase where the script has
- * case). The tab title is the app's own until it sets one (src/i18n/documentMeta.ts keeps it in step afterwards).
+ * case). The tab title holds until the app sets its own (Main.tsx useDocumentTitle keeps it in step afterwards).
  * A locale missing here keeps the English of index.html.
  */
 import type { Locale } from '../../api/_lib/i18n/locales.ts'

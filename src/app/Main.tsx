@@ -169,18 +169,16 @@ function enterDelayAfter(prev: Phase): number {
   return 160
 }
 
-/** index.html's own title, the English one crawlers and link previews read (taken before the app first retitles). */
-let htmlTitle: string | undefined
 /**
- * The tab's title in the page's language, following a switch. English keeps index.html's title untouched; another
- * language sets its own (app.documentTitle), and switching back restores the original.
+ * The tab's title in the page's language, following a switch: app.documentTitle, whose English is index.html's own
+ * title, word for word (i18n.test.ts checks it). Never read back from document.title: before the app runs, the boot
+ * words (src/i18n/bootText.ts) have already set the boot language's title there, so a German page switched to English,
+ * or falling back to it when its chunk failed, kept the German title.
  */
 function useDocumentTitle() {
   const m = useMsgs(enApp)
   useEffect(() => {
-    htmlTitle ??= document.title
-    const title = m === enApp ? htmlTitle : m.documentTitle
-    if (document.title !== title) document.title = title
+    if (document.title !== m.documentTitle) document.title = m.documentTitle
   }, [m])
 }
 

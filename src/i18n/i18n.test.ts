@@ -3,6 +3,7 @@ import { LOCALES, LOCALE_INFO, localeForTag, matchLocale, type Locale } from '..
 import { PLURALS, fmt } from '../../api/_lib/i18n/format'
 import { accent, num, numText, plain, strong } from '../../api/_lib/i18n/parts'
 import { bootLocale, type BootData } from './boot'
+import enApp from './en/app'
 
 const TAGS = [
   'en', 'en-US', 'en-GB', 'EN_us', 'es', 'es-MX', 'es-419', 'fr-CA', 'fr', 'de-AT', 'de-CH', 'pt', 'pt-BR', 'pt-PT', 'pt_br',
@@ -126,6 +127,15 @@ describe('rich parts', () => {
     expect(plain(s)).toBe('In the last 7 days, 256 satellites watched Waterloo.')
     expect(plain([[num('25', '%')], [num('7.46', 'km/s')]])).toBe('25% 7.46 km/s')
     expect(plain([['今週。'], ['見ていた。']], '')).toBe('今週。見ていた。')
+  })
+})
+
+describe('the tab title', () => {
+  // Main.tsx sets app.documentTitle in every language, English included: English must be index.html's title as it is,
+  // the one crawlers and link previews read.
+  it('is index.html’s own in English', () => {
+    const html = import.meta.glob<string>('../../index.html', { query: '?raw', import: 'default', eager: true })['../../index.html']
+    expect(/<title>([^<]*)<\/title>/.exec(html)?.[1]).toBe(enApp.documentTitle)
   })
 })
 
