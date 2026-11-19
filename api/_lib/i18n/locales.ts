@@ -93,6 +93,8 @@ export function localeForTag(tag: string, listedOnly = true): Locale | undefined
     hit = traditional ? 'zh-Hant' : 'zh-Hans'
   } else if (lang === 'pt') hit = 'pt-BR'
   else if (lang === 'in') hit = 'id' // the old code for Indonesian, still sent by some Android browsers
+  // Cantonese reads standard written Traditional Chinese every day: the one neighbour we choose over English (owner)
+  else if (lang === 'yue') hit = 'zh-Hant'
   else hit = LOCALES.find((l) => l.toLowerCase() === lang)
   if (!hit) return undefined
   return !listedOnly || LOCALE_INFO[hit].listed ? hit : undefined

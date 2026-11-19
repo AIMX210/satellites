@@ -66,6 +66,7 @@ export function bootLocale(d: BootData): void {
       hit = script === 'hant' || (!script && region) ? 'zh-Hant' : 'zh-Hans'
     } else if (lang === 'pt') hit = 'pt-BR'
     else if (lang === 'in') hit = 'id'
+    else if (lang === 'yue') hit = 'zh-Hant'
     else
       for (var j = 0; j < codes.length; j++)
         if (lower(codes[j]) === lang) {

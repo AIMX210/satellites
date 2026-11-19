@@ -8,7 +8,7 @@ import enApp from './en/app'
 const TAGS = [
   'en', 'en-US', 'en-GB', 'EN_us', 'es', 'es-MX', 'es-419', 'fr-CA', 'fr', 'de-AT', 'de-CH', 'pt', 'pt-BR', 'pt-PT', 'pt_br',
   'it', 'nl-BE', 'pl', 'tr', 'id', 'in', 'in-ID', 'uk', 'uk-UA', 'ru', 'ru-UA', 'be', 'ja', 'ja-JP', 'ko-KR', 'zh', 'zh-CN',
-  'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant', 'zh-Hant-HK', 'ZH-tw', 'zh-Hans-HK', 'zh-Hans-TW', 'zh-Hans-MO', 'zh-Hant-CN', 'ar', 'ar-SA', 'ar-EG',
+  'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant', 'zh-Hant-HK', 'ZH-tw', 'zh-Hans-HK', 'zh-Hans-TW', 'zh-Hans-MO', 'zh-Hant-CN', 'yue', 'yue-HK', 'ar', 'ar-SA', 'ar-EG',
   'he', 'hi-IN', 'vi', 'th', 'sv', '', ' ', 'x-pseudo', 'enx',
 ]
 
@@ -26,6 +26,9 @@ describe('locale matching', () => {
     expect(localeForTag('zh-Hant-CN')).toBe('zh-Hant')
     expect(localeForTag('pt-PT')).toBe('pt-BR')
     expect(localeForTag('in')).toBe('id')
+    // Cantonese: Traditional Chinese, the one neighbour chosen over English
+    expect(localeForTag('yue')).toBe('zh-Hant')
+    expect(localeForTag('yue-Hant-HK')).toBe('zh-Hant')
     expect(localeForTag('ru')).toBeUndefined()
     expect(localeForTag('enx')).toBeUndefined()
   })
