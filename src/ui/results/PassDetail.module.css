@@ -61,8 +61,8 @@
   padding: 10px 8px 10px 0;
 }
 .stripCell + .stripCell {
-  padding-left: 10px;
-  border-left: 1px solid var(--line);
+  padding-inline-start: 10px;
+  border-inline-start: 1px solid var(--line);
 }
 .stripLabel {
   font-family: var(--font-mono);
@@ -85,7 +85,7 @@
   white-space: nowrap;
 }
 .stripUnit {
-  margin-left: 0.3em;
+  margin-inline-start: 0.3em;
   font-size: var(--fs-label);
   font-weight: 400;
   letter-spacing: var(--track-label);

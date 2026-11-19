@@ -307,7 +307,7 @@ const SatRow = memo(function SatRow({
           <span className={s.countNum}>{count.n}</span>
           <span className={s.countUnit}>{count.u}</span>
         </span>
-        <span className={cx(s.chev, expanded && s.chevOpen)} aria-hidden>
+        <span className={cx(s.chev, s.flipRtl, expanded && s.chevOpen)} aria-hidden>
           <Glyph name="arrow-right" size={11} />
         </span>
       </button>

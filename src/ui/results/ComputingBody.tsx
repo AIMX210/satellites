@@ -169,7 +169,7 @@ export function ComputingBody({ t0, tz }: { t0: number; tz?: string }) {
 
         <div className={s.bar}>
           <span className={s.fill} style={{ transform: `scaleX(${fraction.toFixed(4)})` }} />
-          <span className={s.lead} style={{ transform: `translateX(${(fraction * 100).toFixed(2)}cqw)` }} />
+          <span className={s.lead} style={{ transform: `translateX(calc(${(fraction * 100).toFixed(2)}cqw * var(--dir-x)))` }} />
         </div>
         <div className={s.foot}>
           <span>

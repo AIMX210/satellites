@@ -38,7 +38,7 @@
   color: var(--bone);
 }
 .order {
-  margin-left: -4px;
+  margin-inline-start: -4px;
   color: var(--bone-3);
 }
 .groupCount {
@@ -74,9 +74,10 @@
   align-items: flex-start;
   gap: 10px;
   width: 100%;
-  padding: 12px 8px 12px 0;
+  padding-block: 12px;
+  padding-inline: 0 8px;
   border-bottom: 1px solid var(--line);
-  text-align: left;
+  text-align: start;
   transition: background-color var(--d-hover) var(--ease-out);
   -webkit-tap-highlight-color: transparent;
 }
@@ -110,7 +111,7 @@
 .subRow:active::before {
   content: '';
   position: absolute;
-  left: -1px;
+  inset-inline-start: -1px;
   top: -1px;
   bottom: -1px;
   width: 1px;
@@ -220,14 +221,14 @@
 }
 /* A photographed row leaves room for its thumbnail, which is its own control (expand, owner B2). */
 .rowThumb {
-  padding-right: 72px;
+  padding-inline-end: 72px;
 }
 .rows > li {
   position: relative;
 }
 .thumbBtn {
   position: absolute;
-  right: 8px;
+  inset-inline-end: 8px;
   top: 12px;
   display: block;
   width: 56px;
@@ -335,6 +336,15 @@
 .chevOpen {
   transform: rotate(90deg);
 }
+/* Right to left a closed row's arrow points left, along the reading; open, the mirrored arrow still points down. The
+   wrapper mirrors (its scale applies after its rotation), so the glyph's own mirror (base.css data-reading) is undone:
+   mirrored inside a rotated wrapper, an open row's arrow would point up. */
+:root[dir='rtl'] .flipRtl {
+  scale: -1 1;
+}
+:root[dir='rtl'] .flipRtl svg {
+  scale: none;
+}
 
 .sub {
   border-bottom: 1px solid var(--line);
@@ -354,7 +364,7 @@
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
   color: var(--bone-2);
-  text-align: left;
+  text-align: start;
   white-space: nowrap;
   transition:
     background-color var(--d-hover) var(--ease-out),

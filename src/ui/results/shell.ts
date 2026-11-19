@@ -233,8 +233,9 @@ export function useSheetGeometry(
 
 /**
  * Publishes what the results UI covers (store.uiInsets) so the camera frames the subject in what is
- * left. Desktop: the dock on the right and the timeline strip at the bottom (0 when the strip sits
- * beside the panel or inside it). Phones publish from the Sheet's own `onVisibleChange` instead
+ * left. Desktop: the dock (on the right; on the left when a right-to-left page mirrors it, read from where it is, not
+ * from the language, as ErrorNotice does) and the timeline strip at the bottom (0 when the strip sits beside the
+ * panel or inside it). Phones publish from the Sheet's own `onVisibleChange` instead
  * (see `publishSheetInset`): the visible height, live while dragged or settling.
  */
 export function useInsets(sectionRef: RefObject<HTMLElement | null>, timelineRef: RefObject<HTMLElement | null>, mobile: boolean, deps: unknown[]) {
@@ -245,7 +246,11 @@ export function useInsets(sectionRef: RefObject<HTMLElement | null>, timelineRef
     const publish = () => {
       // R2R9: the panel's LAYOUT position (offsetLeft ignores the dock-in translate), so the computing flight
       // is aimed at the results layout from its first frame.
-      const right = Math.max(0, window.innerWidth - section.offsetLeft + 24)
+      const w = window.innerWidth
+      const onLeft = dockedLeft(section)
+      const side = onLeft
+        ? { left: Math.max(0, section.offsetLeft + section.offsetWidth + 24), right: 0 }
+        : { right: Math.max(0, w - section.offsetLeft + 24), left: 0 }
       const tl = timelineRef.current?.getBoundingClientRect()
       let bottom: number
       if (tl && tl.height) bottom = Math.max(0, window.innerHeight - tl.top)
@@ -256,7 +261,7 @@ export function useInsets(sectionRef: RefObject<HTMLElement | null>, timelineRef
         const px = (v: string) => parseFloat(cs.getPropertyValue(v)) || 0
         bottom = px('--bezel-inset') + px('--timeline-bottom') + px('--timeline-h')
       }
-      set({ right, bottom, left: 0 })
+      set({ ...side, bottom })
     }
     // First publish from the observer's first callback (after layout, same frame): no forced layout.
     if (typeof ResizeObserver === 'undefined') publish()
@@ -272,6 +277,9 @@ export function useInsets(sectionRef: RefObject<HTMLElement | null>, timelineRef
   }, [sectionRef, timelineRef, mobile, ...deps])
 }
 
+/** The desktop dock sits in the viewport's left half (a right-to-left page): its layout box, not the language. */
+const dockedLeft = (el: HTMLElement) => el.offsetLeft + el.offsetWidth / 2 < window.innerWidth / 2
+
 /** Phones: the Sheet's visible height (px from the bottom, every frame while it moves) is the inset. */
 export function publishSheetInset(px: number) {
   useApp.getState().setUiInsets({ bottom: Math.max(0, px), left: 0, right: 0 })
@@ -284,7 +292,8 @@ const MIN_LIFETIME_MS = 48
 
 /**
  * When the results shell leaves for good (New search → landing, an error), its panel and timeline
- * exit as clones: desktop clips away to the right (mirroring the dock's entrance), phones slide down.
+ * exit as clones: desktop clips away toward its screen edge (mirroring the dock's entrance: the right, or the left
+ * where a right-to-left page docks it), phones slide down.
  * A remount within the results flow (computing → results in the current composition) is not an exit.
  */
 export function useShellExit(sectionRef: RefObject<HTMLElement | null>, timelineRef: RefObject<HTMLElement | null>, mobile: boolean) {
@@ -301,16 +310,23 @@ export function useShellExit(sectionRef: RefObject<HTMLElement | null>, timeline
       if (performance.now() - mountedAt < MIN_LIFETIME_MS) return
       const reduced = prefersReducedMotion()
       const phone = mobileRef.current
+      const node = sectionRef.current ?? section
+      const left = !!node && !phone && dockedLeft(node)
       exitClone(
-        sectionRef.current ?? section,
+        node,
         reduced
           ? [{ opacity: 1 }, { opacity: 0 }]
           : phone
             ? [{ translate: '0 0' }, { translate: '0 100%' }]
-            : [
-                { clipPath: 'inset(0 0 0 0)', translate: '0 0' },
-                { clipPath: 'inset(0 0 0 100%)', translate: '16px 0' },
-              ],
+            : left
+              ? [
+                  { clipPath: 'inset(0 0 0 0)', translate: '0 0' },
+                  { clipPath: 'inset(0 100% 0 0)', translate: '-16px 0' },
+                ]
+              : [
+                  { clipPath: 'inset(0 0 0 0)', translate: '0 0' },
+                  { clipPath: 'inset(0 0 0 100%)', translate: '16px 0' },
+                ],
         reduced ? 200 : 320,
       )
       exitTimeline(timelineRef.current ?? timeline)
