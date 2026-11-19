@@ -308,12 +308,15 @@ const SERIF_LATIN = '"Instrument Serif", Georgia, serif'
 let SANS = SANS_LATIN
 let MONO = MONO_LATIN
 let SERIF = SERIF_LATIN
+/** The headline's stack: the sans, or one whose script face is pinned at the display width (Cyrillic, scripts.css) */
+let DISPLAY = SANS_LATIN
 function readStacks() {
   const css = typeof getComputedStyle === 'function' && typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null
   const get = (name: string, fallback: string) => css?.getPropertyValue(name).trim() || fallback
   SANS = get('--font-sans', SANS_LATIN)
   MONO = get('--font-mono', MONO_LATIN)
   SERIF = get('--font-serif', SERIF_LATIN)
+  DISPLAY = get('--font-card-display', SANS)
 }
 
 type Ctx = CanvasRenderingContext2D & { fontStretch?: string; letterSpacing?: string }
@@ -641,7 +644,7 @@ async function plateImage(spec: CardSpec): Promise<{ img: HTMLImageElement; rect
  */
 export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   readStacks()
-  const fontsToLoad = [`560 84px ${SANS}`, `400 24px ${SANS}`, `350 13px ${MONO}`, `500 16px ${MONO}`, `italic 400 84px ${SERIF}`]
+  const fontsToLoad = [`560 84px ${DISPLAY}`, `400 24px ${SANS}`, `350 13px ${MONO}`, `500 16px ${MONO}`, `italic 400 84px ${SERIF}`]
   // The card's own words, so a script face behind a unicode-range (Cyrillic, Arabic) is fetched before it is drawn.
   const sample = JSON.stringify(spec)
   const [, pic] = await Promise.all([
@@ -700,7 +703,7 @@ export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   // the serif place), then the optional sub-line
   const S = spec.size
   const P = S * HEAD.placeScale
-  const lead: Face = { family: SANS, size: S, weight: 560, stretch: 'condensed', tracking: -0.02 * S }
+  const lead: Face = { family: DISPLAY, size: S, weight: 560, stretch: 'condensed', tracking: -0.02 * S }
   const place: Face = { family: SERIF, size: P, italic: true, tracking: -0.01 * P }
   const sub: Face = { family: SANS, size: CARD_FS.sub }
   // Chinese, Japanese, Korean: their leading, and each text part one phrase on one line (HEAD_CJK)
