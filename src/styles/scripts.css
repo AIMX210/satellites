@@ -177,7 +177,9 @@
 
 /* ── Right to left ──────────────────────────────────────────────────────────────────────────────── */
 
-/* Numbers, clocks and Latin names inside right-to-left text keep their own order. */
+/* Numbers, clocks and Latin names inside right-to-left text keep their own order (and a minus stays in front:
+   without direction ltr, −6° would read 6°−). */
 :root[dir='rtl'] [data-num] {
   unicode-bidi: isolate;
+  direction: ltr;
 }
