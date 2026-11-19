@@ -24,7 +24,9 @@ import { encode as encodeJpeg } from 'jpeg-js'
 import { CARD_H, CARD_W, PLATE, defaultCard, defaultPlateDataUri, shareCard } from './_lib/card.js'
 import { buildCardSpec, buildSummarySpec, type CardSpec, type Locale } from './_lib/cardSpec.js'
 import { displayHost, siteOrigin } from './_lib/env.js'
-import { loadFonts } from './_lib/fonts.js'
+import { cardFonts } from './_lib/fonts.js'
+import { textOf } from './_lib/h.js'
+import { DEFAULT_LOCALE } from './_lib/i18n/locales.js'
 import { renderCardPng } from './_lib/ogRender.js'
 import { cropPlan, fetchCropPicture } from './_lib/imagery.js'
 import { SHARE_ID_RE, cardInputFromShare, fetchShare, linkLocale, shareFromParams, shareTimeZone, summaryFromParams, type ShareRecord } from './_lib/share.js'
@@ -91,13 +93,16 @@ export function pngToJpeg(png: ArrayBuffer | Uint8Array): Uint8Array<ArrayBuffer
   return new Uint8Array(jpeg.buffer as ArrayBuffer, jpeg.byteOffset, jpeg.byteLength)
 }
 
-/** The lossless PNG of a card (the JPEG's source; also what scripts/backend-render-og.ts bakes og-default.png from). */
-async function renderPng(element: ReturnType<typeof defaultCard>): Promise<Uint8Array> {
-  return renderCardPng(element, { width: CARD_W, height: CARD_H, fonts: await loadFonts() })
+/**
+ * The lossless PNG of a card (the JPEG's source; also what scripts/backend-render-og.ts bakes og-default.png from), in
+ * the fonts its language and its words need (a card that prints no Cyrillic reads none of the Cyrillic files).
+ */
+async function renderPng(element: ReturnType<typeof defaultCard>, locale: Locale): Promise<Uint8Array> {
+  return renderCardPng(element, { width: CARD_W, height: CARD_H, fonts: await cardFonts(locale, textOf(element)) })
 }
 
-async function render(element: ReturnType<typeof defaultCard>, cacheControl: string, status = 200): Promise<Response> {
-  const jpeg = pngToJpeg(await renderPng(element))
+async function render(element: ReturnType<typeof defaultCard>, locale: Locale, cacheControl: string, status = 200): Promise<Response> {
+  const jpeg = pngToJpeg(await renderPng(element, locale))
   return new Response(jpeg, {
     status,
     headers: {
@@ -113,7 +118,7 @@ async function render(element: ReturnType<typeof defaultCard>, cacheControl: str
  * from satori's own pixels, not from the JPEG /api/og serves.
  */
 export async function defaultCardPng(host: string): Promise<Uint8Array> {
-  return renderPng(defaultCard({ host, plateDataUri: await defaultPlateDataUri() }))
+  return renderPng(defaultCard({ host, plateDataUri: await defaultPlateDataUri() }), DEFAULT_LOCALE)
 }
 
 type CardImage =
@@ -139,11 +144,11 @@ async function renderSummary(q: URLSearchParams, host: string, locale: Locale): 
   const cap = sum.best?.capture
   const plan = cap ? cropPlan(cap, sum.lat, sum.lon, PLATE) : null
   const pic = plan ? await fetchCropPicture(plan.url, IMAGE_TIMEOUT_MS) : null
-  return render(shareCard({ spec, image: pic ? { dataUri: pic.dataUri } : null }), plan && !pic?.complete ? CACHE.degraded : CACHE.final)
+  return render(shareCard({ spec, image: pic ? { dataUri: pic.dataUri } : null }), locale, plan && !pic?.complete ? CACHE.degraded : CACHE.final)
 }
 
 async function renderDefault(host: string, cache: string, locale: Locale): Promise<Response> {
-  return render(defaultCard({ host, plateDataUri: await defaultPlateDataUri(), locale }), cache)
+  return render(defaultCard({ host, plateDataUri: await defaultPlateDataUri(), locale }), locale, cache)
 }
 
 export async function handleOg(request: Request): Promise<Response> {
@@ -176,7 +181,7 @@ export async function handleOg(request: Request): Promise<Response> {
     // Only a transient archive miss (or a plate toned without its cloud mask) is worth re-rendering soon; everything
     // else is final.
     const cache = degraded || img.kind === 'transient' || (img.kind === 'image' && !img.complete) ? CACHE.degraded : CACHE.final
-    return await render(shareCard({ spec, image: img.kind === 'image' ? { dataUri: img.dataUri } : null }), cache)
+    return await render(shareCard({ spec, image: img.kind === 'image' ? { dataUri: img.dataUri } : null }), locale, cache)
   } catch (err) {
     console.error('[og] render failed', err)
     try {

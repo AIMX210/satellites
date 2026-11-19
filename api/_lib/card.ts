@@ -12,6 +12,9 @@
  * The words are the spec's, in its language (spec.locale): mono rows are uppercased here in that language (satori's
  * own text-transform knows no language: Turkish i must become İ), and the headline's blocks are set in the order the
  * language's message gives them. The default card takes its words from the card catalog in the same way.
+ *
+ * Every role names its face and then the face the web gives Cyrillic (fonts.ts FAMILY), so Ukrainian and Cyrillic
+ * place names are set as the app sets them.
  */
 import type { CSSProperties, ReactElement } from 'react'
 import { readFile } from 'node:fs/promises'
@@ -47,7 +50,7 @@ import { cardMessages } from './i18n/card/index.js'
 import { DEFAULT_LOCALE, LOCALE_INFO, type Locale } from './i18n/locales.js'
 import { isAccent, plain, type Rich } from './i18n/parts.js'
 import { bundled } from './bundled.js'
-import { FONT } from './fonts.js'
+import { FAMILY } from './fonts.js'
 import { WORDMARK_ASPECT, wordmarkSvg } from './wordmark.js'
 import { box, h, type Child } from './h.js'
 
@@ -66,7 +69,7 @@ function mono(locale: Locale, text: string, size: number, color: string, style: 
     {
       style: {
         display: 'flex',
-        fontFamily: FONT.mono,
+        fontFamily: FAMILY.mono,
         fontSize: size,
         letterSpacing: size * TRACK.label,
         textTransform: 'uppercase',
@@ -209,7 +212,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
           {
             style: {
               display: 'flex',
-              fontFamily: FONT.serif,
+              fontFamily: FAMILY.serif,
               fontStyle: 'italic',
               fontSize: P,
               lineHeight: HEAD.placeLH,
@@ -225,7 +228,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
           {
             style: {
               display: 'flex',
-              fontFamily: FONT.display,
+              fontFamily: FAMILY.display,
               fontWeight: 600,
               fontSize: S,
               lineHeight: HEAD.leadLH,
@@ -243,7 +246,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
     spec.sub
       ? h(
           'div',
-          { style: { display: 'flex', fontFamily: FONT.sans, fontSize: CARD_FS.sub, lineHeight: HEAD.subLH, marginTop: HEAD.subGap, color: C.bone2 } },
+          { style: { display: 'flex', fontFamily: FAMILY.sans, fontSize: CARD_FS.sub, lineHeight: HEAD.subLH, marginTop: HEAD.subGap, color: C.bone2 } },
           spec.sub,
         )
       : null,
@@ -265,7 +268,7 @@ function readouts(spec: CardSpec): ReactElement[] {
     out.push(
       abs(
         { left: x, top: PANEL.roValue[0], height: PANEL.roValue[1], alignItems: 'baseline', gap: r.unit ? 8 : 0 },
-        h('div', { style: { display: 'flex', fontFamily: FONT.mono, fontSize: size, letterSpacing: TRACK.readout * size, color: C.bone, lineHeight: 1 } }, r.value),
+        h('div', { style: { display: 'flex', fontFamily: FAMILY.mono, fontSize: size, letterSpacing: TRACK.readout * size, color: C.bone, lineHeight: 1 } }, r.value),
         r.unit ? mono(l, r.unit, CARD_FS.readoutUnit, C.bone3, { lineHeight: 1 }) : null,
       ),
     )
@@ -290,7 +293,7 @@ export interface ShareCardInput {
 
 export function shareCard({ spec, image }: ShareCardInput): ReactElement {
   return box(
-    { position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FONT.sans, color: C.bone },
+    { position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FAMILY.sans, color: C.bone },
     plate(spec.locale, spec.plate, image?.dataUri ?? null),
     abs({ left: PLATE, top: 0, width: 1, height: CARD_H, background: C.lineStrong }),
     row(PANEL.top, lockup(), spec.stamp ? mono(spec.locale, spec.stamp, CARD_FS.row, C.bone2) : undefined),
@@ -361,7 +364,7 @@ function heroLines(size: number, lines: Rich[]): ReactElement {
       'span',
       {
         style: {
-          fontFamily: serif ? FONT.serif : FONT.display,
+          fontFamily: serif ? FAMILY.serif : FAMILY.display,
           fontStyle: serif ? 'italic' : 'normal',
           fontWeight: serif ? 400 : 600,
           // Instrument Serif sits smaller than the condensed sans at the same size: match cap height.
@@ -406,7 +409,7 @@ export function defaultCard({ host, plateDataUri, locale = DEFAULT_LOCALE }: { h
     : abs({ left: 0, top: 0, width: PLATE, height: PLATE, background: C.ink1 }, svgPrims([...plateFrame([], undefined, C.bone3Mark), ...reticlePrims(CENTRE, CENTRE)], PLATE, 'd'))
 
   return box(
-    { position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FONT.sans, color: C.bone },
+    { position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FAMILY.sans, color: C.bone },
     left,
     abs({ left: PLATE, top: 0, width: 1, height: CARD_H, background: C.lineStrong }),
     row(PANEL.top, lockup(), mono(locale, m.lastWeek, CARD_FS.row, C.bone2)),
