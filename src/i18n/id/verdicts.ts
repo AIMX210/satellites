@@ -31,7 +31,8 @@ const verdicts: typeof en = {
     verb: 'memindai',
   },
   could: {
-    title: 'Mungkin mengarah ke sini',
+    // The no-break space keeps *ke sini* together where the tile wraps (phones: never *SINI* alone on a line).
+    title: 'Mungkin mengarah ke\u00a0sini',
     short: 'Mungkin',
     unit: passes,
     definition:

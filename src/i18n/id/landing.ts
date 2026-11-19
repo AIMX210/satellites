@@ -101,6 +101,6 @@ const landing: typeof en = {
   /** The place's name, then where it is (a chip without a "where" line says its name alone) */
   chipName: (label: string, sublabel: string) => (sublabel ? `${label}, ${sublabel}` : label),
   surprise: 'Pilih acak',
-  surpriseName: 'Pilih acak: tempat terkenal yang dipilih secara acak',
+  surpriseName: 'Pilih acak: satu tempat terkenal, dipilihkan untukmu',
 }
 export default landing

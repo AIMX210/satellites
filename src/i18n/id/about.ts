@@ -166,7 +166,7 @@ const about: typeof en = {
     passes: 'Telusuri lintasan',
     photos: 'Citra sebelumnya / berikutnya',
     expand: 'Perbesar citra',
-    zoom: 'Perbesar/perkecil (saat dibuka besar)',
+    zoom: 'Perbesar/perkecil di penampil',
     play: 'Putar atau jeda tayangan ulang',
     back: 'Kembali, atau tutup',
     help: 'Halaman ini',

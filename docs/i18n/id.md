@@ -417,8 +417,12 @@ The ladder reads image > covered > maybe > passed, in titles and lanes alike.
 - **Count unit:** *1 lintasan*, *31 lintasan*, tile `31 LINTASAN`. Never *lintasan-lintasan*.
 - **Lanes** must be 8 characters or fewer (the Timeline's 124 px lane column leaves about 58 px at 9.5 px mono;
   measured, `TERCAKUP` and `MELINTAS` are 55 px, the same as English `OVERHEAD`). The tooltip carries the definition.
-- *Kemungkinan besar* (most likely) sits clearly above *mungkin* (maybe). The title is 25 characters; the tile label
-  has about 29 in the two-column grid.
+- *Kemungkinan besar* (most likely) sits clearly above *mungkin* (maybe). The title is 25 characters and the results
+  tile holds about 23 at 1280 × 800 (English *COULD HAVE POINTED HERE* fills it), so it wraps to two lines there
+  (*KEMUNGKINAN / BESAR DIAWASI*). Accepted: every shorter form loses something (*Kemungkinan diawasi* and *Sangat
+  mungkin diawasi* share the could verdict's root, *Hampir pasti* overclaims, *Tampaknya* is a guess, not a measure).
+- The could title is written *Mungkin mengarah ke sini*: the no-break space keeps *ke sini* together where the tile
+  wraps (phones), so *SINI* never stands alone on a line.
 - **Prose keeps *bisa saja*** for "could have" (*Satelit ini bisa saja mengawasi Waterloo.*); *mungkin* is the verdict's
   name, and About quotes it as *“mungkin mengarah ke sini”*.
 - **About's second sentences** (`about.verdictMore`): imaged *Jika kami menampilkannya, itulah citra aslinya.* · likely
@@ -456,7 +460,7 @@ The ladder reads image > covered > maybe > passed, in titles and lanes alike.
 | Location access is blocked. Allow it in your browser settings, or search for a place. | *Akses lokasi diblokir. Izinkan di pengaturan browser, atau cari tempat.* |
 | Your position isn’t available right now. Search for a place instead. | *Posisimu tidak tersedia saat ini. Cari tempat saja.* |
 | Or try / Or click the globe to drop a pin / Drop a pin | *Atau coba* / *Atau klik bola dunia untuk menaruh pin* / *Taruh pin* |
-| Surprise me / Surprise me: a famous place picked at random | *Pilih acak* / *Pilih acak: tempat terkenal yang dipilih secara acak* |
+| Surprise me / Surprise me: a famous place picked at random | *Pilih acak* / *Pilih acak: satu tempat terkenal, dipilihkan untukmu* (never *acak* twice) |
 | Built by @armaangupt0 | *Dibuat oleh @armaangupt0* |
 
 **Results, notes and faults**
@@ -509,7 +513,7 @@ The ladder reads image > covered > maybe > passed, in titles and lanes alike.
 |---|---|
 | Photos (bar, viewer dialog) / Show photos | *Citra* / *Tampilkan citra* |
 | All / Detailed / Weather / Radar | *Semua* / *Rinci* / *Cuaca* / *Radar* |
-| Every photo, newest first after the closest look | *Semua citra, terbaru dulu setelah yang paling rinci* |
+| Every photo, newest first after the closest look | *Semua citra: yang paling rinci, lalu yang terbaru* (the same order as *paling rinci, lalu terbaru*) |
 | Sentinel-2 and Landsat, 10–30 m per pixel | *Sentinel-2 dan Landsat, 10–30 m per piksel* |
 | 12 this week / 12 that week | *Pekan ini: 12* / *Pekan itu: 12* (a number before *pekan* reads "12 weeks") |
 | Previous photo · Previous (←) / Photo 3 of 11 / All photos | *Citra sebelumnya* · *Sebelumnya (←)* / *Citra 3 dari 11* / *Semua citra* |
@@ -518,7 +522,7 @@ The ladder reads image > covered > maybe > passed, in titles and lanes alike.
 | This week’s passes saw mostly cloud / Here’s the last clear look | *Lintasan pekan ini sebagian besar hanya menangkap awan* / *Ini citra cerah terakhir* |
 | Clouded · 25% / Clouded over · 25% / Cloud at your spot | *Berawan · 25%* / *Tertutup awan · 25%* / *Awan di titikmu* |
 | Replay / Replay this pass / View / Share this pass | *Putar ulang* / *Putar ulang lintasan ini* / *Lihat* / *Bagikan lintasan ini* |
-| Acquiring / No image returned / Retry | *Merekam* / *Tidak ada citra yang dikirim* / *Coba lagi* |
+| Acquiring / No image returned / Retry | *Merekam* / *Citra tidak terkirim* / *Coba lagi* |
 | Still rendering. Large scenes can take 10 s or more. | *Masih diproses. Citra besar bisa butuh 10 detik atau lebih.* |
 | Line 0412 → 1024 / Awaiting pass / Awaiting scan | `BARIS 0412 → 1024` / *Menunggu lintasan* / *Menunggu pindaian* |
 | N (north arrow) | `U` |
@@ -584,7 +588,7 @@ The ladder reads image > covered > maybe > passed, in titles and lanes alike.
   *Jenis huruf*; *Citra dari GIBS milik NASA, bagian dari EOSDIS. GOES melalui NOAA dan CIRA, Himawari melalui JMA.*
   Product, agency, licence and people's names stay as they are.
 - **Keyboard:** *Cari tempat* · *Pindah di antara saran* · *Pilih* · *Telusuri lintasan* · *Citra sebelumnya /
-  berikutnya* · *Perbesar citra* · *Perbesar/perkecil (saat dibuka besar)* · *Putar atau jeda tayangan ulang* ·
+  berikutnya* · *Perbesar citra* · *Perbesar/perkecil di penampil* · *Putar atau jeda tayangan ulang* ·
   *Kembali, atau tutup* · *Halaman ini*. Key caps: *Enter*, *Spasi*, *Esc*.
 - **Foot:** *Dibuat oleh @armaangupt0* · *Dibuat dari data publik. Tidak satu pun citra ini kami rekam sendiri.*
 

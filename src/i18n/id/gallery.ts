@@ -27,7 +27,7 @@ const gallery: typeof en = {
   filterLabel: 'Tampilkan citra',
   filter: { all: 'Semua', detailed: 'Rinci', weather: 'Cuaca', radar: 'Radar' },
   filterTitle: {
-    all: 'Semua citra, terbaru dulu setelah yang paling rinci',
+    all: 'Semua citra: yang paling rinci, lalu yang terbaru',
     detailed: 'Sentinel-2 dan Landsat, 10–30 m per piksel',
     weather: 'Mosaik cuaca harian, 250 m per piksel atau lebih kasar',
     radar: 'Citra radar Sentinel-1, 20 m per piksel: menembus awan, siang atau malam',
@@ -78,7 +78,7 @@ const gallery: typeof en = {
   // ── a photo frame ────────────────────────────────────────────────────────────────────────
   photoAlt: (sat: string, place: string) => `Citra ${sat} dari ${place}. Tempat itu ada di tengah.`,
   acquiring: 'Merekam',
-  noImage: 'Tidak ada citra yang dikirim',
+  noImage: 'Citra tidak terkirim',
   retry: 'Coba lagi',
   scaleKm: (km: number) => `${km >= 1 ? f.int(km) : f.dec(km, 1)} km`,
   // Utara, as Indonesian maps mark it (id.md §6).
@@ -88,7 +88,7 @@ const gallery: typeof en = {
 
   // ── a photo developing (the pushbroom reveal) ────────────────────────────────────────────
   stillRendering: 'Masih diproses. Citra besar bisa butuh 10 detik atau lebih.',
-  cropMissing: 'Arsip tidak mengirim potongan citra ini. Mungkin arsip sedang sibuk; citra utuhnya tetap ada.',
+  cropMissing: 'Arsip tidak mengirim potongan ini. Mungkin sedang sibuk; citra utuhnya tetap ada.',
   scanLine: (line: string, lines: string): Rich => ['Baris ', strong(line), ` → ${lines}`],
   awaiting: { pass: 'Menunggu lintasan', scan: 'Menunggu pindaian' },
 }
