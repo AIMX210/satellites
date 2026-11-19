@@ -55,7 +55,8 @@ const L = (
 export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
   en: L('en', 'English', 'English', 'latin', ['one', 'other']),
   es: L('es', 'Español', 'Spanish', 'latin', ['one', 'many', 'other'], { group: '\u00a0' }),
-  fr: L('fr', 'Français', 'French', 'latin', ['one', 'many', 'other'], { percentGap: true }),
+  // Groups with a no-break space: Intl's narrow one (U+202F) is 0.1 em in Instrument Sans, so 2 330 read as 2330.
+  fr: L('fr', 'Français', 'French', 'latin', ['one', 'many', 'other'], { percentGap: true, group: '\u00a0' }),
   de: L('de', 'Deutsch', 'German', 'latin', ['one', 'other'], { percentGap: true }),
   'pt-BR': L('pt-BR', 'Português', 'Portuguese', 'latin', ['one', 'many', 'other']),
   it: L('it', 'Italiano', 'Italian', 'latin', ['one', 'many', 'other']),

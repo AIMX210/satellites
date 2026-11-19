@@ -99,11 +99,12 @@ describe('formatting', () => {
     expect(fmt('de').dec(7.456, 2)).toBe('7,46')
     expect(fmt('ar').int(1715)).toBe('1,715')
     expect(fmt('en').list(['Umbra', 'Capella', '7 other radar satellites'])).toBe('Umbra, Capella and 7 other radar satellites')
-    // Spanish groups with a no-break space from 5 digits (its style guide); French keeps Intl's narrow no-break space.
+    // Spanish groups with a no-break space from 5 digits (its style guide).
     expect(fmt('es').int(35778)).toBe('35\u00a0778')
     expect(fmt('es').int(1715)).toBe('1715')
     expect(fmt('es').dec(12345.678, 2)).toBe('12\u00a0345,68')
-    expect(fmt('fr').int(35778)).toBe('35\u202f778')
+    // French groups with a no-break space too: the sans draws U+202F at 0.1 em, so 2 330 read as 2330.
+    expect(fmt('fr').int(35778)).toBe('35\u00a0778')
   })
   it('spaces a percent sign where the language does', () => {
     expect(numText({ n: '25', u: '%' })).toBe('25%')
