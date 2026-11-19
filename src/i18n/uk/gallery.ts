@@ -97,7 +97,7 @@ const gallery: typeof en = {
 
   // ── a photo developing (the pushbroom reveal) ────────────────────────────────────────────
   stillRendering: 'Ще готується. Для великого кадру це може тривати 10\u00a0с і довше.',
-  cropMissing: 'Архів не надіслав цей фрагмент. Можливо, він зараз перевантажений. Сам знімок існує.',
+  cropMissing: 'Архів не надіслав фрагмент, можливо, через навантаження. Сам знімок існує.',
   scanLine: (line: string, lines: string): Rich => ['Рядок ', strong(line), ` → ${lines}`],
   awaiting: { pass: 'Очікування прольоту', scan: 'Очікування сканування' },
 }

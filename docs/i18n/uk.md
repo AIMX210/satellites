@@ -326,8 +326,9 @@ past tense that would need the satellite's gender.
 - **Могли дивитися сюди**: the impersonal plural names no agent, which is the point (the operator may or may not have
   aimed the camera), and it keeps the product verb. «Навести» is banned (§8).
 - The overhead lane is **У НЕБІ**: it fits the lane and matches the definition («Проліт твоїм небом»).
-- About's longer words: imaged «Якщо ми його показуємо, це справжній знімок.»; likely «Знімок ще не оприлюднили або
-  відкинули через хмари.»; could «Дізнатися, чи так було насправді, неможливо.»
+- About's longer words: imaged «Якщо ми його показуємо, це справжній знімок.»; likely «Можливо, він ще не вийшов або
+  його відкинули через хмари.» (not «Знімок ще не оприлюднили…»: it echoed the definition's «Знімка не оприлюднено»
+  word for word, right before it); could «Дізнатися, чи так було насправді, неможливо.»
 
 ### 3.7 Share card, share page and post
 
