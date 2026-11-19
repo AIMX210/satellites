@@ -3,9 +3,10 @@
  * the hero, the place search, "Use my location", the example chips and the maker's credit.
  *
  * Why it reads this way: the hero and the sub line are the guide's final lines, word for word (這星期 / 有東西 /
- * 注視過*你*。: the accent on 你 alone, no comma at the display's line breaks, 注視過 here and only here). Labels and
- * buttons are verb + object or a bare noun with no 請; 請 appears once, in `locateErrors.denied`, the one sentence that
- * asks the reader to act outside the app, and every other failure offers the search as a possibility (可改為搜尋地點).
+ * 注視過*你*。: the accent on 你 alone, no comma at the display's line breaks, and 注視過, the past report the results
+ * headline and the verdicts also say, so the hero says what the results say). Labels and buttons are verb + object or
+ * a bare noun with no 請; 請 appears once, in `locateErrors.denied`, the one sentence that asks the reader to act
+ * outside the app, and every other failure offers the search as a possibility (可改為搜尋地點).
  * A number and its unit stay together: a plain space in one-line mono labels, U+00A0 where the English ties them in
  * running text (the sub line's `7 天`, the locating note's `10 km`). The kicker's range is built from the UTC date
  * fields (`2026年11月1日 → 8日 UTC`), never Intl's numeric dates, which read as different days in Taipei and Hong Kong.

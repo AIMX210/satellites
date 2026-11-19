@@ -612,7 +612,7 @@ Counters (量詞) are given with each noun. HK forms are in §1.4.
 | satellite | 衛星 | Counter 顆 (`256 顆衛星`). Never 人造衛星 (long), 枚 (literary). Unknown: 一顆衛星; as a subject 有一顆衛星. |
 | pass (noun) | 過境 | Counter 次 (`31 次過境`). At airports 過境 is transit: always in a satellite context. |
 | to pass, to cross | 經過, 飛過 | 飛越 for "fly over" in compact copy and the overhead card. |
-| to watch (product verb) | 注視 | 注視過 default; 注視過 hero only; 注視了 post only. Never 監視, 監控, 盯, 凝視 (too literary), 看見 (claims success), 拍攝 / 拍下 as the verdict. |
+| to watch (product verb) | 注視 | 注視過 everywhere, the hero and its hook included; 注視了 post only. Never 監視, 監控, 盯, 凝視 (too literary), 看見 (claims success), 拍攝 / 拍下 as the verdict. |
 | likely watched | 很可能注視過 | Lane 很可能. |
 | could have pointed here | 或許曾對準這裡 | Lane 或許. |
 | passed overhead | 從上空經過 | Lane 上空. |
@@ -1259,7 +1259,7 @@ watching.
 ### 9.2 Reviewer's checklist (run it on every string)
 
 1. Address is 你 (or no pronoun). No 您, 妳, 閣下. 請 only for the two outside-the-app strings.
-2. The product verb is 注視: 注視過; 注視過 only in the hero and its hook; 注視了 only in the post. No 監視, 監控, 看見,
+2. The product verb is 注視: 注視過 everywhere, the hero and its hook included; 注視了 only in the post. No 監視, 監控, 看見,
    拍攝 as the verdict.
 3. "this week" is 這星期, "that week" 那個星期.
 4. Every count is `[NUM]` + the right counter + noun: 顆衛星, 張影像, 次過境, 個物體, 項, 條軌道. One form; a zero case only

@@ -101,7 +101,8 @@ const timelapse: typeof en = {
   rendering: (pct: number) => `書き出し中 ${pad2(pct)}%`,
   videoFailed: '作成に失敗',
   saveVideo: '動画を保存',
-  noH264: 'このブラウザにはH.264エンコーダーがない。ファイルはChromeとFirefoxで再生できる。',
+  /** A tooltip: its last sentence takes no 。, like every other tooltip (gallery.filterTitle, results.geo.infraredTitle) */
+  noH264: 'このブラウザにはH.264エンコーダーがない。ファイルはChromeとFirefoxで再生できる',
   fileNamePlace: 'place',
 }
 

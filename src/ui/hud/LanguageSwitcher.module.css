@@ -51,7 +51,10 @@
   }
 }
 
-/* A hairline between "How this works" and the language. */
+/* A hairline between "How this works" and the language (none when the language is alone on the line). */
+.trigger:first-child .rule {
+  display: none;
+}
 .rule {
   display: inline-block;
   width: 1px;

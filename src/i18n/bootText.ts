@@ -8,6 +8,8 @@
  * A locale missing here keeps the English of index.html.
  */
 import type { Locale } from '../../api/_lib/i18n/locales.ts'
+import ja from './ja/boot.ts'
+import zhHant from './zh-Hant/boot.ts'
 
 export interface BootText {
   /** aria-label of the loading screen: "Loading Watched" */
@@ -20,4 +22,6 @@ export interface BootText {
 
 export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   en: { loading: 'Loading Watched', slow: 'Slow connection, still loading', title: 'Watched · Something watched you this week' },
+  ja,
+  'zh-Hant': zhHant,
 }
