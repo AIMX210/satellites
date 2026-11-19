@@ -50,7 +50,7 @@ const share: typeof en = {
   copyLink: 'Copiar link',
   copied: 'Copiado',
   postToX: 'Postar no X',
-  copyImage: 'Copiar imagem',
+  copyImage: 'Copiar PNG',
   savePng: 'Salvar PNG',
   tryAgain: 'Refazer PNG',
 
@@ -73,7 +73,7 @@ const share: typeof en = {
     likely: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
       `${sat} cobriu ${place} a ${km(altitudeKm)} de altitude ${when(w)}. O ponto ficou dentro da faixa da câmera.`,
     could: (sat: string, place: string, w: PostWhen) =>
-      `${sat} teve ${place} ao alcance ${when(w)}. Pode ter apontado para cá. O operador não diz se apontou.`,
+      `${sat} teve ${place} ao alcance ${when(w)}. Pode ter apontado aqui. O operador não diz se apontou.`,
     overhead: (sat: string, place: string, altitudeKm: number, w: PostWhen) => `${sat} sobrevoou ${place} a ${km(altitudeKm)} de altitude ${when(w)}.`,
   },
   // "também" after "você": "you too", not "also watched" (§3.6).

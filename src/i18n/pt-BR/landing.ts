@@ -10,7 +10,7 @@
  * puts in `one`, takes the plural. The kicker's dates come from Intl's parts (never a month table), periods stripped
  * and no *de* (*1 → 8 nov 2026 UTC*), with the arrow every language uses.
  *
- * Buttons and placeholders are infinitives with no pronoun (*Buscar um lugar*, *Usar minha localização*, *Marcar
+ * Buttons and placeholders are infinitives with no pronoun (*Buscar um lugar*, *Usar meu local*, *Marcar
  * ponto*); instructions inside sentences are the imperative of *você* (*Busque*, *Tente*, *Permita*); the one fixed
  * exception is *Surpreenda-me*. Status lines while something runs are gerunds (*Buscando*, *Localizando…*). Faults say
  * what failed, then the way out, with no apology. The example coordinates in `searchDown` use the dot notation and an
@@ -70,7 +70,7 @@ const landing: typeof en = {
   suggestions: 'Lugares',
 
   // ── Use my location ──────────────────────────────────────────────────────────────────────
-  useMyLocation: 'Usar minha localização',
+  useMyLocation: 'Usar meu local',
   locateMe: 'Localizar',
   nearMe: 'Perto de mim',
   locating: 'Localizando…',

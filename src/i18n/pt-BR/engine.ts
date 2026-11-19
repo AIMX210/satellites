@@ -7,7 +7,7 @@
  * the row's 40 characters (the longest, *Verificando mosaicos da NASA · 12 / 35*, is 38). The archives are *consultados*,
  * never *buscados* (which would read as looking for the satellites). The footnotes say plainly what failed and what it
  * means for the numbers, in the impersonal *Não foi possível…*, without apology. They quote the verdict titles as the
- * results write them (*fica em “Observou”*, *ficam em “Provavelmente observou”*), read from the 'verdicts' namespace so
+ * results write them (*fica em “Observou”*, *ficam em “Deve ter observado”*), read from the 'verdicts' namespace so
  * the two never drift; a pass is never said to be *observada* (a pass is not what was watched). Every count goes
  * through fmt('pt-BR') and pt-BR's plural forms, with 0 given the plural in code (§5). Proper names stay as they are,
  * with their article in static text: *o NASA GIBS*, *o VIIRS*, *o Sentinel-2*, *o Landsat*, *o Earth Search*.
@@ -22,7 +22,7 @@ const f = fmt('pt-BR')
 const pl = (n: number, one: string, other: string) => (n === 0 ? other : f.plural(n, { one, many: other, other }))
 /** "16.912 objetos", "1 passagem", "0 imagens": a grouped count and its noun */
 const count = (n: number, one: string, other: string) => `${f.int(n)} ${pl(n, one, other)}`
-/** The verdict titles, quoted: “Observou”, “Provavelmente observou” */
+/** The verdict titles, quoted: “Observou”, “Deve ter observado” */
 const imaged = `“${verdicts.imaged.title}”`
 const likely = `“${verdicts.likely.title}”`
 

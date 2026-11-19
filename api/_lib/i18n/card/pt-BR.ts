@@ -190,7 +190,7 @@ const ptBR: CardMessages = {
   },
   lookDay: (ms: number, timeZone: string) => dayMonth(ms, timeZone),
   aSatellite: 'Um satélite',
-  invite: 'Veja o que observou você',
+  invite: 'Algo observou você também',
 
   // ── The default card ──────────────────────────────────────────────────────────────────────────────────────────────
   hero: [['Algo'], ['observou ', accent('você')], ['esta semana.']] as Rich[],
@@ -206,13 +206,13 @@ const ptBR: CardMessages = {
       'Busque qualquer lugar da Terra. Veja todos os satélites que passaram sobre ele nos últimos 7 dias, e as imagens reais que captaram.',
     placeTitle: (place: string) => `Quais satélites observaram ${place} esta semana`,
     placeDescription: (place: string) =>
-      `Todos os satélites que passaram sobre ${place} nos últimos 7 dias, e as imagens reais que captaram. O que observou você esta semana?`,
+      `Todos os satélites que passaram sobre ${place} nos últimos 7 dias, e as imagens reais que captaram. Quais satélites observaram você esta semana?`,
     opening: ['Abrindo o ', accent('Watched')] as Rich,
   },
   crossed: (o: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) =>
     `${subject(o.sat)} passou${o.altitudeKm !== undefined ? ` a ${f.int(o.altitudeKm)} km de altitude` : ''} sobre ${o.place}${at(o.when)}${moving(o.heading)}.`,
   withinView: (o: PassFacts) => `${subject(o.sat)} teve ${o.place} ao alcance${at(o.when)}${moving(o.heading)}.`,
-  couldHave: 'Pode ter apontado para cá. O operador não diz se apontou.',
+  couldHave: 'Pode ter apontado aqui. O operador não diz se apontou.',
   straightDown: 'Olhava direto para baixo.',
   offNadir: (deg: number) => `Olhava ${f.dec(deg, 1)}° fora da vertical.`,
   cloudCover: (pct: number) => `Cobertura de nuvens: ${f.int(pct)}%.`,
@@ -222,7 +222,7 @@ const ptBR: CardMessages = {
     lastClear: (sat: SatName) => `A última vista limpa é ${ofSat(sat)}.`,
     first: (sat: SatName) => `A primeira imagem é ${ofSat(sat)}.`,
   },
-  question: 'O que observou você esta semana?',
+  question: 'Quais satélites observaram você esta semana?',
   cardAlt: {
     withPhoto: (sat: SatName) => `A imagem de compartilhamento, com a vista mais próxima da semana, ${ofSat(sat)}.`,
     plain: 'A imagem de compartilhamento.',

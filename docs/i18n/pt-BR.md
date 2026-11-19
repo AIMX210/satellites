@@ -37,7 +37,7 @@ names stay as the gazetteer gives them: a table of Portuguese exonyms would add 
 | Hero (landing and default share card) | `Algo` / `observou *você*` / `esta semana.` |
 | Sub line | *Busque qualquer lugar da Terra. Veja todos os satélites que passaram sobre ele nos últimos 7 dias, e as imagens reais que captaram.* |
 | Pass (the unit) | **passagem** (f.), *passagens*. Never passe, passo, trânsito. |
-| Verdict titles | **Observou** · **Provavelmente observou** · **Pode ter apontado para cá** · **Sobrevoou** |
+| Verdict titles | **Observou** · **Deve ter observado** · **Pode ter apontado aqui** · **Sobrevoou** (each ≤ 23 characters, §7) |
 | Lane labels | `IMAGEM` · `PROVÁVEL` · `POSSÍVEL` · `SOBREVOO` |
 | Verdict verbs (headline, post, row) | *observou* · *cobriu* · *teve … ao alcance* (prose: *esteve ao alcance*) · *sobrevoou* |
 | *varrer* | Only with the Earth, the disc, a swath or the scan line as object. Never with a place name or *o local*. |
@@ -68,7 +68,7 @@ names stay as the gazetteer gives them: a table of Portuguese exonyms would add 
 |---|---|---|---|
 | Display headlines (hero, results headline, About title, share card headline) | Declarative statement, sentence case, no imperative, no exclamation. The reader appears as **você** (the object, stressable). | *Algo observou você esta semana.* | *Você* is the one unmarked written pronoun of Brazil and the only one that can carry the serif accent. |
 | Sentences and prose (results, pass paragraph, notes, footnotes, post text) | **você** + third-person verbs. The product speaks as *nós* through the verb ending only (*calculamos, não temos como saber*), never the pronoun *nós* and never *a gente*. Preterite for dated facts, imperfect for states during a pass, present for definitions. | *Não temos como saber se observou.* | Second person, plain, factual. |
-| UI labels, buttons, placeholders, aria names of actions | **Infinitive**, no pronoun, no article where a label can drop it. | *Compartilhar*, *Baixar imagem*, *Usar minha localização*, *Ver seu lugar* | The pt-BR platform convention (system dialogs, Google, Apple, Microsoft); neutral in register and natural in Portugal. |
+| UI labels, buttons, placeholders, aria names of actions | **Infinitive**, no pronoun, no article where a label can drop it. | *Compartilhar*, *Baixar imagem*, *Usar meu local*, *Ver seu lugar* | The pt-BR platform convention (system dialogs, Google, Apple, Microsoft); neutral in register and natural in Portugal. |
 | Mono caps labels | Noun or noun phrase, no article, no verb (unless the label is an action). Stored in sentence case. | *Altitude*, *Fora do nadir*, *02 / Passagens* | Instrument labels name a quantity. |
 | Status lines while something runs | Gerund + ellipsis: *Carregando…*, *Baixando…*, *Localizando…*, *Captando…* | *Criando link…* | Brazilian; no neutral form stays short (§1.4). |
 | Fault notices | Label **Falha**. What failed in the impersonal *Não foi possível…*; what to do in the imperative of *você*. No apology, no *Ops!*, no *Desculpe*, no *por favor*. | *Não foi possível carregar o catálogo de órbitas. Verifique a conexão e tente de novo.* | An instrument reports a fault; it does not apologise. |
@@ -248,7 +248,7 @@ Rejected: *Digite qualquer lugar…* (you type a name, not a place); *Escolha…
 (*última semana* is not "the last 7 days", *fotos que tiraram* is snapshot slang and miscounts radar).
 
 The share page's description is the same sentence. `card.page.placeDescription(place)`: *Todos os satélites que
-passaram sobre {place} nos últimos 7 dias, e as imagens reais que captaram. O que observou você esta semana?*
+passaram sobre {place} nos últimos 7 dias, e as imagens reais que captaram. Quais satélites observaram você esta semana?*
 
 ### 3.3 Results headline, second line, reasons and footnotes
 
@@ -363,7 +363,7 @@ looking straight down. Cloud cover across the scene: 25%.*
 | likely.notPublished | As imagens deste satélite alimentam a previsão do tempo; não são publicadas como imagens que possamos mostrar. |
 | could.withinView, offset | O satélite WorldView Legion 4 esteve ao alcance às [10:52 EST], [61 km] a oeste do local. |
 | could.withinView, overhead | O satélite WorldView Legion 4 esteve ao alcance às [10:52 EST], na vertical do local. |
-| could.insideSwath | A faixa de [24 km] cobriu Waterloo. O operador não publica onde fez imagens, por isso não temos como saber se observou este lugar. |
+| could.insideSwath | A faixa de [24 km] cobriu Waterloo. O operador não publica onde captou imagens, por isso não temos como saber se observou este lugar. |
 | could.camera, deg | Apontando [12,3°] fora da vertical, pode ter observado Waterloo. Não temos como saber se observou. |
 | could.camera, none | Olhando direto para baixo, pode ter observado Waterloo. Não temos como saber se observou. |
 | could.radar | O radar vê através das nuvens e do escuro. Apontando [32,1°] para o lado, pode ter mapeado Waterloo. Não temos como saber se mapeou. / (open archive) Não encontramos nenhuma imagem publicada desta passagem. / (no deg) …escuro. Pode ter mapeado Waterloo. … |
@@ -389,12 +389,16 @@ Notes:
 Titles are **verb phrases with the satellite as unstated subject** (Portuguese drops subjects), so nothing agrees in
 gender: *observado/observada* would have to agree with something, and *a passagem observada* is false (the pass is
 not what was watched).
+*Deve ter observado* is a compound perfect (*ter* + invariable participle), so it agrees with nothing either, and
+*deve ter* is the Brazilian inference "likely": it pairs with *Pode ter apontado aqui* as likely pairs with could.
+*Provavelmente observou* (22) did not fit the summary tile; *Pode ter apontado para cá* (25) wrapped (§7). Prose keeps
+the same words as the title (*Pode ter apontado aqui.* in the post, the card page and About).
 
 | verdict | title | lane (≤ 8) | unit | definition | verb (row, headline) |
 |---|---|---|---|---|---|
 | imaged | **Observou** | Imagem | passagem / passagens | Há uma imagem real deste lugar em um arquivo público. | observou |
-| likely | **Provavelmente observou** | Provável | passagem / passagens | A faixa de uma câmera fixa cobriu este lugar. Nenhuma imagem foi publicada. | cobriu |
-| could | **Pode ter apontado para cá** | Possível | passagem / passagens | Uma câmera orientável ou privada estava ao alcance. O operador não diz se ela olhou. | esteve ao alcance (headline: *teve … ao alcance*) |
+| likely | **Deve ter observado** | Provável | passagem / passagens | A faixa de uma câmera fixa cobriu este lugar. Nenhuma imagem foi publicada. | cobriu |
+| could | **Pode ter apontado aqui** | Possível | passagem / passagens | Uma câmera orientável ou privada estava ao alcance. O operador não diz se ela olhou. | esteve ao alcance (headline: *teve … ao alcance*) |
 | overhead | **Sobrevoou** | Sobrevoo | passagem / passagens | Cruzou o seu céu. Estações espaciais e todo o resto. | sobrevoou |
 
 - **Lane *Imagem*, not *Foto*** (the card's `lane.imaged` too): the lane holds radar images and weather mosaics as
@@ -410,7 +414,7 @@ not what was watched).
 - About's next sentence after each definition (`about.verdictMore`): *Se aparece aqui, é a imagem real.* / *A imagem
   ainda não é pública, ou foi descartada por causa das nuvens.* / *Não temos como saber se realmente olhou.* / (none).
 - Engine footnotes quote the group titles in quotation marks: *…por isso essa passagem fica em “Observou”*,
-  *…essas passagens ficam em “Provavelmente observou”* (§3.7).
+  *…essas passagens ficam em “Deve ter observado”* (§3.7).
 - Timeline tooltip kinds (`results.timeline.markKind`): *arquivo aberto · ◇*, *comercial · □*, *radar · ▣*,
   *meteorológico · ○*, *com tripulação · ✛*, *outro*; marks *Mosaico diário, 375 m · ●*, *Imagem de radar, 20 m · ◆*.
 
@@ -440,7 +444,7 @@ reads *teve Rio Grande do… ao alcance* (no full stop).
 | imaged | Sentinel-2C observou Waterloo a 786 km de altitude no domingo, 1º de novembro, às 11:21, hora local. 10 m por pixel; esta é a imagem real. (no pixel: *…hora local. Esta é a imagem real.*) |
 | clouded | Sentinel-2C observou Waterloo a 786 km de altitude no domingo, 1º de novembro, às 11:21, hora local. Só viu nuvens. |
 | likely | Sentinel-2C cobriu Waterloo a 795 km de altitude no domingo, 1º de novembro, às 11:21, hora local. O ponto ficou dentro da faixa da câmera. |
-| could | WorldView Legion 4 teve Waterloo ao alcance no domingo, 1º de novembro, às 11:21, hora local. Pode ter apontado para cá. O operador não diz se apontou. |
+| could | WorldView Legion 4 teve Waterloo ao alcance no domingo, 1º de novembro, às 11:21, hora local. Pode ter apontado aqui. O operador não diz se apontou. |
 | overhead | ISS (ZARYA) sobrevoou Waterloo a 420 km de altitude no domingo, 1º de novembro, às 21:03, hora local. |
 | hookWatched | Algo observou você também esta semana. |
 | hookPassed | O que passou sobre você esta semana? |
@@ -466,7 +470,7 @@ reads *teve Rio Grande do… ao alcance* (no full stop).
 | acquiring · noPublicPhoto · noPhoto | *Captando…* · *Nenhuma imagem pública esta semana* · *Nenhuma imagem para mostrar* |
 | look: closest · lastClear · clouded · radar; lookDay | *Vista mais próxima* · *Última vista limpa* · *Encoberto* · *Radar*; *3 nov* |
 | aSatellite (a chip label alone) | *Um satélite* |
-| invite / enterAnyPlace | *Veja o que observou você* / *Busque um lugar da Terra* |
+| invite / enterAnyPlace | *Algo observou você também* / *Busque um lugar da Terra* |
 | defaultPlace / defaultAlt | *Palm Jumeirah* / *Foto real do satélite Sentinel-2: Palm Jumeirah, Dubai, ao lado da frase: Algo observou você esta semana. Busque um lugar da Terra.* |
 | decimal | `f.dec(n, digits)` (*7,46*) |
 
@@ -475,11 +479,11 @@ leaves (*Distância mín.* 133 px and *Pixel do mosaico* 152 px do not, safely).
 15 px beside `www.watched.earth` (152 px) in 466 px: *Busque um lugar da Terra* is 263 px (= English), *Busque
 qualquer lugar da Terra* would be 328 px and overflow.
 
-**Share page** (`card.page`, `crossed`, …): title *Algo observou você esta semana.*; `placeTitle` *O que observou
-{place} esta semana*; `question` *O que observou você esta semana?*; `opening` `['Abrindo o ', accent('Watched')]`;
+**Share page** (`card.page`, `crossed`, …): title *Algo observou você esta semana.*; `placeTitle` *Quais satélites
+observaram {place} esta semana*; `question` *Quais satélites observaram você esta semana?*; `opening` `['Abrindo o ', accent('Watched')]`;
 `crossed` *{sat} passou a 795 km de altitude sobre {place} às 11:21 EST, no domingo, 1º de novembro de 2026, rumo ao
 sul.* (no altitude: *{sat} passou sobre {place}…*; nameless: *Um satélite passou…*); `withinView` *{sat} teve {place}
-ao alcance às 11:21 EST, no domingo, 1º de novembro de 2026, rumo ao sul.*; `couldHave` *Pode ter apontado para cá. O
+ao alcance às 11:21 EST, no domingo, 1º de novembro de 2026, rumo ao sul.*; `couldHave` *Pode ter apontado aqui. O
 operador não diz se apontou.*; `straightDown` *Olhava direto para baixo.*; `offNadir` *Olhava 5,3° fora da vertical.*;
 `cloudCover` *Cobertura de nuvens: 25%.*; `inSwath(place)` *A faixa da câmera cobriu {place}.*; `bestFrom` *A vista
 mais próxima é do satélite {sat}.* / *A última vista limpa é do satélite {sat}.* / *A primeira imagem é do satélite
@@ -494,7 +498,7 @@ UTC*, *29 dez 2026 → 5 jan 2027 UTC*, built from `formatToParts`, never by edi
 *Nenhum resultado*; `searchHint` *Nome, endereço ou lat, lon*; `go` *Mostrar o que passou sobre este lugar*;
 `searchDown` *A busca de lugares não está respondendo. Coordenadas como 43.47, -80.54 ainda funcionam.* (ASCII
 hyphen-minus: the only form the field parses, §6); `nothingMatches` *Nenhum resultado para “{query}”. Tente uma cidade,
-um ponto turístico ou coordenadas.*; *Usar minha localização* / *Localizar* / *Perto de mim* / *Localizando…*;
+um ponto turístico ou coordenadas.*; *Usar meu local* / *Localizar* / *Perto de mim* / *Localizando…*;
 *Cancelar*, *Cancelar localização*; *Obtendo a posição*, *Identificando o lugar*, elapsed *04 s*; `locatingNote` *A sua
 posição vai para o geocodificador Photon para dar nome ao lugar. Guardamos apenas uma célula de cerca de 10 km.*;
 label *Localização*; *Fechar*; *Ou experimente*; *Ou clique no globo para marcar um ponto*; *Lugares de exemplo*;
@@ -535,7 +539,7 @@ mais recentes, por isso os horários podem errar por alguns minutos.* · gibsUnc
 confirmar 3 imagens VIIRS; o VIIRS capta o planeta inteiro todos os dias, por isso essas passagens ficam em
 “Observou”.* (one: *1 imagem VIIRS… essa passagem fica…*) · *O NASA GIBS não respondeu a tempo, por isso as imagens
 de satélites meteorológicos não aparecem.* · gibsSlowSome *O NASA GIBS não enviou a tempo 3 de 35 imagens de
-satélites meteorológicos; essas passagens ficam em “Provavelmente observou”.* (`missing` 1: *1 de 35 imagens…; essa
+satélites meteorológicos; essas passagens ficam em “Deve ter observado”.* (`missing` 1: *1 de 35 imagens…; essa
 passagem fica…*) · *Não foi possível acessar o NASA GIBS, por isso as imagens de satélites meteorológicos não
 aparecem.* · gibsDownSome *O NASA GIBS não retornou 3 de 35 imagens…* (as gibsSlowSome).
 
@@ -678,7 +682,7 @@ Gender: (m.) masculine, (f.) feminine. "Never" lists the wrong words translators
 | Share | Compartilhar | Never *Partilhar*, *Enviar*. |
 | Share this pass / image / week | Compartilhar esta passagem / esta imagem / esta semana | Lightbox *Share this photo* → *Compartilhar esta imagem*. |
 | Share image / Preparing image… | Compartilhar imagem / Preparando imagem… | |
-| Copy link / Copy image / Copied | Copiar link / Copiar imagem / Copiado | One `copied` key for both: *Copiado* (generic confirmation). |
+| Copy link / Copy image / Copied | Copiar link / Copiar PNG / Copiado | One `copied` key for both: *Copiado* (generic confirmation). *Copiar imagem* (13) overflowed its third of the row on a 390 px phone; *Copiar PNG* (10) is as long as *Copy image*, names what is copied and pairs with *Salvar PNG*. |
 | Post to X | Postar no X | X's own pt-BR verb. |
 | Save PNG / Try again | Salvar PNG / Tentar de novo | |
 | Link / Post (48 px labels) | Link / Texto | |
@@ -692,15 +696,15 @@ Gender: (m.) masculine, (f.) feminine. "Never" lists the wrong words translators
 | Change / New search / Cancel / Close / Back / Dismiss | Trocar / Nova busca / Cancelar / Fechar / Voltar / Fechar | |
 | Recent | Recentes | |
 | All passes / Previous / Next pass of this kind | Todas as passagens / Passagem anterior deste tipo / Próxima passagem deste tipo | aria *Passagem 3 de 31 deste tipo*. |
-| Use my location / Locate me / Near me / Locating… | Usar minha localização / Localizar / Perto de mim / Localizando… | |
+| Use my location / Locate me / Near me / Locating… | Usar meu local / Localizar / Perto de mim / Localizando… | *Usar minha localização* (22) squeezed the field beside it until *Buscar um lugar* was cut to *Buscar um lug…* at 1280 px and *Buscar um l…* at 1024 px; *Usar meu local* (14, Google's and Apple's *local*) leaves the placeholder whole. |
 | Surprise me / Or try | Surpreenda-me / Ou experimente | Never *Ou tente* (implies difficulty). |
 | Drop a pin / Dropped pin | Marcar ponto / Ponto marcado | Never *soltar um alfinete*. |
 | Pin card: naming / no name / move hint | Identificando o local / Sem nome por perto / Segure o globo para mover o ponto | 156 px; 320 px phone. |
 | Pin spoken | Ponto marcado em 43.4723°N 80.5449°W. / Ponto marcado: {place}. Pressione Enter ou a seta para ver o que passou sobre ele. | *ele* = *ponto*. |
 | Search here (Enter) / Remove the pin (Esc) | Buscar aqui (Enter) / Remover o ponto (Esc) | |
-| 3D view unavailable / WebGL 2 is off in this browser | Visualização 3D indisponível / O WebGL 2 está desativado neste navegador | |
+| 3D view unavailable / WebGL 2 is off in this browser | Visualização 3D indisponível / WebGL 2 desativado neste navegador | The reason is a nowrap mono line: the nominal form (269 px at 11 px) matches the title's and fits a 320 px phone; the full sentence (324 px) does not. Checked on screen. |
 | How this works | Como funciona | About title `[['Como'], [accent('funciona'), '.']]`. |
-| About sections | Em resumo · Como encontramos as passagens · O que os rótulos significam · O que não conseguimos ver · Privacidade · Créditos · Teclado | |
+| About sections | Em resumo · Como achamos as passagens · O significado dos rótulos · O que não conseguimos ver · Privacidade · Créditos · Teclado | The index is 233 px at its narrowest and an entry must not wrap: *Como encontramos as passagens* (252 px) and *O que os rótulos significam* (236 px) did; the shipped two are ≤ 25 characters. The body headings use the same words. |
 | Previous / Next photo; tooltips | Imagem anterior / Próxima imagem; *Anterior (←)* / *Próxima (→)* | Arrows kept. |
 | Photos (gallery bar) / Show photos | Imagens / Mostrar imagens | |
 | Filter: All / Detailed / Weather / Radar | **Todas / Fotos / Meteo / Radar** | ≤ 8 each. *Fotos* holds only Sentinel-2 and Landsat; *Meteo* holds mosaics and full-disc frames. |
@@ -723,7 +727,7 @@ Gender: (m.) masculine, (f.) feminine. "Never" lists the wrong words translators
 | Watched continuously (section) | Observação contínua | A noun: no agreement. |
 | Check your place / See the clearest look | `[strong('Ver '), 'seu lugar']` / `[strong('Ver '), 'vista mais limpa']` | Read alone: *Seu lugar*, *Vista mais limpa*. |
 | Daylight here / Now | Dia aqui / Agora | Timeline. |
-| Keys | *Enter*, *Espaço*, *Esc*; *reproduzir / pausar*; *passagem anterior / próxima deste tipo* | |
+| Keys | *Enter*, *Espaço*, *Esc*; *reproduzir / pausar*; *anterior / próxima do mesmo tipo* | The replay hint row is one nowrap line after the ← → caps: *passagem anterior / próxima deste tipo* (38) was cut at the panel's edge; the feminine *próxima* already says *passagem*. |
 | Language / trigger | Idioma / *Idioma: Português. Alterar* | |
 | Expand / Collapse panel | Expandir painel / Recolher painel | |
 | Fault label | Falha | |
@@ -881,7 +885,7 @@ count: (n: number) => (n === 0 ? '0 passagens' : f.plural(n, { one: `${f.int(n)}
 ## 6. Typography and formatting
 
 **Quotation marks.** “ ” (U+201C/201D), ‘ ’ inside. Never « » (Portuguese tradition, foreign in Brazil), never straight
-quotes. Punctuation outside unless it belongs to the quote: *chamamos de “pode ter apontado para cá”.*
+quotes. Punctuation outside unless it belongs to the quote: *chamamos de “pode ter apontado aqui”.*
 
 **Apostrophe.** Portuguese almost never needs one; when it does, ’ (U+2019). English's (*doesn’t*, *NASA’s*) disappear:
 *da NASA*.
@@ -953,7 +957,7 @@ Portuguese sentences run **about 10–25% longer** than English (sub line +9%, a
 sentences and +30% on labels.
 
 Strategies, in this order:
-1. **Drop articles and possessives in labels:** *Usar minha localização*, *Baixar imagem*, *Ver seu lugar*.
+1. **Drop articles and possessives in labels:** *Usar meu local*, *Baixar imagem*, *Ver seu lugar*.
 2. **Nouns over clauses:** *Mais perto* over *Distância mais próxima*; *Sem imagem pública* over *Não há imagem
    pública*.
 3. **Use the long/short pairs the UI already has**, each its own string, never one cut by CSS.
@@ -1001,8 +1005,9 @@ Budgets from the catalogs and the measured card (pt-BR value in brackets):
 | SHARE | COMPARTILHAR | 5 → 12 | glyph only where the UI allows, aria kept |
 | REPLAY | REVER | 6 → 5 | — |
 
-Verdict titles (*Provavelmente observou* 22, *Pode ter apontado para cá* 25) may wrap in the summary and tooltips, as
-English *Could have pointed here* (23) does; never shorten them (the lane words are the short forms).
+Verdict titles stay within 23 characters, English's longest (*Could have pointed here*): the results summary's tiles set
+them in one mono caps line, and a longer title wraps and pushes the last row under the fold (the right-hand tile holds
+about 20). *Observou* 8, *Deve ter observado* 18, *Pode ter apontado aqui* 22, *Sobrevoou* 9. Tooltips may wrap.
 
 ---
 
@@ -1230,8 +1235,28 @@ M5. Aria strings built from counts: **accepted.** *nuvens 25 por cento*, *encobe
 M6. Reviewer test list: **accepted** (§9.3).
 
 The reviewer's "Keep" list (*você*, no *te*/*tu*, *observar*, the hero, the headline, the zero sentence, *Pelo menos*,
-*passagem*, *imagem* vs *foto*, the *Imagem* lane, *Pode ter apontado para cá*, *Sobrevoou / Sobrevoo*, *teve {place}
+*passagem*, *imagem* vs *foto*, the *Imagem* lane, *Pode ter apontado aqui*, *Sobrevoou / Sobrevoo*, *teve {place}
 ao alcance*, *Olhava direto para baixo*, *rumo ao sul a 7,46 km/s*, *Não temos como saber se observou*,
 *Surpreenda-me*, *Rever*, *time-lapse*, *quadro*, *Revelando*, *encoberto*, *cirros*, *pixels*, the zero and `many`
 rules, Intl for numbers, lists and relative time with *há* and *daqui a*, “ ”, no space before *% : ; ! ?*, N/S/E/O and
 the 16 points, the sensitive-content section, English licence lines and analytics) is kept.
+
+### Screen QA, 2026-11-19
+
+Every state of `?hl=pt-BR` was looked at beside English (laptop 1280×800, 1024×768, 1440×900; phones 390, 360, 320).
+
+1. *Ao menos* (card sub-line) vs *Pelo menos* (results): **both kept.** Both are standard in Brazil and Portugal; the
+   card's one 24 px line has no room for *Pelo menos* (468 of 466 px) and the app has; no one sees the two together.
+2. `share.tryAgain` *Refazer PNG*: **kept.** It replaces *Salvar PNG* in a three-button row that holds about 11
+   characters on a 360 px phone; *Tentar de novo* (14) and *Gerar de novo* (13) do not fit, and *Refazer PNG* says
+   what is redone.
+3. `globe.noGl.reason`: **kept** the nominal *WebGL 2 desativado neste navegador* (fits a 320 px phone, §4.2).
+4. About section names: **the catalog's shorter two are the decision** (§4.2 table corrected to match).
+5. *O que observou você* (card question, card invite): **rewritten.** After a verb, *você* reads as its subject (*what
+   did you observe?*). The question names the subject in the plural, which *você* cannot agree with: *Quais satélites
+   observaram você esta semana?* (as `placeTitle` already did). The footer invite has about 26 characters beside the
+   host, so it echoes the hero instead: *Algo observou você também* (25), "something watched you too", the post's hook.
+6. Verdict titles: **shortened** to ≤ 23 characters (§3.5, §7).
+7. *Copiar imagem* → *Copiar PNG*, *Usar minha localização* → *Usar meu local*, replay hint → *anterior / próxima do
+   mesmo tipo*: each was cut or overflowed on screen (§4.2).
+8. `could.insideSwath`: *onde fez imagens* → *onde captou imagens* (*captar* is the instrument verb, §3.4).

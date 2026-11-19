@@ -2,8 +2,8 @@
  * Brazilian Portuguese verdict vocabulary (see src/i18n/en/verdicts.ts; docs/i18n/pt-BR.md §3.5 is the authority on
  * every word here, §4.1 on the verbs).
  *
- * Why it reads this way: the titles are verb phrases whose subject is the unstated satellite (*Observou*, *Provavelmente
- * observou*, *Pode ter apontado para cá*, *Sobrevoou*), because Portuguese drops subjects and a verb agrees with
+ * Why it reads this way: the titles are verb phrases whose subject is the unstated satellite (*Observou*, *Deve ter
+ * observado*, *Pode ter apontado aqui*, *Sobrevoou*), because Portuguese drops subjects and a verb agrees with
  * nothing's gender: *observada* would have to agree with *a passagem*, and a pass is not what was watched. A title is
  * never put after a bare count (*4 observou* is not Portuguese): the readouts write *4 passagens: Observou* and the
  * timeline uses the lane words. The lane words are nouns and adjectives of at most 8 characters (`IMAGEM`, `PROVÁVEL`,
@@ -30,14 +30,14 @@ const verdicts: typeof en = {
     verb: 'observou',
   },
   likely: {
-    title: 'Provavelmente observou',
+    title: 'Deve ter observado',
     short: 'Provável',
     unit: passes,
     definition: 'A faixa de uma câmera fixa cobriu este lugar. Nenhuma imagem foi publicada.',
     verb: 'cobriu',
   },
   could: {
-    title: 'Pode ter apontado para cá',
+    title: 'Pode ter apontado aqui',
     short: 'Possível',
     unit: passes,
     definition: 'Uma câmera orientável ou privada estava ao alcance. O operador não diz se ela olhou.',

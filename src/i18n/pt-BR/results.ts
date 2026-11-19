@@ -308,7 +308,7 @@ const results: typeof en = {
     closest: 'Mais perto',
     spaceKey: 'Espaço',
     playPause: 'reproduzir / pausar',
-    stepKind: 'passagem anterior / próxima deste tipo',
+    stepKind: 'anterior / próxima do mesmo tipo',
   },
 
   // ── the plan view ────────────────────────────────────────────────────────────────────────

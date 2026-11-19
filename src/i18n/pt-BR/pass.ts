@@ -133,7 +133,7 @@ const pass: typeof en = {
   lookingOff: (deg: number): Rich => ['Olhava ', num(f.dec(deg, 1), '°'), ' fora da vertical.'],
   cloudCover: (pct: number): Rich => ['Cobertura de nuvens na cena: ', num(f.int(pct), '%'), '.'],
 
-  // ── "Provavelmente observou" ─────────────────────────────────────────────────────────────
+  // ── "Deve ter observado" ─────────────────────────────────────────────────────────────
   likely: {
     crossed: (o: { sat: string; altKm: number; offset?: Offset; time: string; zone: string; swathKm?: number }): Rich => [
       `O satélite ${o.sat} passou `,
@@ -153,7 +153,7 @@ const pass: typeof en = {
     notPublished: 'As imagens deste satélite alimentam a previsão do tempo; não são publicadas como imagens que possamos mostrar.',
   },
 
-  // ── "Pode ter apontado para cá" ──────────────────────────────────────────────────────────
+  // ── "Pode ter apontado aqui" ──────────────────────────────────────────────────────────
   could: {
     withinView: (o: { sat: string; time: string; zone: string; offset?: Offset }): Rich => [
       `O satélite ${o.sat} esteve ao alcance ${at(o.time)}`,
@@ -164,7 +164,7 @@ const pass: typeof en = {
     insideSwath: (o: { place: string; swathKm: number }): Rich => [
       'A faixa de ',
       km(o.swathKm),
-      ` cobriu ${o.place}. O operador não publica onde fez imagens, por isso não temos como saber se observou este lugar.`,
+      ` cobriu ${o.place}. O operador não publica onde captou imagens, por isso não temos como saber se observou este lugar.`,
     ],
     radar: (o: { place: string; deg?: number; openArchive: boolean }): Rich => [
       'O radar vê através das nuvens e do escuro. ',

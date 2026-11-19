@@ -93,7 +93,7 @@ const about: typeof en = {
       /** "Tilting camera" is *câmera que se inclina* (§4.1); the could verdict quoted as §6 writes it */
       tilting: {
         term: 'Câmeras que se inclinam',
-        text: 'Muitos satélites comerciais conseguem apontar de 30 a 45 graus fora da vertical. Se você estava ao alcance, chamamos de “pode ter apontado para cá”.',
+        text: 'Muitos satélites comerciais conseguem apontar de 30 a 45 graus fora da vertical. Se você estava ao alcance, chamamos de “pode ter apontado aqui”.',
       },
       /** *foto*: the sentence is about daylight cameras, whose pictures are photos; radar in the dark does count */
       daylight: { term: 'Luz do dia', text: 'Câmeras comuns precisam do sol. Uma passagem no escuro nunca conta como foto.' },
