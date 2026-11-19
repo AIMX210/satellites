@@ -39,10 +39,11 @@ const gallery: typeof en = {
   // ── the bar over the photos ──────────────────────────────────────────────────────────────
   barLabel: 'Görüntüler',
   filterLabel: 'Görüntüleri filtrele',
-  // ≤ 8 characters each: `Detaylı`, because `Ayrıntılı` is 9 (§3.9).
-  filter: { all: 'Tümü', detailed: 'Detaylı', weather: 'Hava', radar: 'Radar' },
+  // `Ayrıntılı`, the results footnote's word (*ayrıntılı görüntü*): the four segments together (22 characters) stay
+  // narrower than the English (23), so it fits wherever the English does (§3.9).
+  filter: { all: 'Tümü', detailed: 'Ayrıntılı', weather: 'Hava', radar: 'Radar' },
   filterTitle: {
-    all: 'Bütün görüntüler: en net görüntüden sonra en yeniden eskiye',
+    all: 'Tüm görüntüler: en net görüntüden sonra en yeniden eskiye',
     detailed: 'Sentinel-2 ve Landsat, piksel başına 10–30 m',
     // `ve üzeri`: the idiom for "this figure and beyond"; a larger pixel is the coarser direction. `meteoroloji
     // mozaikleri`, as the results' footnote counts them (*meteoroloji mozaiği*), never *hava durumu* ("forecast").

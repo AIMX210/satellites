@@ -35,9 +35,9 @@ function longDay(ms: number, timeZone: string): string {
 /** "1 Kasım Pazar, yerel saatle 11:21.": the post's dateline, its own sentence */
 const dateline = (w: PostWhen) => `${longDay(w.ms, w.timeZone)}, yerel saatle ${w.clock}.`
 /** "795 km": the satellite's altitude, whole kilometres */
-const km = (altitudeKm: number) => `${f.int(altitudeKm)} km`
+const km = (altitudeKm: number) => `${f.int(altitudeKm)}\u00a0km`
 /** "10 m", "2 km": a pixel's size, whole metres, or whole kilometres from 1000 m */
-const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)} km` : `${f.int(m)} m`)
+const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)}\u00a0km` : `${f.int(m)}\u00a0m`)
 
 const share: typeof en = {
   // ── The sheet ─────────────────────────────────────────────────────────────────────────────────────────────────────

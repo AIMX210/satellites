@@ -542,7 +542,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `passView.count` / `countStack` / `sats` | *31 geçiş* / `num('31', 'geçiş')` / *12 uydu* |
 | `showAllSats` / `showAllRows` / `showMore` / `left` / `showFewer` | *31 uydunun tümünü göster* / *31 satırın tümünü göster* / *40 tane daha göster* / *12 kaldı* / *Daha az göster* |
 | `passView.tag` | *Mozaik · Radar · Bulutlu · %86 · Bulutlu · noktada* |
-| `passView.rowLabel` | *[SAT], [verb], [daySpoken] [TIME], [ago], bulut yüzde 25, tamamen bulutlu* |
+| `passView.rowLabel` | *[SAT], [verb], [daySpoken] [TIME], [ago], bulut yüzde 81, bulutlu* (the row's chip word; *tamamen bulutlu* claimed a full cover beside 81 %) |
 | `offNadir` / `offNadirShort` / `distanceKm` / `cloudPct` | *dikeyden 5,3°* / *5,3°* / *61 km* / *bulut %25* |
 | `expandLabel` / `expandTitle` | *Fotoğrafı büyüt: [SAT], [DAY] [TIME]* / *Fotoğrafı büyüt* |
 | `satLabel` | *[SAT], [OPERATOR], 3 geçiş, sonuncusu 6 Kasım Cuma 16:14* |
@@ -554,7 +554,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `noImage.*` | *Bu geçişten bu noktanın [SAT] görüntüsü yok. Geçişin kuşbakışı çizimi.* · *Kamuya açık görüntü yok: bu radar operatörünün arşivi kapalı. Geçişin kuşbakışı çizimi.* · *Kamuya açık görüntü yok: ticari arşivler kapalı. …* · *Bu geçiş için gösterilecek görüntü yok. …* · *Arşiv şu an aranamadı. …* · *Bu geçiş için sahne yok. …* · *Bu geçişle eşleşen yayımlanmış bir sahne henüz yok. Sentinel-2 ve Landsat sahneleri genellikle bir gün içinde çıkar.* · *İnsanlı istasyonlarda kamera var, ama fotoğrafları yere ve zamana göre yayımlanmıyor.* · *Bu geçişin görüntüsü kullanılamıyor.* |
 | `links` | *Kaydetmek için görüntüyü aç · İndiriliyor… · Görüntüyü indir · Kaynağı gör · [ARCHIVE]* |
 | `spot.*` | *Seçtiğin noktadaki piksel okunuyor…* · *Seçtiğin noktada hava açık.* · *Seçtiğin noktada ince sirrus var; görüntüyü biraz yumuşatabilir.* · *Seçtiğin noktada bulut var.* · *Seçtiğin nokta bulut gölgesindeydi.* |
-| `strip.*` | *İrtifa · Ufuktan açı · Bakış açısı · Piksel · Bant · Güneş · Bulut · Noktada bulut* |
+| `strip.*` | *İrtifa · Ufuktan açı · Dikeyden · Piksel · Bant · Güneş · Bulut · Noktada bulut* (*Dikeyden*, the rows' word: *Bakış açısı* wrapped in the strip's cell at 1280 px and dropped its value below the others) |
 | `band.*` / `spotValue.*` | *Kızılötesi · Görünür · Renkli* / *Yok · Sirrus · Var · Gölge* (under *NOKTADA BULUT*, *YOK* means clear) |
 | `unit.*` | *km · m · km/sn · yukarıda · mozaik · sahne · gündüz · alacakaranlık · gece* |
 | `geo.*` (01 / Geometry) | *En yakın an · UTC · En yakın an · yerel · Yatay uzaklık · Ufkundan açı · Yer hızı · Yön · Güneş açısı · Görüş alanı · Tarama şeridi · Şeritte · Görüş alanında · Zaman aralığı (*ARALIK* alone is also December) · NORAD · geçiş · Tarama çizgisi · UTC · Tarama çizgisi · yerel · Ekvatorun üzerinde · Göğünde · Tarama yönü · Buradaki çizgi hızı · Kapsama · Bu tarama · NORAD · tarama* |
@@ -566,8 +566,8 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | Key | Turkish |
 |:--|:--|
 | `gallery.barLabel` / `filterLabel` | *Görüntüler* / *Görüntüleri filtrele* |
-| `gallery.filter` | *Tümü · Detaylı · Hava · Radar* (≤ 8 characters each; *Ayrıntılı* is 9) |
-| `gallery.filterTitle` | *Bütün görüntüler: en net görüntüden sonra en yeniden eskiye* · *Sentinel-2 ve Landsat, piksel başına 10–30 m* · *Günlük hava durumu mozaikleri, piksel başına 250 m ve üzeri* · *Sentinel-1 radar görüntüleri, piksel başına 20 m: bulutun içinden, gece gündüz* |
+| `gallery.filter` | *Tümü · Ayrıntılı · Hava · Radar* (22 characters together, the English 23: *Ayrıntılı* is the footnote's word, so one term for "detailed" everywhere) |
+| `gallery.filterTitle` | *Tüm görüntüler: en net görüntüden sonra en yeniden eskiye* · *Sentinel-2 ve Landsat, piksel başına 10–30 m* · *Günlük meteoroloji mozaikleri, piksel başına 250 m ve üzeri* · *Sentinel-1 radar görüntüleri, piksel başına 20 m: bulutun içinden, gece gündüz* |
 | `position` / `photosThisWeek` / `photosThatWeek` | *3 / 27* / *bu hafta 12* / *o hafta 12* |
 | `prevPhoto` / `nextPhoto` / titles | *Önceki görüntü* / *Sonraki görüntü* / *Önceki (←)* / *Sonraki (→)* |
 | `carousel` / `slide` / `trackLabel` | *karusel* / *slayt* / *Bu yerin görüntüleri; daha fazlası için kaydır* |
@@ -592,7 +592,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `lightbox.perPixel` / `panTitle` / `panProduct` | *10 m / piksel* / *Landsat’ın 15 m’lik pankromatik bandıyla keskinleştirildi* / *Landsat C2 L2 + L1 pan · 15 m* |
 | `lightbox.status` | *Bulutlu · %86* / *Noktanda hava açık* |
 | `lightbox.replay` / `share` / `shareLabel` | *Oynat* (the gallery's word without its tablet part) / *Paylaş* / *Bu görüntüyü paylaş* |
-| `lightbox.filmstripLabel` / `thumbLabel` | *Bütün görüntüler* / *Görüntü 3* |
+| `lightbox.filmstripLabel` / `thumbLabel` | *Tüm görüntüler* / *Görüntü 3* (UI labels say *Tüm/Tümü*, as the filter and *Tüm geçişler*; prose keeps *bütün gezegen*) |
 | `timelapse.dialog` / `title` / `slider` / `frameList` | *Zaman atlamalı: [PLACE]* / *Zaman atlamalı* / *Kare* / *Kareler* |
 | `timelapse.date` / `dayMonth` / `readout` | *22 Eki 2015* / *22 Eki* / *22 Eki 2015 · Sentinel-2A* |
 | `timelapse.frameSpoken` | *Kare 3, toplam 12: 6 Ağustos 2019* |
@@ -775,7 +775,7 @@ gender, so the notes cover case, plural and register.
 | scene | sahne | The archive's image tile only, never the 10 km crop; always beside a cue (*sahne genelinde*). |
 | crop (of a scene) | kesit | *Arşiv bu kesiti göndermedi.* |
 | swath / swath width | tarama şeridi / tarama genişliği | Label *TARAMA ŞERİDİ*; *Şeritte* (in swath). Never *koridor, bant*. |
-| off-nadir | bakış açısı (label) / *dikeyden 5,3° eğik* (prose) / *dikeyden 5,3°* (row) | Never *eğim* (orbital inclination, terrain slope). Never *nadir* in any sense. |
+| off-nadir | bakış açısı (card label) / *DİKEYDEN* (the pass view's readout strip, one line) / *dikeyden 5,3° eğik* (prose) / *dikeyden 5,3°* (row) | Never *eğim* (orbital inclination, terrain slope). Never *nadir* in any sense. |
 | straight down | tam aşağı | *Tam aşağıya bakıyordu.* Never *tepeden bakıyordu* (condescending), *düz aşağı*. |
 | ground track | yer izi | |
 | orbit / orbital elements (TLE) | yörünge / yörünge elemanları (TLE) | Never *eleman setleri*. |
@@ -1154,7 +1154,7 @@ Getting this wrong is a spelling mistake (*PIKSEL* is not a word).
 | LAST 7 DAYS | SON 7 GÜN | 11 → 9 | |
 | CLOSEST LOOK / LAST CLEAR LOOK | EN NET GÖRÜNTÜ / SON BULUTSUZ GÖRÜNTÜ | 12 / 15 → 14 / 20 | chip ≤ ~20 |
 | TIME-LAPSE | ZAMAN ATLAMALI | 10 → 14 | |
-| OFF-NADIR | BAKIŞ AÇISI | 9 → 11 | |
+| OFF-NADIR | BAKIŞ AÇISI (card) / DİKEYDEN (pass strip) | 9 → 11 / 8 | |
 | ALTITUDE / PIXEL / SPEED | İRTİFA / PİKSEL / HIZ | 8 / 5 / 5 → 6 / 6 / 3 | |
 | MOSAIC PIXEL | MOZAİK PİKSELİ | 12 → 14 | QA in the 155 px column |
 | PASSES | GEÇİŞLER / GEÇİŞ | 6 → 8 / 5 | |
@@ -1168,7 +1168,7 @@ Getting this wrong is a spelling mistake (*PIKSEL* is not a word).
 | VIDEO FAILED / SAVE VIDEO / RENDERING 05% | VİDEO HATASI / KAYDET / İŞLENİYOR %05 | 12 / 10 / 13 → 12 / 6 / 13 | one 132 px button |
 | SEE WHAT WATCHED YOU | SENİ NEYİN İZLEDİĞİNİ GÖR | 20 → 25 | QA at 466 px; fallback *SENİ NE İZLEDİ, GÖR* (19) |
 
-**Known tight spots to check in QA:** the readout strip's *BAKIŞ AÇISI* and *NOKTADA BULUT* cells on a 360 px phone; the
+**Known tight spots to check in QA:** the readout strip's *DİKEYDEN* and *NOKTADA BULUT* cells on a 360 px phone; the
 sun unit *alacakaranlık* (let it wrap under the value); the band value *Kızılötesi* (10, budget ~9) at 21 px; the pin
 card's *Çevrede yer adı yok* in 156 px at 13 px; the time-lapse waiting rows on a 280 px picture; the card footer CTA;
 *YERDURAĞAN* in the timeline lane (hidden on phones, as in English).
@@ -1309,7 +1309,7 @@ The critique's 53 items: 38 accepted, 15 partly accepted, 0 rejected.
 | 3 | Verdict `verb` used in the active | Accepted: verbs *izledi / taradı / görüş alanından geçti / tepeden geçti*; headlines never built from `verb` (§3.6). |
 | 4 | Second person removed | Accepted: *seçtiğin nokta* in prose, *noktan* in chips, *ufkunun, tepende, sokaklarını değil, bulutlarını* (§1.4, §3.4, §3.8). |
 | 5 | MUHTEMEL and OLASI are synonyms | Accepted: lane *MENZİLDE*. |
-| 6 | EĞİM collides with inclination | Accepted: label *BAKIŞ AÇISI*, row *dikeyden 5,3°*. |
+| 6 | EĞİM collides with inclination | Accepted: label *BAKIŞ AÇISI* (card), *DİKEYDEN* (pass strip, one line), row *dikeyden 5,3°*. |
 | 7 | *bakış* reads as "gaze" | Partly accepted: *bakış* out, *bulutsuz görüntü* in; but "Closest look" is the most detailed clear photo (`photos.ts`), so *En net görüntü*, not *En yakın geçiş*, which would claim distance. |
 | 8 | Compass words are a closed set | Accepted: four full tables (§4), *irtifadan* chosen over *irtifada*. |
 | 9 | `since` is a runtime slot | Accepted: *[YEAR] yılından beri*. |

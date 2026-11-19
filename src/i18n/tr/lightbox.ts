@@ -41,7 +41,7 @@ const lightbox: typeof en = {
   replay: 'Oynat',
   shareLabel: 'Bu görüntüyü paylaş',
   share: 'Paylaş',
-  filmstripLabel: 'Bütün görüntüler',
+  filmstripLabel: 'Tüm görüntüler',
   thumbLabel: (i: number) => `Görüntü ${f.int(i)}`,
 }
 export default lightbox

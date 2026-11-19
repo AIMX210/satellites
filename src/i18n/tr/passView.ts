@@ -66,7 +66,8 @@ const passView: typeof en = {
       `${o.day} ${o.time} ${o.zone}`,
       o.ago,
       o.cloudPct !== undefined ? `bulut yüzde ${f.int(o.cloudPct)}` : undefined,
-      o.clouded ? 'tamamen bulutlu' : undefined,
+      // The row's own chip says *Bulutlu · %81*: *tamamen bulutlu* would claim a full cover the number denies.
+      o.clouded ? 'bulutlu' : undefined,
     ]
       .filter(Boolean)
       .join(', '),
@@ -126,7 +127,9 @@ const passView: typeof en = {
   strip: {
     altitude: 'İrtifa',
     elevation: 'Ufuktan açı',
-    offNadir: 'Bakış açısı',
+    // `Dikeyden`, the rows' word (`dikeyden 5,3°`): one line in the strip's ~10-character cell, where *Bakış açısı*
+    // wrapped at 1280 px and dropped its value below its neighbours'. The card keeps *Bakış açısı* (it has room).
+    offNadir: 'Dikeyden',
     pixel: 'Piksel',
     band: 'Bant',
     sun: 'Güneş',
