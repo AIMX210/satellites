@@ -86,9 +86,8 @@ capture, so the newest passes may not have an image yet.
 </p>
 
 TypeScript, React 19, three.js through React Three Fiber, zustand and Vite. The pass search and the photo toning run
-in Web Workers in your browser. The server side is a few small functions on a Cloudflare Worker (the same handlers
-also run on Vercel), the Worker's hour-long cache of EUMETSAT's newest Meteosat frames, and an optional Supabase
-database.
+in Web Workers in your browser. The server side is a few small functions on a Cloudflare Worker, the Worker's
+hour-long cache of EUMETSAT's newest Meteosat frames, and an optional Supabase database.
 
 ### A pass search that can't miss
 
@@ -179,8 +178,8 @@ npm run data:celestrak    # refresh the orbit catalog (CelesTrak asks for 2 h be
 
 ## Self-hosting
 
-A fork runs as is, with no backend: deploy it to Cloudflare Workers or Vercel and turn on GitHub Actions so the
-orbit catalog refreshes. Supabase (lookups, shares, stats) is optional. Step by step:
+A fork runs as is, with no backend: deploy it to Cloudflare Workers and turn on GitHub Actions so the orbit
+catalog refreshes. Supabase (lookups, shares, stats) is optional. Step by step:
 [`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md).
 
 <details>
@@ -197,7 +196,7 @@ src/
   app/          phase controller, boot screen, telemetry wiring
   admin/        the /admin stats page
 api/            share card, share page, events relay, Landsat pan band
-worker/         the Cloudflare Worker: routes and headers that mirror vercel.json
+worker/         the Cloudflare Worker: the routes, the frame cache's timer
 supabase/       migrations and SQL tests
 scripts/        catalog, places, textures, card renders, database helpers
 public/         orbit catalog, place list, textures, brand

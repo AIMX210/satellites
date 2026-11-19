@@ -25,8 +25,11 @@
   font sizes or colours.
 
 **Production, data and permissions**
-- Every branch push gets a Vercel preview deploy, behind Vercel login. To open one, use the Vercel connector's
-  `get_access_to_vercel_url` (a share link) and keep its cookie.
+- Cloudflare is the only host (Workers Builds): a push to `main` runs `npm run build` and `wrangler deploy`; a push
+  to any other branch runs `npm run build` and `wrangler versions upload`, which gives that commit a preview URL on
+  `workers.dev` (find it with the Cloudflare API: the Worker `watched`, its versions). Previews are `noindex` and
+  write no events. Vercel no longer builds: `vercel.json` is only the switch that tells it not to. Don't delete the
+  Vercel project: it is what redirects the launch address (`overflight-psi.vercel.app`) to the site.
 - Supabase project `etiebfmgepkcewkkbxwi`: use the Management API
   (`POST https://api.supabase.com/v1/projects/etiebfmgepkcewkkbxwi/database/query`; the session proxy adds the token).
   Do NOT use the Supabase MCP connector: it points at an unrelated project (`xcinlndzgpzjmvmeujor`).
@@ -77,7 +80,7 @@
 
 **Testing against the live site** (www.watched.earth)
 - Any probe must block writes so it doesn't pollute analytics: requests matching `rpc/(create_share|record_lookup|log_events)`,
-  `/api/e`, `/_vercel/insights` and `/cdn-cgi/rum` (Cloudflare Web Analytics), plus any non-GET to watched.earth or Supabase. Also add `?noanalytics=1`.
+  `/api/e` and `/cdn-cgi/rum` (Cloudflare Web Analytics), plus any non-GET to watched.earth or Supabase. Also add `?noanalytics=1`.
   Planetary Computer's STAC search must NOT be blocked, or no photos load: it is a GET (no CORS preflight, see
   `src/imagery/stac.ts searchPage`) that falls back to a POST if the archive refuses the GET form.
 - Time a search with User Timing marks: `performance.getEntriesByName('overflight:<name>')`, for `run-report`,
@@ -140,12 +143,12 @@
   and calls `preventDefault()`.
 - iOS: tapping a non-input element blurs the focused field before `click` fires. Choose touch taps on `pointerup`
   (see `SearchBox.tsx`).
-- Vercel functions use the fetch-style handler (`export default { fetch }`) and are registered in `vercel.json`
-  (`maxDuration`). Vercel passes the query string percent-encoded in `req.url`.
-- The site is moving to a Cloudflare Worker (`worker/`, `wrangler.jsonc`) that runs the same handlers. Its routes
-  (`worker/router.ts`) and static headers (`public/_headers`) mirror `vercel.json`, and tests keep them equal: change
-  both. Workers run only WebAssembly bundled at deploy time, so the card renderer takes its fonts and WebAssembly
-  from `api/_lib/bundled.ts` there. After `npm run build`, `npm run dev:worker` runs it locally.
+- The site is one Cloudflare Worker (`worker/`, `wrangler.jsonc`): `worker/router.ts` holds the routes and
+  `public/_headers` the static files' headers (a response the Worker builds itself never gets that file's headers:
+  the router adds them). The handlers in `api/` take a `Request` and return a `Response`; the Worker imports each by
+  name (`handleOg`, `handleSharePage`, …). Workers run only WebAssembly bundled at deploy time, so the card renderer
+  takes its fonts and WebAssembly from `api/_lib/bundled.ts` there, and reads them from disk under Node (tests,
+  scripts). After `npm run build`, `npm run dev:worker` runs it locally.
 - Honest labelling is a product rule: a label (resolution, "watched", counts) must say exactly what is on screen.
 - Sentinel-1 radar images (`sentinel-1-rtc`) are real images but not photos: `isDetailed` is false for them, they
   never lead or get a cloud check, and their crops are toned by `radarTone.ts` (route new radar URLs through
@@ -176,7 +179,7 @@
   it is stored and the fill keeps its own state key. The Worker stores no logs (Workers Logs would bill every
   request): what the fill's last 40 working runs saw is in that state, KV key `fill`, field `log` (read it with the
   Cloudflare API: `…/storage/kv/namespaces/<id>/values/fill`). EUMETView publishes a frame 21–29 minutes after it
-  is taken, and its cached list can lag minutes more (seen in the log on 2026-11-17), so every second read asks its tile service. Vercel and `npm run dev` have no cache: the Meteosat rows say
+  is taken, and its cached list can lag minutes more (seen in the log on 2026-11-17), so every second read asks its tile service. `npm run dev` has no cache: the Meteosat rows say
   "No image just now" there; `npx wrangler dev --test-scheduled` has one (start a fill with `/__scheduled`, see
   docs/SELF-HOSTING.md). Cloud containers cannot reach EUMETView from `wrangler dev` (workerd ignores the proxy): set
   `GEO_UPSTREAM` to a local stand-in that serves downloaded pieces.

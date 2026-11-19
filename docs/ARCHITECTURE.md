@@ -4,8 +4,8 @@
 images they took. A 3D globe shows the real sun, the real catalog (~17k objects), and each pass replayed.
 
 Stack: Vite 8 + React 19 + TypeScript 7 (`tsc -b`) + three.js 0.187 via @react-three/fiber 9 / drei 10 /
-postprocessing. State: zustand (`src/state/store.ts`). Orbits: satellite.js 7 (SGP4). Hosting: Vercel
-(static + `api/` functions). DB: Supabase (RPC-only access, publishable key).
+postprocessing. State: zustand (`src/state/store.ts`). Orbits: satellite.js 7 (SGP4). Hosting: a Cloudflare
+Worker (static files + the `api/` handlers). DB: Supabase (RPC-only access, publishable key).
 
 Read first: `docs/DESIGN.md` (non-negotiable art direction), `src/types.ts` (shared contracts),
 `src/lib/geo.ts` (frame conventions), `src/state/store.ts` (app state), `src/ui/system/*` (primitives).
@@ -37,7 +37,7 @@ Read first: `docs/DESIGN.md` (non-negotiable art direction), `src/types.ts` (sha
 | **globe** | `src/globe/**`, `src/sandbox/globe.tsx` | `<GlobeCanvas/>` and the whole 3D scene |
 | **ui-shell** | `src/ui/hud/**`, `src/ui/landing/**`, `src/ui/pages/**`, `src/ui/system/**` (may ADD components), `src/sandbox/shell.tsx` | bezel, corner readouts, hero, search field, about page (the loading screen is index.html + `src/app/bootCurtain.ts`) |
 | **ui-results** | `src/ui/results/**`, `src/ui/share/**`, `src/sandbox/results.tsx` | progress readout, results panel, timeline, pass list and detail, pushbroom reveal, share |
-| **backend** | `api/**`, `worker/**`, `supabase/**`, `vercel.json`, `wrangler.jsonc`, `public/_headers`, `src/lib/backend.ts` | DB schema and RPCs, OG share images, share pages, stats, the Cloudflare Worker |
+| **backend** | `api/**`, `worker/**`, `supabase/**`, `wrangler.jsonc`, `public/_headers`, `src/lib/backend.ts` | DB schema and RPCs, OG share images, share pages, stats, the Cloudflare Worker |
 | integrator | `src/app/**`, `src/main.tsx`, `src/types.ts`, `src/state/**`, `src/lib/geo.ts`, `package.json`, `docs/**` | composition |
 
 Rules for parallel work:
@@ -207,10 +207,10 @@ a swapped view is placed at once.
 - `supabase/migrations/*.sql`: tables `lookups`, `shares`; RLS on, no direct anon table access; `security definer` RPCs `record_lookup`, `create_share`, `get_share`, `get_stats`. `create_share` keeps a capture only from its collection allow-list (latest: 0012, which adds `sentinel-1-rtc`; a radar share's card is the same 12.6 km crop at 20 m, toned on the server with `api/_lib/radar.ts`, the app's tone).
 - `src/lib/backend.ts`: browser client wrappers (`recordLookup`, `createShare`, `getShare`, `getStats`) using `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. These must **no-op gracefully** when env vars are missing.
 - `api/og.tsx`: 1200×630 share card (satori lays it out, resvg rasterises it: `api/_lib/ogRender.ts`) in the Instrument style. Runtime cards are returned as `image/jpeg`
-  (under 250 KB; PNG decoded with `fast-png`, encoded with `jpeg-js`, both pure JS so `vercel.json` `includeFiles` is
-  unchanged). `public/og-default.png` stays PNG. `api/s.ts`: share page HTML with OG tags that boots the app at `/?s=<id>`. `vercel.json`: rewrites `/s/:id` and caching headers.
-- `worker/`: the same site as a Cloudflare Worker. `router.ts` is `vercel.json`'s routes as code, `public/_headers`
-  its static headers (tests keep both equal), and `index.ts` registers the fonts and WebAssembly the card renderer
+  (under 250 KB; PNG decoded with `fast-png`, encoded with `jpeg-js`, both pure JS). `public/og-default.png` stays PNG.
+  `api/s.ts`: share page HTML with OG tags that boots the app at `/?s=<id>`.
+- `worker/`: the Cloudflare Worker that serves the site. `router.ts` holds the routes (it rewrites `/s/:id`),
+  `public/_headers` the static files' headers, and `index.ts` registers the fonts and WebAssembly the card renderer
   needs (`api/_lib/bundled.ts`). Cards, share pages and pan crops are kept in Cloudflare's cache when they say
   `s-maxage`.
 - **Share fallback deep link** (used when a share row can't be created): `/?q=<lat>,<lon>&n=<label>&p=<passId>`, plus
