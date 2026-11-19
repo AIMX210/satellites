@@ -136,9 +136,9 @@
   --display-k: 0.76;
   --lh-text-k: 1.15;
   --accent-k: 1.08;
-  /* tracking breaks the joins: none, anywhere */
-  --track-display: 0;
-  --track-label: 0;
+  /* tracking breaks the joins: none, anywhere (a length, as a calc() adding it to one needs: `1ch + 0` is invalid) */
+  --track-display: 0em;
+  --track-label: 0em;
   --w-display: 600;
   --w-strong: 600;
   font-synthesis-style: none;
