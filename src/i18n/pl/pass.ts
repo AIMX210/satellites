@@ -6,8 +6,9 @@
  * Why it is built this way:
  *  - The past tense shows gender, and code doesn't know a satellite's: the name always follows the classifier
  *    «satelita» (m.), so «Satelita Sentinel-2C przeleciał…» is right for any name, and the name is never declined.
- *    These messages get no satellite category, so an overhead pass (a crewed station today) says «satelita» too (the
- *    ISS is an artificial satellite); only «darkStation», which English words for the station, says «stacja».
+ *    These messages get no satellite category, so a crewed station is recognised by the display name the catalog
+ *    gives it (/^(ISS|Tiangong)\b/, src/engine/profiles.ts), as the Arabic file does: the overhead sentence then says
+ *    «Stacja ISS przeleciała…» (f.), and «darkStation», which English words for the station, says «stacja» too.
  *    Follow-up sentences that run for one non-crewed category only (the mosaic, the weather night, Sentinel-2 /
  *    Landsat, commercial and radar) may use the masculine without the classifier («zarejestrował», «mógł», «jego»).
  *  - The place is never named: Polish would need a case for it. Sentences say «to miejsce», «tu», «stąd»; the panel's
@@ -54,6 +55,8 @@ const SKY: Record<Compass8, string> = {
 const km = (n: number) => num(f.int(n), 'km')
 const deg1 = (n: number) => num(f.dec(n, 1), '°')
 const clock = (time: string, zone: string) => num(time, zone)
+/** Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong): the messages carry no crewed flag */
+const CREWED = /^(ISS|Tiangong)\b/
 /** «na wysokości 786 km» / «na wysokości 786 km, 61 km na zachód stąd» (the offset after the height, never glued to it) */
 const height = (altKm: number, offset?: Offset): Part[] =>
   offset ? [' na wysokości ', km(altKm), ', ', km(offset.km), ` ${MOTION[offset.dir]} stąd`] : [' na wysokości ', km(altKm)]
@@ -189,7 +192,7 @@ const pass: typeof en = {
 
   // ── «Nad głową» ──────────────────────────────────────────────────────────────────────────
   overhead: (o: { sat: string; altKm: number; time: string; zone: string; elevationDeg: number; toward?: Compass8 }): Rich => [
-    `Satelita ${o.sat} przeleciał o\u00a0`,
+    CREWED.test(o.sat) ? `Stacja ${o.sat} przeleciała o\u00a0` : `Satelita ${o.sat} przeleciał o\u00a0`,
     clock(o.time, o.zone),
     ' na wysokości ',
     km(o.altKm),

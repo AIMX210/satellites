@@ -55,6 +55,12 @@ const images = (n: number) => f.plural(n, { one: 'obraz', few: 'obrazy', many: '
 
 /** A satellite's name in display text: its last short token kept with the one before it («Landsat 9», «NORAD 60989») */
 const tie = (sat: string) => sat.replace(/ (?=\S{1,5}$)/u, '\u00a0')
+/**
+ * Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong). No message carries a crewed flag, so
+ * the overhead frames recognise them by name, as the Arabic card does: «przelot stacji ISS», «stacja ISS przeleciała».
+ */
+const CREWED = /^(ISS|Tiangong)\b/
+const isStation = (s: SatName) => s !== undefined && CREWED.test(s)
 /** «satelity Sentinel-2C» / «satelity» (genitive, in a headline's nominal frame) */
 const ofSat = (s: SatName) => (s !== undefined ? `satelity ${tie(s)}` : 'satelity')
 /** «satelita Sentinel-2C» / «satelita» (the subject of a sentence after the place's colon) */
@@ -90,7 +96,10 @@ const pl: CardMessages = {
     likely: (s: SatName, place: string, _cut: boolean): Rich => [head(place), `w\u00a0kadrze ${ofSat(s)}.`],
     could: (s: SatName, place: string, _cut: boolean): Rich => [head(place), `w\u00a0zasięgu ${ofSat(s)}.`],
     // The colon closes the place's serif block, as its own part (punctuation alone is not counted toward its lines).
-    overhead: (s: SatName, place: string, _cut: boolean): Rich => [accent(place, ':'), `przelot ${ofSat(s)}.`],
+    overhead: (s: SatName, place: string, _cut: boolean): Rich => [
+      accent(place, ':'),
+      `przelot ${s !== undefined && isStation(s) ? `stacji ${tie(s)}` : ofSat(s)}.`,
+    ],
   },
   headlineWeek: (satellites: number, place: string, _cut: boolean): Rich => [head(place), `${watched(satellites)} w\u00a0tym tygodniu.`],
 
@@ -206,8 +215,14 @@ const pl: CardMessages = {
   // The time comes before the height, as in the pass sentence (§3.4): «795 km 1 listopada» would run two numbers
   // together (§5.3). Lowercase after the colon (§6.7). Without an altitude the place is said in full: «przeleciał nad
   // tym miejscem».
-  crossed: (p: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) =>
-    `${p.place}: ${satSubj(p.sat)} przeleciał${p.altitudeKm !== undefined ? ` tu${at(p.when)} na wysokości ${f.int(p.altitudeKm)}\u00a0km` : ` nad tym miejscem${at(p.when)}`}${moving(p.heading)}.`,
+  // An overhead pass of a crewed station: «stacja ISS przeleciała» (f.).
+  crossed: (p: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) => {
+    const station = p.verdict === 'overhead' && isStation(p.sat)
+    const flew = station ? `stacja ${p.sat} przeleciała` : `${satSubj(p.sat)} przeleciał`
+    const where =
+      p.altitudeKm !== undefined ? ` tu${at(p.when)} na wysokości ${f.int(p.altitudeKm)}\u00a0km` : ` nad tym miejscem${at(p.when)}`
+    return `${p.place}: ${flew}${where}${moving(p.heading)}.`
+  },
   withinView: (p: PassFacts) => `${p.place}: ${satSubj(p.sat)} był w zasięgu${at(p.when)}${moving(p.heading)}.`,
   // Follows `withinView`, whose subject is «satelita» (m.): «Mógł».
   couldHave: 'Mógł tu spojrzeć. Operator nie podaje, czy tak było.',

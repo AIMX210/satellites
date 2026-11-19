@@ -78,7 +78,7 @@ and `strong()`.
 | None headline | `*[PLACE]* poza zasięgiem znanych nam satelitów w tym tygodniu.` |
 | Second line | `Opublikowano [NUM] obrazów.` (impersonal *-no*, so nothing agrees) · zero: `W tym tygodniu nie opublikowano żadnych obrazów.` |
 | [PLACE] | Nominative only: subject of a verbless frame, after a colon, a heading, or in parentheses. In prose it is *to miejsce / tu / stąd*. Never after a preposition, never an object, never the subject of a verb. |
-| [SAT] as subject | Behind a classifier noun: **satelita [SAT]** (m.) everywhere, **stacja [SAT]** (f.) for a crewed station when the message knows it (§5.2). In nominal frames, the genitive: *satelity [SAT]*. |
+| [SAT] as subject | Behind a classifier noun: **satelita [SAT]** (m.) everywhere, **stacja [SAT]** (f.) for a crewed station, recognised by its name (`/^(ISS|Tiangong)\b/`, §5.2). In nominal frames, the genitive: *satelity [SAT]*. |
 | Nameless satellite | The code passes `sat` undefined. Each sentence says *satelita* on its own (*Satelita przeleciał tu…*, *z nieznanego satelity*). `aSatellite` is *Satelita*, for chips and the callout only. |
 | Plurals | CLDR `one` / `few` / `many` / `other`, all four always written. `many` covers 0, 5–21, 25–31, 100, 101, 112 and 1000. `other` is fractions only. Zero is a branch in the message (`n <= 0 ? … :`). |
 | Verdicts | **Pod okiem** · **Zapewne pod okiem** · **Satelita mógł spojrzeć** · **Nad głową**. Lanes: *Zdjęcie · W kadrze · W zasięgu · Nad głową*. |
@@ -1082,15 +1082,19 @@ Readers would put *Umbra*, *Capella* or *Aqua* in the feminine from the ending, 
 
 - ***Satelita [SAT]*** (m.) for every category except crewed: optical, commercial, radar, weather (LEO and GEO) and
   "other". In nominal frames, the genitive: *satelity [SAT]*.
-- ***Stacja [SAT]*** (f.) for a crewed station, in messages that know it. In the app, overhead-verdict passes are
-  crewed stations only (`passes.ts verdictFor`). The pl delivery asks the extraction to add `crewed: boolean` to the
-  four overhead messages: `pass.overhead`, `card.headlineBy.overhead`, `card.crossed` (verdict `'overhead'`) and
-  `share.post.overhead`. It is one boolean, free to pass. Until it lands, those messages say *satelita* (correct: the
-  ISS is an artificial satellite), and `darkStation` keeps *stacja* (§3.4).
+- ***Stacja [SAT]*** (f.) for a crewed station. In the app, overhead-verdict passes are crewed stations only
+  (`passes.ts verdictFor`), but no message carries a `crewed` flag and none is coming. So the four overhead messages
+  (`pass.overhead`, `card.headlineBy.overhead`, `card.crossed` with verdict `'overhead'`, `share.post.overhead`)
+  recognise the station by the display name the catalog gives it, `/^(ISS|Tiangong)\b/` (`src/engine/profiles.ts`), as
+  the Arabic files do (`src/i18n/ar/pass.ts`, `api/_lib/i18n/card/ar.ts`): *Stacja ISS przeleciała o 21:14 EST…*,
+  *Waterloo: przelot stacji ISS.*, *Waterloo: stacja ISS przeleciała tu…*, *Waterloo: przelot stacji ISS na wysokości
+  428 km, …*. Every other satellite in those messages keeps *satelita* (m.). `darkStation` says *stacja* (§3.4). A
+  new crewed station joins the pattern in each of the three files (`pl/pass.ts`, `pl/share.ts`, `card/pl.ts`).
 
 ```ts
-overhead: (o: { sat: string; altKm: number; time: string; zone: string; elevationDeg: number; toward?: Compass8; crewed?: boolean }): Rich => [
-  o.crewed ? `Stacja ${o.sat} przeleciała o ` : `Satelita ${o.sat} przeleciał o `,
+const CREWED = /^(ISS|Tiangong)\b/
+overhead: (o: { sat: string; altKm: number; time: string; zone: string; elevationDeg: number; toward?: Compass8 }): Rich => [
+  CREWED.test(o.sat) ? `Stacja ${o.sat} przeleciała o ` : `Satelita ${o.sat} przeleciał o `,
   num(o.time, o.zone), ' na wysokości ', num(f.int(o.altKm), 'km'), ', ', num(f.int(o.elevationDeg), '°'),
   o.toward === undefined ? ' nad twoim horyzontem, niemal w zenicie.' : ` nad twoim horyzontem, ${SKY[o.toward]}.`,
 ],
@@ -1104,7 +1108,7 @@ overhead: (o: { sat: string; altKm: number; time: string; zone: string; elevatio
   (*Ujęcie z najbliższa · Satelita · 10 m*). *NORAD 60989* is a name: *satelita NORAD 60989*.
 - **Follow-up sentences** that run for one non-crewed category only (§3.4) may use the masculine without the
   classifier: *mógł obserwować to miejsce*, *zarejestrował to miejsce*, *jego radar*. Anything that can run for an
-  overhead pass uses the classifier and the `crewed` flag, or a gender-free subject.
+  overhead pass uses the classifier chosen by the station pattern above, or a gender-free subject.
 - **Gender-free tools:** the present tense (*Satelita Meteosat-12 nie przelatuje. Wisi…*), adverbial participles
   (*lecąc, patrząc, obejmując, przesuwając się*), a different subject (*Kamera patrzyła…*, *Linia tego skanu
   dotarła…*, *Obraz z jego instrumentu trafił…*, *Radar widzi…*), impersonal neuters (*Było tu ciemno*, *Widać tylko

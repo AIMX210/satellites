@@ -27,6 +27,8 @@ const f = fmt('pl')
 const km = (altitudeKm: number) => `${f.int(altitudeKm)}\u00a0km`
 /** «10 m», «2 km»: a pixel's size, whole metres or whole kilometres from 1000 m */
 const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)}\u00a0km` : `${f.int(m)}\u00a0m`)
+/** Display names of the crewed stations (src/engine/profiles.ts): «stacji ISS», never «satelity ISS» (§5.2) */
+const CREWED = /^(ISS|Tiangong)\b/
 /** «1 listopada o 11:21 czasu lokalnego» (no weekday: after a preposition it would need a case Intl does not give) */
 const when = (w: PostWhen) => `${formatDate('pl', w.ms, w.timeZone, { day: 'numeric', month: 'long' })} o\u00a0${w.clock} czasu lokalnego`
 
@@ -71,7 +73,7 @@ const share: typeof en = {
     could: (sat: string, place: string, w: PostWhen) =>
       `${place} w\u00a0zasięgu satelity ${sat}, ${when(w)}. Mógł tu spojrzeć. Operator nie podaje, czy tak było.`,
     overhead: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
-      `${place}: przelot satelity ${sat} na wysokości ${km(altitudeKm)}, ${when(w)}.`,
+      `${place}: przelot ${CREWED.test(sat) ? 'stacji' : 'satelity'} ${sat} na wysokości ${km(altitudeKm)}, ${when(w)}.`,
   },
   // The stressed «Ciebie też» is "you too"; the reader is the object, so nothing shows a gender.
   hookWatched: 'Ciebie też coś obserwowało w\u00a0tym tygodniu.',
