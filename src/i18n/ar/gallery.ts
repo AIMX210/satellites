@@ -22,7 +22,9 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { strong, type Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('ar')
-const pct = (n: number) => `${f.int(n)}%`
+// A left-to-right island (LRI…PDI, DOM text only): after Arabic letters the digits turn Arabic numbers and «25%»
+// draws «%25».
+const pct = (n: number) => `\u2066${f.int(n)}%\u2069`
 
 const LEAD: Record<CoverLead, string> = {
   closest: 'أقرب نظرة',

@@ -39,7 +39,8 @@ const lightbox: typeof en = {
   // side of the code («م Landsat … pan · 15»), ar.md §6.2.5.
   panProduct: (pixel: string) => `${ltr('Landsat C2 L2 + L1 pan')} · ${pixel}`,
   status: {
-    clouded: (pct?: number) => `سحب${pct !== undefined ? ` · ${f.int(pct)}%` : ''}`,
+    // The percentage is a left-to-right island: after Arabic letters «86%» would draw «%86»
+    clouded: (pct?: number) => `سحب${pct !== undefined ? ` · \u2066${f.int(pct)}%\u2069` : ''}`,
     clearAtSpot: 'صافٍ فوق بقعتك',
   },
   replayLabel: 'إعادة عرض هذا المرور على الكرة الأرضية',

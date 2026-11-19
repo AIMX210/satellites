@@ -98,7 +98,8 @@ const timelapse: typeof en = {
   linkCopied: 'تم نسخ الرابط',
   shareTitle: (place: string) => `عبر السنين: ${place}`,
   video: 'فيديو',
-  rendering: (pct: number) => `جارٍ الإنشاء ${pad2(pct)}%`,
+  // The percentage is a left-to-right island, or «06%» draws «%06» after the Arabic words
+  rendering: (pct: number) => `جارٍ الإنشاء \u2066${pad2(pct)}%\u2069`,
   videoFailed: 'فشل الفيديو',
   saveVideo: 'حفظ الفيديو',
   // «مرمّز» (encoder) takes the shadda only: a damma is for passives (ar.md §6.6).

@@ -101,7 +101,8 @@ const passView: typeof en = {
   tag: {
     mosaic: 'فسيفساء',
     radar: 'رادار',
-    cloudedPct: (pct: number) => `سحب · ${f.int(pct)}%`,
+    // Percentages after Arabic words are left-to-right islands, or «81%» draws «%81»
+    cloudedPct: (pct: number) => `سحب · \u2066${f.int(pct)}%\u2069`,
     cloudedAtSpot: 'سحب فوق البقعة',
   },
   // «Sentinel-2C، رصد، الجمعة، 6 نوفمبر 16:14 EST، قبل 41 ساعة، السحب 25 بالمئة، تحت السحب»
@@ -120,7 +121,7 @@ const passView: typeof en = {
   offNadir: (deg: number) => `انحراف ${ltr(`${f.dec(deg, 1)}°`)}`,
   offNadirShort: (deg: number) => `${f.dec(deg, 1)}°`,
   distanceKm: (km: number) => `${f.int(km)}${nb}كم`,
-  cloudPct: (pct: number) => `السحب ${f.int(pct)}%`,
+  cloudPct: (pct: number) => `السحب \u2066${f.int(pct)}%\u2069`,
   expandLabel: (sat: string, day: string, time: string) => `تكبير الصورة: ${sat}، ${day} ${time}`,
   expandTitle: 'تكبير الصورة',
   // «Sentinel-2C، ESA، 31 مرة، الأحدث الجمعة، 6 نوفمبر 16:14»
