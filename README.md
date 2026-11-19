@@ -163,7 +163,7 @@ publishable key, never a secret one: `VITE_` variables ship to every browser).
 npm test                  # engine, imagery and UI (Vitest)
 npm run test:backend      # the server functions and the Worker
 npm run typecheck
-npm run build             # the app and /admin, into dist/
+npm run build             # the app, /admin and the place pages, into dist/
 npm run dev:worker        # after a build: the Cloudflare Worker, locally
 
 npm run data:celestrak    # refresh the orbit catalog (CelesTrak asks for 2 h between downloads)
@@ -172,6 +172,7 @@ npm run data:celestrak    # refresh the orbit catalog (CelesTrak asks for 2 h be
 | URL | |
 |:--|:--|
 | `/?q=lat,lon&n=name` | Open a place. Add `&p=<pass id>` for a pass, or `&tl=1` for its time-lapse. |
+| `/place/<slug>` | A well-known place's own page (`/place` lists them). Built files: `npm run dev:worker`, not `npm run dev`. |
 | `/?debug=gl` | WebGL diagnostics. |
 | `/?sandbox=<name>` | Development pages: `engine`, `backend`, `globe`, `imagery`, `results`, `shell`. |
 | `/admin.html?mock=1` | The stats page with fixture data. |
@@ -194,11 +195,12 @@ src/
   globe/        the three.js scene: Earth, atmosphere, clouds, satellites, swath, camera
   ui/           design system, landing, results, share, time-lapse, About
   app/          phase controller, boot screen, telemetry wiring
+  seo/          the place pages, their list, the sitemap: what search engines read
   admin/        the /admin stats page
 api/            share card, share page, events relay, Landsat pan band
 worker/         the Cloudflare Worker: the routes, the frame cache's timer
 supabase/       migrations and SQL tests
-scripts/        catalog, places, textures, card renders, database helpers
+scripts/        catalog, places, place pages, textures, card renders, database helpers
 public/         orbit catalog, place list, textures, brand
 ```
 

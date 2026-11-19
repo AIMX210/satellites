@@ -18,7 +18,8 @@
 **Checks and style**
 - `npm test` covers `src/**` only. The serverless functions in `api/` and the Cloudflare Worker in `worker/` have their
   own suite: `npm run test:backend`.
-  Run both, plus `npm run build` (it runs `tsc -b` and two Vite builds: the app and `/admin`).
+  Run both, plus `npm run build` (it runs `tsc -b`, two Vite builds: the app and `/admin`, then
+  `scripts/build-seo.ts`, which writes the place pages, sitemap and robots.txt into `dist/`).
 - There is no Prettier or ESLint config. Never run `npx prettier`: it downloads Prettier and rewrites files in its
   defaults (double quotes, 80 columns). House style: single quotes, no semicolons, ~120 columns, and a doc comment at
   the top of each module saying *why* it works the way it does. Follow `docs/DESIGN.md` for UI: tokens only, no raw
@@ -135,7 +136,20 @@
   two presses, because a share sheet or a download only opens inside a press. Its events (`timelapse_open`,
   `timelapse_share`) are allow-listed in 0022 and charted on the admin page by 0024 (a fifth number in the series,
   `event_hours.timelapse`, and two breakdowns).
-- Back button: layers register with `src/lib/backStack.ts`. Never call `history.pushState` directly.
+- Search engines (`src/seo/`, `scripts/build-seo.ts`, `src/lib/placePage.ts`; docs/ARCHITECTURE.md has the rules):
+  the build writes ~2,100 place pages (`/place/<slug>`: the built index.html with that place's title, canonical,
+  card and the place in a JSON script), their list (`/place`), `sitemap.xml` and `robots.txt`. Keep these true: the
+  set is closed (`src/seo/places.ts` chooses it from the offline place list; never make a page from a typed address
+  or an `n=` label, which would put other people's words in titles here); a slug never changes once given; a place
+  page IS the app opened on that place, and its static text states no count; every `?q=` and `?s=` address is
+  canonical to `/`; the text under the app stays `display: none` while the loading screen is up, so it is never the
+  page's LCP; robots.txt never closes `/api/` (link previews fetch `/api/og`, and X's and Facebook's fetchers obey
+  it). index.html's head between the `seo:head` markers is `headTags(homeMeta())`: change the generator, then the
+  copy (a test compares them). Crawlers run the app on these pages: the client sends no events when the user agent
+  names one (`CRAWLER_RE`), and each rendering is a real search against the archives.
+- Back button: layers register with `src/lib/backStack.ts`. Never call `history.pushState` directly. The address is
+  written through `addressOf` / `homePath` (`src/lib/placePage.ts`): a place page keeps its own path only while its
+  place is on screen.
 - Share has three entry points, each tagged `from` in its events: the headline's second line (the week's summary;
   nothing is stored), the photo viewer, and the pass view (plus the laptop lead photo's icon). The sheet and the
   photo viewer are portals on `<body>`: the app root is `position: fixed`, so nothing inside it can paint over them.

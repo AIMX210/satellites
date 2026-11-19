@@ -218,6 +218,47 @@ a swapped view is placed at once.
   `cloud` (%), `gsd` (m), `spot`. Coordinates are always rounded to 0.01°. `api/s.ts` unfurls it as the pass card.
   `controller.readUrlTarget` re-centres the 7-day window on `t` when `t` is more than 6 days old.
 
+### Search engines (`src/seo/`, `scripts/build-seo.ts`, `src/lib/placePage.ts`)
+
+The app is one page that computes everything in the browser, so on its own it gives a search engine one title for
+every place. `npm run build` therefore ends with `scripts/build-seo.ts`, which writes into `dist/`:
+
+- `place/<slug>.html`, served at `/place/<slug>`: one page for each of about 2,100 well-known places. It is the built
+  `index.html` with that place's title, description, canonical link, link-preview card and schema.org `Place` in the
+  head, the place itself in a JSON script, and plain text under the app. The app opens it straight on that place
+  (`src/app/links.ts`), and the address stays the page's own while that place is on screen.
+- `place.html`, served at `/place`: the list of those pages. A document of its own, with no app.
+- `sitemap.xml` and `robots.txt`.
+- `index.html` again, with the landing's own text under the app.
+
+The rules behind it:
+
+- **The set of pages is closed.** `src/seo/places.ts` chooses it from the offline place list: every curated landmark,
+  every city of about half a million people, cities down to about 100,000 in countries where an English page is what
+  a search shows, and each country's two largest towns. No page is ever made from a typed address or an `n=` label,
+  which would put other people's words in titles on this site.
+- **A slug never changes once given.** The largest place of a name keeps the bare slug (`london`); a namesake says
+  where it is (`london-ontario`, `valencia-spain`). Loosening a threshold adds pages and renames none.
+- **A place page is the app, not a door to it.** Its text says what the visitor is about to see and states no
+  count: the week's numbers exist only once the browser has computed them.
+- **One address a place.** `index.html` is canonical to `/`, so every `?q=` and `?s=` link points search engines at
+  the landing. A place page is canonical to itself, and `src/app/head.ts` keeps the title and the canonical link true
+  as the visitor moves on inside the app. The title is one function (`pageTitle`) for the static page and the app.
+- **The text under the app is for readers that run no JavaScript** (a crawler's first pass, an assistant, scripts
+  off). With scripts on, React replaces it under the loading screen; `index.html` keeps it `display: none` until
+  then, so it is never the page's first content in the speed numbers.
+- **Previews are never indexed.** `/place` and `/place/*` go through the Worker (`worker/router.ts`), which marks
+  every host outside `PRODUCTION_HOSTS` noindex; a place with no page answers 404 with the app.
+- **`robots.txt` closes nothing.** Link previews fetch their cards from `/api/og`, and X's and Facebook's fetchers
+  obey it.
+- **A crawler is not a visitor.** Search engines render these pages by running the app, so the client sends no
+  usage events when the browser names itself as a crawler (`CRAWLER_RE` in `src/lib/telemetry.ts`). Each rendering is
+  still a real search against the archives.
+
+`index.html` carries the landing's head between `<!-- seo:head -->` markers; it is `headTags(homeMeta())` from
+`src/seo/pages.ts`, and a test keeps the two equal. Every deploy rewrites every place page, because each carries
+the build's version: about 40 MB of small files for Cloudflare to take.
+
 ## App flow (integrator)
 `boot` (the wordmark; textures, fonts; the catalog loads in parallel) → `idle` (hero + search over the spinning globe) → `locating` → `computing`
 (camera flies to place; progress readouts) → `results` (panel + timeline; selecting a pass frames it and replays the
