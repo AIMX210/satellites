@@ -11,6 +11,7 @@ import {
   regionLabel,
   scrubMessage,
   setEnricher,
+  setLanguage,
   telemetryAllowed,
   track,
   utmOf,
@@ -162,6 +163,28 @@ describe('batching', () => {
     track('about_open')
     expect(() => flush()).not.toThrow()
   })
+
+  it('names the language the app shows in each batch, as it is when the batch is sent (0027)', () => {
+    const sent: string[] = []
+    _testing({ allowed: true, sender: (b) => sent.push(b), ctx: { device: 'phone' }, sid: 'sid_abcdefghijklmnop' })
+    track('about_open')
+    flush()
+    expect(JSON.parse(sent[0]).ctx).toEqual({ device: 'phone' }) // none handed in yet: no key
+    let locale = 'de'
+    setLanguage(() => locale)
+    track('about_open')
+    flush()
+    locale = 'pt-BR' // the language menu
+    track('about_open')
+    flush()
+    expect(sent.slice(1).map((b) => JSON.parse(b).ctx)).toEqual([{ device: 'phone', lang: 'de' }, { device: 'phone', lang: 'pt-BR' }])
+    setLanguage(() => {
+      throw new Error('boom')
+    })
+    track('about_open')
+    expect(() => flush()).not.toThrow()
+    expect(JSON.parse(sent[3]).ctx).toEqual({ device: 'phone' })
+  })
 })
 
 describe('derived events', () => {
@@ -289,6 +312,7 @@ describe('the boot-time arrival record (src/app/telemetryDeps.ts)', () => {
     vi.doMock('@/state/store', () => ({ useApp: {} }))
     vi.doMock('@/engine/catalog', () => ({ getSatInfo: () => undefined }))
     vi.doMock('@/app/messageRefs', () => ({ englishOf: () => undefined }))
+    vi.doMock('@/i18n/runtime', () => ({ currentLocale: () => 'en' })) // its import reads <html data-locale>
     return (await import('@/app/telemetryDeps')).arrival
   }
   it('?noanalytics=1 opts the tab out at boot, before the app rewrites the URL', async () => {

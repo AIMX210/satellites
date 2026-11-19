@@ -14,7 +14,7 @@
  */
 import type { AppState } from '@/state/store'
 import type { MessageRef, Report } from '@/types'
-import { cellOf, flush, regionLabel, scrubMessage, setArrival, setEnricher, startTelemetry, track, type Props } from '@/lib/telemetry'
+import { cellOf, flush, regionLabel, scrubMessage, setArrival, setEnricher, setLanguage, startTelemetry, track, type Props } from '@/lib/telemetry'
 import type * as Deps from './telemetryDeps'
 
 /** Handed in by src/main.tsx (src/app/telemetryDeps.ts): this chunk imports no app module itself, so adding it
@@ -85,10 +85,13 @@ export function phaseErrorMsg(st: Pick<AppState, 'error' | 'errorCause'>, englis
 
 let installed = false
 
-export function initTelemetry({ useApp, getSatInfo, canonicalPlace, cityLevelLabel, englishOf, arrival }: TelemetryDeps): void {
+export function initTelemetry({ useApp, getSatInfo, canonicalPlace, cityLevelLabel, englishOf, currentLocale, arrival }: TelemetryDeps): void {
   setArrival(arrival)
   if (installed || !startTelemetry()) return
   installed = true
+
+  // Every batch names the language the app shows when it is sent (a switch included), for the admin page's Languages.
+  setLanguage(currentLocale)
 
   setEnricher((_type, p) => {
     if (typeof p.norad === 'number' && !p.sat) {
