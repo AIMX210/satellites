@@ -105,8 +105,8 @@ const passView: typeof en = {
     noneToShow: 'З цього прольоту немає знімка, який можна показати. Схема прольоту.',
     archiveDown: 'Архів зараз не вдалося переглянути. Схема прольоту.',
     noScene: 'Кадру з цього прольоту не існує. Схема прольоту.',
-    notYet: 'Оприлюдненого кадру з цього прольоту ще немає. Кадри Sentinel-2 та Landsat зазвичай зʼявляються протягом доби.',
-    crewed: 'Пілотовані станції мають камери, але їхні фото не публікують із привʼязкою до місця й часу.',
+    notYet: 'Оприлюдненого кадру з цього прольоту ще немає. Кадри Sentinel-2 та Landsat зазвичай з’являються протягом доби.',
+    crewed: 'Пілотовані станції мають камери, але їхні фото не публікують із прив’язкою до місця й часу.',
     unavailable: 'Знімок цього прольоту недоступний.',
   },
   links: {
@@ -118,7 +118,7 @@ const passView: typeof en = {
   spot: {
     checking: 'Читаємо піксель у твоїй точці…',
     clear: 'Над твоєю точкою ясно.',
-    cirrus: 'Над твоєю точкою позначено тонкі перисті хмари. Знімок може бути мʼякшим.',
+    cirrus: 'Над твоєю точкою позначено тонкі перисті хмари. Знімок може бути м’якшим.',
     cloud: 'Над твоєю точкою хмари.',
     shadow: 'Твоя точка була в тіні від хмар.',
   },
@@ -133,7 +133,7 @@ const passView: typeof en = {
     sun: 'Сонце',
     cloud: 'Хмарність',
     // Strip labels wrap in a ~75 px cell: the no-break space keeps «в» with its word («ХМАРИ / В ТОЧЦІ»).
-    cloudAtSpot: 'Хмари в точці',
+    cloudAtSpot: 'Хмари в\u00a0точці',
   },
   band: { infrared: 'Тепловий', visible: 'Видимий', colour: 'Колір' },
   spotValue: { clear: 'Ясно', cirrus: 'Перисті', cloud: 'Хмари', shadow: 'Тінь' },
@@ -181,8 +181,10 @@ const passView: typeof en = {
   timeRange: (from: string, to: string) => `${from} → ${to}`,
   sunPhase: { day: 'День', twilight: 'Сутінки', night: 'Ніч' },
   fullDisc: 'Повний диск',
-  // «щохвилини» for one minute: «кожні 1 хв» is not Ukrainian.
-  everyMin: (n: number) => (n === 1 ? 'щохвилини' : `кожні ${count(n)}\u00a0хв`),
+  // «щохвилини» for one minute: «кожні 1 хв» is not Ukrainian. «кожну 21 хв» agrees with uk's `one`, as the pass
+  // paragraph and the geostationary row say it («хв» never inflects).
+  everyMin: (n: number) =>
+    n === 1 ? 'щохвилини' : `${f.category(n) === 'one' ? 'кожну' : 'кожні'} ${count(n)}\u00a0хв`,
   // The label «У твоєму небі» already says "up": the compass point alone (§4.2).
   upCompass: (compass: string) => compass,
   heading: (compass: string, ascending: boolean) => `${compass} · ${ascending ? 'висх.' : 'низх.'}`,

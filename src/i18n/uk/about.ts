@@ -6,7 +6,7 @@
  * is unknown, §1.4): «Якщо твоє місце було в досяжності», «вибраний проліт». The privacy rows are translated exactly,
  * promising nothing more or less than the English. The em dash appears only where Ukrainian grammar needs it for a
  * missing link verb («Автомобіль — це один піксель»), with an NBSP before it. The catalog line splits into two
- * sentences so the count changes only its noun («1 обʼєкт · 2 обʼєкти · 5 обʼєктів») and nothing has to agree with it.
+ * sentences so the count changes only its noun («1 об’єкт · 2 об’єкти · 5 об’єктів») and nothing has to agree with it.
  * Licence lines, product, agency and person's names stay as they are; OpenStreetMap's credit takes the form OSM
  * gives for Ukrainian. The Type credit names the Cyrillic faces too, because a uk reader sees Noto, not Instrument.
  */
@@ -56,14 +56,14 @@ const about: typeof en = {
 
   method: {
     orbits: [
-      'Для кожного обʼєкта на орбіті є відкритий набір чисел, що описує його шлях. ',
+      'Для кожного об’єкта на орбіті є відкритий набір чисел, що описує його шлях. ',
       link('CelesTrak'),
       ' публікує ці набори за даними спостережень Космічних сил США, а ми беремо свіжу копію кожні шість годин.',
     ] as AboutPart[],
     loaded: (n: number, stamp: string): AboutPart[] => [
       'Ця сторінка завантажила ',
       num(count(n)),
-      `\u00a0${f.plural(n, { one: 'обʼєкт', few: 'обʼєкти', many: 'обʼєктів', other: 'обʼєкта' })}. Каталог отримано `,
+      `\u00a0${f.plural(n, { one: 'об’єкт', few: 'об’єкти', many: 'об’єктів', other: 'об’єкта' })}. Каталог отримано `,
       num(stamp),
       '.',
     ],
@@ -124,14 +124,14 @@ const about: typeof en = {
       term: 'Хмари',
       text: 'Чимало фото\u00a0— це лише хмари. Якщо архів дає дані про хмарність, ми перевіряємо піксель саме над твоєю точкою й повідомляємо про це.',
     },
-    delays: { term: 'Затримки', text: 'Фото можуть зʼявитися через день-два.' },
+    delays: { term: 'Затримки', text: 'Фото можуть з’явитися через день-два.' },
   },
 
   privacy: {
     where: { term: 'Де це працює', text: 'Розрахунки орбіт відбуваються у твоєму браузері.' },
     kept: {
       term: 'Що ми зберігаємо',
-      text: 'Ми рахуємо пошуки за населеним пунктом і ділянкою близько 10\u00a0км, ніколи не за твоїм точним місцем, і ведемо лік того, що відкривають і чим діляться. Жодних IP-адрес, жодних власних файлів cookie, нічого, що повʼязувало б один візит із наступним.',
+      text: 'Ми рахуємо пошуки за населеним пунктом і ділянкою близько 10\u00a0км, ніколи не за твоїм точним місцем, і ведемо лік того, що відкривають і чим діляться. Жодних IP-адрес, жодних власних файлів cookie, нічого, що пов’язувало б один візит із наступним.',
     },
     others: {
       term: 'Хто ще це бачить',

@@ -167,7 +167,7 @@ const uk: CardMessages = {
   note: {
     imageInApp: 'Знімок відкривається в застосунку',
     imageUnavailable: 'Знімок зараз недоступний',
-    commercial: 'Закритий комерційний архів',
+    commercial: 'Комерційний архів, закритий',
     // "no public image yet": the image may exist and not be published, so «оприлюднено», not «знімка немає».
     inSwath: 'У смузі огляду, ще не оприлюднено',
     groundTrack: 'Траса в момент зближення',

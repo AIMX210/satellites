@@ -34,12 +34,12 @@ Examples show ordinary spaces for readability; where §6.3 says NBSP, the catalo
 | "made public" | **оприлюднено**: «Оприлюднено 31 знімок.» |
 | Weeks | «цього тижня» / «того тижня»; "last 7 days" «останні 7 днів», in prose «за останні 7 днів». |
 | `[PLACE]` | Only where Ukrainian puts the **nominative**: first, as a title («*Waterloo*. За останні 7 днів…»), after a colon, or alone. Referred back to as **сюди / тут / це місце**. Never after a preposition, never an object, never the subject of a past tense. |
-| `[SAT]` | Always with the head noun **супутник** (**станція** for a crewed station, when the code says so) wherever anything agrees with it. A nameless satellite is «невідомий супутник» in sentences, «Супутник» as a lone chip. |
+| `[SAT]` | Always with the head noun **супутник** (a crewed station too: no message gets a category) wherever anything agrees with it. A nameless satellite is «невідомий супутник» in sentences, «Супутник» as a lone chip. |
 | Plurals | CLDR `one / few / many / other`. The plural message wraps the **verb** too (21 → «дивився 21 супутник»). Oblique cases have their own table (§5.3). |
 | Numbers | `1 715` (NBSP), `7,46`, `25%`, `98,6°`, NBSP before units: `786 км`. |
 | Coordinates and compass | Coordinates are international notation, set as they arrive: `43.47, −80.54`, `16.2°S 063.0°E`. Readouts keep the compass point as it arrives (`SSW`); prose uses Ukrainian words (§4.2). |
 | Clocks | 24-hour with a colon, as they arrive. Preposition **о** 16:14, **об** 1:xx and 11:xx (chosen from the hour). |
-| Punctuation | «ялинки», nested „лапки“; apostrophe **ʼ (U+02BC)**; one-character ellipsis …; em dash only where grammar needs it. |
+| Punctuation | «ялинки», nested „лапки“; apostrophe **’ (U+2019)**, not U+02BC ’ (the design's faces have no U+02BC glyph, so it would fall to a system font; ’ looks the same and is the one in use in Ukrainian digital type); one-character ellipsis …; em dash only where grammar needs it. |
 | Euphony | у/в, і/й, з/із/зі by Правопис §23–25 in fixed text; next to a runtime slot, «та» for "and", and fixed words on both sides of у/в (§6.2). |
 | Cost and speed | Catalog text, `Intl`, two small uk-only tables (query transliteration, Ukrainian names for Ukraine's places) and uk-only fonts (≈ 76 kB once, self-hosted, preloaded, cached). No new service, no third-party request. A Cyrillic search for a Ukrainian place is answered by the offline list, like a Latin one; a uk share card renders with bundled fonts and makes no font request. English downloads exactly what it did before (Appendix B). |
 
@@ -71,8 +71,8 @@ hero and the share post, and blur "you" into "you all" on the one word the produ
 | Mono caps labels | **Nouns** and noun phrases | «Висота» · «Останні 7 днів» · «02 / Прольоти» | Verbs in labels: a label is a name, not a request |
 | Prompts that are not buttons | **ти**-imperative | «02 / Або спробуй» · «Або постав мітку на глобусі» | Infinitive: sounds like a button that does nothing |
 | Status labels (mono, short) | **Verbal nouns** | «Завантаження каталогу» · «Пошук» · «Збереження…» · «Зчитування» | «Завантажую…»: first person singular; who is "I"? |
-| Lines that narrate the product's work | **ми**-present | «Читаємо піксель у твоїй точці…» · «Повільне зʼєднання, ще завантажуємо» · locate chip «Шукаємо…» | A verbal noun here («Визначення…») does not say what is being done |
-| Error notices | Impersonal fact, then **ти** advice | «Не вдалося завантажити каталог орбіт. Перевір зʼєднання й спробуй ще раз.» | «Вибачте за незручності»: filler, banned |
+| Lines that narrate the product's work | **ми**-present | «Читаємо піксель у твоїй точці…» · «Повільне з’єднання, ще завантажуємо» · locate chip «Шукаємо…» | A verbal noun here («Визначення…») does not say what is being done |
+| Error notices | Impersonal fact, then **ти** advice | «Не вдалося завантажити каталог орбіт. Перевір з’єднання й спробуй ще раз.» | «Вибачте за незручності»: filler, banned |
 | About | **ти**, conversational, short answers | «Мене видно? Ні.» | ви: turns the page into terms and conditions |
 | Share posts and card invitation | **ти** to the next reader | «Цього тижня щось дивилося й на тебе.» | ви: breaks the echo of the hero |
 
@@ -86,7 +86,7 @@ slash forms («шукав(-ла)»). The English strings that need it, with thei
 |---|---|
 | If you were in reach, we call it "could have pointed here" | Якщо твоє місце було в досяжності, ми пишемо «Могли дивитися сюди». |
 | Shared with you | З тобою поділилися |
-| Made when you share | Зʼявиться, коли поділишся |
+| Made when you share | З’явиться, коли поділишся |
 | If you're on their side of Earth, you're in every frame | Якщо ти на їхньому боці Землі, ти в кожному кадрі. |
 | You're not in it | Тебе на знімку не видно. |
 | Your spot was in cloud shadow | Твоя точка була в тіні від хмар. |
@@ -291,11 +291,13 @@ Parts of the frame:
   оприлюднено. Архіви можуть запізнюватися на добу й більше.»
 - Likely, at night: «Тут була ніч. Метеосупутники сканують і вночі, в інфрачервоному діапазоні, тож цей супутник
   бачив твої хмари, а не вулиці.»
-- Could (commercial): «Супутник WorldView Legion 4 мав це місце в полі зору об 10:52 за місцевим часом. Він міг
+- Could (commercial): «Супутник WorldView Legion 4 мав це місце в полі зору о 10:52 за місцевим часом. Він міг
   дивитися сюди. Ми не можемо цього знати.»
-- Overhead, crewed (the code passes `meta.category === 'crewed'`): «Станція ISS (ZARYA) пролетіла на висоті 420 км о
-  21:03 EET, на 45° над твоїм горизонтом, на північному заході.» Near the zenith: «…майже в зеніті.» At night: «Там,
-  де ти, було темно. Якщо станцію ще освітлювало сонце, вона пролетіла твоїм небом яскравою точкою, що не блимає.»
+- Overhead (the message gets no satellite category, so a station is «супутник» here too, which is true: a station is
+  an artificial satellite): «Супутник ISS (ZARYA) пролетів на висоті 420 км о 21:03 EET, на 45° над твоїм горизонтом,
+  на північному заході.» Near the zenith: «…майже в зеніті.» At night (`darkStation`, which English words for a
+  station): «Там, де ти, було темно. Якщо станцію ще освітлювало сонце, вона пролетіла твоїм небом яскравою точкою,
+  що не блимає.»
 - Geostationary: «Супутник Meteosat-12 не пролітає. Він нерухомо висить на висоті 35 778 км над екватором (0.2°W) і
   кожні 10 хв сканує весь бік Землі під собою.» «Лінія цього сканування дійшла сюди близько 07:49 CET, рухаючись на
   північ.» Infrared: «Тут була ніч, тож це інфрачервоний знімок: верхівки хмар за температурою, що холодніше, то
@@ -377,7 +379,7 @@ lanes «Знімок · Імовірно · Можливо · У небі»; uni
 | `crossed` imaged / likely | «Waterloo. Супутник Sentinel-2C пролетів на висоті 795 км об 11:21 EST, 1 листопада 2026 року, рухаючись на південь.» |
 | `crossed` overhead | «Waterloo. Над цим місцем пролетів супутник ISS (ZARYA) о 21:03 EET, 1 листопада 2026 року, рухаючись на північний схід.» |
 | nameless | «Waterloo. Невідомий супутник пролетів…» |
-| `withinView` | «Waterloo. Супутник WorldView Legion 4 мав це місце в полі зору об 10:52 EST, 1 листопада 2026 року, рухаючись на північ.» |
+| `withinView` | «Waterloo. Супутник WorldView Legion 4 мав це місце в полі зору о 10:52 EST, 1 листопада 2026 року, рухаючись на північ.» |
 | `couldHave` | «Він міг дивитися сюди. Оператор не повідомляє, чи так було.» |
 | `straightDown` / `offNadir` | «Він дивився прямо вниз.» / «Він дивився вниз із відхиленням 5,4° від вертикалі.» |
 | `cloudCover` | «Хмарність: 25%.» |
@@ -386,8 +388,9 @@ lanes «Знімок · Імовірно · Можливо · У небі»; uni
 | `question` | «Що дивилося на тебе цього тижня?» |
 | `cardAlt` | «Картка для поширення з кадром зблизька цього тижня. Його зробив супутник Sentinel-2C.» · plain «Картка для поширення.» |
 
-The card and page frames receive no satellite category, so they keep «супутник» for a station too: it is true (a
-station is an artificial satellite). Only the app's sentences, which know `meta.category`, say «станція».
+No message, in the app, the post or the card, receives a satellite category, so every frame with `[SAT]` keeps
+«супутник» for a station too: it is true (a station is an artificial satellite). Only `darkStation`, which English
+words for a station, says «станція».
 
 **Post text:**
 
@@ -396,7 +399,7 @@ station is an artificial satellite). Only the app's sentences, which know `meta.
 | imaged | «Waterloo. Сюди дивився супутник Sentinel-2C з висоти 786 км, 1 листопада об 11:21 за місцевим часом. 10 м на піксель. Це справжній знімок.» |
 | likely | «Waterloo. Супутник Sentinel-2A пролетів на висоті 786 км, 1 листопада о 10:41 за місцевим часом. Це місце потрапило в смугу огляду його камери.» |
 | could | «Waterloo. Супутник WorldView Legion 4 мав це місце в полі зору 1 листопада о 10:52 за місцевим часом. Він міг дивитися сюди. Оператор не повідомляє, чи так було.» |
-| overhead (crewed) | «Waterloo. Над цим місцем на висоті 420 км пролетіла станція ISS (ZARYA), 1 листопада о 21:03 за місцевим часом.» |
+| overhead | «Waterloo. Над цим місцем на висоті 420 км пролетів супутник ISS (ZARYA), 1 листопада о 21:03 за місцевим часом.» |
 | hooks | «Цього тижня щось дивилося й на тебе.» / «Що пролітало над тобою цього тижня?» |
 | credit | «via @armaangupt0» (unchanged) |
 
@@ -419,7 +422,7 @@ of capture (§8).
 | SUN 16.2°S 063.0°E | Сонце 16.2°S 063.0°E (coordinates as they arrive) |
 | Sub-solar point · GMST 18:41:50 | Підсонячна точка · GMST 18:41:50 |
 | Scene (replay clock) | Кадр |
-| 12,847 OBJECTS · Objects · CATALOG | 12 847 обʼєктів · Обʼєкти · Каталог |
+| 12,847 OBJECTS · Objects · CATALOG | 12 847 об’єктів · Об’єкти · Каталог |
 | Fetched [stamp] · Stale, 3 D ago | Отримано [stamp] · Застарілий, 3 дн. тому |
 | Catalog unavailable · Loading catalog | Каталог недоступний · Завантаження каталогу |
 | Fault · Trying… · Back | Збій · Пробуємо… · Назад |
@@ -460,7 +463,7 @@ Gender: m. / f. / n. / pl. Plural forms are `one · few · many`.
 |---|---|---|
 | satellite | супутник | m.; супутник · супутники · супутників. Never «сателіт». |
 | a satellite (no name) | невідомий супутник (sentences) · Супутник (a lone chip or callout) | |
-| station (crewed) | станція | f. «станція пролетіла». In app sentences when `meta.category` is `crewed`. |
+| station (crewed) | станція | f. Only where the English itself words a station (`darkStation`: «станцію … вона»). No message gets a category, so a station named by `[SAT]` is «супутник». |
 | pass (noun) / overflight | проліт | m.; проліт · прольоти · прольотів · прольоту. Never «пас», «прохід». |
 | to pass over | пролітати / пролетіти над | Past tense only with «супутник» / «станція» (§5.2). Never the bare «пролетів» as a label: slang for "failed". |
 | to watch (product verb) | дивитися (на / сюди) | Never стежити, спостерігати, слідкувати, фотографувати. |
@@ -518,7 +521,7 @@ Gender: m. / f. / n. / pl. Plural forms are `one · few · many`.
 | place / spot | місце / точка | «твоя точка». Never «пляма». |
 | pin / reticle | мітка | f. «Поставити мітку». Never «пін», «приціл», «ціль». |
 | acquired / imaged | знімок (noun) | Never «зафіксовано», «захоплено» (§8). |
-| object (catalog) | обʼєкт | m.; обʼєкт · обʼєкти · обʼєктів. |
+| object (catalog) | об’єкт | m.; об’єкт · об’єкти · об’єктів. |
 | pass geometry / plan view | геометрія прольоту / схема прольоту | |
 | app | застосунок | Never «додаток». |
 | share | поділитися | «Поділитися прольотом / знімком / тижнем». |
@@ -586,7 +589,7 @@ the oblast is still Дніпропетровська; Кіровоградськ
 
 Settlements: every UA row of 10,000+ people (≈ 350 names, ≈ 3 kB gzipped), generated by a script from GeoNames
 `alternateNamesV2` (language `uk`, preferred names), read once by a native reviewer, never typed by hand. It covers the
-landmark aliases too: Kiev → Київ, Pripyat → Припʼять, Kishinev → Кишинів.
+landmark aliases too: Kiev → Київ, Pripyat → Прип’ять, Kishinev → Кишинів.
 
 ### 4.4 Curated places (`places` namespace, every id)
 
@@ -630,11 +633,11 @@ Ukrainians write.
 | richat | Структура Рішат | Сахара, Мавританія |
 | greatBlueHole | Велика блакитна діра | Риф Лайтгаус, Беліз |
 | boraBora | Бора-Бора | Острови Товариства, Французька Полінезія |
-| hardyReef | Риф Гарді | Великий Барʼєрний риф, Австралія |
+| hardyReef | Риф Гарді | Великий Бар’єрний риф, Австралія |
 | male | Мале | Атол Північний Мале, Мальдіви |
 | deadSea | Солеварні Мертвого моря | Південний басейн, Ізраїль і Йорданія |
-| binghamCanyon | Карʼєр Бінгем-Каньйон | Юта, США |
-| mountWhaleback | Карʼєр Маунт-Вейлбек | Пілбара, Австралія |
+| binghamCanyon | Кар’єр Бінгем-Каньйон | Юта, США |
+| mountWhaleback | Кар’єр Маунт-Вейлбек | Пілбара, Австралія |
 | etna | Етна | Сицилія, Італія |
 | santorini | Санторині | Кіклади, Греція |
 | teide | Тейде | Тенерифе, Іспанія |
@@ -688,9 +691,10 @@ English adds "the" to oceans and deserts (`placeInProse`); uk frames take the ra
   [SAT] пролетів…», «Сюди дивився супутник [SAT].»
 - After the first mention, «він / його» refer to «супутник»: «Він дивився прямо вниз.» «Його радар…»
 - Oblique cases fall on the head noun; the name stays as is: «у полі зору супутника [SAT]», «зробив супутник [SAT]».
-- **Crewed stations** in the app's sentences (`meta.category === 'crewed'`): «станція [SAT]» with feminine agreement
-  throughout («Станція ISS (ZARYA) пролетіла…», «станцію… вона…»). Card and page frames, which get no category, keep
-  «супутник».
+- **Crewed stations:** no message receives a satellite category (the app's pass sentences, posts, cards and pages
+  alike), so a station named by `[SAT]` is «супутник [SAT]» with masculine agreement («Супутник ISS (ZARYA)
+  пролетів…»), grammatical for any satellite. «Станція» with feminine agreement appears only where the English itself
+  words a station (`darkStation`: «станцію… вона…»). Never hard-code «Станція [SAT] пролетіла».
 - **No name** (`sat` undefined): «невідомий супутник» takes the head noun's place («Сюди дивився невідомий супутник.»,
   «…смугу огляду невідомого супутника.»). «NORAD 60989» is a name: «супутник NORAD 60989».
 - Two or more names are a compound subject: plural verb, no head noun («Umbra та Capella пролітали…»).
@@ -713,7 +717,7 @@ CLDR uk (verified in Node, ICU 78 / CLDR 48): `one` 1, 21, 31, 101 (not 11); `fe
 | добова мозаїка | 1 добова мозаїка | 2 добові мозаїки | 5 добових мозаїк | 1,5 добової мозаїки |
 | ясний кадр | 1 ясний кадр | 2 ясні кадри | 5 ясних кадрів | 1,5 ясного кадру |
 | кадр | 1 кадр | 2 кадри | 5 кадрів | 1,5 кадру |
-| обʼєкт | 1 обʼєкт | 2 обʼєкти | 5 обʼєктів | 1,5 обʼєкта |
+| об’єкт | 1 об’єкт | 2 об’єкти | 5 об’єктів | 1,5 об’єкта |
 | збіг (search matches) | 1 збіг | 2 збіги | 5 збігів | 1,5 збігу |
 | раз | 1 раз | 2 рази | 5 разів | 1,5 раза |
 | день | 1 день | 2 дні | 5 днів | 1,5 дня |
@@ -759,7 +763,7 @@ Rules:
 - **Date:** «1 листопада» from Intl (`{ day: 'numeric', month: 'long' }` gives the genitive month). With the year:
   «1 листопада 2026 року».
 - **Never put an Intl weekday after a preposition:** «у неділю» needs the accusative and Intl gives «неділя». In
-  sentences and posts, drop the weekday; a standalone label may lead with it: «пʼятниця, 6 листопада».
+  sentences and posts, drop the weekday; a standalone label may lead with it: «п’ятниця, 6 листопада».
 - **Clock:** «о [TIME]», but «об [TIME]» when the hour is 1 or 11 («об одній», «об одинадцятій»). The message takes
   the hour: `hour === 1 || hour === 11 ? 'об' : 'о'`. Approximate times: «близько 07:49 CET», no preposition.
 - Local time: «об 11:21 за місцевим часом». The zone follows the clock: «о 16:14:21 UTC».
@@ -784,7 +788,7 @@ The alternation rules (§6.2) depend on the sounds on both sides, and code canno
 
 - **Quotation marks:** «ялинки», „лапки“ inside them. Never straight or “English” quotes. A typed query is quoted
   with «ялинки»: «Нічого не знайдено за запитом «Kyiv».»; „лапки“ only for a quote inside a quote.
-- **Apostrophe:** **ʼ U+02BC** everywhere («зʼєднання», «обʼєкт», «пʼятниця», «Припʼять»). It is what Intl prints, and
+- **Apostrophe:** **’ U+02BC** everywhere («з’єднання», «об’єкт», «п’ятниця», «Прип’ять»). It is what Intl prints, and
   it is in Instrument Sans's Latin subset, so it never falls back to another face. Never U+0027, U+2019 or a backtick.
 - **Ellipsis:** one character … (U+2026), no space before: «Пошук…».
 - **Dashes:** em dash — with spaces only where grammar needs it (a missing link verb: «Автомобіль — це один піксель»,
@@ -800,7 +804,7 @@ Native readers notice this first. Apply it to every fixed string; next to a slot
   colon, dash) before a consonant; and before в, ф, льв, св, тв, хв whatever comes before («у твоєму браузері», «у
   відкритих каталогах»). «в» between vowels, after a vowel before a consonant («ця точка … потрапила в кадр», «Ясно в
   точці»), and at the start of a sentence or after a pause before a vowel («вночі, в інфрачервоному діапазоні»).
-- **і / й.** «й» between vowels and after a vowel before a consonant («зʼєднання й спробуй», «Гувера й озеро», «дивилося
+- **і / й.** «й» between vowels and after a vowel before a consonant («з’єднання й спробуй», «Гувера й озеро», «дивилося
   й на тебе»). «і» between consonants («знімальних і пілотованих»), at the start of a sentence, after a pause, and before
   й, я, ю, є, ї («Ізраїль і Йорданія»).
 - **з / із / зі.** «з» between vowels and after a vowel before most consonants; «із» between consonants («кадрів із
@@ -832,7 +836,7 @@ Native readers notice this first. Apply it to every fixed string; next to a slot
 | Where | Form | Intl options |
 |---|---|---|
 | Prose | «1 листопада», «з 29 жовтня по 5 листопада» | `{ day: 'numeric', month: 'long' }` |
-| Standalone label with weekday | «пʼятниця, 6 листопада» | `{ weekday: 'long', day: 'numeric', month: 'long' }` |
+| Standalone label with weekday | «п’ятниця, 6 листопада» | `{ weekday: 'long', day: 'numeric', month: 'long' }` |
 | Short (chips, timeline, lists) | «нд, 1 лист.» | `{ weekday: 'short', day: 'numeric', month: 'short' }` |
 | Card stamp | «нд, 1 лист. 2026 · 11:21 EST» | short parts + year, without Intl's «р.» |
 | Week stamp | «7 днів до 1 лист. 2026» | no weekday |
@@ -885,7 +889,7 @@ study, `scratchpad/i18n/type/cyrillic/index.md`):
 
 - **Order: brand faces first.** `src/styles/scripts.css` keeps Latin letters and digits in Instrument and Martian Mono
   in every language, so «Sentinel-2C», «256», «UTC» and a Latin place in the accent look the same everywhere. Cyrillic
-  falls through to the next family. Every punctuation mark uk needs (ʼ, «», „“, —, …, NBSP) is in Instrument's Latin
+  falls through to the next family. Every punctuation mark uk needs (’, «», „“, —, …, NBSP) is in Instrument's Latin
   subset.
 - **Display and body: Noto Sans (variable, `wdth` + `wght`)**, Fontsource `noto-sans-cyrillic-wdth-normal.woff2`
   (34.0 kB), one `@font-face` with the Cyrillic `unicode-range` (U+0400–045F, U+0490–0491, U+2116), weight 100 900,
@@ -935,7 +939,7 @@ Budgets (measured or from the English catalog's constraints):
 | Search status | short | «Пошук» · «Немає збігів» · «Пошук недоступний» · «1 збіг · 3 збіги · 5 збігів» |
 | Card footer (beside the domain, 466 px row) | ≈ 20 characters | «Що дивилося на тебе?» · «Обери місце на Землі» |
 | Card readout labels (155 px column, 13 px) | ≤ 15 characters | «Піксель мозаїки» ≈ 142 px |
-| Boot note at 320 px | one line | «Повільне зʼєднання, ще завантажуємо» (35) |
+| Boot note at 320 px | one line | «Повільне з’єднання, ще завантажуємо» (35) |
 
 Strategies, in order:
 1. A noun instead of a verb phrase in labels («Курс», «Висота», «Повтор»).
@@ -1014,7 +1018,7 @@ the reader's town is read through that. The copy stays flat and factual.
 **Place-name politics:**
 
 - Ukrainian places in their Ukrainian forms: Київ, Одеса, Харків, Львів, Миколаїв, Запоріжжя, Дніпро (not
-  Dnipropetrovsk), Кропивницький, Бахмут, Чорнобиль, Припʼять. Never Kiev, Odessa, Kharkov, Lvov, Nikolaev, Chernobyl,
+  Dnipropetrovsk), Кропивницький, Бахмут, Чорнобиль, Прип’ять. Never Kiev, Odessa, Kharkov, Lvov, Nikolaev, Chernobyl,
   Pripyat in uk. The §4.3 table does this for the offline list.
 - «в Україні», never «на Україні».
 - Neighbours: Білорусь, Молдова, Кишинів.
@@ -1075,7 +1079,7 @@ browser to English, not Ukrainian).
 1. **Address:** ти in sentences, never ви; buttons infinitives; no past tense or short adjective with ти as subject.
 2. **[PLACE]** only as a title before a full stop, after a colon, or alone; no preposition before it; never an object
    or the subject of a past tense. Read it with «Одеса», «Україна», «Карпати», «Їжакевичі».
-3. **[SAT]** has «супутник» (or «станція» for a crewed station in the app) beside it wherever anything agrees; «він /
+3. **[SAT]** has «супутник» (a station too: no message gets a category) beside it wherever anything agrees; «він /
    його» only after that; a nameless satellite is «невідомий супутник».
 4. **Counts** go through `one / few / many / other`; the verb sits inside the plural message; a governed count takes
    its case (§5.3); check 1, 2, 5, 11, 21, 22, 25, 111, 421.
@@ -1084,7 +1088,7 @@ browser to English, not Ukrainian).
 6. **Euphony:** у/в, і/й, з/із/зі by §6.2; «та» next to a slot.
 7. **Numbers:** decimal comma, NBSP grouping and units (as ` ` in source), «25%» and «98,6°» tight; coordinates
    and compass points in readouts untouched.
-8. **Punctuation:** «ялинки», ʼ (U+02BC), …, em dash only where grammar needs it, no exclamation marks.
+8. **Punctuation:** «ялинки», ’ (U+02BC), …, em dash only where grammar needs it, no exclamation marks.
 9. **Dates and times:** genitive months from Intl; no weekday after a preposition; «о / об» by the hour; «за місцевим
    часом»; numeric relative times; no «р.» in stamps.
 10. **Length:** within §7's budgets; mono labels counted in characters.
@@ -1120,7 +1124,7 @@ Landing
 | Name, address or lat, lon | Назва, адреса, координати |
 | Searching · No match · Search unavailable | Пошук · Немає збігів · Пошук недоступний |
 | 1 match / 3 matches / 5 matches | 1 збіг / 3 збіги / 5 збігів |
-| Nothing matches "q". Try a city, a landmark, or coordinates. | Нічого не знайдено за запитом «q». Спробуй місто, памʼятку або координати. |
+| Nothing matches "q". Try a city, a landmark, or coordinates. | Нічого не знайдено за запитом «q». Спробуй місто, пам’ятку або координати. |
 | 02 / OR TRY · Or click the globe to drop a pin | 02 / Або спробуй · Або постав мітку на глобусі |
 | Use my location · Locate me · Near me · Locating… | Моє місцезнаходження · Де я · Поруч · Шукаємо… |
 | Requesting position · Naming the place | Запит місцезнаходження · Визначення назви |
@@ -1131,10 +1135,10 @@ Landing
 | Surprise me: a famous place picked at random (aria) | Навмання: відоме місце, вибране випадково |
 | Pin dropped: Waterloo. Press Enter or an arrow to see what passed over it. | Мітку поставлено: Waterloo. Натисни Enter або стрілку, щоб побачити, що пролітало тут. |
 | Built by @armaangupt0 | Автор — @armaangupt0 |
-| Loading Watched · Slow connection, still loading | Завантаження Watched · Повільне зʼєднання, ще завантажуємо |
+| Loading Watched · Slow connection, still loading | Завантаження Watched · Повільне з’єднання, ще завантажуємо |
 | Watched · Something watched you this week (tab) | Watched · Цього тижня щось дивилося на тебе |
 | 3D view unavailable · WebGL 2 is off in this browser | 3D-вигляд недоступний · У цьому браузері вимкнено WebGL 2 |
-| Could not load the orbit catalog. Check your connection and try again. | Не вдалося завантажити каталог орбіт. Перевір зʼєднання й спробуй ще раз. |
+| Could not load the orbit catalog. Check your connection and try again. | Не вдалося завантажити каталог орбіт. Перевір з’єднання й спробуй ще раз. |
 
 Results
 
@@ -1159,7 +1163,7 @@ Results
 | Clear · Thin cirrus · Cloud shadow · Cloud at spot · Clouded · 93% · Cloud 25% | Ясно · Перисті хмари · Тінь від хмар · Хмари в точці · Хмарно · 93% · Хмари 25% |
 | Clear at your spot (lightbox) | Ясно в точці |
 | Reading the pixel at your spot… · Clear over your spot. · Your spot was in cloud shadow. | Читаємо піксель у твоїй точці… · Над твоєю точкою ясно. · Твоя точка була в тіні від хмар. |
-| Thin cirrus flagged over your spot; it may soften the picture. | Над твоєю точкою позначено тонкі перисті хмари. Знімок може бути мʼякшим. |
+| Thin cirrus flagged over your spot; it may soften the picture. | Над твоєю точкою позначено тонкі перисті хмари. Знімок може бути м’якшим. |
 | Sentinel-2C image of Waterloo. The place is at the centre. (alt) | Знімок із супутника Sentinel-2C: Waterloo. Це місце в центрі кадру. |
 | Photo 1 of 27, closest look (spoken) | Знімок 1 з 27, кадр зблизька |
 | Time-lapse · This place, year by year | Таймлапс · Це місце рік за роком |
@@ -1189,7 +1193,7 @@ Pass detail readouts
 | Geometry · Replay (section rules) | Геометрія · Повтор |
 | Download image · Downloading… · Open image to save it · View source | Зберегти знімок · Збереження… · Відкрити знімок, щоб зберегти · Джерело |
 | No public image: commercial archives are private. Plan view of the pass. | Оприлюдненого знімка немає: комерційні архіви закриті. Схема прольоту. |
-| Crewed stations carry cameras, but their photos are not published by place and time. | Пілотовані станції мають камери, але їхні фото не публікують із привʼязкою до місця й часу. |
+| Crewed stations carry cameras, but their photos are not published by place and time. | Пілотовані станції мають камери, але їхні фото не публікують із прив’язкою до місця й часу. |
 
 Share sheet
 
@@ -1201,7 +1205,7 @@ Share sheet
 | Copy link · Copied · Post to X · Copy image · Save PNG · Try again | Копіювати · Скопійовано · Допис в X · Копіювати картку · Зберегти · Повторити |
 | Link · Post (field labels) | URL · Допис |
 | Direct link: the short link could not be made right now | Пряме посилання: коротке зараз не вдалося створити |
-| Creating link… · Made when you share | Створення посилання… · Зʼявиться, коли поділишся |
+| Creating link… · Made when you share | Створення посилання… · З’явиться, коли поділишся |
 | The card could not be rendered here; the link still works. | Тут не вдалося створити картку, але посилання працює. |
 
 Time-lapse
@@ -1214,7 +1218,7 @@ Time-lapse
 | Listing the archive · Choosing clear looks · Developing frames | Перегляд архіву · Вибір ясних кадрів · Проявлення кадрів |
 | Too cloudy here for a time-lapse. · 2 clear looks since 2015 · 3 needed | Тут забагато хмар для таймлапсу. · 2 ясні кадри з 2015 року · потрібно 3 |
 | No clear look since 2015 · 1 clear look | Жодного ясного кадру з 2015 року · 1 ясний кадр |
-| The archive did not answer. · Planetary Computer could not be reached | Архів не відповів. · Не вдалося зʼєднатися з Planetary Computer |
+| The archive did not answer. · Planetary Computer could not be reached | Архів не відповів. · Не вдалося з’єднатися з Planetary Computer |
 | No time-lapse for this place | Для цього місця таймлапсу немає |
 | Each frame is the same 10 km square, taken by Sentinel-2 and toned like every photo here. Each year aims for a different season; a year with no clear look is left out. | Кожен кадр — той самий квадрат 10 × 10 км, знятий супутником Sentinel-2 та тонований, як і всі фото тут. Кожен рік припадає на інший сезон. Рік без ясного кадру пропущено. |
 | Frame 3 of 12: … · Play · Pause | Кадр 3 з 12: … · Відтворити · Пауза |
@@ -1237,7 +1241,7 @@ new is stored, and an English visitor downloads exactly what they did before.
    where CLAUDE.md budgets ~2% of searches. Fix, uk chunk only: transliterate the query (only the query) by the
    official national table (КМУ 2010) before `placeKey`: а a, б b, в v, г h, ґ g, д d, е e, є ye/ie, ж zh, з z, и y,
    і i, ї yi/i, й y/i, к k, л l, м m, н n, о o, п p, р r, с s, т t, у u, ф f, х kh, ц ts, ч ch, ш sh, щ shch, ь and
-   apostrophes dropped (ʼ U+02BC is a letter to `placeKey`, so strip it first), ю yu/iu, я ya/ia (the first form at the
+   apostrophes dropped (’ U+02BC is a letter to `placeKey`, so strip it first), ю yu/iu, я ya/ia (the first form at the
    start of a word), зг → zgh; best-effort ы y, э e, ё yo, ъ dropped. It yields the GeoNames names in the offline files:
    Київ → kyiv, Харків → kharkiv, Одеса → odesa, Запоріжжя → zaporizhzhia, Хмельницький → khmelnytskyi, Ужгород →
    uzhhorod; «Ки» → ky for prefix typing. About 0.3 kB. Foreign places typed in Cyrillic (Варшава, Париж) still go to
@@ -1271,7 +1275,7 @@ The critique's 36 items: 29 accepted, 7 partly accepted, 0 rejected.
 | # | Item | Resolution |
 |---|---|---|
 | 1 | Blocker: «навести / наведення» is strike wording | Accepted: could = «Могли дивитися сюди», frame «Сюди міг дивитися супутник [SAT].», «Зона огляду», About «спрямовують»; наводити / навести / наведення / навідник / наводка banned (§3.6, §4.1, §8). |
-| 2 | Blocker: Cyrillic searches skip the offline list | Accepted: КМУ 2010 query transliteration in the uk chunk, ʼ stripped first; Ukrainian display table for UA places; Cost row rewritten. Foreign Cyrillic exonyms measured before any alias table (§0, §4.3, Appendix B.1–2). |
+| 2 | Blocker: Cyrillic searches skip the offline list | Accepted: КМУ 2010 query transliteration in the uk chunk, ’ stripped first; Ukrainian display table for UA places; Cost row rewritten. Foreign Cyrillic exonyms measured before any alias table (§0, §4.3, Appendix B.1–2). |
 | 3 | Blocker: no Cyrillic typefaces chosen | Partly accepted: Noto Sans (wdth) and Noto Serif Display Italic chosen from the measured type study, preload and `FIRST_FONTS` added; the accent budget is ≤ 25 kB (a static instance), not 15 kB, because a true Cyrillic italic subset for any place name needs the whole basic block (§6.10). |
 | 4 | Share cards: wrong face, overflow, font fetches | Accepted: bundled Cyrillic TTF instances, no Google Fonts request; and the card hero is set in four lines, measured at 480 px against 466 (§3.1, §6.10). |
 | 5 | «накрив / накрила» means hit with fire | Accepted: «потрапило в смугу огляду»; clouds «закрили точку»; «накрити» banned (§3.6, §3.7, §8). |
@@ -1283,7 +1287,7 @@ The critique's 36 items: 29 accepted, 7 partly accepted, 0 rejected.
 | 11 | Share-sheet labels overflow | Partly accepted, measured (8 px a character, ≈ 90 px a third at 360 px): «Копіювати URL» (104 px) and «Зберегти PNG» (96 px) do not fit, so «Копіювати» and «Зберегти», plus «Повторити» for Try again; «URL», «Допис», «Допис в X», «Копіювати картку», «Поділитися карткою», «Скопійовано» as proposed (§7, Appendix A). |
 | 12 | Other fixed-width strings over budget | Accepted: «Тепловий / Видимий / Колір», gallery and lightbox statuses, «12 за 7 днів», hints, «Немає збігів», card footer, «7 днів до 1 лист. 2026» (§7). |
 | 13 | No rule for counts in oblique cases | Accepted: oblique-case table and the fixed footnote; the engine row joins with «та», not «і», before a number (§5.3). |
-| 14 | Euphony rule missing and broken | Accepted, made precise: after a pause «у/і» only before a consonant, «в» before a vowel; «зʼєднання й спробуй» shipped; «та» beside slots (§5.6, §6.2). |
+| 14 | Euphony rule missing and broken | Accepted, made precise: after a pause «у/і» only before a consonant, «в» before a vowel; «з’єднання й спробуй» shipped; «та» beside slots (§5.6, §6.2). |
 | 15 | "Cyrillic face first" contradicts the design system | Accepted: brand faces first, Cyrillic after them (§6.10). |
 | 16 | Chornobyl breaks the guide's rule; label dishonest | Accepted, exception chosen: stays in the pool as the one stated exception, labelled «Чорнобильська АЕС», «Київська область, Україна» (§4.4, §8). |
 | 17 | «він» points back to a plural | Accepted: «тож цей супутник бачив твої хмари» (§2.4, §3.5). |
@@ -1294,7 +1298,7 @@ The critique's 36 items: 29 accepted, 7 partly accepted, 0 rejected.
 | 22 | English count helpers and abbreviations | Partly accepted: «проліт» and «супутник» pluralised in uk, «ще 12», replay short / long; but `showAll*` put the count in parentheses («Показати всі супутники (31)») to avoid «усі 31 супутник» agreement (§5.3). |
 | 23 | NBSP instruction misleads | Accepted: the translator writes the NBSP before a noun, as ` ` (§3.3, §6.3). |
 | 24 | Wording | Accepted, all eight: «додав … до», «точкою, що не блимає», «Оператор не повідомляє», «Пошукай місце за назвою», «Це в реальному часі?», present tense on About, «Архіви не відповіли», «Цього тижня знімків не оприлюднено» (§3, Appendix A). |
-| 25 | «станція [SAT]» for crewed stations | Partly accepted: the rule for the app's sentences, which know `meta.category`; card and page frames get no category and keep «супутник» (§3.5, §5.2). |
+| 25 | «станція [SAT]» for crewed stations | Partly accepted, then corrected against the English: no message (app, post, card or page) receives `meta.category`, so `[SAT]` keeps «супутник» for a station everywhere; «станція» only where the English words a station (`darkStation`) (§3.5, §5.2). |
 | 26 | ти decision lacks trade-off and inventory | Accepted (§1.2, §1.4). |
 | 27 | Length estimate optimistic | Accepted: +30% prose, up to ×2 labels (§7). |
 | 28 | File names need Latin | Partly accepted: slugs come from the canonical English label (watched-kyiv-…), transliteration only for a label with no Latin form, `fileNamePlace` «place» (Appendix A). |

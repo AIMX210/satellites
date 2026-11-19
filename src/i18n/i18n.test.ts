@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs'
 import { afterEach, describe, expect, it } from 'vitest'
 import { LOCALES, LOCALE_INFO, localeForTag, matchLocale, type Locale } from '../../api/_lib/i18n/locales'
 import { PLURALS, fmt } from '../../api/_lib/i18n/format'
@@ -123,6 +124,18 @@ describe('rich parts', () => {
     expect(plain(s)).toBe('In the last 7 days, 256 satellites watched Waterloo.')
     expect(plain([[num('25', '%')], [num('7.46', 'km/s')]])).toBe('25% 7.46 km/s')
     expect(plain([['今週。'], ['見ていた。']], '')).toBe('今週。見ていた。')
+  })
+})
+
+describe('catalog characters', () => {
+  // The design's faces draw ’ (U+2019); they have no glyph for U+02BC ʼ, so a translation using it would print its
+  // apostrophes in a system font (src/styles/scripts.css).
+  it('uses ’ for apostrophes, never U+02BC', () => {
+    const dirs = readdirSync('src/i18n', { withFileTypes: true }).filter((d) => d.isDirectory() && d.name !== 'en')
+    const files = dirs.flatMap((d) => readdirSync(`src/i18n/${d.name}`).filter((f) => f.endsWith('.ts')).map((f) => `src/i18n/${d.name}/${f}`))
+    files.push(...readdirSync('api/_lib/i18n/card').map((f) => `api/_lib/i18n/card/${f}`))
+    const bad = files.filter((f) => readFileSync(f, 'utf8').includes('\u02bc'))
+    expect(bad).toEqual([])
   })
 })
 

@@ -100,7 +100,7 @@ const timelapse: typeof en = {
   tooFew: (n: number, since: number, needed: number) =>
     `${n === 0 ? 'Жодного ясного кадру з' : `${looks(n)} ${f.plural(n, { one: 'із', few: 'з', many: 'із', other: 'з' })}`} ${since} року · потрібно ${f.int(needed)}`,
   noAnswer: 'Архів не відповів.',
-  unreachable: 'Не вдалося зʼєднатися з Planetary Computer',
+  unreachable: 'Не вдалося з’єднатися з Planetary Computer',
   retry: 'Повторити',
 
   // ── Sharing and the video ─────────────────────────────────────────────────────────────────

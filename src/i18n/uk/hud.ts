@@ -34,8 +34,8 @@ const hud: typeof en = {
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) =>
-    `${Number.isInteger(n) ? f.int(n) : f.dec(n, 1)}\u00a0${f.plural(n, { one: 'обʼєкт', few: 'обʼєкти', many: 'обʼєктів', other: 'обʼєкта' })}`,
-  objectsPending: 'Обʼєкти',
+    `${Number.isInteger(n) ? f.int(n) : f.dec(n, 1)}\u00a0${f.plural(n, { one: 'об’єкт', few: 'об’єкти', many: 'об’єктів', other: 'об’єкта' })}`,
+  objectsPending: 'Об’єкти',
   catalog: 'Каталог',
   fetched: (stamp: string) => `Отримано ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Застарілий, ' : ''}${age(unit, n)} тому`,

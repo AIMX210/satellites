@@ -3,7 +3,7 @@
  * something happened.
  *
  * Why Intl for every word: months and weekdays come from CLDR through api/_lib/i18n/dates.ts («нд, 1 лист.»,
- * «пʼятниця, 6 листопада», genitive months, ʼ U+02BC), never from a hand-made table. Relative times are numeric (an
+ * «п’ятниця, 6 листопада», genitive months, ’ U+02BC), never from a hand-made table. Relative times are numeric (an
  * instrument says «30 год тому», not «учора»): short style for minutes and hours, long for days («2 дні тому», since
  * the short «2 дн. тому» is not how a sentence says it), long throughout for screen readers. Ranges keep the arrow the
  * landing's kicker uses. Clocks, zones and the T− countdown stay international and are never touched.

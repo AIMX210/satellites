@@ -59,7 +59,7 @@ const share: typeof en = {
   linkLabel: 'URL',
   directLink: 'Пряме посилання: коротке зараз не вдалося створити',
   creatingLink: 'Створення посилання…',
-  linkLater: 'Зʼявиться, коли поділишся',
+  linkLater: 'З’явиться, коли поділишся',
   postLabel: 'Допис',
   renderFailed: 'Тут не вдалося створити картку, але посилання працює.',
 
