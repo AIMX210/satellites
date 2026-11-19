@@ -207,9 +207,9 @@ const results: typeof en = {
     ok: 'OK',
     /** "1.84秒": a Latin "s" is a clipping Japanese readers do not use */
     seconds: (s: number) => `${f.dec(s, 2)}秒`,
-    /** "**7日間の時間枠 · **11/1 05:47 → 11/8 05:47 UTC" (the strong part hides on phones) */
+    /** "**7日間 · **11/1 05:47 → 11/8 05:47 UTC" (the strong part hides on phones; 時間枠 would cut the end on laptops) */
     window: (days: number, from: UtcWhen, to: UtcWhen): Rich => [
-      strong(`${f.int(days)}日間の時間枠 · `),
+      strong(`${f.int(days)}日間 · `),
       `${dayMonth(from.ms, 'UTC')} ${from.time} → ${dayMonth(to.ms, 'UTC')} ${to.time} UTC`,
     ],
     percent: (pct: number) => `${f.int(pct)}%`,

@@ -6,9 +6,10 @@
  * Why it is shaped this way:
  *  - The place is always the last block. A text block after it would open a display line on a particle (を見ていた。),
  *    and words inside the accent would be set in the serif, so the card headline is a relative clause with a noun
- *    ending (7基の衛星が／見ていた／*Waterloo*。): the accent holds only the place and its 。 (dropped when the place
+ *    ending (衛星7基が／見ていた／*Waterloo*。): the accent holds only the place and its 。 (dropped when the place
  *    was cut short, as English drops its stop). Each phrase is its own text part, because a ja line breaks only between
- *    parts (§6.7): at most four lead parts of at most seven glyphs.
+ *    parts (§6.7): at most four lead parts, each within the 466 px column at the 84 px size (about 5.5 glyphs), which is
+ *    why the count reads 衛星7基が and not 7基の衛星が (6.5 glyphs with three digits: が fell alone onto a line).
  *  - Japanese needs no inflection, article, gender or space around a name: particles attach straight to any place or
  *    satellite name, in any script. A nameless satellite is ある衛星 in sentences and 不明な衛星 as a label.
  *  - Dates are built by hand from the place's local fields (dates.ts dateFormat at the place's zone): 2026/11/1(日) in
@@ -59,8 +60,8 @@ const named = (sat: SatName) => sat ?? SOME_SATELLITE
 
 /** The place as the accent block, with its 。 as its own part unless the place was cut short */
 const placeBlock = (place: string, cut: boolean) => (cut ? accent(place) : accent(place, '。'))
-/** "7基の衛星が" "見ていた", or the zero sentence's phrases: the headline's lead parts, one line each */
-const watched = (n: number) => (n > 0 ? [`${f.int(n)}基の衛星が`, '見ていた'] : ['追跡中の', 'どの衛星も', '見ていなかった'])
+/** "衛星7基が" "見ていた", or the zero sentence's phrases: the headline's lead parts, one line each */
+const watched = (n: number) => (n > 0 ? [`衛星${f.int(n)}基が`, '見ていた'] : ['追跡中の', 'どの衛星も', '見ていなかった'])
 
 /** Eight compass points for prose, 0 north, 1 northeast, … 7 northwest */
 const COMPASS = ['北', '北東', '東', '南東', '南', '南西', '西', '北西']

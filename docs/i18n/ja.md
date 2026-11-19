@@ -38,7 +38,7 @@ has, once per link (the card is cached per link).
 | Numbers | 1,715 · 7.46 km/s · 25% · 98.6° · 786 km. Half-width digits, comma grouping, never 万 / 億. |
 | Dates | Mono: 11/1(日), 2026/11/1(日). Prose: 11月1日（日）, 2026年11月1日（日）. Spoken: 11月1日日曜日. 24 h clock. |
 | Ranges | Mono: 10–30 M, kicker 2026/11/12 → 11/19 UTC. Prose: 10〜30 m (U+301C). Never ～ (U+FF5E). |
-| Share card headline | Place last, a relative clause with a noun ending: 7基の衛星が／見ていた／*Waterloo*。 |
+| Share card headline | Place last, a relative clause with a noun ending: 衛星7基が／見ていた／*Waterloo*。 |
 | Type | System gothic and Mincho; Latin and digits stay in the brand faces. Upright accent, never slanted. palt on display. Labels 12 px, nothing under 11 px. |
 | Country names | Intl.DisplayNames long style with seven overrides (§8). |
 
@@ -410,8 +410,8 @@ English 「Waterloo.」. Give each phrase as its own text part: each part is one
 
 | Message | Parts (text parts, then the accent) | Plain (share page title) |
 |---|---|---|
-| `headline(n)` | 「[N]基の衛星が」「見ていた」 + accent([PLACE], 。) | 7基の衛星が見ていたWaterloo。 |
-| `headlineWeek(n ≥ 1)` | 「この1週間、」「[N]基の衛星が」「見ていた」 + accent([PLACE], 。) | この1週間、7基の衛星が見ていたWaterloo。 |
+| `headline(n)` | 「衛星[N]基が」「見ていた」 + accent([PLACE], 。) | 衛星7基が見ていたWaterloo。 |
+| `headlineWeek(n ≥ 1)` | 「この1週間、」「衛星[N]基が」「見ていた」 + accent([PLACE], 。) | この1週間、衛星7基が見ていたWaterloo。 |
 | `headlineWeek(0)` | 「この1週間、」「追跡中の」「どの衛星も」「見ていなかった」 + accent([PLACE], 。) | この1週間、追跡中のどの衛星も見ていなかったWaterloo。 |
 | `headlineBy.imaged` | 「[SAT]が」「見ていた」 + accent | Sentinel-2Cが見ていたWaterloo。 |
 | `headlineBy.likely` | 「[SAT]の」「観測幅に入った」 + accent | Sentinel-2Cの観測幅に入ったWaterloo。 |
@@ -419,8 +419,10 @@ English 「Waterloo.」. Give each phrase as its own text part: each part is one
 | `headlineBy.overhead` | 「[SAT]が」「上空を通った」 + accent | ISSが上空を通ったWaterloo。 |
 
 - `sat` undefined: ある衛星が / ある衛星の. `cut` (the place ends in …): drop the 。, as English drops its stop.
-- Keep each part at 7 full-width glyphs or fewer (a 3-digit count with 基の衛星が is ≈ 6.7 em), and at most four lead
-  parts.
+- Keep each part within one line of the card's column: 466 px at the 84 px headline size holds about 5.5 full-width
+  glyphs, and a longer part wraps inside itself (a 3-digit count with 基の衛星が is ≈ 6.5 em: が fell alone onto the
+  next line, in the PNG and the sheet's preview alike). So the count goes first, 衛星[N]基が (≈ 5.4 em with three
+  digits), the counter-first order this guide already uses for 衛星7基 in prose. At most four lead parts.
 - The results headline and the pass view stay full sentences (§3.3, §3.4): inline rich text handles a particle after
   the accent. The card differs on purpose because the layout forces it.
 
@@ -659,7 +661,7 @@ of a fault, never this one.
 | `photoAlt` | [sat]による[place]の画像。中央がこの場所。 |
 | `acquiring` / `noImage` / `retry` | 取得中 / 画像なし / 再試行 |
 | `north` / `expandLabel` / `expandTitle` | N / 画像を拡大 / 拡大(F) |
-| `stillRendering` / `cropMissing` | まだ生成中。大きなシーンは10秒以上かかる。 / アーカイブがこの範囲を返さなかった。混んでいるのかもしれない。画像そのものは存在する。 |
+| `stillRendering` / `cropMissing` | まだ生成中。大きなシーンは10秒以上かかる。 / アーカイブがこの範囲を返さなかった。混んでいるのかもしれない。画像自体は存在する。 |
 | `scanLine` | `['ライン ', strong(line), ' → ' + lines]` → ライン 0412 → 1024 (走査線 is reserved for the geostationary scan) |
 | `awaiting` | 通過待ち · 走査待ち (then · T−00:00:41) |
 | lightbox `dialogLabel` / `spokenPosition` / `spokenLastClear` | 画像 / 27枚中3枚目、最も詳細な画像 / 直近の晴天画像。この1週間より前のもの |

@@ -95,7 +95,7 @@ const gallery: typeof en = {
 
   // ── a photo developing (the pushbroom reveal) ────────────────────────────────────────────
   stillRendering: 'まだ生成中。大きなシーンは10秒以上かかることがある。',
-  cropMissing: 'アーカイブがこの範囲を返さなかった。混んでいるのかもしれない。画像そのものは存在する。',
+  cropMissing: 'アーカイブがこの範囲を返さなかった。混んでいるのかもしれない。画像自体は存在する。',
   /** ライン, not 走査線: that word is the geostationary scan's */
   scanLine: (line: string, lines: string): Rich => ['ライン ', strong(line), ` → ${lines}`],
   awaiting: { pass: '通過待ち', scan: '走査待ち' },

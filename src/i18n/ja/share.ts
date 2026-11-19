@@ -18,10 +18,10 @@ import { jaDayProse } from '../../../api/_lib/i18n/card/ja'
 
 const f = fmt('ja')
 
-/** "795 km": the satellite's altitude, in whole km */
-const km = (altitudeKm: number) => `${f.int(altitudeKm)} km`
+/** "795 km": the satellite's altitude, in whole km (a no-break space: the post never breaks a number from its unit) */
+const km = (altitudeKm: number) => `${f.int(altitudeKm)}\u00a0km`
 /** "10 m", "2 km": a pixel's size, in whole metres or whole km from 1,000 m */
-const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)} km` : `${f.int(m)} m`)
+const pixel = (m: number) => (m >= 1000 ? `${f.int(m / 1000)}\u00a0km` : `${f.int(m)}\u00a0m`)
 /** "1ピクセル10 m。", or nothing when the pixel size is unknown */
 const perPixel = (m?: number) => (m !== undefined ? `1ピクセル${pixel(m)}。` : '')
 /** "11月1日（日）現地時間11:21": the moment, right after the topic */
