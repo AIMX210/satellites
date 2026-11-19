@@ -616,8 +616,8 @@
     padding: 4px;
     scroll-padding-inline: 4px;
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - var(--chips-fade, 28px)), transparent);
+    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - var(--chips-fade, 28px)), transparent);
   }
   .chips[data-end] {
     -webkit-mask-image: none;
@@ -726,7 +726,8 @@
     margin-top: 12px;
   }
   /* One swipeable row of chips, led by "Or try", bleeding to the bezel; the fade at the trailing edge
-     says it scrolls (it lifts once the row is scrolled to its end). */
+     says it scrolls (it lifts once the row is scrolled to its end). It is 28 px, or reaches back to the end of the
+     last whole chip where the edge would cut the next one mid-word (--chips-fade, Landing.tsx). */
   .chips {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -735,8 +736,8 @@
     scroll-snap-type: x proximity;
     scroll-padding-inline: var(--margin);
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - var(--chips-fade, 28px)), transparent);
+    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - var(--chips-fade, 28px)), transparent);
   }
   .chips[data-end] {
     -webkit-mask-image: none;
@@ -942,8 +943,8 @@
     padding: 0;
     padding-inline-end: var(--margin);
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - var(--chips-fade, 28px)), transparent);
+    mask-image: linear-gradient(var(--to-inline-end), #000 calc(100% - var(--chips-fade, 28px)), transparent);
   }
   .chips[data-end] {
     -webkit-mask-image: none;
@@ -1026,8 +1027,20 @@
 /* A scrolled chip row (the stacked and short-wide layouts, where it is a scroller): the leading edge fades as the
    trailing one does, so the chip leaving at the start is never hard-cut at the bezel (U-5). */
 .chips[data-scrolled] {
-  -webkit-mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px, #000 calc(100% - 28px), transparent);
-  mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  -webkit-mask-image: linear-gradient(
+    var(--to-inline-end),
+    transparent,
+    #000 28px,
+    #000 calc(100% - var(--chips-fade, 28px)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    var(--to-inline-end),
+    transparent,
+    #000 28px,
+    #000 calc(100% - var(--chips-fade, 28px)),
+    transparent
+  );
 }
 .chips[data-scrolled][data-end] {
   -webkit-mask-image: linear-gradient(var(--to-inline-end), transparent, #000 28px);

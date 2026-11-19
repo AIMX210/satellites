@@ -73,6 +73,11 @@ useApp.subscribe((st, prev) => {
 const PANEL_PAD_TOP = 22
 /** Wide: the globe's point cloud keeps this much air from the end of the text. */
 const TEXT_CLEAR = 24
+/**
+ * The chip row's trailing fade reaches back to the last whole chip once that ends further than this from the edge
+ * (Landing.module.css `--chips-fade`, 28 px otherwise): past ~64 px the cut chip's words show beyond the 28 px fade.
+ */
+const FADE_REACH = 64
 /** The maker's credit under the example chips. */
 const CREDIT_HANDLE = '@armaangupt0'
 const CREDIT_URL = 'https://x.com/armaangupt0'
@@ -576,7 +581,8 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
   const pinReady = useApp((st) => st.pinReady)
   const touch = useMediaQuery(TOUCH_QUERY)
   // Swipeable row (stacked): the edge fade that says "more" lifts once the row is scrolled to its end, and the
-  // leading edge fades too once the row has scrolled (a chip is never hard-cut at either edge).
+  // leading edge fades too once the row has scrolled (a chip is never hard-cut at either edge). The trailing fade
+  // reaches back to the last whole chip (`--chips-fade`).
   const listRef = useRef<HTMLUListElement>(null)
   const markEnd = () => {
     const ul = listRef.current
@@ -588,14 +594,46 @@ function Examples({ onPick, disabled, locate }: { onPick: (p: Place) => void; di
     else delete ul.dataset.end
     if (scrolled > 2) ul.dataset.scrolled = ''
     else delete ul.dataset.scrolled
+    // The trailing fade starts where the last whole chip ends when the edge would otherwise cut the next chip with
+    // more than a letter or two in full ink ("PRÈS DE MO", French at 360 px; English at 320 px showed "NEAR M"): that
+    // chip then fades out as a whole. A sliver of the next chip inside the usual 28 px fade says "more" as before.
+    const rtl = getComputedStyle(ul).direction === 'rtl'
+    const box = ul.getBoundingClientRect()
+    // In the order they are seen ("Surprise me" is last in the list and first on screen), skipping any not shown.
+    const ends = [...ul.children]
+      .map((li) => li.getBoundingClientRect())
+      .filter((r) => r.width > 0)
+      .map((r) => (rtl ? box.right - r.left : r.right - box.left)) // from the row's start, either direction
+      .sort((a, b) => a - b)
+    let fade = 0
+    for (const e of ends) {
+      if (e > box.width + 0.5) break
+      fade = box.width - e
+    }
+    if (!end && fade > FADE_REACH) ul.style.setProperty('--chips-fade', `${Math.round(fade)}px`)
+    else ul.style.removeProperty('--chips-fade')
   }
   useLayoutEffect(() => {
     const ul = listRef.current
     if (!ul || typeof ResizeObserver === 'undefined') return
-    // The observer's first callback marks it, after layout and before the first paint: no forced layout.
+    // The observer's first callback marks it, after layout and before the first paint: no forced layout. The chips
+    // are observed too (a language switch or the fonts arriving change their widths, not the row's), and the list
+    // (touch adds "Drop a pin" once the globe is ready).
     const ro = new ResizeObserver(markEnd)
-    ro.observe(ul)
-    return () => ro.disconnect()
+    const observe = () => {
+      ro.observe(ul)
+      for (const li of ul.children) ro.observe(li)
+    }
+    observe()
+    const mo = new MutationObserver(() => {
+      observe()
+      markEnd()
+    })
+    mo.observe(ul, { childList: true })
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+    }
   }, [])
   return (
     // A CSS rise (fill: backwards) rather than <Reveal>: the block's delay lives in CSS with the field's.
