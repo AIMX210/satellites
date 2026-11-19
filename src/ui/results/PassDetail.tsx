@@ -126,7 +126,7 @@ function PassBody({ model, pass, entering }: { model: ResultsModel; pass: Pass; 
         {capture && isDailyMosaic(capture) ? <p className={r.footnote}>{m.mosaicNote(capture.gsdM)}</p> : null}
         {capture && isRadar(capture) ? <p className={r.footnote}>{m.radarNote}</p> : null}
         {blurb ? <p className={r.blurb}>{blurb}</p> : null}
-        {capture ? <Links capture={capture} pass={pass} meta={meta} placeLabel={place.label} /> : null}
+        {capture ? <Links capture={capture} pass={pass} meta={meta} placeLabel={place.canonicalLabel ?? place.label} /> : null}
       </section>
 
       {rest ? (
@@ -193,7 +193,9 @@ function Links({ capture, pass, meta, placeLabel }: { capture: Capture; pass: Pa
       const ext = blob.type.includes('png') ? 'png' : 'jpg'
       const a = document.createElement('a')
       a.href = URL.createObjectURL(blob)
-      a.download = `watched-${slug(meta.name)}-${slug(placeLabel)}-${new Date(pass.tClosest).toISOString().slice(0, 10)}.${ext}`
+      // The place's English name when it has one (as links and shares are named); a name only in another script, whose
+      // slug is empty, drops out rather than leave "--".
+      a.download = `${['watched', slug(meta.name), slug(placeLabel), new Date(pass.tClosest).toISOString().slice(0, 10)].filter(Boolean).join('-')}.${ext}`
       document.body.appendChild(a)
       a.click()
       a.remove()
