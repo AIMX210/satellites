@@ -189,10 +189,12 @@
   line-break: strict;
   text-autospace: normal;
 }
+/* Chinese: the catalogs write the space between Han and Latin or digits themselves, and a date token takes none inside
+   (both guides, §5.1 and §6.2); autospace put quarter-em gaps into 11月1日. */
 :root:lang(zh-Hans),
 :root:lang(zh-Hant) {
   line-break: strict;
-  text-autospace: normal;
+  text-autospace: no-autospace;
 }
 :root:lang(ko) {
   word-break: keep-all;
