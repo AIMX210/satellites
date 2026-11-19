@@ -9,10 +9,10 @@
 --     with the tab's next events), one that names none keeps it. Not indexed, so the batch's update stays HOT (0017).
 --   * event_aggregates and event_hour_aggregates add the breakdown `session.lang` next to session.device and the
 --     others. A tab counts once an Eastern day (0019), in the language its row has when its first hour that day is
---     rolled, about an hour later (a switch after that counts from the next day). Tabs with no language (an app from
---     before this, a row from before this migration) are left out of the list, as tabs with no referrer are of
---     session.ref: dimTotals['session.lang'] is the tabs that have one. Every rollup after them carries the breakdown
---     like the others (top 200 values an hour and a day: there are 16).
+--     rolled, at :17 an hour or two later (a switch after that counts from the next day). Tabs with no language (an
+--     app from before this, a row from before this migration) are left out of the list, as tabs with no referrer are
+--     of session.ref: dimTotals['session.lang'] is the tabs that have one. Every rollup after them carries the
+--     breakdown like the others (top 200 values an hour and a day: there are 16).
 --   * admin_stats_compute lists all 16 (`top` keeps 15 values of every other list); nothing else in it changes.
 -- Nothing is backfilled: no language was recorded before. The client may deploy before or after this: log_events
 -- ignores a ctx key it does not know, and the page says "No languages recorded yet" until the list has rows.

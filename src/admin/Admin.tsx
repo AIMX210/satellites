@@ -529,7 +529,7 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
 
       <Section n={9} title="LANGUAGES">
         <div className="a-grid3">
-          <Panel title="TABS BY LANGUAGE" wide note="A tab counts once a day, in the language it showed an hour or so after it first came that day; a later switch counts from the next day.">
+          <Panel title="TABS BY LANGUAGE" wide note="A tab counts once a day, in the language it showed an hour or two after it first came that day; a later switch counts from the next day.">
             <RankList rows={langs} total={langTabs} max={LOCALES.length} label={languageName} empty="No languages recorded yet" cols />
           </Panel>
           <Panel title="IN USE" note="Of the tabs that recorded a language: tabs from before the app sent one are not counted here.">
