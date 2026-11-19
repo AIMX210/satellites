@@ -46,7 +46,7 @@ const PURE_LIB_MODULES = /src[\\/]lib[\\/]geo3\.ts$/
  * use-sync-external-store under it) is React Three Fiber's, and taking it here pulled the globe into the first load.
  */
 const I18N_CORE =
-  /src[\\/]i18n[\\/](ns|accentFont|runtime|Rich)\.tsx?$|api[\\/]_lib[\\/]i18n[\\/](locales|parts|format)\.ts$|src[\\/]ui[\\/]system[\\/]format\.ts$|src[\\/]imagery[\\/]placeKey\.ts$|src[\\/]i18n[\\/]en[\\/]time\.ts$|src[\\/]ui[\\/]results[\\/]lib[\\/]time\.ts$|node_modules[\\/]zustand[\\/]esm[\\/](index|vanilla|react)\.mjs$/
+  /src[\\/]i18n[\\/](ns|accentFont|runtime|Rich)\.tsx?$|api[\\/]_lib[\\/]i18n[\\/](locales|parts|format|units)\.ts$|src[\\/]ui[\\/]system[\\/]format\.ts$|src[\\/]imagery[\\/]placeKey\.ts$|src[\\/]i18n[\\/]en[\\/]time\.ts$|src[\\/]ui[\\/]results[\\/]lib[\\/]time\.ts$|node_modules[\\/]zustand[\\/]esm[\\/](index|vanilla|react)\.mjs$/
 
 /**
  * The verdicts' English names ride with the results' meta (the results panel and About both load it), not in a chunk
@@ -75,6 +75,22 @@ function overflightHtml(): Plugin {
   let base = '/'
   return {
     name: 'overflight-html',
+    // Two chunks that import each other evaluate one before the other has set its exports: the release of 2026-11-19
+    // died on load with "n is not a function" (engine imported the i18n core, which imported a helper Rolldown had put
+    // in engine). Fail the build on any cycle instead of shipping it.
+    generateBundle(_options, bundle) {
+      const imports = new Map<string, string[]>()
+      for (const o of Object.values(bundle)) if (o.type === 'chunk') imports.set(o.fileName, o.imports)
+      const state = new Map<string, 'open' | 'done'>()
+      const visit = (file: string, path: string[]) => {
+        if (state.get(file) === 'done') return
+        if (state.get(file) === 'open') this.error(`chunk import cycle: ${[...path.slice(path.indexOf(file)), file].join(' → ')}`)
+        state.set(file, 'open')
+        for (const next of imports.get(file) ?? []) visit(next, [...path, file])
+        state.set(file, 'done')
+      }
+      for (const file of imports.keys()) visit(file, [])
+    },
     configResolved(config) {
       origin = siteOrigin({ ...process.env, ...loadEnv(config.mode, config.root, '') } as Record<string, string>)
       base = config.base
