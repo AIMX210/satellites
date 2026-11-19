@@ -172,6 +172,26 @@ describe('card language', () => {
       locale,
     )
 
+  it('tracks the default card’s hero as the landing hero is tracked in the card’s language', () => {
+    const tracks = (locale: Locale) => {
+      const out = new Set<unknown>()
+      const walk = (node: unknown): void => {
+        if (Array.isArray(node)) return node.forEach(walk)
+        if (!node || typeof node !== 'object' || !('props' in node)) return
+        const { style, children } = (node as ReactElement<{ style?: Record<string, unknown>; children?: unknown }>).props
+        if (style?.fontFamily === FAMILY.display && style.fontSize === 88) out.add(style.letterSpacing)
+        walk(children)
+      }
+      walk(defaultCard({ host: '', locale }))
+      return [...out]
+    }
+    // --track-display: tokens.css, and scripts.css for Cyrillic and CJK (Arabic waits for the right-to-left card)
+    expect(tracks('en')).toEqual([-0.02 * 88])
+    expect(tracks('pl')).toEqual([-0.02 * 88])
+    expect(tracks('uk')).toEqual([-0.015 * 88])
+    expect(tracks('ja')).toEqual([-0.01 * 88])
+  })
+
   it('tells satori the language whose Han forms the card wants, and nothing for any other', () => {
     const want: Partial<Record<Locale, string>> = { ja: 'ja-JP', ko: 'ko-KR', 'zh-Hans': 'zh-CN', 'zh-Hant': 'zh-TW' }
     for (const locale of LOCALES) {

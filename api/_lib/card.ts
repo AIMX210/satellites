@@ -48,7 +48,7 @@ import {
   type Tone,
 } from './cardSpec.js'
 import { cardMessages } from './i18n/card/index.js'
-import { DEFAULT_LOCALE, LOCALE_INFO, type Locale } from './i18n/locales.js'
+import { DEFAULT_LOCALE, LOCALE_INFO, type Locale, type Script } from './i18n/locales.js'
 import { isAccent, plain, type Rich } from './i18n/parts.js'
 import { bundled } from './bundled.js'
 import { FAMILY } from './fonts.js'
@@ -200,7 +200,8 @@ function plate(locale: Locale, p: Plate, dataUri: string | null): ReactElement {
 /**
  * The headline block, centred in its band (PANEL.headTop … headBottom): the headline's parts as blocks in their order
  * (text in the condensed display face, the accent, the place, in the serif, P × placeGap between two blocks), then
- * the optional sub-line.
+ * the optional sub-line. The display text is tracked -0.02em in every language, as the app's own preview and PNG of
+ * this card are (src/ui/share/ShareCard.tsx and card.ts): the unfurl shows what the sharer saw.
  */
 function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size'>): ReactElement {
   const S = spec.size
@@ -367,15 +368,24 @@ export function defaultPlateDataUri(): Promise<string | null> {
 }
 
 /**
+ * The landing hero's tracking per script, in em (--track-display in src/styles/tokens.css, overridden in scripts.css):
+ * Cyrillic lowercase is a denser picket fence than Latin, Han and kana denser again. Arabic is tracked as Latin until
+ * the right-to-left card gives it the web's (none: tracking breaks its joins).
+ */
+const HERO_TRACK: Record<Script, number> = { latin: -0.02, cyrillic: -0.015, cjk: -0.01, arabic: -0.02 }
+
+/**
  * The hero, set in explicit lines (satori has no inline formatting, and a free wrap left "week." as a
  * widow): "Something / watched *you* / this week." The last line is the widest (≈ 445 of the
  * 466px column at 88px); it never wraps, so the phrase always stays whole.
  *
  * Each line is the catalog's parts, each its own span: a part boundary with a space at it gets the word gap (0.2em,
  * a flex gap: satori has no inline spacing), so "watched" and the serif "you" stay two words while parts written
- * without a space between them (Chinese, Japanese) touch.
+ * without a space between them (Chinese, Japanese) touch. The display words are tracked as the landing hero's are in
+ * the card's language (HERO_TRACK).
  */
-function heroLines(size: number, lines: Rich[]): ReactElement {
+function heroLines(locale: Locale, size: number, lines: Rich[]): ReactElement {
+  const track = HERO_TRACK[LOCALE_INFO[locale].script]
   const w = (s: string, serif = false, style: CSSProperties = {}) =>
     h(
       'span',
@@ -386,7 +396,7 @@ function heroLines(size: number, lines: Rich[]): ReactElement {
           fontWeight: serif ? 400 : 600,
           // Instrument Serif sits smaller than the condensed sans at the same size: match cap height.
           fontSize: serif ? size * 1.12 : size,
-          letterSpacing: serif ? 0 : -0.02 * size,
+          letterSpacing: serif ? 0 : track * size,
           lineHeight: 0.94,
           whiteSpace: 'nowrap',
           // "you" (the serif accent) in signal, as on the landing hero.
@@ -432,7 +442,7 @@ export function defaultCard({ host, plateDataUri, locale = DEFAULT_LOCALE }: { h
     row(PANEL.top, lockup(), mono(locale, m.lastWeek, CARD_FS.row, C.bone2)),
     rule(PANEL.rule1),
     // The hero is centred between the top rule and the footer rule, lifted as the pass headline is (owner: even spacing).
-    abs({ left: PANEL.x, top: PANEL.headTop, width: PANEL.w, height: PANEL.rule3 - 12 - PANEL.headTop, flexDirection: 'column', justifyContent: 'center' }, heroLines(88, m.hero)),
+    abs({ left: PANEL.x, top: PANEL.headTop, width: PANEL.w, height: PANEL.rule3 - 12 - PANEL.headTop, flexDirection: 'column', justifyContent: 'center' }, heroLines(locale, 88, m.hero)),
     rule(PANEL.rule3),
     row(PANEL.foot, mono(locale, m.enterAnyPlace, 15, C.bone), host ? mono(locale, host, CARD_FS.row, C.bone2, { textTransform: 'none', letterSpacing: 0.5 }) : undefined),
   )
