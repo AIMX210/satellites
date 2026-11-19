@@ -73,6 +73,12 @@
   line-height: 1.2;
   color: var(--bone-3);
 }
+.stripLabel[data-tight] {
+  letter-spacing: 0;
+}
+.stripLabel[data-tight='2'] {
+  font-size: var(--fs-micro, 9.5px);
+}
 .stripValue {
   font-family: var(--font-mono);
   font-stretch: 87.5%;
@@ -83,9 +89,20 @@
   font-variant-numeric: tabular-nums;
   color: var(--bone);
   white-space: nowrap;
+  /* The unit goes under its value when the cell is too narrow for both ("−43.1°" over "Night"), never cut. */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  align-self: start;
+  column-gap: calc(var(--fs-label) * 0.3);
+  row-gap: 3px;
+}
+/* The last cell's end padding is the strip's edge, not a gutter to a neighbour: its value may run into it, as English's
+   "32.7° day" and "25% scene" always have, and wraps only past it ("−43.1° night" was cut at the edge). */
+.stripCell:last-child .stripValue {
+  margin-inline-end: -8px;
 }
 .stripUnit {
-  margin-inline-start: 0.3em;
   font-size: var(--fs-label);
   font-weight: 400;
   letter-spacing: var(--track-label);
@@ -93,6 +110,13 @@
   color: var(--bone-3);
 }
 @media (max-width: 420px) {
+  .stripValue {
+    font-size: 18px;
+  }
+}
+/* A strip as narrow as a phone's on a laptop (the 1024 px pass column is 350 px) takes the phone's numbers: at 21 px,
+   "−20.0°" alone was wider than its cell. */
+@container (max-width: 360px) {
   .stripValue {
     font-size: 18px;
   }

@@ -16,8 +16,10 @@
   scroll-margin-top: 12px;
 }
 .groupHead {
+  /* One line: the count stays on the header's line in every language ("1.565 Überflüge"); the title's order words
+     give way first, then the satellite count, whole (measured, PassList.tsx), and only then does the verdict's name
+     take a second line, never the count. */
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 4px 12px;
@@ -35,13 +37,27 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
   color: var(--bone);
 }
+/* The verdict's name is never cut: on the narrowest phones a long one ("Kemungkinan besar diawasi") takes two balanced
+   lines beside its count. */
+.groupName {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: normal;
+  text-wrap: balance;
+}
 .order {
+  flex: 0 1000 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-inline-start: -4px;
   color: var(--bone-3);
 }
 .groupCount {
+  flex: none;
   color: var(--bone-2);
 }
 .signal {
@@ -417,7 +433,8 @@
 /*
  * Narrow lists (phones, narrow docks): the two meta lines must fit, never end in an ellipsis. What gives way: the
  * words "Latest" / "Closest", the zone abbreviation (the timeline and the footnote name it), and on a
- * photograph's row the ground distance (its cloud cover is what it is judged by). Tracking tightens.
+ * photograph's row the ground distance (its cloud cover is what it is judged by). Tracking tightens. These widths
+ * are English's; a row whose words are longer still measures itself and gives way further (`data-level`, below).
  */
 @container (max-width: 370px) {
   .giveWay,
@@ -440,4 +457,19 @@
   .subRow {
     letter-spacing: 0;
   }
+}
+/* Measured (PassList.tsx shedRef): a row whose meta lines still overflow hides its `data-shed` parts level by level,
+   and a header whose verdict's name would take two lines, its satellite count. */
+.main[data-level='1'] [data-shed='1'],
+.main[data-level='2'] [data-shed='1'],
+.main[data-level='3'] [data-shed],
+.main[data-level='4'] [data-shed],
+.groupHead[data-level='1'] [data-shed] {
+  display: none;
+}
+.main:is([data-level='2'], [data-level='3']) .metaLine {
+  letter-spacing: 0;
+}
+.main[data-level='4'] .metaLine {
+  letter-spacing: -0.02em;
 }

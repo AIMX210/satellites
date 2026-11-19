@@ -12,7 +12,7 @@
  * Honest about cloud (decision #2): a mostly-cloud scene says so in its caption and its spot line, and a
  * near-total one is dimmed so it is never the brightest thing on screen.
  */
-import { startTransition, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { startTransition, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { isRadarUrl, isTonedUrl, spotCloud, tonedImageBlob } from '@/imagery'
 import type { Capture, Pass, SpotCloud } from '@/types'
 import { Glyph, Readout, Rule, ScrambleOnce, cx, fmtLon, fmtNorad, fmtUtcDate, fmtUtcTime } from '@/ui/system'
@@ -263,8 +263,9 @@ function ReadoutStrip({ pass: p, meta, capture, cloud }: { pass: Pass; meta: Sat
       : { id: 'pixel', label: L.pixel, value: res !== undefined ? (res < 1 ? f.dec(res, 2) : f.int(res)) : '—', unit: res !== undefined ? U.m : undefined },
     last,
   ]
+  const ref = useTightLabels(cells.map((c) => c.label).join('\n'))
   return (
-    <div className={s.strip}>
+    <div className={s.strip} ref={ref}>
       {cells.map((c) => (
         <div key={c.id} className={s.stripCell}>
           <span className={s.stripLabel}>{c.label}</span>
@@ -276,6 +277,36 @@ function ReadoutStrip({ pass: p, meta, capture, cloud }: { pass: Pass; meta: Sat
       ))}
     </div>
   )
+}
+
+/**
+ * A label that is one word wider than its cell ("Dépointage", "Nubosidad" on a phone) cannot wrap: it drops its
+ * tracking (`data-tight="1"`), and on the narrowest phones takes the micro size too ("2"), rather than run over the
+ * divider or the strip's edge. Measured, so a label that fits is left as it is; again when the strip's width or a
+ * font changes.
+ */
+function useTightLabels(words: string) {
+  const ref = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const strip = ref.current
+    if (!strip) return
+    const fit = () => {
+      for (const label of strip.querySelectorAll<HTMLElement>(`.${s.stripLabel}`)) {
+        delete label.dataset.tight
+        for (let level = 1; level <= 2 && label.scrollWidth > label.clientWidth; level++) label.dataset.tight = String(level)
+      }
+    }
+    fit()
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(fit)
+    ro.observe(strip)
+    document.fonts?.addEventListener('loadingdone', fit)
+    return () => {
+      ro.disconnect()
+      document.fonts?.removeEventListener('loadingdone', fit)
+    }
+  }, [words])
+  return ref
 }
 
 // ── spot cloud ────────────────────────────────────────────────────────────────────────────

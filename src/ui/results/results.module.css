@@ -503,8 +503,8 @@
 .tzText {
   color: var(--bone-3);
 }
-/* One line, always (R3-8): a long place keeps its row's height; the zone (the least of the three) truncates
-   instead of wrapping onto a second line when the place changes. */
+/* One line, always (R3-8): a long place keeps its row's height; the zone (the least of the three) gives way first,
+   whole (below), instead of wrapping onto a second line when the place changes. */
 .placeRow {
   flex-wrap: nowrap;
   min-width: 0;
@@ -525,6 +525,15 @@
 }
 .placeRow .tzText {
   flex: 0 1000 auto;
+}
+/* What fits of the zone, measured (Headers.tsx PlaceRow): the full label, the offset alone, or nothing. */
+.tzShort,
+.placeRow[data-zone='short'] .tzFull,
+.placeRow[data-zone='none'] .tzPart {
+  display: none;
+}
+.placeRow[data-zone='short'] .tzShort {
+  display: inline;
 }
 /* Phones: the summary under the search bar, with room above it (it is the finding, not a caption to the field). */
 .mHead {
@@ -979,7 +988,10 @@
 /* ── verdict readouts: 2 × 2, number + unit over the verdict's name ── */
 .verdicts {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Equal tiles: each keeps 10 px between its words and the divider, and the outer edges none, as the first's start
+     never had any; the second also carries the 1 px divider, so it gets 0.5 px more of the width. Both tiles' words
+     then have the same width (they differed by 13 px), and a long verdict name breaks alike in both columns. */
+  grid-template-columns: minmax(0, calc(50% - 0.5px)) minmax(0, 1fr);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -999,7 +1011,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .verdict:nth-child(2n) {
-  padding-inline-start: 12px;
+  padding-inline: 10px 0;
   border-inline-start: 1px solid var(--line);
 }
 /* Laptops: a tighter counts strip (after the base rule, so it applies), tighter still up to 860 px tall (R2R1). */
@@ -1024,8 +1036,12 @@
 }
 .verdictTop {
   display: flex;
+  /* A count too wide for its tile ("1.565 overvluchten" on a phone) puts its unit under the number, never into the
+     divider; English's fit one line. */
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px;
+  gap: 4px 6px;
+  max-width: 100%;
   white-space: nowrap;
 }
 .verdictTop svg {
@@ -1132,11 +1148,29 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
 }
+/* Each cell is a subgrid of two rows (label, value) and its Readout's box steps aside (display: contents), so a label
+   that takes two lines in a narrow phone cell ("Scan line here · local", "Elevación desde tu posición") moves its
+   neighbour's value down with its own: the two values of a row stay on one line. */
 .cell {
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  row-gap: 4px;
   padding-block: 11px;
   padding-inline: 0 12px;
   border-bottom: 1px solid var(--line);
   min-width: 0;
+}
+.cell > div {
+  display: contents;
+}
+/* A label takes the cell's width and wraps there, balanced, rather than run past the cell's edge. */
+.cell > div > span:first-child {
+  white-space: normal;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 .cell:nth-child(2n) {
   padding-inline-start: 12px;

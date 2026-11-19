@@ -21,14 +21,15 @@
  * Words: the 'results' namespace (head, and the shared searchAnother / allPasses), read at render. Coordinates, clocks
  * and zone names are international notation; place and satellite names are data, shown as they are.
  */
-import { memo, useEffect, useRef, type KeyboardEvent } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, type KeyboardEvent } from 'react'
 import enResults from '@/i18n/en/results'
-import { msgs, useMsgs } from '@/i18n/runtime'
+import { msgs, useLocale, useMsgs } from '@/i18n/runtime'
 import { timeZoneAt } from '@/imagery'
 import { useApp } from '@/state/store'
 import type { Pass, Place } from '@/types'
 import { SearchBox } from '@/ui/landing/SearchBox'
 import { Glyph, Kbd, LiveDot, ScrambleOnce, cx, fmtLat, fmtLon, useMediaQuery } from '@/ui/system'
+import { fmt } from '../../../api/_lib/i18n/format'
 import { secs } from './ComputingBody'
 import { Mark } from './Mark'
 import { useOnce } from './once'
@@ -38,7 +39,7 @@ import { clearPass } from './actions'
 import { ONE_LINE_TITLE_QUERY, SHORT_DESK_QUERY } from './shell'
 import { glyphForPass, markColorVar } from './lib/meta'
 import { stepPass } from './lib/timeline'
-import { zoneLabel } from './lib/time'
+import { utcLabel, utcOffsetMin, zoneLabel } from './lib/time'
 import type { ResultsModel } from './model'
 import { placeName } from './placeName'
 import s from './results.module.css'
@@ -120,19 +121,7 @@ export function OverviewHeader(props: OverviewHeaderProps) {
       </div>
 
 
-      {showPlaceRow && place ? (
-        <div className={s.placeRow}>
-          <b>{placeName(place)}</b>
-          <span className={s.sep}>·</span>
-          <Coords lat={place.lat} lon={place.lon} />
-          {tz ? (
-            <>
-              <span className={s.sep}>·</span>
-              <span className={s.tzText}>{zoneLabel(Date.now(), tz)}</span>
-            </>
-          ) : null}
-        </div>
-      ) : null}
+      {showPlaceRow && place ? <PlaceRow place={place} tz={tz} /> : null}
 
       {searching ? (
         <InlineSearch onSearch={props.onSearch} onClose={props.onCloseSearch} current={place} />
@@ -218,6 +207,65 @@ function SearchBar({ place, desk = false, onOpen }: { place: Place; desk?: boole
         {m.change}
       </span>
     </button>
+  )
+}
+
+/**
+ * "WATERLOO · 43.46°N 80.52°W · UTC−5 · AT SEA" on one line (R3-8). The zone is the least of the three, and it gives
+ * way whole, never cut mid-word: where the full label does not fit, an ocean's zone shows its offset alone ("UTC−5",
+ * the same number the label starts with), and where that does not fit either the zone and its separator go. The row
+ * measures itself (the words' width depends on the language and its font), again whenever its box or a font changes.
+ */
+function PlaceRow({ place, tz }: { place: Place; tz?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const now = Date.now()
+  const full = tz ? zoneLabel(now, tz) : undefined
+  const short = tz?.startsWith('Etc/') ? utcLabel(utcOffsetMin(now, tz)) : undefined
+  useLayoutEffect(() => {
+    const row = ref.current
+    const zone = row?.querySelector<HTMLElement>(`.${s.tzText}`)
+    if (!row || !zone) return
+    // Cut at all: scrollWidth rounds to whole pixels, so the words' own width catches a fraction too.
+    const words = document.createRange()
+    const cut = () => {
+      words.selectNodeContents(zone)
+      return zone.scrollWidth > zone.clientWidth || words.getBoundingClientRect().width > zone.getBoundingClientRect().width + 0.25
+    }
+    const fit = () => {
+      delete row.dataset.zone
+      if (!cut()) return
+      if (short) {
+        row.dataset.zone = 'short'
+        if (!cut()) return
+      }
+      row.dataset.zone = 'none'
+    }
+    fit()
+    if (typeof ResizeObserver === 'undefined') return
+    // The row's own box: hiding the zone frees room inside it but never resizes it, so fitting never wakes this again.
+    const ro = new ResizeObserver(fit)
+    ro.observe(row)
+    document.fonts?.addEventListener('loadingdone', fit)
+    return () => {
+      ro.disconnect()
+      document.fonts?.removeEventListener('loadingdone', fit)
+    }
+  }, [place, full, short])
+  return (
+    <div ref={ref} className={s.placeRow}>
+      <b>{placeName(place)}</b>
+      <span className={s.sep}>·</span>
+      <Coords lat={place.lat} lon={place.lon} />
+      {full ? (
+        <>
+          <span className={cx(s.sep, s.tzPart)}>·</span>
+          <span className={cx(s.tzText, s.tzPart)}>
+            <span className={s.tzFull}>{full}</span>
+            {short ? <span className={s.tzShort}>{short}</span> : null}
+          </span>
+        </>
+      ) : null}
+    </div>
   )
 }
 
@@ -315,6 +363,7 @@ export function DetailHeader({ model, pass, mobile, onSelect, strip, photo, shar
   }
   const r = useMsgs(enResults)
   const m = r.head
+  const f = fmt(useLocale())
   const t = model.times(pass)
   // Phones and short laptops: the name and the time on one line (R2R1: the pass photo gets the height).
   const oneLine = useMediaQuery(ONE_LINE_TITLE_QUERY) || mobile
@@ -337,9 +386,10 @@ export function DetailHeader({ model, pass, mobile, onSelect, strip, photo, shar
   const stepper = (
     <span className={cx(s.stepper, photo && s.stepperOff)} aria-hidden={photo || undefined}>
       <span className={s.position} aria-label={m.position(index + 1, lane.length)}>
-        {index + 1}
+        {/* Numbers as the language writes them, as the gallery's position does ("124 / 1,565", "124 / 1.565"). */}
+        {f.int(index + 1)}
         {/* A big lane on a narrow phone (V1: "1350 / 1362" crowded the row): the position alone. */}
-        <span className={cx(lane.length >= 1000 && s.positionTotalLong)}> / {lane.length}</span>
+        <span className={cx(lane.length >= 1000 && s.positionTotalLong)}> / {f.int(lane.length)}</span>
       </span>
       <button type="button" className={s.stepBtn} onClick={() => step(-1)} disabled={index <= 0} aria-label={m.previous} aria-keyshortcuts="ArrowLeft" title={m.previousTitle}>
         <Mark name="chevron-left" size={12} />

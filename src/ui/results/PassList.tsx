@@ -8,7 +8,7 @@
  * at all, except the two honest exceptions, 'Mosaic' (coarse daily weather picture) and
  * 'Clouded · 86%' (warn), whose thumbnail is dimmed and hatched instead of a bright white square.
  */
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState, type RefCallback } from 'react'
 import { useApp } from '@/state/store'
 import type { Capture, Pass } from '@/types'
 import { Glyph, Tag, cx } from '@/ui/system'
@@ -88,15 +88,15 @@ function Group({ group, model, selectedId, onSelect }: { group: PassGroup } & Pr
   const imaged = group.verdict === 'imaged'
   return (
     <section className={s.group} id={`passes-${group.verdict}`} aria-label={VERDICT_TITLE[group.verdict]}>
-      <header className={s.groupHead} title={VERDICT_META[group.verdict].definition}>
+      <header className={s.groupHead} title={VERDICT_META[group.verdict].definition} ref={fitHead}>
         <span className={cx(s.groupTitle, imaged && s.signal)}>
           <Glyph name={VERDICT_GLYPH[group.verdict]} size={12} color={imaged ? 'var(--signal)' : undefined} />
-          {VERDICT_TITLE[group.verdict]}
+          <span className={s.groupName}>{VERDICT_TITLE[group.verdict]}</span>
           {imaged && group.items.some((i) => i.kind === 'pass') ? <span className={s.order}> · {m.imagedOrder}</span> : null}
         </span>
         <span className={s.groupCount}>
           {m.count(group.passCount, group.verdict)}
-          <span className={cx(s.dim, s.satCount, imaged && s.satCountImaged)}>
+          <span className={cx(s.dim, s.satCount, imaged && s.satCountImaged)} data-shed="1">
             {' '}
             · {m.sats(group.satCount)}
           </span>
@@ -200,16 +200,23 @@ const PassRow = memo(function PassRow({
         <span className={s.glyph}>
           <Mark name={glyphForPass(p.verdict, meta.category)} size={14} color={markColorVar(p.verdict, meta.category)} />
         </span>
-        <span className={s.main}>
+        <span className={s.main} ref={fitMeta}>
           <span className={s.nameLine}>
             <span className={s.name}>{meta.name}</span>
             {tag ? <Tag className={cx(s.tag, tag.warn && s.tagWarn)}>{tag.text}</Tag> : null}
           </span>
           <span className={s.metaLine}>
-            {t.day} · {t.time}
-            {/* Narrow phones drop the zone (the timeline and the footnote name it) before the age. */}
-            <span className={s.zone}> {t.zone}</span>
-            <span className={s.dim}>
+            {t.day} ·{' '}
+            {/* One island, so right to left the zone stays after its clock ("11:21 UTC−5"). Narrow phones drop the zone
+                (the timeline and the footnote name it) before the age. */}
+            <span data-num="">
+              {t.time}
+              <span className={s.zone} data-shed="1">
+                {' '}
+                {t.zone}
+              </span>
+            </span>
+            <span className={s.dim} data-shed="3">
               {' · '}
               <Ago t={p.tClosest} base={model.clock} />
             </span>
@@ -217,7 +224,10 @@ const PassRow = memo(function PassRow({
           <span className={s.metaLine}>
             {m.offNadir(p.offNadirDeg)}
             {/* …and the ground distance before the cloud, which is what a photograph is judged by. */}
-            <span className={capture?.cloudCoverPct !== undefined ? s.km : undefined}> · {m.distanceKm(p.groundDistanceKm)}</span>
+            <span className={capture?.cloudCoverPct !== undefined ? s.km : undefined} data-shed={capture?.cloudCoverPct !== undefined ? '1' : undefined}>
+              {' '}
+              · {m.distanceKm(p.groundDistanceKm)}
+            </span>
             {capture?.cloudCoverPct !== undefined ? <span className={s.dim}> · {m.cloudPct(capture.cloudCoverPct)}</span> : null}
           </span>
         </span>
@@ -285,22 +295,27 @@ const SatRow = memo(function SatRow({
         <span className={s.glyph}>
           <Mark name={glyphForPass(verdict, meta.category)} size={14} color={markColorVar(verdict, meta.category)} />
         </span>
-        <span className={s.main}>
+        <span className={s.main} ref={fitMeta}>
           <span className={s.nameLine}>
             <span className={s.name}>{meta.name}</span>
             {meta.operator ? <span className={s.operator}>{meta.operator}</span> : null}
           </span>
           <span className={s.metaLine}>
-            <span className={s.giveWay}>{m.latest}</span>
-            {lt.day} · {lt.time}
-            <span className={s.dim}>
+            <span className={s.giveWay} data-shed="1">
+              {m.latest}
+            </span>
+            {lt.day} · <span data-num="">{lt.time}</span>
+            <span className={s.dim} data-shed="3">
               {' · '}
               <Ago t={latest.tClosest} base={model.clock} />
             </span>
           </span>
           <span className={s.metaLine}>
-            <span className={s.giveWay}>{m.closest}</span>
-            {m.offNadir(closest.offNadirDeg)} · {m.distanceKm(closest.groundDistanceKm)}
+            <span className={s.giveWay} data-shed="1">
+              {m.closest}
+            </span>
+            {m.offNadir(closest.offNadirDeg)}
+            <span data-shed="3"> · {m.distanceKm(closest.groundDistanceKm)}</span>
           </span>
         </span>
         <span className={s.count}>
@@ -346,6 +361,66 @@ const SatRow = memo(function SatRow({
     </>
   )
 })
+
+/*
+ * A row's two mono meta lines fit the row's real width, whatever the language: a container query can only guess from
+ * the list's width (English's words), while "OVERVLUCHTEN" in the count column or Polish's "pon., 2 lis" and
+ * "6 godz. temu" are wider. So the row measures itself: while a meta line still ends in an ellipsis, it hides one more
+ * level (1: the parts marked `data-shed="1"`, the "Latest" / "Closest" words, both lines together so the row reads
+ * as one, and the zone or the photo's ground distance; 2: the tracking tightens to none; 3: the `data-shed="3"`
+ * parts, the age and the closest pass's distance; 4: the tracking a hair below none), so the day and the clock read
+ * whole. A group's header does the same with its satellite count, before its title would wrap. Whatever fits hides
+ * nothing: English, whose lines fit, renders as before. It runs again when the box changes, when its text changes (the
+ * age ticks) and when a web font arrives.
+ */
+const fits = new Map<Element, () => void>()
+let sizes: ResizeObserver | undefined
+
+function shedRef(levels: number, over: (el: HTMLElement) => boolean): RefCallback<HTMLElement> {
+  return (el) => {
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const fit = () => {
+      let level = 0
+      delete el.dataset.level
+      if (!el.querySelector('[data-shed]')) return
+      while (level < levels && over(el)) el.dataset.level = String(++level)
+    }
+    if (!sizes) {
+      sizes = new ResizeObserver((entries) => entries.forEach((e) => fits.get(e.target)?.()))
+      document.fonts?.addEventListener('loadingdone', () => fits.forEach((f) => f()))
+    }
+    // Text only (the level is an attribute on the box itself, so fitting never wakes it again). The box's size comes
+    // from the list, never from what it hides, so neither does the ResizeObserver.
+    const texts = new MutationObserver(fit)
+    texts.observe(el, { subtree: true, characterData: true, childList: true })
+    fits.set(el, fit)
+    sizes.observe(el)
+    fit()
+    return () => {
+      fits.delete(el)
+      sizes?.unobserve(el)
+      texts.disconnect()
+    }
+  }
+}
+
+/** Ends in an ellipsis: scrollWidth rounds to whole pixels, so a line over by a fraction is caught by its text's width. */
+function cut(el: Element): boolean {
+  if (el.scrollWidth > el.clientWidth) return true
+  const text = document.createRange()
+  text.selectNodeContents(el)
+  return text.getBoundingClientRect().width > el.getBoundingClientRect().width + 0.25
+}
+
+/** Takes more than one line (a verdict's name wraps rather than be cut). */
+function wraps(el: Element): boolean {
+  const text = document.createRange()
+  text.selectNodeContents(el)
+  return new Set(Array.from(text.getClientRects(), (r) => Math.round(r.top))).size > 1
+}
+
+const fitMeta = shedRef(4, (el) => Array.from(el.querySelectorAll(`.${s.metaLine}`)).some(cut))
+const fitHead = shedRef(1, (el) => Array.from(el.querySelectorAll(`.${s.groupName}`)).some((n) => cut(n) || wraps(n)))
 
 /** Thumbnail URLs already shown this session: a remount (back from a pass) shows them at once, no fade (A2). */
 const shownThumbs = new Set<string>()
