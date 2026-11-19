@@ -703,7 +703,7 @@ beside *WYSOKOŚĆ* (km) on purpose, because the qualifier and the unit tell the
 | Key | Polish |
 |---|---|
 | `imaged` / `imagedAbout` | *Ujęcie 11:21:13 EST* / *Ujęcie ≈ 11:21 EST* |
-| `acquired` / `acquiredAbout` | *Ujęcie 11:21:13 EST · 10 M* / *Ujęcie ≈ 11:21 EST · 10 M* |
+| `acquired` / `acquiredAbout` | *Ujęcie 11:21:13 EST · 10 m* / *Ujęcie ≈ 11:21 EST · 10 m* |
 | `acquisitionOf` / `closestApproachOf` | *Ujęcie · Sentinel-2C* / *Najbliżej · Sentinel-2C* |
 | `acquiredNow` / `closestApproachNow` | *Zarejestrowano* / *Najbliżej* |
 | `pin.card` / `pin.naming` / `pin.noName` | *Pinezka* / *Ustalanie nazwy…* / *Brak nazwy w pobliżu* |
@@ -1334,8 +1334,8 @@ zachodzie*. The share page's `moving(heading)` uses `MOTION`.
 - Labels are written in sentence case in the catalog and uppercased by CSS. Boot sets `lang="pl"` on `<html>`, so
   casing and screen-reader pronunciation follow Polish. Uppercasing is safe (*ą→Ą, ł→Ł, ó→Ó, ś→Ś, ż→Ż*), and Polish has
   no special casing rules. Canvases and satori use `toLocaleUpperCase('pl')`.
-- What they look like: *OSTATNIE 7 DNI*, *02 / PRZELOTY*, *WYSOKOŚĆ 786 KM*, *OD PIONU 4,2°*, *PIKSEL 10 M*, *KURS
-  194,6° · SSW · NA PŁD.*, *UJĘCIE 11:21:21 EST · 10 M*, *LINIA 0412 → 1024*, *12 847 OBIEKTÓW · POBRANO 2026-11-08
+- What they look like: *OSTATNIE 7 DNI*, *02 / PRZELOTY*, *WYSOKOŚĆ 786 km*, *OD PIONU 4,2°*, *PIKSEL 10 m*, *KURS
+  194,6° · SSW · NA PŁD.*, *UJĘCIE 11:21:21 EST · 10 m*, *LINIA 0412 → 1024*, *12 847 OBIEKTÓW · POBRANO 2026-11-08
   03:34Z · 5 GODZ. TEMU*, *SŁOŃCE 16.2°S 063.0°E*.
 - **Never uppercased:** prose, the wordmark *Watched.*, URLs, file names, sensor names in sentences. Satellite names
   are uppercased by CSS only inside mono labels, as in English.

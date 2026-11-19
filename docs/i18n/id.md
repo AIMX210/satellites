@@ -695,7 +695,7 @@ Indonesian has no grammatical gender and no plural inflection. "Notes" says what
 | previous / next | sebelumnya / berikutnya | |
 | play / pause | Putar / Jeda | |
 | zoom in / zoom out | Perbesar / Perkecil | Readout `2,5×`. |
-| acquiring / acquired | merekam / terekam | `TEREKAM 11:21:21 WIB · 10 M`. |
+| acquiring / acquired | merekam / terekam | `TEREKAM 11:21:21 WIB · 10 m`. |
 | line (scan counter) | baris | `BARIS 0000 → 1024`. |
 | fault | gangguan | |
 | browser | browser | *peramban* is correct but unfamiliar. Never with an enclitic. |
@@ -924,7 +924,7 @@ make it identical to `other`.
 | Capitalisation | Sentence case everywhere, buttons and About headings included; never PUEBI title case for headings. Days and months capitalised; *minggu* (week) lowercase; *Bumi* capitalised as the planet's name, *bumi* in fixed phrases (*belahan bumi*); *matahari*, *khatulistiwa*, compass words lowercase. | *Cara kerja*, *Versi singkat* |
 | Italic | Never for loanwords (PUEBI would italicise *browser*, *time-lapse*): italic means the serif accent and nothing else. | |
 | Bold | Only the results headline's count phrase. | |
-| Mono caps labels | Written in sentence case in the catalog; CSS (or `toLocaleUpperCase('id')` on canvas and satori) uppercases. | `7 HARI TERAKHIR · 1 → 8 NOV 2026 UTC` · `02 / LINTASAN` · `KETINGGIAN 786 KM` · `MIRING 5,4°` · `PIKSEL 10 M` · `AWAN DI TITIK · CERAH` · `ARAH 194,6° SBD · TURUN` |
+| Mono caps labels | Written in sentence case in the catalog; CSS (or `toLocaleUpperCase('id')` on canvas and satori) uppercases. | `7 HARI TERAKHIR · 1 → 8 NOV 2026 UTC` · `02 / LINTASAN` · `KETINGGIAN 786 km` · `MIRING 5,4°` · `PIKSEL 10 m` · `AWAN DI TITIK · CERAH` · `ARAH 194,6° SBD · TURUN` |
 | Never uppercased | The wordmark *Watched.*; *www.watched.earth*; units in prose; satellite names and place names outside mono labels. | |
 | North arrow | `U` (*utara*), as on Indonesian maps | |
 | Line breaks | No-break space in *7 hari*, number + unit, *pukul* + clock, *ke-* + number. In display lines never end a line on *di, ke, dari, yang, dan, atau*. No automatic hyphenation in headlines. | |

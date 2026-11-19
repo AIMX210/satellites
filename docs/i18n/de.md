@@ -32,7 +32,7 @@ inspector. Widths quoted in px were measured (method in §7), not estimated from
 | [SAT] | Bare as a subject. Crewed stations take the classifier in sentences: *Die Raumstation ISS zog …*. No pronoun after a bare name. |
 | Numbers | Decimal comma and a dot to group thousands: `1.715`, `7,46 km/s`, `5,4°`, `25 %`. Years, NORAD IDs and pass IDs are never grouped. |
 | Coordinates | International, as code delivers them: `16.2°S 063.0°E`, `0.2°W`. Never reformatted, also inside German prose. |
-| Units | SI symbols, written lowercase in the catalog (`786 km`, `10 m`, `5 min`). A mono caps row prints them in capitals like the English (`786 KM`). Prose is never uppercased. |
+| Units | SI symbols, written lowercase in the catalog (`786 km`, `10 m`, `5 min`). A mono caps row keeps them lowercase, as in every language (`786 KM` never: DESIGN §3). Prose is never uppercased. |
 | Compass | Prose spells the direction out (*Richtung Süden*, *westlich*, *im Südwesten*). The 16-point readout table (`pass.compass16`) uses N, NNO, NO, ONO, O … Coordinates keep their own letters. |
 | Dates | Numeric in mono (`So 01.11.`, `01.11. → 08.11.`), Intl short in prose (*am So., 1. Nov.*), Intl long for screen readers (*Sonntag, 1. November*). Instrument UTC stamps stay ISO 8601. Table by key in §6.3. |
 | Time zones | 24-hour clock. CET/CEST print as **MEZ/MESZ** (WEZ/WESZ, OEZ/OESZ), through one helper in the German catalog. Other abbreviations stay. *Uhr* only without a zone (*um 11:21 Uhr Ortszeit*). |
@@ -1157,8 +1157,8 @@ Each `time` key serves every screen that calls it, so the form is chosen per key
   SS: *Schließen* → `SCHLIESSEN`, *Größte Annäherung* → `GRÖSSTE ANNÄHERUNG`. This is correct. Never type ẞ (it would
   cost a font download, §6.7) and never type `SS` by hand (the same string is read in sentence case by screen readers).
 - **Units** are written lowercase in the catalog (*km*, *m*, *km/s*, *min*, *h*, *s*) and follow the design: a caps row
-  prints them in capitals, as English does (`786 KM`, `7,46 KM/S`). German makes no exception of its own. Prose is
-  never uppercased.
+  keeps the unit symbols lowercase, as English does (`HÖHE 786 km`, `7,46 km/s`; DESIGN §3, owner 2026-11-19). German
+  makes no exception of its own. Prose is never uppercased.
 - Labels are nouns or noun phrases without articles: `HÖHE`, `KURS`, `STREIFENBREITE`, `01 / GEOMETRIE`,
   `02 / WIEDERGABE`.
 
@@ -1445,8 +1445,8 @@ were re-run with its method and reproduced; its Intl claims were checked on Node
     card's `weekTo` keeping its year (§6.3).
 14. **U+2009 from Intl; → and ≈ not in card fonts; latin-ext cuts.** Accepted, all three re-checked: ranges built from
     parts (U+2009 → U+00A0 if ever needed), → and ≈ DOM-only, the font claim corrected (§6.7).
-15. **Units never uppercased under :lang(de).** Accepted: units follow the design and print in capitals in caps rows,
-    as in English (§0, §6.5).
+15. **Units never uppercased under :lang(de).** Accepted, now for every language: the owner ruled on 2026-11-19 that
+    units keep their case in caps rows (§0, §6.5).
 16. **Time-lapse video labels break 132 px.** Accepted: *Video*, *Rendern 42 %*, *Fehlgeschlagen*, *Speichern*
     (§3.8, §7).
 17. **Default card footer.** Accepted, with §1.2's imperative: *Suche dir einen Ort aus* (403 / 466 px); the invite

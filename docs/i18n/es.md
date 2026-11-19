@@ -380,7 +380,7 @@ uppercases it).
 | heading | rumbo | m.; label `RUMBO`; prose *rumbo al sur*; unit `SSO · DESC`. |
 | ascending / descending | ascendente / descendente | Readout `ASC` / `DESC`. |
 | closest approach | máxima aproximación | Countdown `MÁXIMA APROXIMACIÓN · SENTINEL-2C`, `MÁXIMA APROXIMACIÓN`; geometry labels `MÁS CERCA · UTC`, `MÁS CERCA · LOCAL`; card readout *Más cerca*. |
-| acquisition / acquiring | captura / captando | Countdown `CAPTURA · SENTINEL-2C`; placeholder *Captando…*; `CAPTURA 11:21:21 EST · 10 M`. |
+| acquisition / acquiring | captura / captando | Countdown `CAPTURA · SENTINEL-2C`; placeholder *Captando…*; `CAPTURA 11:21:21 EST · 10 m`. |
 | scan line here | línea de escaneo aquí | `LÍNEA DE ESCANEO AQUÍ · UTC`. |
 | cloud cover | nubosidad | f.; label `NUBOSIDAD`; *Nubosidad en toda la escena: 25%*. |
 | clouded over | nublado | Chip *Nublado · 81%*. |
@@ -682,7 +682,7 @@ of a label or sublabel is capitalised, as any label starts (*Monte Everest*, *Es
 **Mono caps labels.** Write them in sentence case in the catalog (*Últimos 7 días*); CSS uppercases them following
 `lang="es"`. Accents stay on capitals, as the RAE requires: `ÚLTIMOS 7 DÍAS`, `CÓMO FUNCIONA`, `PÍXEL`, `LÍNEA`, `ÉPOCA
 TLE`, `SÁB 31 OCT`, `MIÉ`. Where there is no CSS (canvas, satori), the renderer uses `toLocaleUpperCase('es')`. The
-English habit of uppercase units inside mono readouts (`786 KM`) is accepted there only; in prose units are lowercase.
+units stay lowercase everywhere, caps rows included (`ALTITUD 786 km`: DESIGN §3, owner 2026-11-19).
 Never uppercase: the serif place name, satellite names in prose, the wordmark.
 
 **Line breaking.** No-break space between a number and its unit or noun (*7 días*, *256 satélites*). In display

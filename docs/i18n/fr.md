@@ -34,7 +34,7 @@ so a reviewer can see them; never as invisible literals, never as plain spaces.
 | Numbers | Decimal comma, U+00A0 for thousands (the sans draws U+202F at 0.1 em: 2330 on screen), from `fmt('fr')`: `1 715`, `7,46 km/s`, `25 %`, `5,4°`. Years, NORAD IDs and pass IDs are never grouped. |
 | Coordinates | Readouts keep the international form, point and letters: `16.2°S 063.0°E`, `43.4723°N 80.5449°W`. Prose spells them out: *par 0,2° ouest*. |
 | Compass | Prose spells it out (*vers le sud*, *à l’ouest*). Bearing readouts use the French 16-point letters with **O**: `SSO`, `ONO`, `NO`. |
-| Units | Written lowercase in the catalog (`km`, `m`, `km/s`). A surface that sets its line in caps prints them in caps, as English does (`786 KM`); that is accepted. |
+| Units | Written lowercase in the catalog (`km`, `m`, `km/s`). A surface that sets its line in caps keeps them lowercase, as in every language (`786 km`, never `786 KM`: DESIGN §3). |
 | Dates | Prose: *dimanche 1er novembre*; readouts: *dim. 1 nov.*; display headline ranges: *Du 29 octobre au 5 novembre*. |
 | Time | 24-hour with colons, in prose too: *à 16:14:21 UTC*. |
 | Never translated | Watched., www.watched.earth, satellite / sensor / product / programme names, NORAD IDs, UTC, zone abbreviations (EST, CET, JST), ISO stamps, readout coordinates, key symbols, attribution lines. |
@@ -321,7 +321,7 @@ Lanes (≤ 8 characters): *Image*, *Probable*, *Possible*, *Survol*.
 indisponible pour l’instant* · *Archives commerciales, non publiques* · *Dans la fauchée, aucune image publique* ·
 *Trace au sol au plus près*; `acquiring` *Acquisition…*; `noPublicPhoto` *Aucune image publique cette semaine*;
 `noPhoto` *Aucune image à montrer*; `look` *Vue rapprochée* · *Dernière vue dégagée* · *Ciel couvert* · *Radar*;
-`aSatellite` *Un satellite* (a chip label only: `VUE RAPPROCHÉE · UN SATELLITE · 10 M`).
+`aSatellite` *Un satellite* (a chip label only: `VUE RAPPROCHÉE · UN SATELLITE · 10 m`).
 
 **Footer:** `invite` *Voir ce qui vous observait* (26 characters beside `www.watched.earth` in the 466 px row);
 `enterAnyPlace` *Choisissez un lieu* (the sub's first words; *N’importe quel lieu sur Terre*, 29 characters, ran
@@ -849,7 +849,7 @@ Use `fmt('fr').list` (`Intl.ListFormat('fr', { type: 'conjunction' })`): *Umbra,
 | `…` | One character U+2026, no space before | *Recherche…*, *Création du lien…* |
 | `–` (en dash) | Ranges in compact labels only, no spaces | `10–30 m`; in prose: *de 10 à 30 m* |
 | `—` (em dash) | Not used (the owner's copy has none). Use a comma, a colon or parentheses. | |
-| `·` | Separator in labels and chips, a normal space each side | `VUE RAPPROCHÉE · SENTINEL-2B · 10 M` |
+| `·` | Separator in labels and chips, a normal space each side | `VUE RAPPROCHÉE · SENTINEL-2B · 10 m` |
 | `→` | Kept from English, in web labels only (§6.8) | `12 → 19 NOV. 2026 UTC`, `NORD → SUD` |
 | `.` `,` `)` | No space before | |
 
@@ -919,9 +919,9 @@ caps French keeps its accents: `DÉPOINTAGE`, `ÉLÉVATION`, `AU PLUS PRÈS`, `D
 without its accents (`DEPOINTAGE`) is a bug.
 
 **Units.** Write unit symbols in lowercase (`km`, `m`, `km/s`, `min`, `h`, `s`, `j`). Where a surface sets the line in
-mono caps they come out in caps, exactly as in English (`786 KM`, `10 M`, `IL Y A 3 J`): DESIGN §3 sets units in caps,
-and that is accepted in an instrument's all-caps line. In sentence-case text (prose, tooltips, aria labels, posts)
-they stay lowercase. The wordmark *Watched.* is never set in mono caps. Satellite names are uppercased with their
+mono caps, the distance and speed symbols stay lowercase, as in every language (`ALTITUDE 786 km`, `10 m`: DESIGN §3,
+owner 2026-11-19); the HUD's compact ages are uppercased with their line (`IL Y A 3 J`). In sentence-case text (prose,
+tooltips, aria labels, posts) they stay lowercase. The wordmark *Watched.* is never set in mono caps. Satellite names are uppercased with their
 label as in English (`SENTINEL-2B`).
 
 ### 6.6 Line breaking and abbreviations
@@ -1145,8 +1145,8 @@ Each item of the native review (`fr.critique.md`), numbered as there, and how it
 
 1. **Split `could` verb**: Accepted: the verb slot is *pouvait viser*; whole sentences use *avait [PLACE] à portée*,
    with offsets written *à 61 km à l’ouest* (§3.4–§3.6).
-2. **Units "always lowercase" unworkable**: Accepted: units written lowercase, printed in caps where the line is caps,
-   as in English; lowercase SI units in caps lines left to the owner as a product-wide question (§6.5).
+2. **Units "always lowercase" unworkable**: Settled by the owner (2026-11-19) for every language: units are written
+   lowercase and stay lowercase in caps lines (§6.5).
 3. **Decimal comma in readout coordinates**: Accepted: readout coordinates keep point and N/S/E/W; prose spells them
    out; every other decimal keeps the comma (§0, §4.2, §6.2).
 4. **W versus O in bearings**: Accepted: bearing readouts use the French 16-point set with O; coordinates keep W/E;

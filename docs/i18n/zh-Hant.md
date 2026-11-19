@@ -694,7 +694,7 @@ Counters (量詞) are given with each noun. HK forms are in §1.4.
 | report | 結果 | `結果已就緒`. |
 | propagate orbits | 推算軌道 | |
 | match scenes to passes | 配對影像與過境 | |
-| imaged / acquired (globe, capture line) | 成像 / 已成像 | `成像 11:21:13 EST`, `已成像 11:21:21 EST · 10 M`, `成像 · SENTINEL-2C`. Never 擷取 (screen capture in Taiwan). |
+| imaged / acquired (globe, capture line) | 成像 / 已成像 | `成像 11:21:13 EST`, `已成像 11:21:21 EST · 10 m`, `成像 · SENTINEL-2C`. Never 擷取 (screen capture in Taiwan). |
 | acquiring (a photo loading) | 接收中 | Honest: the image is downloading; still instrument-like. |
 | developing (frames) | 顯影 | The darkroom word. |
 | share / download | 分享 / 下載 | |
@@ -1021,8 +1021,8 @@ Rules and builders: §5.5. Never a numeric short date: the same string means dif
 
 ### 6.7 Case, mono labels and scrambled strings
 
-- Han has no case. `text-transform: uppercase` touches only the Latin inside a label, as in English: `786 KM`, `10 M`,
-  `SENTINEL-2C · MSI · 10 M`. Expected. Write units and names in normal case; CSS does the rest.
+- Han has no case. `text-transform: uppercase` touches only the Latin inside a label, units aside, as in English: `786 km`,
+  `10 m`, `SENTINEL-2C · MSI · 10 m`. Expected. Write units and names in normal case; CSS does the rest.
 - **Han is allowed in mono labels and readouts.** It renders in the system sans through `--font-mono`'s fallback. A zh
   mono label looks like: `高度`, `側視角`, `像素`, `02 / 過境`, `最接近 · UTC`, `NORAD · 過境`, `過去 7 天`.
 - **Strings that scramble** on first appearance (`ScrambleOnce`): the landing kicker (`windowRange`), the HUD's sun readout
@@ -1338,9 +1338,9 @@ HK overlay forms in brackets where they differ.
 
 | English | zh-Hant |
 |---|---|
-| NORAD 60989 / NORAD … · 795 KM | NORAD 60989 / NORAD … · 795 KM |
+| NORAD 60989 / NORAD … · 795 km | NORAD 60989 / NORAD … · 795 km |
 | IMAGED 11:21:13 EST / IMAGED ≈ 11:21 EST | 成像 11:21:13 EST / 成像 ≈ 11:21 EST |
-| ACQUIRED 11:21:13 EST · 10 M / ACQUIRED | 已成像 11:21:13 EST · 10 M / 已成像 |
+| ACQUIRED 11:21:13 EST · 10 m / ACQUIRED | 已成像 11:21:13 EST · 10 m / 已成像 |
 | ACQUISITION · SENTINEL-2C / CLOSEST APPROACH · … / CLOSEST APPROACH | 成像 · SENTINEL-2C / 最接近 · SENTINEL-2C / 最接近 |
 | Dropped pin / Naming this spot / No named place nearby | 已放置的圖釘 / 正在查詢地名 / 附近沒有已命名的地點 (10 Han: fits 156 px at 13 px) |
 | Search here (Enter) / Remove the pin / Remove the pin (Esc) | 搜尋這裡（Enter） / 移除圖釘 / 移除圖釘（Esc） |

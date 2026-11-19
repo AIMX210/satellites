@@ -49,7 +49,7 @@ serif accent, `**…**` the bold (strong) run.
 | Compass | Prose: full Turkish forms from closed tables (*güneye doğru, buranın 61 km batısından, kuzeybatıdaydı*). Readouts: Turkish 16-point letters (*K … GGB … KKB*). |
 | Dates | *1 Kas Paz · 1 Kasım Pazar · 1 Kas 2026 Paz*; ranges with the house arrow: *26 Eki → 1 Kas 2026* (on the share card, Intl's en dash, *26 Eki – 1 Kas 2026*: the card's fonts have no arrow). |
 | Plurals | CLDR `one`, `other`. A noun after a numeral is always singular, the verb singular; the two forms are identical unless English says "one/once" as a word. |
-| Caps | Turkish rules on the whole Turkish label, names included (*SENTİNEL-2C · MSI · 10 M*). Licence credits stay English and are uppercased with English rules. |
+| Caps | Turkish rules on the whole Turkish label, names included (*SENTİNEL-2C · MSI · 10 m*). Licence credits stay English and are uppercased with English rules. |
 | Seasons (war zones, glaciers) | *her yıl kışın / ilkbaharda / yazın / sonbaharda* |
 
 ### What these decisions cost: nothing at runtime, and the Turkish first screen gets faster
@@ -623,7 +623,7 @@ Source of truth: `src/i18n/<tr>/verdicts.ts` (read through `VERDICT_META`); the 
 | `hud.catalogAge` | *<1 dk önce · 42 dk önce · 5 sa önce · 3 gün önce*; stale: *Eski, 3 gün önce* |
 | `hud.catalogUnavailable` / `catalogLoading` | *Katalog yüklenemedi* / *Katalog yükleniyor* |
 | `globe.imaged` / `imagedAbout` | *Görüntülendi 11:21:13 EST* / *Görüntülendi ≈ 11:21 EST* |
-| `globe.acquired` / `acquiredAbout` / `resolution*` | *Alındı 11:21:13 EST · 10 M* / *Alındı ≈ …* / *10 M*, *2 KM* |
+| `globe.acquired` / `acquiredAbout` / `resolution*` | *Alındı 11:21:13 EST · 10 m* / *Alındı ≈ …* / *10 m*, *2 km* |
 | `globe.acquisitionOf` / `closestApproachOf` | *Görüntü alımı · [SAT]* / *En yakın an · [SAT]* |
 | `globe.acquiredNow` / `closestApproachNow` | *Alındı* / *En yakın an* |
 | `globe.pin` | *Bırakılan raptiye* · *Yer adı bulunuyor* · *Çevrede yer adı yok* · *[name], [area]* · *[PLACE] üzerinden ne geçtiğini göster* · *Burada ara (Enter)* · *Raptiyeyi kaldır* · *Raptiyeyi kaldır (Esc)* · *Taşımak için küreye basılı tut* · *Raptiye bırakıldı: [coords].* · *Raptiye bırakıldı: [PLACE]. Üzerinden ne geçtiğini görmek için Enter’a ya da oka bas.* · *Raptiye bırakıldı. Üzerinden ne geçtiğini görmek için Enter’a ya da oka bas.* |
@@ -1017,7 +1017,7 @@ Turkish letter name (*UTC’ye*: ce; *USGS’nin*: se; *TLE’nin*: e). The bran
 | Coordinates | **International, exactly as code writes them**: decimal point, N/S/E/W, no Turkish letters. `fmtLat / fmtLon`, the HUD's `sun`, the geostationary `seat` arrive written; translators never retype them. Prose puts an invariant word after the seat: *0.2°W boylamında*. | *41.0186°N 28.9784°E · Güneş 16.2°S 063.0°E* |
 | Distance, speed | No-break space between number and unit. | *786 km · 10 m · 7,46 km/sn* |
 | Time units in readouts | *sn, dk, sa, gün*, no full stop, space before. | *38 sn · 4 dk 12 sn · 1 sa 02 dk* |
-| Units in mono caps | Uppercased with the label. | *786,2 KM · 7,46 KM/SN · 10 M* |
+| Units in mono caps | Never uppercased: the words around them take Turkish capitals (DESIGN §3). | *İRTİFA 786,2 km · 7,46 km/sn · 10 m* |
 
 ### 6.4 Dates and times
 
@@ -1074,7 +1074,7 @@ Getting this wrong is a spelling mistake (*PIKSEL* is not a word).
 1. `<html lang="tr">` (the boot script sets it). CSS `text-transform: uppercase` then follows Turkish rules at no cost,
    and the fonts' Turkish `locl` feature switches on (Instrument Sans, Instrument Serif and Martian Mono map *i* to
    *i.loclTRK*), so the *f_i* ligature no longer swallows the dot of *i*.
-2. **Turkish rules apply to the whole Turkish label, names included**: *SENTİNEL-2C · MSI · 10 M*, *GÖRÜNTÜ ALIMI ·
+2. **Turkish rules apply to the whole Turkish label, names included**: *SENTİNEL-2C · MSI · 10 m*, *GÖRÜNTÜ ALIMI ·
    SENTİNEL-2C*, the video's place line *PARİS*. Turkish typesetting caps foreign names this way in every headline and
    ticker (*LİVERPOOL, WİKİLEAKS*), and it is what the card renderers (`api/_lib/card.ts mono()`, `src/ui/share/card.ts`
    `caps`), the video (`video.ts upper`) and the HUD already do with `toLocaleUpperCase('tr')`.

@@ -37,7 +37,7 @@ has, once per link (the card is cached per link).
 | Plural | One CLDR category, `other` (cardinal and ordinal). One string per message; zero gets its own sentence where English has one. |
 | Numbers | 1,715 · 7.46 km/s · 25% · 98.6° · 786 km. Half-width digits, comma grouping, never 万 / 億. |
 | Dates | Mono: 11/1(日), 2026/11/1(日). Prose: 11月1日（日）, 2026年11月1日（日）. Spoken: 11月1日日曜日. 24 h clock. |
-| Ranges | Mono: 10–30 M, kicker 2026/11/12 → 11/19 UTC. Prose: 10〜30 m (U+301C). Never ～ (U+FF5E). |
+| Ranges | Mono: 10–30 m, kicker 2026/11/12 → 11/19 UTC. Prose: 10〜30 m (U+301C). Never ～ (U+FF5E). |
 | Share card headline | Place last, a relative clause with a noun ending: 衛星7基が／見ていた／*Waterloo*。 |
 | Type | System gothic and Mincho; Latin and digits stay in the brand faces. Upright accent, never slanted. palt on display. Labels 12 px on laptops, 11 px on phones (scripts.css), nothing under 11 px. |
 | Country names | Intl.DisplayNames long style with seven overrides (§8). |
@@ -595,9 +595,9 @@ of a fault, never this one.
 
 | Key | ja |
 |---|---|
-| `calloutMeta` / compact | NORAD 43013 · 786 KM / · 786 KM |
+| `calloutMeta` / compact | NORAD 43013 · 786 km / · 786 km |
 | `imaged` / `imagedAbout` | 撮像 11:21:13 EST / 撮像 ≈ 11:21 EST (≈ stays in mono; ごろ is for prose) |
-| `acquired` / `acquiredAbout` | 取得 11:21:13 EST · 10 M / 取得 ≈ 11:21 EST · 2 KM |
+| `acquired` / `acquiredAbout` | 取得 11:21:13 EST · 10 m / 取得 ≈ 11:21 EST · 2 km |
 | `acquisitionOf` / `closestApproachOf` | 取得 · SENTINEL-2C / 最接近 · ISS (ZARYA) |
 | `acquiredNow` / `closestApproachNow` | 取得 / 最接近 |
 | pin `card` / `naming` / `noName` | 立てたピン / 地名を確認中 / 近くに地名なし (≤ 7 glyphs: the column is 156 px at 13 px) |
@@ -1016,12 +1016,12 @@ mean a hoax, so the label says what they are (円形農地). Gibraltar keeps the
 | Exclamation mark | never | |
 | Ellipsis | … (U+2026), once | After 中 in status lines (計算中…, 取得中…, リンクを作成中…) and after a cut place name. Never ..., ・・・, ……, or a trailing ellipsis for mood. |
 | Dash | none in prose | — only as the "unknown value" readout. Never ― or ー as a dash. |
-| Range | 〜 (U+301C) in prose; – (en dash) in mono; → in the kicker and day ranges | 10〜30 m · 10–30 M · 2026/11/12 → 11/19 UTC. Never ～ (U+FF5E), which formatRange emits. |
+| Range | 〜 (U+301C) in prose; – (en dash) in mono; → in the kicker and day ranges | 10〜30 m · 10–30 m · 2026/11/12 → 11/19 UTC. Never ～ (U+FF5E), which formatRange emits. |
 | Middle dot | · (U+00B7) between fields in mono and chips; ・ (U+30FB) inside katakana names and fixed noun pairs (昼・夜) | Never ・ as a list separator for Latin names. |
 | Slash | " / " with spaces | 02 / 通過 · 3 / 27 |
 | Arrow | → | 北 → 南 · ライン 0412 → 1024 |
 | Note marks | the product's superscripts ¹ ² ³ | Never ※ or 注). |
-| Spaces | Prose: none typed between Japanese and Latin or digits (CSS spaces them, §6.6); one between a number and an SI unit. Mono readouts: a space separates fields (取得 11:21:21 EST · 10 M, 物体数 16,893, 傾き 8.9°). Never U+3000. |
+| Spaces | Prose: none typed between Japanese and Latin or digits (CSS spaces them, §6.6); one between a number and an SI unit. Mono readouts: a space separates fields (取得 11:21:21 EST · 10 m, 物体数 16,893, 傾き 8.9°). Never U+3000. |
 
 ### 6.2 Numbers and units
 
@@ -1061,9 +1061,9 @@ mean a hoax, so the label says what they are (円形農地). Gibraltar keeps the
 
 ### 6.4 Case, mono labels, abbreviations
 
-- Japanese has no case. Latin words keep their own case (Sentinel-2, NASA, km); CSS uppercases Latin units in mono
-  exactly as in English (高度 786 KM), which is accepted. Never full-width capitals for emphasis.
-- Mono labels in ja: 02 / 通過 · 過去7日間 · 2026/11/12 → 11/19 UTC · 取得 11:21:21 EST · 10 M · 物体数 16,893 ·
+- Japanese has no case. Latin words keep their own case (Sentinel-2, NASA, km); Latin units stay lowercase in mono caps,
+  exactly as in English (高度 786 km). Never full-width capitals for emphasis.
+- Mono labels in ja: 02 / 通過 · 過去7日間 · 2026/11/12 → 11/19 UTC · 取得 11:21:21 EST · 10 m · 物体数 16,893 ·
   TLE元期 2026-11-08 03:15Z · CELESTRAK.
 - **Abbreviations:** short kanji nouns instead. Never invented clippings (最詳), never Latin-style ones (Asc / Desc →
   北上 / 南下; min / h → 分 / 時間). Latin acronyms stay: UTC, NORAD, TLE, GMST, km, m.

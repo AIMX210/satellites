@@ -911,7 +911,7 @@ first mention of NASA, NOAA, JMA, ESA or EUMETSAT may carry the Korean name in p
 | hud.objects / objectsPending / catalog | 물체 16,893개 / 물체 / 카탈로그 |
 | hud.fetched / catalogAge | 수신 2026-11-08 03:34Z / 방금 · 42분 전 · 5시간 전 · 3일 전 · stale: 오래됨, 3일 전 |
 | hud.catalogUnavailable / catalogLoading | 카탈로그를 불러오지 못함 / 카탈로그 불러오는 중 |
-| globe.noradName / calloutMeta* | NORAD [ID] / NORAD [ID] · [ALT] KM (unchanged) |
+| globe.noradName / calloutMeta* | NORAD [ID] / NORAD [ID] · [ALT] km (as the English) |
 | globe.imaged / imagedAbout | 포착 [TIME] [ZONE] / 포착 ≈ [TIME] [ZONE] |
 | globe.acquired / acquiredAbout | 포착 [TIME] [ZONE] · [RES] / 포착 ≈ [TIME] [ZONE] · [RES] |
 | globe.resolutionM / resolutionKm | [N] m / [N] km (CSS uppercases the Latin) |
@@ -1253,7 +1253,7 @@ carries the product.
   ['그래도 기상위성은 적외선으로 이곳을 ', num(f.int(n)), '번 훑었다.']
   ```
 - **In stacked readouts and tiles** (`passView.countStack`, the summary tiles, timeline lanes) the counter may be the
-  num unit: there it is the readout design, like `786 KM`: `num('31', '회')`.
+  num unit: there it is the readout design, like `786 km`: `num('31', '회')`.
 - **Never add Hangul to `tightUnit`.** Its space and dim style are right for readouts.
 - The no-break between 256 and 기 comes from `word-break: keep-all` on the root (§6.6), which suppresses the break
   between a digit and a Hangul syllable.
@@ -1425,10 +1425,10 @@ Use `relativeParts(ms, now)`, then 방금 for the unit 'second', else `relativeF
   sentence case have no Korean counterpart: every title is an ordinary phrase with no full stop (통과를 찾는 방법).
 - **Only mono labels are uppercased**, by CSS. Units in prose stay lowercase (7.46 km/s), and so do names (Sentinel-2C).
   Never type capitals into a ko string to imitate the caps style.
-- CSS `uppercase` leaves Hangul alone and uppercases the Latin in a label exactly as in English (고도 786 KM, 포착
-  11:21:21 EST · 10 M, SENTINEL-2C). That is accepted. Don't add a satellite name to a ko label where the English label
+- CSS `uppercase` leaves Hangul alone and uppercases the Latin in a label exactly as in English, units aside (고도 786 km,
+  포착 11:21:21 EST · 10 m, SENTINEL-2C). Don't add a satellite name to a ko label where the English label
   has none.
-- **Mono labels in ko look like:** 02 / 통과 · 최근 7일 · 2026.11.12 → 11.19 UTC · 포착 11:21:21 EST · 10 M · 물체
+- **Mono labels in ko look like:** 02 / 통과 · 최근 7일 · 2026.11.12 → 11.19 UTC · 포착 11:21:21 EST · 10 m · 물체
   16,917개 · TLE 기준 2026-11-08 03:15Z · CELESTRAK · 태양 12.4°S 118.2°E · 최근접 시각 · UTC.
 - **Abbreviations.** Korean labels use short nouns, not clipped words. Never clip a Hangul term to fit (고 for 고도).
   Latin abbreviations stay: UTC, NORAD, TLE, GMST, km, m. English clippings become Korean nouns: Asc / Desc → 북행 / 남행

@@ -412,7 +412,7 @@ of capture (§8).
 | English | uk (stored in sentence case; CSS uppercases) |
 |---|---|
 | Acquiring | Зчитування |
-| ACQUIRED 11:21:21 EST · 10 M | Знімок 11:21:21 EST · 10 м |
+| ACQUIRED 11:21:21 EST · 10 m | Знімок 11:21:21 EST · 10 м |
 | ACQUIRED (now) | Знімок |
 | IMAGED 11:21:13 EST / ≈ 11:21 EST | Знімок 11:21:13 EST / Знімок ≈ 11:21 EST |
 | ACQUISITION · [SAT] (over T−) | Знімок · [SAT] |
@@ -865,7 +865,8 @@ Month abbreviations (Intl): січ., лют., бер., квіт., трав., ч�
 - Proper names: only the first word and proper nouns («Сектор Гази», «Західний берег», «Тихий океан»).
 - **Mono caps labels** are stored in sentence case and uppercased by CSS («Висота» → ВИСОТА); Cyrillic uppercases
   correctly with `<html lang="uk">`. Canvas and satori use `toLocaleUpperCase('uk')`.
-- **Never uppercased:** the serif place and the hero accent; units in prose; satellite names in prose (mono chips
+- **Never uppercased:** the serif place and the hero accent; units, in prose and in mono caps alike (ВИСОТА 786 км,
+  10 м, 7,46 км/с: DESIGN §3); satellite names in prose (mono chips
   uppercase them, as in English); the wordmark «Watched.»; URLs; whole sentences.
 - Keep mono caps labels to two words: long uppercase Cyrillic with +0.08em tracking reads slowly.
 

@@ -869,8 +869,8 @@ padding in ISO (11-01).
 
 ### 6.7 Case, mono labels and scrambled strings
 
-- Han has no case. `text-transform: uppercase` on a mono label only touches its Latin parts, as in English (`786 KM`,
-  `NORAD · 过境`). Write units and names in normal case; CSS does the rest. Prose is never uppercased, so `km/s` in a
+- Han has no case. `text-transform: uppercase` on a mono label only touches its Latin parts, units aside, as in English
+  (`786 km`, `NORAD · 过境`). Write units and names in normal case; CSS does the rest. Prose is never uppercased, so `km/s` in a
   sentence stays lowercase.
 - **Han words are allowed in mono labels and readouts.** They render in the system sans through `--font-mono`'s
   fallback. Labels look like: `02 / 过境` · `过去 7 天` · `高度` · `偏离垂直` · `像素` · `最接近 · UTC` · `NORAD · 过境`.
@@ -1160,7 +1160,7 @@ programme in a blurb (§8).
 | Reading the pixel at your spot… · Clear over your spot. · Thin cirrus flagged over your spot; it may soften the picture. · Cloud over your spot. · Your spot was in cloud shadow. | 正在读取此处的像素… · 此处上空无云。 · 此处上空有薄卷云，画面可能略显模糊。 · 此处有云。 · 此处当时在云影里。 |
 | Time-lapse · This place, year by year | 延时摄影 · 这个地方，一年一帧 |
 | Replay · View · Share | 回放 · 查看 · 分享 |
-| Acquiring · ACQUIRED 11:21:21 EST · 10 M | 获取中 · 已获取 11:21:21 EST · 10 M |
+| Acquiring · ACQUIRED 11:21:21 EST · 10 m | 获取中 · 已获取 11:21:21 EST · 10 m |
 | Show all 31 passes · Show all 12 rows · Show 40 more · 40 left · Show fewer | 显示全部 31 次过境 · 显示全部 12 条 · 再显示 40 条 · 还有 40 条 · 收起 |
 | closest look, then newest | 最清晰画面在前，其余由新到旧 |
 | Latest · Closest · 8.9° off-nadir · cloud 25% · 31 sats | 最新 · 最接近 · 偏离垂直 8.9° · 云量 25% · 31 颗 |
