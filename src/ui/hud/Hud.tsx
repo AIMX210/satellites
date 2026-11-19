@@ -26,6 +26,7 @@ import { Bezel, CornerReadout, Kbd, Reveal, ScrambleOnce, cx, fmtUtc, useWallSec
 // The pure time module, never the lazy '@/ui/results' index (that would pull the results chunk in).
 import { fmtLocalDay, fmtLocalTime, zoneAbbr } from '@/ui/results/lib/time'
 import { useCatalogStatus } from './catalogStatus'
+import { LanguageSwitcher } from './LanguageSwitcher'
 import { useSecondClock, useSecondDerived } from './clock'
 import { fmtAge, fmtGmst, fmtObjects, fmtSource, fmtStampZ, fmtSun, isStale } from './readouts'
 import s from './Hud.module.css'
@@ -187,14 +188,15 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
             )}
           </span>
         </div>
-        {onAbout ? (
-          <Reveal key={`${k}-about`} skip={booting} axis="x" duration={480} delay={at(520)} as="div" className={s.line}>
+        <Reveal key={`${k}-about`} skip={booting} axis="x" duration={480} delay={at(520)} as="div" className={s.line}>
+          {onAbout ? (
             <button type="button" className={s.about} onClick={() => aboutRef.current?.()} aria-keyshortcuts="?">
               <span className={s.aboutText}>How this works</span>
               <Kbd className={s.desk}>?</Kbd>
             </button>
-          </Reveal>
-        ) : null}
+          ) : null}
+          <LanguageSwitcher />
+        </Reveal>
       </CornerReadout>
 
       <CornerReadout corner="tr" label="Time" ref={topRight}>
