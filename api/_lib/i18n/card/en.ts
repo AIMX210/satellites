@@ -233,7 +233,7 @@ const card = {
     closest: 'Closest',
   },
   /** The week's card: the four counts, by what each pass did (the results' lane names). About 8 characters at most */
-  lane: { imaged: 'Photo', likely: 'Likely', could: 'Could', overhead: 'Overhead' },
+  lane: { imaged: 'Image', likely: 'Likely', could: 'Could', overhead: 'Overhead' },
   /** Units after a readout's number (mono caps, smaller). Keep the symbols unless your readers write them otherwise */
   unit: { km: 'km', m: 'm', kmPerSecond: 'km/s' },
   /** A number with fixed decimals: readouts ("7.46" km/s, "5.3"°), small pixels ("0.31 m"). Use fmt(locale).dec */

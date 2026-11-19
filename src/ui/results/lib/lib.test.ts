@@ -603,7 +603,7 @@ describe('one vocabulary for verdicts (R9)', () => {
     expect(VERDICT_META.likely.title).toBe('Likely watched')
     expect(VERDICT_META.imaged.title).toBe('Watched')
     expect(VERDICT_META.imaged.verb).toBe('watched')
-    expect(VERDICT_TAG.imaged).toBe('Photo')
+    expect(VERDICT_TAG.imaged).toBe('Image')
     expect(verdictUnit('imaged', 1)).toBe('pass')
     expect(verdictUnit('imaged', 31)).toBe('passes')
     expect(verdictUnit('could', 1)).toBe('pass')

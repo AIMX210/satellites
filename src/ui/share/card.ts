@@ -260,7 +260,7 @@ export function summaryFacts(report: Report, placeLabel: string, meta: MetaFn): 
     lat: report.place.lat,
     lon: report.place.lon,
     satellites: head.flewOver,
-    // K is the headline's own count (it equals the imaged passes, the card's PHOTO readout).
+    // K is the headline's own count (it equals the imaged passes, the card's IMAGE readout).
     counts: { ...counts, imaged: head.images },
     archiveDown: down || undefined,
     partial: !down && (report.partial || (report.lateChecks ?? 0) > 0) ? true : undefined,

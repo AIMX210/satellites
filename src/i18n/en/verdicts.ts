@@ -53,8 +53,8 @@ const verdicts: Record<Pass['verdict'], VerdictWords> = {
   /** A real image of the place is public (a photo, a weather mosaic, a radar image) */
   imaged: {
     title: 'Watched',
-    /** Says "Photo" while the title says "Watched" (owner): the lane holds the pictures */
-    short: 'Photo',
+    /** The lane's word: "Image", not "Photo", since radar images and daily mosaics share the lane (owner, 2026-11-19) */
+    short: 'Image',
     unit: passes,
     definition: 'A real image of this place exists in a public archive.',
     verb: 'watched',

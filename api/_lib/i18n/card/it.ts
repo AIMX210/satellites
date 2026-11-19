@@ -152,7 +152,7 @@ const card: CardMessages = {
     mosaicPixel: 'Pixel mosaico',
     closest: 'Più vicino',
   },
-  lane: { imaged: 'Foto', likely: 'Probabile', could: 'Possibile', overhead: 'In cielo' },
+  lane: { imaged: 'Immagine', likely: 'Probabile', could: 'Possibile', overhead: 'In cielo' },
   unit: { km: 'km', m: 'm', kmPerSecond: 'km/s' },
   decimal: (n: number, digits: number) => f.dec(n, digits),
 

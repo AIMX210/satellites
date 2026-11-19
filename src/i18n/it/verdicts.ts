@@ -25,7 +25,8 @@ const passes = (n: number) => f.plural(n, { one: 'passaggio', many: 'di passaggi
 const verdicts: typeof en = {
   imaged: {
     title: 'Osservato',
-    short: 'Foto',
+    // «Immagine», not «Foto»: the lane also holds radar images and daily mosaics (English says Image; owner)
+    short: 'Immagine',
     unit: passes,
     definition: 'In un archivio pubblico c’è un’immagine reale di questo luogo.',
     verb: 'osservato',

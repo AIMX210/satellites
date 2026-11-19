@@ -146,7 +146,7 @@ const pl: CardMessages = {
     closest: 'Najbliżej',
   },
   // The results' lanes (§3.6): the longest, «W zasięgu» / «Nad głową», is 9 characters in the 116 px column.
-  lane: { imaged: 'Zdjęcie', likely: 'W\u00a0kadrze', could: 'W\u00a0zasięgu', overhead: 'Nad głową' },
+  lane: { imaged: 'Obraz', likely: 'W\u00a0kadrze', could: 'W\u00a0zasięgu', overhead: 'Nad głową' },
   unit: { km: 'km', m: 'm', kmPerSecond: 'km/s' },
   decimal: (n: number, digits: number) => f.dec(n, digits),
 

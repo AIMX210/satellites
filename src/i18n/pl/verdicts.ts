@@ -12,8 +12,8 @@
  *    the screen's place). «Prawdopodobnie pod okiem» (24) and «Satelita mógł tu spojrzeć» (25) wrapped and pushed the
  *    last row under the panel's fold. Sentences keep «prawdopodobnie».
  *  - «Obserwowane» is never a label: on Instagram and X it means "Following" (§9).
- *  - The lanes are short prepositional states in mono caps (about 8 characters): «Zdjęcie» (the owner's "Photo", the
- *    lane that holds the pictures), «W kadrze» (never «W pasie», which alone reads "at the waist"), «W zasięgu»,
+ *  - The lanes are short prepositional states in mono caps (about 8 characters): «Obraz» (the owner's "Image", the
+ *    lane that holds the pictures, radar and mosaics included), «W kadrze» (never «W pasie», which alone reads "at the waist"), «W zasięgu»,
  *    «Nad głową».
  *  - The spoken `verb` follows a bare satellite name in a comma list («Sentinel-2C, pod okiem, piątek, 6 listopada…»),
  *    so it is the title's own gender-free phrase in running case.
@@ -30,7 +30,8 @@ const passes = (n: number) => f.plural(n, { one: 'przelot', few: 'przeloty', man
 const verdicts: typeof en = {
   imaged: {
     title: 'Pod okiem',
-    short: 'Zdjęcie',
+    // «Obraz», as the definition says: the lane also holds radar images and daily mosaics (English says Image; owner)
+    short: 'Obraz',
     unit: passes,
     // «obraz», not «zdjęcie»: the imaged verdict includes radar images and weather mosaics.
     definition: 'Prawdziwy obraz tego miejsca jest w\u00a0publicznym archiwum.',
