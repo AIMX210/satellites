@@ -45,7 +45,13 @@ const BONE = '#ece8e0'
 const BONE_2 = 'rgba(236, 232, 224, 0.72)'
 const SIGNAL = '#ff6a1a'
 const CHIP = 'rgba(7, 8, 10, 0.82)'
-const MONO = "'Martian Mono Variable', 'Martian Mono', ui-monospace, 'SF Mono', Menlo, monospace"
+const MONO_LATIN = "'Martian Mono Variable', 'Martian Mono', ui-monospace, 'SF Mono', Menlo, monospace"
+/** The page's mono stack for the active script (src/styles/scripts.css adds Arabic or CJK faces after Martian Mono). */
+let MONO = MONO_LATIN
+function readMono() {
+  const css = typeof getComputedStyle === 'function' && typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null
+  MONO = css?.getPropertyValue('--font-mono').trim() || MONO_LATIN
+}
 
 type MuxCodec = 'avc' | 'vp9' | 'av1'
 /** Encoder settings to try, best supported first: H.264 High, Main and Baseline at level 4, then VP9, then AV1. */
@@ -314,6 +320,7 @@ export async function renderVideo(frames: readonly Frame[], opts: VideoOptions):
   const images = await Promise.all(frames.map((f) => loadImage(f.src)))
   // The chips' font must be in before the first frame is drawn, or the first second is in a fallback face; given the
   // words, the browser also fetches the subsets they need beyond Latin (Łódź, Київ).
+  readMono()
   await Promise.all([document.fonts?.load(`400 92px ${MONO}`), document.fonts?.load(`400 19px ${MONO}`, [place, ...subs, credit].join(' '))]).catch(() => undefined)
   opts.signal?.throwIfAborted()
 

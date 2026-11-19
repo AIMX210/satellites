@@ -296,9 +296,24 @@ export function summaryCardSpec(report: Report, placeLabel: string, meta: MetaFn
 
 // ── Canvas ──────────────────────────────────────────────────────────────────────────────────
 
-const SANS = '"Instrument Sans Variable", "Instrument Sans", system-ui, sans-serif'
-const MONO = '"Martian Mono Variable", "Martian Mono", ui-monospace, monospace'
-const SERIF = '"Instrument Serif", Georgia, serif'
+/**
+ * The canvas's font stacks: the page's own for the active script (src/styles/scripts.css adds the Cyrillic, Arabic or
+ * CJK faces behind the brand ones), read from the CSS tokens when a card is drawn, so the PNG matches the preview in
+ * every language. A canvas cannot read var(); getComputedStyle hands back the resolved list.
+ */
+const SANS_LATIN = '"Instrument Sans Variable", "Instrument Sans", system-ui, sans-serif'
+const MONO_LATIN = '"Martian Mono Variable", "Martian Mono", ui-monospace, monospace'
+const SERIF_LATIN = '"Instrument Serif", Georgia, serif'
+let SANS = SANS_LATIN
+let MONO = MONO_LATIN
+let SERIF = SERIF_LATIN
+function readStacks() {
+  const css = typeof getComputedStyle === 'function' && typeof document !== 'undefined' ? getComputedStyle(document.documentElement) : null
+  const get = (name: string, fallback: string) => css?.getPropertyValue(name).trim() || fallback
+  SANS = get('--font-sans', SANS_LATIN)
+  MONO = get('--font-mono', MONO_LATIN)
+  SERIF = get('--font-serif', SERIF_LATIN)
+}
 
 type Ctx = CanvasRenderingContext2D & { fontStretch?: string; letterSpacing?: string }
 interface Face {
@@ -614,9 +629,12 @@ async function plateImage(spec: CardSpec): Promise<{ img: HTMLImageElement; rect
  * critical path, instead of first reading the whole card back from the GPU (a long task on phones).
  */
 export async function renderCardPng(spec: CardSpec): Promise<Blob> {
+  readStacks()
   const fontsToLoad = [`560 84px ${SANS}`, `400 24px ${SANS}`, `350 13px ${MONO}`, `500 16px ${MONO}`, `italic 400 84px ${SERIF}`]
+  // The card's own words, so a script face behind a unicode-range (Cyrillic, Arabic) is fetched before it is drawn.
+  const sample = JSON.stringify(spec)
   const [, pic] = await Promise.all([
-    Promise.all(fontsToLoad.map((f) => document.fonts?.load(f))).catch(() => undefined), // fall back to whatever is available
+    Promise.all(fontsToLoad.map((f) => document.fonts?.load(f, sample))).catch(() => undefined), // fall back to whatever is available
     plateImage(spec),
   ])
   const img = pic?.img ?? null
