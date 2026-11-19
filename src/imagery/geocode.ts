@@ -30,6 +30,7 @@ import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { fmtLat, fmtLon } from '@/ui/system/format'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
+import { exonym } from './exonyms'
 import { countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
@@ -89,13 +90,23 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
 }
 
 /**
+ * A place's name as shown to the visitor: the name the visitor's language gives that town or region in that country
+ * (./exonyms.ts: München, Київ), else its label as it came. In English, the label itself. Read at call time, as
+ * displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups send.
+ */
+export function displayLabel(place: Pick<Place, 'label' | 'countryCode'>): string {
+  return exonym(place.label, place.countryCode, 'label')
+}
+
+/**
  * A place's sublabel as shown to the visitor. When the sublabel ends with the English name of the place's own country
  * (as the offline list and the geocoders, asked in English, write it: CLDR's long name, or the short one SHORT_NAMES
  * shows), that country is named as the visitor reads it (shownCountryName: the browser's own names, a few by their
- * short name) and joined to the rest by the 'geo' namespace's `where`; the rest stays one piece of data, never split
- * back into parts. In English that is the sublabel itself, except Hong Kong and Macao by their short names. Any other
- * sublabel (no country code, a geocoder's own spelling of the country, a curated place's copy already in the
- * visitor's language) is shown as it came.
+ * short name) and joined to the rest by the 'geo' namespace's `where`. The rest stays as it came, one piece of data
+ * in its own order and punctuation, except that each of its names the visitor's language names otherwise in that
+ * country is shown so (./exonyms.ts: "Bavaria" → Bayern). In English that is the sublabel itself, except Hong Kong and
+ * Macao by their short names. Any other sublabel (no country code, a geocoder's own spelling of the country, a curated
+ * place's copy already in the visitor's language) is shown as it came.
  *
  * Read at call time: React callers subscribe to the language (useLocale()) so a switch re-renders it. The Place keeps
  * its English sublabel, which is what the usage stats and lookups send.
@@ -110,8 +121,12 @@ export function displaySublabel(place: Pick<Place, 'sublabel' | 'countryCode'>):
   if (country === undefined) return sub
   const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
   const shown = shownCountryName(cc, currentLocale())
+  const named = rest
+    ?.split(', ')
+    .map((part) => exonym(part, cc, 'where'))
+    .join(', ')
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
-  return msgs(enGeo).where(rest, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
+  return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
 }
 
 /** "43.4723°N 80.5449°W": international notation, the same in every language. */

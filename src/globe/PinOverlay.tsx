@@ -21,7 +21,7 @@
 import { useEffect, useRef, useState } from 'react'
 import enGlobe from '@/i18n/en/globe'
 import { useMsgs } from '@/i18n/runtime'
-import { coordinateLabel, displaySublabel, isAbortError, reversePlace } from '@/imagery'
+import { coordinateLabel, displayLabel, displaySublabel, isAbortError, reversePlace } from '@/imagery'
 import { isStacked } from '@/lib/layout'
 import { useApp, type DroppedPin } from '@/state/store'
 import type { Place } from '@/types'
@@ -166,9 +166,10 @@ function PinCard({ runtime, pin, onSearch }: { runtime: GlobeRuntime; pin: Dropp
 
   const coords = `${fmtLat(pin.lat, 4)} ${fmtLon(pin.lon, 4)}`
   const name = named?.pinId === pin.id ? named.place : undefined // undefined: still naming; null: no name here
-  // The "where" line with its country in the visitor's language (the Place keeps the English one for lookups).
+  // The name and the "where" line in the visitor's language (the Place keeps the English ones for lookups).
+  const label = name ? displayLabel(name) : undefined
   const sub = name ? displaySublabel(name) : undefined
-  const title = name ? (name.label && sub ? m.placeTitle(name.label, sub) : name.label || sub || '') : undefined
+  const title = name ? (label && sub ? m.placeTitle(label, sub) : label || sub || '') : undefined
 
   const search = async () => {
     if (busy) return
@@ -195,7 +196,7 @@ function PinCard({ runtime, pin, onSearch }: { runtime: GlobeRuntime; pin: Dropp
           <div className={s.text}>
             <span className={s.coord}>{coords}</span>
             <span className={s.name} data-state={name === undefined ? 'naming' : name ? 'named' : 'none'} title={title}>
-              {name === undefined ? m.naming : name ? name.label : m.noName}
+              {name === undefined ? m.naming : name ? label : m.noName}
               {sub ? <span className={s.sub}> {sub}</span> : null}
             </span>
           </div>

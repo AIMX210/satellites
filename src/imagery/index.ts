@@ -10,7 +10,8 @@
  *   latestGeoFrame   the newest frame of a geostationary watcher: GOES, Himawari (GIBS) and Meteosat (EUMETSAT)
  *   spotCloud        cloud / shadow / clear at the exact pixel (SCL or QA_PIXEL)
  *   searchPlaces, reversePlace, locateMe, timeZoneAt (after ensureTz)
- *   displaySublabel  a place's "where" line on screen, its country in the visitor's language
+ *   displayLabel     a place's name on screen, in the visitor's language where it has a name there (München)
+ *   displaySublabel  a place's "where" line on screen, its country and regions in the visitor's language
  *   preloadImage     fetch + decode, LRU-cached
  *
  * Extras are exported for the UI and engine where they help (detailed search with degradation
@@ -29,7 +30,7 @@ export type { GeoFrame, GeoFrameBand } from './geoFrames'
 export { spotCloud, spotCheck, classifyScl, classifySclArea, classifyQaPixel, type SpotCheck } from './cloud'
 export type { SpotCloud } from './cloud'
 
-export { searchPlaces, reversePlace, locateMe, timeZoneAt, ensureTz, tzReady, nauticalZone, coordinateLabel, displaySublabel, parseCoordinates, LocateError } from './geocode'
+export { searchPlaces, reversePlace, locateMe, timeZoneAt, ensureTz, tzReady, nauticalZone, coordinateLabel, displayLabel, displaySublabel, parseCoordinates, LocateError } from './geocode'
 export type { LocateErrorCode } from './geocode'
 
 export { preloadImage, isImageCached, probeImage, decodeImagePixels, EmptyImageError, tonedImageBlob } from './image'

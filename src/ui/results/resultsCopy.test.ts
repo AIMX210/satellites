@@ -166,6 +166,15 @@ describe("a curated place's name follows the language showing (placeName)", () =
     expect(picked.canonicalLabel).toBe('Pyramids of Giza')
   })
 
+  it("shows a geocoder's place under the name the language gives it there, and a link's as it came", () => {
+    setBundleForTests('it', { exonyms: { names: 'GB:London=Londra|DE:Munich=Monaco di Baviera' } })
+    const london: Place = { label: 'London', sublabel: 'England, United Kingdom', countryCode: 'gb', lat: 51.5085, lon: -0.1257, source: 'search' }
+    expect(placeName(london)).toBe('Londra')
+    expect(placeName({ ...london, countryCode: 'ca', lat: 42.98, lon: -81.25 })).toBe('London') // London, Ontario
+    expect(placeName({ ...london, source: 'url', countryCode: undefined })).toBe('London')
+    expect(london.label).toBe('London')
+  })
+
   it('shows every other place as it came (geocoder names are data)', () => {
     setBundleForTests('fr', FRENCH)
     expect(placeName({ ...link, source: 'search' })).toBe('Pyramids of Giza')

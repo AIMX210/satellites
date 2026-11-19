@@ -25,7 +25,7 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import enLanding from '@/i18n/en/landing'
 import { useMsgs } from '@/i18n/runtime'
-import { displaySublabel, isAbortError, searchPlaces } from '@/imagery'
+import { displayLabel, displaySublabel, isAbortError, searchPlaces } from '@/imagery'
 import type { Place } from '@/types'
 import { Field, Glyph, Kbd, cx, fmtLat, fmtLon, useIsMobile } from '@/ui/system'
 import { canSubmitQuery, clampActive, enterTarget, isTypingTarget, stepActive } from './listNav'
@@ -162,7 +162,7 @@ export function SearchBox({
   const choose = (place: Place) => {
     ctrl.current?.abort()
     window.clearTimeout(timer.current)
-    setQuery(place.label)
+    setQuery(displayLabel(place))
     setOpen(false)
     setActive(-1)
     // Submit first, then let go of the field: the caller knows it is leaving when the blur arrives,
@@ -495,8 +495,8 @@ export function SearchBox({
                   }}
                 >
                   <span className={s.optText}>
-                    <span className={s.optLabel}>{p.label}</span>
-                    {/* The "where" line with its country in the visitor's language (the Place keeps the English one). */}
+                    {/* The name and the "where" line in the visitor's language (the Place keeps the English ones). */}
+                    <span className={s.optLabel}>{displayLabel(p)}</span>
                     {p.sublabel ? <span className={s.optSub}>{displaySublabel(p)}</span> : null}
                   </span>
                   {/* a place named by its own coordinates (open sea, geocoder offline) doesn't repeat them */}

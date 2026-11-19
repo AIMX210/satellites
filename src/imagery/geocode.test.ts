@@ -504,12 +504,12 @@ describe('places on screen', () => {
     expect(displaySublabel({ countryCode: 'ca' })).toBeUndefined()
   })
 
-  it('name the country in the language on screen, joined its way to the rest, which stays one piece as it came', () => {
+  it('name the country in the language on screen, joined its way to the rest, which keeps its order and punctuation', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${country} · ${rest}`)
     setBundleForTests('de', { geo: { ...enGeo, where } })
     expect(displaySublabel({ sublabel: 'Ontario, Canada', countryCode: 'ca' })).toBe('Kanada · Ontario')
     expect(displaySublabel({ sublabel: 'Germany', countryCode: 'de' })).toBe('Deutschland')
-    // The rest is never split back into parts: a disambiguated row keeps its kind and commas exactly as written.
+    // The rest is never reordered or re-punctuated: a disambiguated row keeps its kind and commas exactly as written.
     expect(displaySublabel({ sublabel: 'Paris, Île-de-France, France', countryCode: 'fr' })).toBe('Frankreich · Paris, Île-de-France')
     expect(displaySublabel({ sublabel: 'Bus stop, Ushuaia, Tierra del Fuego, Argentina', countryCode: 'ar' })).toBe(
       'Argentinien · Bus stop, Ushuaia, Tierra del Fuego',
