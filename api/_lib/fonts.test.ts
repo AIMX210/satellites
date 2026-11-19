@@ -131,6 +131,14 @@ describe('card fonts', () => {
     expect(await svg(line('Київ', roles[0][1]), fonts)).not.toBe(await svg(line('Київ', roles[1][1]), fonts))
   })
 
+  it('takes the letters Martian Mono lacks (Serbian, Macedonian, Kazakh) from the sans cut, not the display', async () => {
+    const fonts = await cardFonts('uk', '')
+    const mono = { fontFamily: FAMILY.mono }
+    for (const word of ['Ђ', 'љ', 'Ұ']) {
+      expect(await svg(line(word, mono), fonts)).toBe(await svg(line(word, mono), fonts.filter((f) => f.name === 'Overflight Sans Cyrillic')))
+    }
+  })
+
   it('renders an English card exactly as it did before the Cyrillic cuts existed', async () => {
     const latin = await loadFonts()
     const share = shareFromParams(

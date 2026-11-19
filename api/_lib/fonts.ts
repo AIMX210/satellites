@@ -37,11 +37,17 @@ const CYRILLIC_NAME = (name: string) => `${name} Cyrillic`
 /** A role's files, in the order a glyph is looked for in them. */
 const stack = (name: string) => `${name}, ${EXT_NAME(name)}, ${CYRILLIC_NAME(name)}`
 
-/** What the card's text is set in (its `fontFamily`): each role's face, its latin-ext file, then its Cyrillic cut. */
+/**
+ * What the card's text is set in (its `fontFamily`): each role's face, its latin-ext file, then its Cyrillic cut.
+ * Martian Mono's Cyrillic has every Ukrainian, Russian and Belarusian letter but not Serbian, Macedonian or Kazakh ones
+ * (Ђ Ѓ Ѕ Ј Љ Њ Ћ Ќ Џ Ѐ Ѝ Ұ and their small letters): in a mono label those come from the sans cut, regular width, where
+ * the web falls to the system's monospace, rather than from the first registered font that has them (the condensed
+ * display).
+ */
 export const FAMILY = {
   display: stack(FONT.display),
   sans: stack(FONT.sans),
-  mono: stack(FONT.mono),
+  mono: `${stack(FONT.mono)}, ${CYRILLIC_NAME(FONT.sans)}`,
   serif: stack(FONT.serif),
 } as const
 
