@@ -263,6 +263,78 @@ function summaryModel(report: Report, tz: string, host: string, locale: Locale):
   }
 }
 
+/** The share rows' column weights while every label has room in its share (ShareSheet.module.css). */
+const ACTION_WEIGHTS = [1.4, 1, 1]
+const SECONDARY_WEIGHTS = [1, 1, 1]
+/** The least room a label keeps from its border (the CSS padding: it shows only once a label is that tight). */
+const PAD_LEAST = { actions: 4, secondary: 6 }
+/** What a row needs per side before its buttons share one line when the weighted shares are too tight for a label. */
+const PAD_EVEN = 12
+
+/**
+ * A row of share buttons that fits its labels, whatever the language (CSS `data-fit` on the row):
+ *   none      the weighted columns (Post to X wider than Copy link and Copy image) while every label fits its share
+ *   'even'    one line still, each button its label plus an equal part of what is left, when a share is too narrow
+ *   'stack'   the first button on a line of its own over the other two, in halves (1 + 2), when one line cannot
+ *             give each label PAD_EVEN a side
+ *   'stack-even'  the same, the two sized as 'even' is, when a half is too narrow for one of them
+ *   'column'  a line each, when even the last two cannot share one
+ * Three weighted buttons on a phone are ~99 px, and "Copier l’image", "Bild kopieren", "Görüntüyü kopyala" ran past
+ * their borders. CSS cannot tell when labels no longer fit, so the row measures them: on a width change, a language
+ * change and once the fonts are in, never when a label flashes "Copied" (that would move the buttons under the finger
+ * that pressed one). Written to the DOM: nothing renders for it.
+ */
+function useFitRow(locale: Locale, weights: readonly number[], padLeast: number) {
+  const stop = useRef<(() => void) | null>(null)
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- locale: a new callback re-measures in the new language
+  return useCallback((row: HTMLElement | null) => {
+    stop.current?.()
+    stop.current = null
+    if (!row) return
+    let width = -1
+    let live = true
+    const check = (force = false) => {
+      const w = row.clientWidth
+      if (!live || !w || (w === width && !force)) return
+      width = w
+      const labels = ([...row.children] as HTMLElement[]).map(labelWidth)
+      const gap = parseFloat(getComputedStyle(row).columnGap) || 0
+      const free = w - gap * (labels.length - 1)
+      const total = weights.slice(0, labels.length).reduce((a, b) => a + b, 0)
+      // Whether these labels share one line with `pad` a side (and the 1 px borders).
+      const line = (ls: number[], pad: number) => ls.reduce((sum, x) => sum + x + 2 * pad + 2, gap * (ls.length - 1)) <= w + 0.5
+      const rest = labels.slice(1)
+      const half = (w - gap) / 2
+      const fit = labels.every((x, i) => x + 2 * padLeast + 2 <= (free * (weights[i] ?? 1)) / total + 0.5)
+        ? undefined
+        : line(labels, PAD_EVEN)
+          ? 'even'
+          : rest.every((x) => x + 2 * PAD_EVEN + 2 <= half + 0.5)
+            ? 'stack'
+            : line(rest, PAD_EVEN)
+              ? 'stack-even'
+              : 'column'
+      if (fit) row.dataset.fit = fit
+      else delete row.dataset.fit
+    }
+    check(true)
+    void document.fonts?.ready.then(() => check(true))
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => check())
+    ro?.observe(row)
+    stop.current = () => {
+      live = false
+      ro?.disconnect()
+    }
+  }, [locale])
+}
+
+/** A button's label at its own length (a nowrap line: the glyph and the words), without the padding and border. */
+function labelWidth(el: HTMLElement): number {
+  const range = document.createRange()
+  range.selectNodeContents(el)
+  return range.getBoundingClientRect().width
+}
+
 /**
  * The overlay contract (R3-16): `document.documentElement.dataset.overlay = 'share'` while `on`; an overlay that was
  * already up (the lightbox) gets its value back when this one goes.
@@ -315,6 +387,8 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
   const nativeFirst = coarse && canNativeShare
   const [shareFiles] = useState(canShareFiles)
   const [copyImageOk] = useState(canCopyImage)
+  const fitActions = useFitRow(locale, ACTION_WEIGHTS, PAD_LEAST.actions)
+  const fitSecondary = useFitRow(locale, SECONDARY_WEIGHTS, PAD_LEAST.secondary)
 
   const [link, setLink] = useState<LinkState>({ kind: 'idle' })
   const [flash, setFlash] = useState<Flash>(null)
@@ -595,7 +669,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
         <Glyph name="share" size={14} />
         {nativeLabel}
       </Button>
-      <div className={s.secondary}>
+      <div ref={fitSecondary} className={s.secondary}>
         <Button onClick={copy} onPointerDown={warm} aria-live="polite">
           {flash === 'link' ? m.copied : m.copyLink}
         </Button>
@@ -606,7 +680,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
       </div>
     </div>
   ) : (
-    <div className={s.actions}>
+    <div ref={fitActions} className={s.actions}>
       <Button variant="primary" onClick={post} onPointerDown={warm}>
         {m.postToX}
       </Button>

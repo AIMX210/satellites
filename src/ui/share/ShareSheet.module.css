@@ -127,16 +127,37 @@
   gap: 16px;
 }
 
-/* Wide: three equal-weight actions, the primary a little wider (Post to X · Copy link · Copy image). */
+/* Three equal-weight actions, the primary a little wider (Post to X · Copy link · Copy image), while every label has
+   room in its share. Otherwise (ShareSheet.tsx useFitRow, any language): each its label plus an equal part of what
+   is left ('even'), the first on a line of its own over the other two ('stack', 'stack-even'), or a line each
+   ('column'). */
 .actions {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
   gap: 8px;
 }
+/* The least room a label keeps from its border (the button centres it, so this shows only once a label is that tight):
+   English "Copy image" on a 360 px phone has 5 px. */
 .actions > * {
   min-width: 0;
+  padding-inline: 4px;
 }
-/* Touch: one full-width "Share image", then three equal secondaries. */
+:is(.actions, .secondary)[data-fit='even'] {
+  grid-template-columns: repeat(3, auto);
+}
+:is(.actions, .secondary)[data-fit='stack'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+:is(.actions, .secondary)[data-fit='stack-even'] {
+  grid-template-columns: repeat(2, auto);
+}
+:is(.actions, .secondary):is([data-fit='stack'], [data-fit='stack-even']) > :first-child {
+  grid-column: 1 / -1;
+}
+:is(.actions, .secondary)[data-fit='column'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+/* Touch: one full-width "Share image", then three equal secondaries (fitted as .actions is). */
 .actionsTouch {
   display: flex;
   flex-direction: column;
