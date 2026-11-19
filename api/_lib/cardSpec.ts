@@ -890,6 +890,19 @@ function readoutsFor(input: CardInput, m: CardMessages, locale: Locale): Readout
  * sharer's language (the app's when they share, the link's `l=` on the server). English by default, for callers
  * that only ever print English (scripts, older tests).
  */
+/**
+ * The card's fonts have no narrow no-break space (U+202F) or thin space (U+2009): satori sends a character its fonts lack
+ * to Google Fonts for a subset (two requests, up to 4 s each) before the card renders, and the canvas draws it in a
+ * system face. French puts U+202F before ; ! ? and inside « », so every card's text takes a no-break space for them
+ * instead (docs/i18n/fr.md). English has neither, so an English card is unchanged.
+ */
+function cardSpaces<T>(v: T): T {
+  if (typeof v === 'string') return v.replace(/[\u202f\u2009]/g, '\u00a0') as T
+  if (Array.isArray(v)) return v.map(cardSpaces) as T
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, cardSpaces(x)])) as T
+  return v
+}
+
 export function buildCardSpec(input: CardInput, locale: Locale = DEFAULT_LOCALE): CardSpec {
   const m = cardMessages(locale)
   const place = cardPlace(input.placeLabel)
@@ -919,7 +932,7 @@ export function buildCardSpec(input: CardInput, locale: Locale = DEFAULT_LOCALE)
     }
   } else plate = planPlate(input, planNote(m, input.verdict, input.imageMiss), locale)
 
-  return {
+  return cardSpaces({
     verdict: input.verdict,
     locale,
     stamp: input.tClosest !== undefined ? localStamp(input.tClosest, input.timeZone, locale) : '',
@@ -932,7 +945,7 @@ export function buildCardSpec(input: CardInput, locale: Locale = DEFAULT_LOCALE)
     footLeft: m.invite,
     host: input.host,
     plate,
-  }
+  })
 }
 
 // ── Summary card (share SH6): the week at a place, with its closest look ────────────────────
@@ -1051,7 +1064,7 @@ export function buildSummarySpec(i: SummaryInput, locale: Locale = DEFAULT_LOCAL
     plate = emptyPlate(none ? m.noPublicPhoto : m.noPhoto)
   }
   const readouts: Readout[] = (['imaged', 'likely', 'could', 'overhead'] as const).map((v) => ({ label: m.lane[v], value: int(i.counts[v]) }))
-  return {
+  return cardSpaces({
     verdict: n > 0 ? 'imaged' : 'overhead',
     locale,
     stamp: i.windowEnd !== undefined ? m.weekTo(i.windowEnd, i.timeZone ?? 'UTC') : m.lastWeek,
@@ -1066,7 +1079,7 @@ export function buildSummarySpec(i: SummaryInput, locale: Locale = DEFAULT_LOCAL
     footLeft: m.invite,
     host: i.host,
     plate,
-  }
+  })
 }
 
 /** No picture to show (none this week, or the archive was slow): the instrument face alone (grid, reticle, a plain note). */
