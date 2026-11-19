@@ -69,13 +69,14 @@ export function parsePagePlace(json: string | null | undefined): PagePlace | und
   }
 }
 
+/** The browser's document and address, when there is one. Named here, not as globals: Node compiles this file too. */
+const browser = globalThis as { document?: { getElementById(id: string): { textContent: string | null } | null }; location?: { pathname: string } }
+
 let read: PagePlace | null | undefined
 
 /** The place this document was built for, if it is a place page. Read once: the script never changes. */
 export function pagePlace(): PagePlace | undefined {
-  if (read === undefined) {
-    read = typeof document === 'undefined' ? null : (parsePagePlace(document.getElementById(PLACE_PAGE_ID)?.textContent) ?? null)
-  }
+  if (read === undefined) read = parsePagePlace(browser.document?.getElementById(PLACE_PAGE_ID)?.textContent) ?? null
   return read ?? undefined
 }
 
@@ -83,7 +84,7 @@ export function pagePlace(): PagePlace | undefined {
  * The page's place when the address is still the page's own: what a load of /place/<slug> opens. A `?q=` or `?s=`
  * on the same address asks for something else and wins (src/app/links.ts).
  */
-export function bootPlace(pathname: string = typeof location === 'undefined' ? '' : location.pathname): PagePlace | undefined {
+export function bootPlace(pathname: string = browser.location?.pathname ?? ''): PagePlace | undefined {
   const page = pagePlace()
   return page && pathname === page.path ? page : undefined
 }
