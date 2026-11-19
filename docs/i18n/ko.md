@@ -416,8 +416,9 @@ Cloud cover across the scene: 25%.
 - Aria (`results.verdictReadout`): 31회: 지켜봤다.
 - Timeline lanes: 이미지 31 · 추정 4 · 가능 120 · 상공 12.
 - Group header order line (`passView.imagedOrder`): 가장 자세한 모습부터, 이후 최신순.
-- About's longer words (`about.verdictMore`): imaged 보여 주는 이미지는 모두 실제 이미지다. · likely 이미지가 아직
-  공개되지 않았거나, 구름 때문에 버려졌다. · could 실제로 봤는지는 알 길이 없다. · overhead (none).
+- About's longer words (`about.verdictMore`): imaged 보여 주는 이미지는 모두 실제 이미지다. · likely 아직 공개
+  전이거나, 구름 때문에 버려졌다. · could 그래서 알 길이 없다. · overhead (none). Each is read right after its
+  definition, so it leans on it instead of repeating it (공개 전, not 공개되지 않았 again; 그래서, not 실제로 봤는지 again).
 - Footnotes quote the titles in ‘ ’: ‘지켜봤다’로 센다, ‘아마 지켜봤다’로 보여 준다. Every title ends in 다, so 로 and
   라고 after the quote are fixed.
 
@@ -847,21 +848,21 @@ In every card sentence, `sat` undefined goes through `named()` (§5.3): 이름 �
 |---|---|
 | bar / close / sectionsLabel | 소개 / 닫기 / 목차 |
 | title | `[['이렇게'], [accent('돌아간다'), '.']]` (돌아가다: "to work, to run", and "to go round", which everything on this page does; the lede uses it too) |
-| lede | 지구 위 한 지점을 고르면, Watched가 지난 일주일 동안 그 상공을 지나간 위성을 계산하고, 그 위성들이 찍은 이미지를 찾아온다. 모든 과정은 브라우저에서, 공개 데이터로 돌아간다. |
+| lede | 지구 위 한 지점을 고르면, Watched가 지난 일주일 동안 어떤 위성이 그 상공을 지나갔는지 계산하고, 그 위성들이 찍은 이미지를 찾아온다. 모든 과정은 브라우저에서, 공개 데이터로 돌아간다. (계산하다 takes an orbit, a time or an embedded question, never 위성을) |
 | sections | 00 짧게 말하면 · 01 통과를 찾는 방법 · 02 분류가 뜻하는 것 · 03 보이지 않는 것 · 04 개인정보 · 05 크레딧 · 06 키보드 |
 | short.live | 실시간일까? / 꼭 그렇지는 않다. 이미지는 찍힌 뒤 몇 시간에서 이틀쯤 지나야 아카이브에 올라온다. 그래서 가장 최근 통과에는 아직 이미지가 없을 수 있다. |
 | short.seeMe | 내가 보일까? / 안 보인다. 여기서는 픽셀 하나가 아무리 작아도 10 m다. 자동차 한 대가 픽셀 하나다. 당신은 그보다 작다. |
 | short.every | 이게 위성 전부일까? / 전부는 아니다. 군사 위성과 정찰위성은 대부분 공개 카탈로그에 없다. 기업들은 카메라를 어디로 돌리는지 밝히지 않는다. |
 | method.orbits | `['궤도에 있는 모든 물체에는 그 경로를 나타내는 공개된 숫자 묶음이 있다. ', link('CelesTrak'), '이 미국 우주군의 추적 자료로 이를 공개하고, Watched는 6시간마다 새로 받아 온다.']` |
 | method.loaded | `['이 페이지는 물체 ', num(n), '개를 불러왔다(받은 시각 ', num(stamp), ').']` |
-| method.sgp4 | 각 위성을 표준 궤도 모델인 SGP4로 지난 7일 동안 계산하고, 이 지점이 위성의 시야 안에 든 때를 모두 기록한다. |
+| method.sgp4 | 각 위성의 지난 7일 궤도를 표준 궤도 모델인 SGP4로 계산하고, 이 지점이 위성의 시야 안에 든 때를 모두 기록한다. (the window inside the object: 지난 7일 동안 right before 계산하고 reads as how long the computing took) |
 | facts.straightDown | 바로 아래 / Sentinel-2와 Landsat은 바로 아래의 띠 모양 땅을 본다. 폭은 Sentinel-2가 약 290 km, Landsat이 약 185 km다. 이 띠 안에 있어야 한다. |
 | facts.tilting | 기울이는 카메라 / 상업 위성 상당수는 30~45도까지 기울일 수 있다. 그 범위 안에 있었다면 ‘여기를 볼 수도 있었다’로 분류한다. |
 | facts.daylight | 낮 / 일반 카메라에는 햇빛이 필요하다. 어둠 속 통과는 사진으로 세지 않는다. |
-| facts.radar | 레이더 / Sentinel-1에는 햇빛이 필요 없다. 마이크로파를 쏘고 그 반사파를 기록하므로, 구름을 뚫고 밤에도 본다. 궤도 한쪽 옆을 비스듬히 본다. 이미지도 공개되므로 회색으로 보여 준다. 밝은 곳은 거친 지면과 건물, 어두운 곳은 잔잔한 물이다. |
-| facts.weather | 기상위성 / 몇몇은 적도 위에 머물며 10분마다 지구의 절반을 지켜본다. 그쪽 지구에 있다면 모든 프레임에 들어 있다. |
+| facts.radar | 레이더 / Sentinel-1에는 햇빛이 필요 없다. 마이크로파를 쏘고 그 반사파를 기록하므로, 구름을 뚫고 밤에도 본다. 시선은 궤도 한쪽 옆으로 비스듬히 향한다. 이미지도 공개되므로 회색으로 보여 준다. 밝은 곳은 거친 지면과 건물, 어두운 곳은 잔잔한 물이다. |
+| facts.weather | 기상위성 / 몇몇은 적도 위에 머물며 10분마다 지구의 절반을 지켜본다. 그 절반 안에 있다면 모든 프레임에 들어 있다. |
 | archives | 그다음 이미지 아카이브(Microsoft Planetary Computer, Element 84, NASA(미국 항공우주국))를 검색해, 각 이미지를 그것을 찍은 통과와 짝짓는다. → write: 각 이미지를 찍은 통과와 짝짓는다. 보이는 이미지는 모두 실제 이미지를 이 지점 주변으로 잘라 낸 것이다. |
-| photoFacts.touchUps | 보정 / Sentinel-2와 Landsat 사진은 화면에 맞게 색 균형을 맞추고, 매끄럽게 다듬고, 살짝 선명하게 한다. 사진 전체에 같은 방식으로 적용한다. 더하거나 빼는 것은 없다. |
+| photoFacts.touchUps | 보정 / Sentinel-2와 Landsat 사진은 화면에 맞춰 색 균형을 잡고, 매끄럽게 다듬은 뒤 살짝 선명하게 한다. 사진 전체에 같은 방식으로 적용한다. 더하거나 빼는 것은 없다. |
 | photoFacts.whichWayUp | 어느 쪽이 위인가 / Sentinel-2와 Landsat 사진은 아카이브의 지도 격자를 그대로 쓴다. 그래서 북쪽이 정확히 위에서 몇 도 어긋날 수 있다. 이미지를 열면 N 화살표가 정확한 방향을 가리킨다. |
 | verdictMore | §3.5 |
 | accuracy.positions | 정확한 위치 / 공개 궤도 자료의 오차는 약 1 km이고, 날마다 조금씩 커진다. 시각은 몇 초 틀릴 수 있다. |
@@ -870,7 +871,7 @@ In every card sentence, `sat` undefined goes through `named()` (§5.3): 이름 �
 | accuracy.delays | 지연 / 사진이 올라오기까지 하루이틀 걸릴 수 있다. |
 | privacy.where | 계산되는 곳 / 궤도 계산은 브라우저 안에서 이뤄진다. |
 | privacy.kept | 남기는 것 / Watched는 검색을 도시와 약 10 km 크기의 구역 단위로만 세고, 정확한 지점은 남기지 않는다. 무엇이 열리고 공유됐는지도 집계한다. IP 주소도, 자체 쿠키도, 한 방문과 다음 방문을 잇는 정보도 남기지 않는다. |
-| privacy.others | 다른 곳이 보는 것 / 대부분의 장소 이름은 사이트에 내장된 목록에서 나온다. 그 밖의 검색은 Open-Meteo, Photon 또는 Nominatim으로 간다. 이미지는 아카이브에서 바로 불러온다. 호스팅 업체는 쿠키 없이 페이지 조회 수와 속도를 세고, 사람과 봇을 구분하려고 보안 쿠키 하나를 둘 수 있다. Watched는 그 쿠키를 읽지 않는다. |
+| privacy.others | 다른 곳이 보는 것 / 대부분의 장소 이름은 사이트에 내장된 목록에서 나온다. 그 밖의 검색은 Open-Meteo, Photon 또는 Nominatim으로 간다. 이미지는 아카이브에서 바로 불러온다. 호스팅 업체는 쿠키 없이 페이지 조회 수와 속도를 집계하고, 사람과 봇을 구분하려고 보안 쿠키 하나를 둘 수 있다. Watched는 그 쿠키를 읽지 않는다. |
 | privacy.links | 공유 링크 / 무언가를 공유할 때만 만든다. 링크가 있으면 누구나 장소 이름, 약 1 km 단위로 반올림한 지점, 고른 통과를 볼 수 있다. |
 | credits.madeBy | 만든 사람 / `['Armaan, X ', link(handle)]` |
 | credits.gibs | 이미지: NASA(미국 항공우주국)의 GIBS(EOSDIS의 일부). GOES는 NOAA(미국 해양대기청)와 CIRA, Himawari는 JMA(일본 기상청) 제공. |
@@ -956,8 +957,10 @@ stays 이미저 in blurbs (Copernicus 다중분광 이미저); in prose sentence
 
 Examples: sentinel2 Copernicus 다중분광 이미저: 밴드 13개, 픽셀 10 m, 관측 폭 290 km. · noaaViirs VIIRS 이미저가 관측
 폭 3,040 km를 훑으며 하루 두 번 지구 전체를 덮는다. · terra MODIS 이미저는 1999년부터 한 번에 2,330 km씩 지구 전체를
-지켜봐 왔다. · goesEast GOES-East: 10분마다 아메리카의 지구 전면을 관측한다. · goes16 예전의 GOES-East로, 예비 위성으로
-궤도에 남아 있다. · skysat 자세를 빠르게 바꾸는 Planet의 이미저로, 픽셀은 약 50 cm이며 요청에 따라 특정 지점을 찍는다.
+지켜봐 왔다. · goesEast GOES-East: 10분마다 아메리카 쪽 지구 전면을 관측한다. ("full disk of X" → X 쪽 지구 전면,
+never X의 지구 전면) · goes16 예전의 GOES-East: 지금은 예비 위성으로 궤도에 남아 있다. (never two -로 in a row) ·
+fengyun4a 먼저 발사된 중국의 정지궤도 이미저: 주 운용 위성으로는 세지 않는다. ("Older" → 먼저 발사된, never 더 오래된
+with nothing to compare to) · skysat 자세를 빠르게 바꾸는 Planet의 이미저로, 픽셀은 약 50 cm이며 요청에 따라 특정 지점을 찍는다.
 · sentinel1 모든 이미지를 공개하는 Copernicus C 밴드 레이더: 한쪽 옆으로 관측 폭 250 km, 20 m, 구름을 뚫고 밤낮없이.
 · iss 국제우주정거장. 2000년 11월부터 사람이 끊임없이 머물고 있다.
 

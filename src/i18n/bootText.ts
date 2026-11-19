@@ -15,6 +15,7 @@ import nl from './nl/boot.ts'
 import id from './id/boot.ts'
 import uk from './uk/boot.ts'
 import ja from './ja/boot.ts'
+import ko from './ko/boot.ts'
 import zhHans from './zh-Hans/boot.ts'
 import zhHant from './zh-Hant/boot.ts'
 
@@ -36,6 +37,7 @@ export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   id,
   uk,
   ja,
+  ko,
   'zh-Hans': zhHans,
   'zh-Hant': zhHant,
 }

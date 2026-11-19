@@ -81,7 +81,8 @@ const passView: typeof en = {
     radarPrivate: `공개 이미지 없음: 이 레이더 운영사의 아카이브는 비공개다. ${PLAN}`,
     commercialPrivate: `공개 이미지 없음: 상업 아카이브는 비공개다. ${PLAN}`,
     noneToShow: `이번 통과에 보여 줄 이미지가 없다. ${PLAN}`,
-    archiveDown: `지금은 아카이브를 검색할 수 없었다. ${PLAN}`,
+    /** "just now" is 방금은, as pass.likely.archiveFailed says it: it agrees with the past 없었다, and 지금은 would not */
+    archiveDown: `방금은 아카이브를 검색할 수 없었다. ${PLAN}`,
     noScene: `이번 통과의 장면은 없다. ${PLAN}`,
     notYet: '이번 통과와 맞는 공개 장면이 아직 없다. Sentinel-2와 Landsat 장면은 보통 하루 안에 올라온다.',
     crewed: '우주정거장에도 카메라가 있지만, 그 사진은 장소와 시각별로 공개되지 않는다.',
