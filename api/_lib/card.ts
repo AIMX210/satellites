@@ -9,9 +9,10 @@
  * hairlines, Martian Mono numerics, condensed Instrument Sans display, one Instrument Serif phrase.
  * Line art is ≥ 2px wherever it carries meaning, so it survives X's ~600px timeline render.
  *
- * The words are the spec's, in its language (spec.locale): mono rows are uppercased here in that language (satori's
- * own text-transform knows no language: Turkish i must become İ), and the headline's blocks are set in the order the
- * language's message gives them. The default card takes its words from the card catalog in the same way.
+ * The words are the spec's, in its language (spec.locale): mono rows are uppercased here in that language, their units
+ * kept as they are ("10 m": satori's own text-transform knows no language, Turkish i must become İ, and would
+ * uppercase the units), and the headline's blocks are set in the order the language's message gives them. The default
+ * card takes its words from the card catalog in the same way.
  *
  * Every role names its face and then the face the web gives Cyrillic (fonts.ts FAMILY), so Ukrainian and Cyrillic
  * place names are set as the app sets them; a Chinese, Japanese or Korean card carries its language (`lang`), so its
@@ -52,6 +53,7 @@ import {
 import { cardMessages } from './i18n/card/index.js'
 import { DEFAULT_LOCALE, LOCALE_INFO, type Locale, type Script } from './i18n/locales.js'
 import { isAccent, plain, type Rich } from './i18n/parts.js'
+import { capsExceptUnits } from './i18n/units.js'
 import { bundled } from './bundled.js'
 import { FAMILY } from './fonts.js'
 import { WORDMARK_ASPECT, wordmarkSvg } from './wordmark.js'
@@ -62,11 +64,13 @@ export { CARD_H, CARD_W, PLATE, niceLength }
 // ── Type primitives ─────────────────────────────────────────────────────────────────────────
 
 /**
- * Mono caps text: tracking +0.08em, as `.label` in primitives.module.css. Uppercased first in the card's language
- * (satori's text-transform then leaves the capitals as they are).
+ * Mono caps text: tracking +0.08em, as `.label` in primitives.module.css. Uppercased here in the card's language,
+ * except its units ("10 m", "1 km": ./i18n/units.ts), so satori's own text-transform is off: it would uppercase the
+ * units too, and in no language's rules (Turkish i must become İ). `textTransform: 'none'` from a caller keeps the
+ * text as it is (the host, a readout's unit).
  */
 function mono(locale: Locale, text: string, size: number, color: string, style: CSSProperties = {}): ReactElement {
-  const shown = style.textTransform === 'none' ? text : text.toLocaleUpperCase(LOCALE_INFO[locale].intl)
+  const shown = style.textTransform === 'none' ? text : capsExceptUnits(text, LOCALE_INFO[locale].intl)
   return h(
     'div',
     {
@@ -75,7 +79,7 @@ function mono(locale: Locale, text: string, size: number, color: string, style: 
         fontFamily: FAMILY.mono,
         fontSize: size,
         letterSpacing: size * TRACK.label,
-        textTransform: 'uppercase',
+        textTransform: 'none',
         color,
         lineHeight: 1.3,
         whiteSpace: 'nowrap',
@@ -148,7 +152,7 @@ function chip(locale: Locale, c: Chip): ReactElement {
   )
 }
 
-/** Scale bar sized to a round ground distance: ├── 1 KM ──┤, top right of the plate. */
+/** Scale bar sized to a round ground distance: ├── 1 km ──┤, top right of the plate. */
 function scaleBar(locale: Locale, s: ScaleBar): ReactElement | null {
   if (s.px <= 0) return null
   return abs(
@@ -280,7 +284,8 @@ function readouts(spec: CardSpec): ReactElement[] {
       abs(
         { left: x, top: PANEL.roValue[0], height: PANEL.roValue[1], alignItems: 'baseline', gap: r.unit ? 8 : 0 },
         h('div', { style: { display: 'flex', fontFamily: FAMILY.mono, fontSize: size, letterSpacing: TRACK.readout * size, color: C.bone, lineHeight: 1 } }, r.value),
-        r.unit ? mono(l, r.unit, CARD_FS.readoutUnit, C.bone3, { lineHeight: 1 }) : null,
+        // A readout's unit is a unit symbol ("km", "m", "km/s"): it keeps its case.
+        r.unit ? mono(l, r.unit, CARD_FS.readoutUnit, C.bone3, { lineHeight: 1, textTransform: 'none' }) : null,
       ),
     )
     return out

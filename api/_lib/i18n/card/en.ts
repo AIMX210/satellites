@@ -31,8 +31,8 @@
  *    Decimals go through `decimal` (English rounds as JavaScript's toFixed always has; a translation uses
  *    fmt(locale).dec, which writes its own decimal sign).
  *  - Mono labels (chips over the picture, the stamp, readout labels and units, the footer) are stored in sentence case:
- *    each renderer uppercases them in the card's language. They are single lines that never wrap and are never cut:
- *    keep them about as short as the English.
+ *    each renderer uppercases them in the card's language, except the units ("10 m", "1 km", "km/s" stay lowercase:
+ *    ../units.ts). They are single lines that never wrap and are never cut: keep them about as short as the English.
  *  - The licence credits ("Contains modified Copernicus Sentinel data 2026", "Landsat: USGS / NASA") stay in English
  *    as the data policies word them: they are in cardSpec.ts, not here. Satellite, sensor and agency names, NORAD ids,
  *    the brand ("Watched.") and www.watched.earth are never translated.
@@ -234,7 +234,10 @@ const card = {
   },
   /** The week's card: the four counts, by what each pass did (the results' lane names). About 8 characters at most */
   lane: { imaged: 'Image', likely: 'Likely', could: 'Could', overhead: 'Overhead' },
-  /** Units after a readout's number (mono caps, smaller). Keep the symbols unless your readers write them otherwise */
+  /**
+   * Units after a readout's number (mono, smaller, never in capitals). Keep the symbols unless your readers write them
+   * otherwise
+   */
   unit: { km: 'km', m: 'm', kmPerSecond: 'km/s' },
   /** A number with fixed decimals: readouts ("7.46" km/s, "5.3"°), small pixels ("0.31 m"). Use fmt(locale).dec */
   decimal: (n: number, digits: number) => n.toFixed(digits),

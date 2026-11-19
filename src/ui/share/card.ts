@@ -16,9 +16,10 @@
  * Pictures go through the results' session photo cache (loadPhoto): one request per URL for the page.
  *
  * Language: the spec is built in the sharer's language (the app's, unless a caller names another) and the PNG is
- * drawn in it: mono rows uppercased with that language's rules, lines broken between words even where words are not
- * separated by spaces (Chinese, Japanese: Intl.Segmenter), and text that a shaping engine must join (Arabic) always
- * drawn as one run, untracked, in its own direction. Latin text is drawn exactly as it always was.
+ * drawn in it: mono rows uppercased with that language's rules except their units ("10 m", "786 km" in every language:
+ * api/_lib/i18n/units.ts), lines broken between words even where words are not separated by spaces (Chinese, Japanese:
+ * Intl.Segmenter), and text that a shaping engine must join (Arabic) always drawn as one run, untracked, in its own
+ * direction. Latin text is drawn exactly as it always was, units aside.
  */
 import { isolateIslands, outsideIsolates } from './bidi'
 import { geoCaptureFromItem, gibsWmsUrl, pcCropUrl, radarCropUrl, radarPolOfItemId } from '@/imagery'
@@ -62,6 +63,7 @@ import { roundedPlace, type SummaryLinkInput } from './links'
 import { WORDMARK_BOX, WORDMARK_DOT, WORDMARK_PATH } from '../../../api/_lib/wordmark'
 import { LOCALE_INFO, type Locale } from '../../../api/_lib/i18n/locales'
 import { isAccent, plain } from '../../../api/_lib/i18n/parts'
+import { capsExceptUnits } from '../../../api/_lib/i18n/units'
 import { currentLocale } from '@/i18n/runtime'
 // The card in the app's language takes its words from the app's loaded bundle (installed on import).
 import '@/i18n/en/card'
@@ -527,8 +529,17 @@ function drawPrims(ctx: Ctx, prims: Prim[]) {
   }
 }
 
-/** Uppercase in the card's language (canvas has no CSS text-transform): Turkish i → İ. */
+/**
+ * Uppercase in the card's language (canvas has no CSS text-transform): Turkish i → İ. Units keep their case
+ * ("10 m", "1 km": api/_lib/i18n/units.ts), as the preview's [data-unit] spans and satori's rows keep them.
+ */
 type Caps = (text: string) => string
+
+/** The card's mono caps in a language (`intl`, as LOCALE_INFO gives it). */
+export const cardCaps =
+  (intl: string): Caps =>
+  (t) =>
+    capsExceptUnits(t, intl)
 
 /**
  * How a chip is uppercased: in the card's language, except the licence credit (Chip.lang 'en'), which is English in
@@ -536,7 +547,7 @@ type Caps = (text: string) => string
  */
 export function chipCaps(chip: Pick<Chip, 'lang'>, caps: Caps): Caps {
   const lang = chip.lang
-  return lang ? (t) => t.toLocaleUpperCase(lang) : caps
+  return lang ? cardCaps(lang) : caps
 }
 
 /** A flat ink chip: padding, 1px line-strong border, mono segments separated by CHIP_BOX.gap. */
@@ -566,7 +577,7 @@ function drawChip(ctx: Ctx, chip: Chip, caps: Caps, plateSize = PLATE) {
   })
 }
 
-/** ├── 1 KM ──┤ in a chip at the plate's top right. */
+/** ├── 1 km ──┤ in a chip at the plate's top right. */
 function drawScale(ctx: Ctx, s: ScaleBar, caps: Caps) {
   if (s.px <= 0) return
   const f = monoFace(CARD_FS.chip)
@@ -666,8 +677,7 @@ export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   const ctx = cv.getContext('2d', { willReadFrequently: true }) as Ctx | null
   if (!ctx) throw new Error('Canvas unavailable')
   ctx.textBaseline = 'alphabetic'
-  const intl = LOCALE_INFO[spec.locale].intl
-  const caps: Caps = (t) => t.toLocaleUpperCase(intl)
+  const caps = cardCaps(LOCALE_INFO[spec.locale].intl)
 
   ctx.fillStyle = C.ink0
   ctx.fillRect(0, 0, CARD_W, CARD_H)
@@ -773,7 +783,8 @@ export async function renderCardPng(spec: CardSpec): Promise<Blob> {
       const uf = monoFace(CARD_FS.readoutUnit)
       setFace(ctx, uf)
       ctx.fillStyle = C.bone3
-      fillText(ctx, caps(r.unit), cx + vw + 8, base, uf.tracking!)
+      // A readout's unit is a unit symbol ("km", "m", "km/s"): it keeps its case.
+      fillText(ctx, r.unit, cx + vw + 8, base, uf.tracking!)
     }
   })
 

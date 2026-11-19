@@ -227,9 +227,11 @@
   font-variant-numeric: tabular-nums;
   color: var(--bone);
 }
+/* A readout's unit is a unit symbol ("km", "m", "km/s"): it keeps its case, as the PNG and the server card draw it. */
 .unit {
   font-size: 14px;
   line-height: 1;
+  text-transform: none;
   color: rgb(236 232 224 / 0.52);
 }
 

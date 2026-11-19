@@ -15,9 +15,11 @@
  *
  * The words are the spec's, in its language (spec.locale, the app's when it was built): the headline's parts are set
  * as blocks in the order the language gives them, as the PNG and the server card set them; CSS uppercases the mono
- * rows in the page's language.
+ * rows in the page's language, except their units ("10 m", "1 km": [data-unit] spans, as the PNG and the server card
+ * keep them).
  */
 import { Fragment, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { withUnits } from '@/i18n/Rich'
 import { cx, Wordmark } from '@/ui/system'
 import { cardMessages } from '../../../api/_lib/i18n/card/index'
 import { LOCALE_INFO, type Locale } from '../../../api/_lib/i18n/locales'
@@ -75,7 +77,7 @@ export function ShareCard({ spec: given }: { spec: CardSpec }) {
 
         <Row box={PANEL.top}>
           <Wordmark height={20} className={s.lockupMark} />
-          {spec.stamp ? <span className={s.row} style={{ color: CARD_COLOR.bone2 }}>{spec.stamp}</span> : null}
+          {spec.stamp ? <span className={s.row} style={{ color: CARD_COLOR.bone2 }}>{withUnits(spec.stamp)}</span> : null}
         </Row>
         <Hair y={PANEL.rule1} />
 
@@ -110,7 +112,7 @@ export function ShareCard({ spec: given }: { spec: CardSpec }) {
           <div key={r.label}>
             {i ? <div className={s.vrule} style={{ left: PANEL.x + i * colW, top: PANEL.roLabel[0], height: PANEL.roValue[0] + PANEL.roValue[1] - PANEL.roLabel[0] }} /> : null}
             <div className={cx(s.cell, s.row)} style={{ left: PANEL.x + i * colW + (i ? 22 : 0), top: PANEL.roLabel[0], height: PANEL.roLabel[1], color: CARD_COLOR.bone3 }}>
-              {r.label}
+              {withUnits(r.label)}
             </div>
             <div className={s.value} style={{ left: PANEL.x + i * colW + (i ? 22 : 0), top: PANEL.roValue[0], height: PANEL.roValue[1] }}>
               <span className={s.valueNum} style={spec.readoutSize ? { fontSize: spec.readoutSize } : undefined}>
@@ -124,7 +126,7 @@ export function ShareCard({ spec: given }: { spec: CardSpec }) {
         <Hair y={PANEL.rule3} />
         <Row box={PANEL.foot}>
           <span className={s.row} style={{ color: CARD_COLOR.bone2 }}>
-            {spec.footLeft}
+            {withUnits(spec.footLeft)}
           </span>
           {spec.host ? <span className={s.host}>{spec.host}</span> : null}
         </Row>
@@ -261,7 +263,7 @@ function ChipView({ chip }: { chip: Chip }) {
     <span className={s.chip} lang={chip.lang} style={{ ...chip.pos, fontSize: chip.size } as CSSProperties}>
       {chip.segs.map((seg, i) => (
         <span key={i} style={{ color: TONE_COLOR[seg.tone] }}>
-          {seg.text}
+          {withUnits(seg.text)}
         </span>
       ))}
     </span>
@@ -273,7 +275,7 @@ function Scale({ bar }: { bar: ScaleBar }) {
   return (
     <span className={s.chip} style={{ right: 24, top: 24, fontSize: CARD_FS.chip }}>
       <span className={s.bar} style={{ width: bar.px }} />
-      <span>{bar.label}</span>
+      <span>{withUnits(bar.label)}</span>
     </span>
   )
 }

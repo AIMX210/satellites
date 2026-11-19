@@ -15,7 +15,7 @@
  * language's order (each top-level part a block: text in the condensed face, the accent, the place, in the serif).
  *
  *   ┌──────────── 630 ────────────┬──────────────── 570 ───────────────┐
- *   │ SENTINEL-2C · MSI · 10 M  ├1 KM┤│ Watched.      SUN 1 NOV 2026 · 11:21 EST│
+ *   │ SENTINEL-2C · MSI · 10 m  ├1 km┤│ Watched.      SUN 1 NOV 2026 · 11:21 EST│
  *   │                             │ ─────────────────────────────────── │
  *   │                             │                                     │
  *   │            ⊕                │ 7 satellites                        │
@@ -23,12 +23,13 @@
  *   │                             │ Waterloo.                           │
  *   │                             │ ─────────────────────────────────── │
  *   │                             │ ALTITUDE    OFF-NADIR     PIXEL      │
- *   │ CONTAINS MODIFIED COPERNICUS│ 795 KM      5.3°          10 M       │
+ *   │ CONTAINS MODIFIED COPERNICUS│ 795 km      5.3°          10 m       │
  *   │                             │ SEE WHAT WATCHED YOU  www.watched.earth│
  *   └─────────────────────────────┴─────────────────────────────────────┘
  *
  * Text is stored in sentence case; mono rows are uppercased by the renderers, in the card's language (as CSS does),
- * except the licence credit, which is English and uppercased as English (Chip.lang).
+ * except the licence credit, which is English and uppercased as English (Chip.lang). Units keep their case in every
+ * renderer ("10 m", "1 km", a readout's "km": ./i18n/units.ts).
  */
 import { cardMessages, type CardMessages } from './i18n/card/index.js'
 import { fmt } from './i18n/format.js'
@@ -132,6 +133,7 @@ export function headTracking(locale: Locale): { lead: number; place: number } {
 export interface Readout {
   label: string
   value: string
+  /** A unit symbol ("km", "m", "km/s", "км"): every renderer draws it as it is, never in capitals */
   unit?: string
 }
 
@@ -153,7 +155,7 @@ export interface Chip {
 export interface ScaleBar {
   /** bar length, px */
   px: number
-  /** "1 KM", "500 M" */
+  /** "1 km", "500 m" (its unit keeps its case in the caps) */
   label: string
 }
 
@@ -465,7 +467,7 @@ export function niceLength(max: number): number {
   return p
 }
 
-/** "1 KM" / "500 M": a scale bar's round length, in the card's language */
+/** "1 km" / "500 m": a scale bar's round length, in the card's language */
 export function fmtKm(km: number, locale: Locale = DEFAULT_LOCALE): string {
   return cardMessages(locale).scale(km)
 }
@@ -624,7 +626,7 @@ export interface CardCrop {
 
 /**
  * The card's crop: one output pixel = one native pixel (10 m for Sentinel-2 → a 6.3 km square: 630 of the scene's
- * own pixels, the very ones the app's photo shows), so the "10 M" on the chip is literally what each pixel is.
+ * own pixels, the very ones the app's photo shows), so the "10 m" on the chip is literally what each pixel is.
  * Landsat's 30 m is soft at 1:1 on a phone, so it renders at 15 m per pixel: an exact 2× of 315 native pixels
  * (9.45 km), as the app's Landsat photo is (500 native pixels at 1000 px), so the card shows the photo's pixels.
  */
@@ -1005,7 +1007,7 @@ export function summaryLookChip(best: NonNullable<SummaryInput['best']>, timeZon
 
 /**
  * The summary plate's chip and its scale bar, fitted together: the chip must end before the scale chip at the plate's
- * top right ("LAST CLEAR LOOK · 3 NOV · LANDSAT 9 · 30 M" ran 72 px under it, in English). First the bar takes a
+ * top right ("LAST CLEAR LOOK · 3 NOV · LANDSAT 9 · 30 m" ran 72 px under it, in English). First the bar takes a
  * shorter round length (it may be anything up to 150 px), then the chip gives up the pixel size, the satellite's
  * name, and last the day, which says the picture is from before the week.
  */

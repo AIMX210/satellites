@@ -41,9 +41,9 @@ describe('the Open Graph card’s licence credit', () => {
     }
   })
 
-  it('leaves the card’s own mono text in the card’s casing', () => {
+  it('leaves the card’s own mono text in the card’s casing, and its units lowercase', () => {
     const [share] = cards('tr')
-    expect(textOf(share)).toContain('SENTİNEL-2C · MSI · 10 M')
-    expect(textOf(cards('en')[0])).toContain('SENTINEL-2C · MSI · 10 M')
+    expect(textOf(share)).toContain('SENTİNEL-2C · MSI · 10 m')
+    expect(textOf(cards('en')[0])).toContain('SENTINEL-2C · MSI · 10 m')
   })
 })
