@@ -8,7 +8,7 @@
  */
 import { Fragment, type ReactNode } from 'react'
 import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
-import { isAccent, isNum, percentGapBefore, tightUnit, type Part } from '../../api/_lib/i18n/parts'
+import { isAccent, isNum, percentFirst, percentGapBefore, tightUnit, type Part, type PercentStyle } from '../../api/_lib/i18n/parts'
 import { useLocale } from './runtime'
 
 export interface RichClasses {
@@ -26,20 +26,20 @@ export interface RichClasses {
 type AccentTag = 'em' | 'span' | 'b' | 'strong'
 
 export function Rich({ parts, classes = {}, accentAs = 'span', strongAs = 'strong' }: { parts: readonly Part[]; classes?: RichClasses; accentAs?: AccentTag; strongAs?: AccentTag }): ReactNode {
-  const gap = LOCALE_INFO[useLocale()].percentGap
-  return parts.map((p, i) => <Fragment key={i}>{renderPart(p, classes, accentAs, strongAs, gap)}</Fragment>)
+  const style = LOCALE_INFO[useLocale()]
+  return parts.map((p, i) => <Fragment key={i}>{renderPart(p, classes, accentAs, strongAs, style)}</Fragment>)
 }
 
-function renderPart(p: Part, c: RichClasses, accentAs: AccentTag, strongAs: AccentTag, gap?: boolean): ReactNode {
+function renderPart(p: Part, c: RichClasses, accentAs: AccentTag, strongAs: AccentTag, style: PercentStyle): ReactNode {
   if (typeof p === 'string') return p
   if (isNum(p))
     return (
       <span className={c.num} data-num="">
-        {p.n}
-        {p.u ? tightUnit(p.u) ? percentGapBefore(p.u, gap) + p.u : <span className={c.unit}>{p.u}</span> : null}
+        {percentFirst(p, style) ? '%' + p.n : p.n}
+        {!p.u || percentFirst(p, style) ? null : tightUnit(p.u) ? percentGapBefore(p.u, style) + p.u : <span className={c.unit}>{p.u}</span>}
       </span>
     )
   const Tag = isAccent(p) ? accentAs : strongAs
   const inner = isAccent(p) ? p.accent : p.strong
-  return <Tag className={isAccent(p) ? c.accent : c.strong}>{inner.map((q, i) => <Fragment key={i}>{renderPart(q, c, accentAs, strongAs, gap)}</Fragment>)}</Tag>
+  return <Tag className={isAccent(p) ? c.accent : c.strong}>{inner.map((q, i) => <Fragment key={i}>{renderPart(q, c, accentAs, strongAs, style)}</Fragment>)}</Tag>
 }

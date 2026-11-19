@@ -251,7 +251,7 @@ function ReadoutStrip({ pass: p, meta, capture, cloud }: { pass: Pass; meta: Sat
     last = {
       id: 'cloud',
       label: L.cloud,
-      value: capture.cloudCoverPct !== undefined ? `${f.int(capture.cloudCoverPct)}%` : '—',
+      value: capture.cloudCoverPct !== undefined ? f.pct(capture.cloudCoverPct) : '—',
       unit: capture.cloudCoverPct !== undefined ? U.scene : undefined,
     }
   const cells = [

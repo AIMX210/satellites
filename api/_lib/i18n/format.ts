@@ -10,6 +10,7 @@
  * other, Arabic six), so a missing form is a compile error, not a wrong word at runtime.
  */
 import { LOCALE_INFO, type Locale, type PluralCategory } from './locales.js'
+import { numText } from './parts.js'
 
 /** The plural categories of a locale, as a type. */
 export type PluralsOf<L extends Locale> = (typeof PLURALS)[L][number]
@@ -48,6 +49,8 @@ export interface Fmt<L extends Locale = Locale> {
   plural<T>(n: number, forms: Record<PluralsOf<L>, T>): T
   /** "A, B and C" in the locale's own words and punctuation */
   list(items: readonly string[]): string
+  /** A whole percentage as the language writes it: 25% · 25 % · %25 */
+  pct(n: number): string
 }
 
 const cache = new Map<Locale, Fmt>()
@@ -82,6 +85,7 @@ export function fmt<L extends Locale>(locale: L): Fmt<L> {
       return all[rules.select(n) as PluralCategory] ?? all.other!
     },
     list: (items) => list.format(items),
+    pct: (n) => numText({ n: out(intFmt, Math.round(n)), u: '%' }, LOCALE_INFO[locale]),
   }
   cache.set(locale, f)
   return f

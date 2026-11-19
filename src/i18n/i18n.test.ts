@@ -107,8 +107,10 @@ describe('formatting', () => {
   })
   it('spaces a percent sign where the language does', () => {
     expect(numText({ n: '25', u: '%' })).toBe('25%')
-    expect(numText({ n: '25', u: '%' }, LOCALE_INFO.fr.percentGap)).toBe('25\u00a0%')
-    expect(numText({ n: '5,3', u: '°' }, LOCALE_INFO.de.percentGap)).toBe('5,3°')
+    expect(numText({ n: '25', u: '%' }, LOCALE_INFO.fr)).toBe('25\u00a0%')
+    expect(numText({ n: '5,3', u: '°' }, LOCALE_INFO.de)).toBe('5,3°')
+    expect(numText({ n: '25', u: '%' }, LOCALE_INFO.tr)).toBe('%25')
+    expect([fmt('en').pct(25), fmt('fr').pct(25), fmt('tr').pct(25), fmt('es').pct(12.4)]).toEqual(['25%', '25\u00a0%', '%25', '12%'])
   })
   it('picks plural forms', () => {
     const pl = fmt('pl')

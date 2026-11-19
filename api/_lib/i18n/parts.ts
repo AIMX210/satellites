@@ -36,12 +36,27 @@ export const isStrong = (p: Part): p is StrongPart => typeof p === 'object' && '
 /** Units that attach without a space: 5.3°, 25%, 12′. */
 export const tightUnit = (u: string) => /^[°%′″٪]/.test(u)
 
-/** French and German write "25 %": a no-break space before a percent sign (LocaleInfo.percentGap). */
-export const percentGapBefore = (u: string, percentGap?: boolean) => (percentGap && u.startsWith('%') ? '\u00a0' : '')
+/** How a language writes a percentage (LocaleInfo): "25%", "25 %" (French, German), "%25" (Turkish). */
+export interface PercentStyle {
+  percentGap?: boolean
+  percentFirst?: boolean
+}
 
-/** A number with its unit as plain text: "7.46 km/s", "25%" ("25 %" with `percentGap`). */
-export const numText = (p: NumPart, percentGap?: boolean) =>
-  !p.u ? p.n : tightUnit(p.u) ? `${p.n}${percentGapBefore(p.u, percentGap)}${p.u}` : `${p.n} ${p.u}`
+/** French and German write "25 %": a no-break space before a percent sign (LocaleInfo.percentGap). */
+export const percentGapBefore = (u: string, style?: PercentStyle) => (style?.percentGap && u.startsWith('%') ? '\u00a0' : '')
+
+/** Turkish writes "%25": the sign comes first (LocaleInfo.percentFirst). Only a bare "%" moves. */
+export const percentFirst = (p: NumPart, style?: PercentStyle) => !!style?.percentFirst && p.u === '%'
+
+/** A number with its unit as plain text: "7.46 km/s", "25%" ("25 %", "%25" in the languages that write them so). */
+export const numText = (p: NumPart, style?: PercentStyle) =>
+  !p.u
+    ? p.n
+    : percentFirst(p, style)
+      ? `%${p.n}`
+      : tightUnit(p.u)
+        ? `${p.n}${percentGapBefore(p.u, style)}${p.u}`
+        : `${p.n} ${p.u}`
 
 /**
  * Flatten to plain text (aria labels, share posts, tests). Several sentences join with `gap`: a space, or nothing in

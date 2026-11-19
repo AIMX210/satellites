@@ -37,6 +37,8 @@ export interface LocaleInfo {
   sentenceGap: '' | ' '
   /** A no-break space before % ("25 %": French, German), where English writes "25%" */
   percentGap?: boolean
+  /** The percent sign before the number, with no space ("%25": Turkish) */
+  percentFirst?: boolean
   /** The digit-group separator, where the language's typography differs from Intl's default (Spanish: a no-break space) */
   group?: string
 }
@@ -47,7 +49,7 @@ const L = (
   english: string,
   script: Script,
   plurals: readonly PluralCategory[],
-  extra: Partial<Pick<LocaleInfo, 'dir' | 'intl' | 'listed' | 'sentenceGap' | 'percentGap' | 'group'>> = {},
+  extra: Partial<Pick<LocaleInfo, 'dir' | 'intl' | 'listed' | 'sentenceGap' | 'percentGap' | 'percentFirst' | 'group'>> = {},
 ): LocaleInfo => ({ code, native, english, script, dir: 'ltr', intl: code, plurals, listed: true, sentenceGap: ' ', ...extra })
 
 export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
@@ -59,7 +61,7 @@ export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
   it: L('it', 'Italiano', 'Italian', 'latin', ['one', 'many', 'other']),
   nl: L('nl', 'Nederlands', 'Dutch', 'latin', ['one', 'other']),
   pl: L('pl', 'Polski', 'Polish', 'latin', ['one', 'few', 'many', 'other']),
-  tr: L('tr', 'Türkçe', 'Turkish', 'latin', ['one', 'other']),
+  tr: L('tr', 'Türkçe', 'Turkish', 'latin', ['one', 'other'], { percentFirst: true }),
   id: L('id', 'Bahasa Indonesia', 'Indonesian', 'latin', ['other']),
   uk: L('uk', 'Українська', 'Ukrainian', 'cyrillic', ['one', 'few', 'many', 'other']),
   ja: L('ja', '日本語', 'Japanese', 'cjk', ['other'], { sentenceGap: '' }),
