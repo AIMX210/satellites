@@ -14,7 +14,8 @@
  * language's message gives them. The default card takes its words from the card catalog in the same way.
  *
  * Every role names its face and then the face the web gives Cyrillic (fonts.ts FAMILY), so Ukrainian and Cyrillic
- * place names are set as the app sets them.
+ * place names are set as the app sets them; a Chinese, Japanese or Korean card carries its language (`lang`), so its
+ * Han characters take that language's forms.
  */
 import type { CSSProperties, ReactElement } from 'react'
 import { readFile } from 'node:fs/promises'
@@ -285,6 +286,22 @@ function footer(locale: Locale, left: string, host: string): ReactElement[] {
 
 // ── Cards ───────────────────────────────────────────────────────────────────────────────────
 
+/**
+ * satori's code for a language that gives Han characters forms of its own, set as the card's `lang`: satori then draws
+ * Han from the Noto it loaded for that language (fallbackFonts.ts) rather than from whichever it loaded first, as the
+ * web's per-language stacks do. Only these four: satori matches `lang` by prefix against its own codes (German `de`
+ * would read as Devanagari), and no other language has forms to choose. (Korean's rare Han still take Japanese forms:
+ * satori asks for a Korean font only for hangul.)
+ */
+const HAN_LANG: Partial<Record<Locale, string>> = { ja: 'ja-JP', ko: 'ko-KR', 'zh-Hans': 'zh-CN', 'zh-Hant': 'zh-TW' }
+
+/** The 1200×630 card itself, in its language. */
+function cardRoot(locale: Locale, ...children: (Child | Child[])[]): ReactElement {
+  const lang = HAN_LANG[locale]
+  const style: CSSProperties = { display: 'flex', position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FAMILY.sans, color: C.bone }
+  return h('div', lang ? { lang, style } : { style }, ...children)
+}
+
 export interface ShareCardInput {
   spec: CardSpec
   /** The fetched crop for an image plate; null draws the plate's geometry fallback. */
@@ -292,8 +309,8 @@ export interface ShareCardInput {
 }
 
 export function shareCard({ spec, image }: ShareCardInput): ReactElement {
-  return box(
-    { position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FAMILY.sans, color: C.bone },
+  return cardRoot(
+    spec.locale,
     plate(spec.locale, spec.plate, image?.dataUri ?? null),
     abs({ left: PLATE, top: 0, width: 1, height: CARD_H, background: C.lineStrong }),
     row(PANEL.top, lockup(), spec.stamp ? mono(spec.locale, spec.stamp, CARD_FS.row, C.bone2) : undefined),
@@ -408,8 +425,8 @@ export function defaultCard({ host, plateDataUri, locale = DEFAULT_LOCALE }: { h
       )
     : abs({ left: 0, top: 0, width: PLATE, height: PLATE, background: C.ink1 }, svgPrims([...plateFrame([], undefined, C.bone3Mark), ...reticlePrims(CENTRE, CENTRE)], PLATE, 'd'))
 
-  return box(
-    { position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FAMILY.sans, color: C.bone },
+  return cardRoot(
+    locale,
     left,
     abs({ left: PLATE, top: 0, width: 1, height: CARD_H, background: C.lineStrong }),
     row(PANEL.top, lockup(), mono(locale, m.lastWeek, CARD_FS.row, C.bone2)),

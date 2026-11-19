@@ -1,7 +1,8 @@
 /**
  * Which fonts a card reads, and what they draw: an English card reads and renders exactly what it always did, and a
  * card that speaks Ukrainian or prints Cyrillic adds the faces the web gives Cyrillic, each role its own, drawing every
- * letter without asking Google Fonts. Rendered offline with satori itself, since the point is how satori resolves them.
+ * letter without asking Google Fonts; a Chinese, Japanese or Korean card tells satori its language. Rendered offline
+ * with satori itself, since the point is how satori resolves them.
  */
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
@@ -135,5 +136,22 @@ describe('card fonts', () => {
     }
     const vercel = JSON.parse(await readFile(new URL('../../vercel.json', import.meta.url), 'utf8')) as { functions: Record<string, { includeFiles?: string }> }
     expect(vercel.functions['api/og.tsx'].includeFiles).toContain('api/_fonts/**')
+  })
+})
+
+describe('card language', () => {
+  const spec = (locale: Locale) =>
+    buildCardSpec(
+      cardInputFromShare(shareFromParams(new URLSearchParams('place=Waterloo&lat=43.47&lon=-80.54&sat=Sentinel-2C&norad=60989&verdict=could&t=1793549661025'))!, ''),
+      locale,
+    )
+
+  it('tells satori the language whose Han forms the card wants, and nothing for any other', () => {
+    const want: Partial<Record<Locale, string>> = { ja: 'ja-JP', ko: 'ko-KR', 'zh-Hans': 'zh-CN', 'zh-Hant': 'zh-TW' }
+    for (const locale of LOCALES) {
+      for (const card of [defaultCard({ host: '', locale }), shareCard({ spec: spec(locale), image: null })]) {
+        expect((card.props as { lang?: string }).lang).toBe(want[locale])
+      }
+    }
   })
 })
