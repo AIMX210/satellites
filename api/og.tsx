@@ -18,6 +18,11 @@
  *
  * Every card is drawn in the language its URL names (`l=<locale>`, the sharer's: api/s.ts writes it into og:image
  * for any language but English), English otherwise; an English card is byte for byte what it always was.
+ *
+ * Except a right-to-left language: satori shapes Arabic (HarfBuzz) but has no bidirectional layout, so an Arabic
+ * headline came out with its words in reverse order and its numbers misplaced. Those links unfurl with the English
+ * card (the share page itself, HTML, is in Arabic; the PNG the app saves is drawn by the browser, which lays Arabic
+ * out properly). `cardLocale` is the one place that decides it.
  */
 import { decode as decodePng } from 'fast-png'
 import { encode as encodeJpeg } from 'jpeg-js'
@@ -26,7 +31,7 @@ import { buildCardSpec, buildSummarySpec, type CardSpec, type Locale } from './_
 import { displayHost, siteOrigin } from './_lib/env.js'
 import { cardFonts } from './_lib/fonts.js'
 import { textOf } from './_lib/h.js'
-import { DEFAULT_LOCALE } from './_lib/i18n/locales.js'
+import { DEFAULT_LOCALE, LOCALE_INFO } from './_lib/i18n/locales.js'
 import { renderCardPng } from './_lib/ogRender.js'
 import { cropPlan, fetchCropPicture } from './_lib/imagery.js'
 import { SHARE_ID_RE, cardInputFromShare, fetchShare, linkLocale, shareFromParams, shareTimeZone, summaryFromParams, type ShareRecord } from './_lib/share.js'
@@ -151,10 +156,13 @@ async function renderDefault(host: string, cache: string, locale: Locale): Promi
   return render(defaultCard({ host, plateDataUri: await defaultPlateDataUri(), locale }), locale, cache)
 }
 
+/** The language satori can draw a card in: the link's, or English for a right-to-left one (see the top of this file). */
+export const cardLocale = (locale: Locale): Locale => (LOCALE_INFO[locale].dir === 'rtl' ? DEFAULT_LOCALE : locale)
+
 export async function handleOg(request: Request): Promise<Response> {
   const url = new URL(request.url)
   const host = displayHost(siteOrigin(request))
-  const locale = linkLocale(url.searchParams)
+  const locale = cardLocale(linkLocale(url.searchParams))
   try {
     let share: ShareRecord | null = null
     let degraded = false
