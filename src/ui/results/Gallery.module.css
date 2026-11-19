@@ -61,6 +61,17 @@
 .counterShort {
   min-width: calc(7.5 * (1ch + var(--track-label, 0.08em)));
 }
+/* The counter shares one grid cell with hidden copies of its language's widest forms (Gallery.tsx `sizers`): the
+   min-widths above are English's room, and a language whose words run longer takes theirs. */
+.counterBox {
+  display: inline-grid;
+}
+.counterBox > * {
+  grid-area: 1 / 1;
+}
+.counterSizer {
+  visibility: hidden;
+}
 .filter {
   display: inline-flex;
   border: 1px solid var(--line-strong);
@@ -204,6 +215,10 @@
   .counter {
     min-width: 0;
     font-size: 10px;
+  }
+  /* here the counter takes only what it says, as it always has */
+  .counterSizer {
+    display: none;
   }
 }
 @media (pointer: coarse) {

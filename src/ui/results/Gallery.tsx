@@ -384,6 +384,10 @@ export function Gallery({ model, context, mobile, selectedId, onReplay, onShare 
   const showFilter = [counts.detailed, counts.weather, counts.radar].filter((n) => n > 0).length > 1
   // The counter's longest words ("27 this week") are only said on the last clear look, a photo with no pass.
   const hasLastClear = items.some((p) => !p.pass)
+  // Hidden copies of the counter's widest forms in this language, in its grid cell: its room is theirs ("12 esta
+  // semana", "この1週間に88枚"), and it never changes as the photo or the count does. Two-digit counts, with a few-
+  // and a many-form (Polish, Ukrainian); English's all fit the min-width it always had.
+  const sizers = [m.position(88, 88), ...(hasLastClear ? [22, 88].map((k) => (oldWindow ? m.photosThatWeek : m.photosThisWeek)(k)) : [])]
   const hero = !detail
 
   return (
@@ -391,8 +395,15 @@ export function Gallery({ model, context, mobile, selectedId, onReplay, onShare 
       <div className={s.bar}>
         {showFilter ? <FilterControl filter={filter} counts={counts} /> : <span className={s.barLabel}>{hero ? m.barLabel : null}</span>}
         <span className={s.nav}>
-          <span ref={counterRef} className={cx(s.counter, !hasLastClear && s.counterShort)} aria-live="polite" aria-atomic="true">
-            {counterText(idx)}
+          <span className={s.counterBox}>
+            <span ref={counterRef} className={cx(s.counter, !hasLastClear && s.counterShort)} aria-live="polite" aria-atomic="true">
+              {counterText(idx)}
+            </span>
+            {sizers.map((t, i) => (
+              <span key={i} className={cx(s.counter, !hasLastClear && s.counterShort, s.counterSizer)} aria-hidden="true">
+                {t}
+              </span>
+            ))}
           </span>
           {!mobile ? (
             <>
