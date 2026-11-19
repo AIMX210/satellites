@@ -89,7 +89,7 @@ const about: typeof en = {
       },
       weather: {
         term: 'Satelit cuaca',
-        text: 'Beberapa di antaranya berada di atas khatulistiwa dan mengawasi separuh planet setiap 10 menit. Jika kamu berada di sisi Bumi yang menghadapnya, kamu ada di setiap bingkainya.',
+        text: 'Beberapa di antaranya berada di atas khatulistiwa dan mengawasi separuh planet setiap 10 menit. Jika kamu berada di sisi Bumi yang menghadapnya, kamu ada di setiap citranya.',
       },
     },
     archives:
