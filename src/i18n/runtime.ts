@@ -114,17 +114,26 @@ export async function startLocale(): Promise<void> {
   useLocaleStore.setState({ locale, version: useLocaleStore.getState().version + 1 })
 }
 
-/** The switcher: load, swap, remember. Resolves once the page shows the new language. */
+/** The latest language asked for: a chunk that arrives after a newer choice is never applied over it. */
+let wanted: Locale | undefined
+
+/**
+ * The switcher: load, swap, remember. Resolves once the page shows the new language, or once a newer choice has
+ * replaced this one (a second language picked while the first still loads: the last pick wins, as it is the one saved).
+ */
 export async function setLocale(locale: Locale): Promise<void> {
   try {
     localStorage.setItem(LANG_KEY, locale)
   } catch {
     /* storage blocked: the choice lasts for this page */
   }
+  wanted = locale
   if (locale === active) return
   const mod = await fetchModule(locale)
+  if (wanted !== locale) return
   if (!mod && locale !== DEFAULT_LOCALE) return
   await installAccentFont(mod?.accentFont)
+  if (wanted !== locale) return
   bundle = mod?.default ?? null
   active = locale
   applyToDocument(locale)
