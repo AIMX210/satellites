@@ -20,8 +20,8 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { num, type NumPart } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('pt-BR')
-/** "às 16:14", "à 01:05" (the clock's hour decides the article) */
-const at = (clock: string) => `${parseInt(clock, 10) <= 1 ? 'à' : 'às'} ${clock}`
+/** "às 16:14", "à 01:05" (the clock's hour decides the article; a no-break space ties it to the clock, as in pass.ts) */
+const at = (clock: string) => `${parseInt(clock, 10) <= 1 ? 'à' : 'às'} ${clock}`
 /** "no domingo, 1º de novembro", "na sexta-feira, 6 de novembro" (a day that is not a Portuguese weekday stays bare) */
 const onDay = (day: string) =>
   /^(domingo|sábado)/i.test(day) ? `no ${day}` : /^(segunda|terça|quarta|quinta|sexta)/i.test(day) ? `na ${day}` : day

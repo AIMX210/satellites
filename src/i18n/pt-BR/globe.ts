@@ -56,6 +56,8 @@ const globe: typeof en = {
 
   noGl: {
     title: 'Visualização 3D indisponível',
+    // A nowrap mono line, nominal like the title: the guide's *O WebGL 2 está desativado neste navegador* is 324 px at
+    // 11 px (English 235 px), past a 320 px phone's room; this is 269 px.
     reason: 'WebGL 2 desativado neste navegador',
   },
 }

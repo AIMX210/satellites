@@ -19,8 +19,8 @@ import { strong, type Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('pt-BR')
 const pct = (n: number) => `${f.int(n)}%`
-/** "às 16:14", "à 01:05" (the clock's hour decides the article) */
-const at = (clock: string) => `${parseInt(clock, 10) <= 1 ? 'à' : 'às'} ${clock}`
+/** "às 16:14", "à 01:05" (the clock's hour decides the article; a no-break space ties it to the clock, as in pass.ts) */
+const at = (clock: string) => `${parseInt(clock, 10) <= 1 ? 'à' : 'às'} ${clock}`
 
 const LEAD: Record<CoverLead, string> = {
   closest: 'Vista mais próxima',

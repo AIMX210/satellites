@@ -95,7 +95,7 @@ const landing: typeof en = {
 
   // ── Examples ──────────────────────────────────────────────────────────────────────────────
   orTry: 'Ou experimente',
-  pinHint: 'Ou clique em um ponto do globo',
+  pinHint: 'Ou clique no globo para marcar um ponto',
   examplesLabel: 'Lugares de exemplo',
   dropPin: 'Marcar ponto',
   chipName: (label: string, sublabel: string) => `${label}, ${sublabel}`,
