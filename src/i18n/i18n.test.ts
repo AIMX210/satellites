@@ -8,7 +8,7 @@ import enApp from './en/app'
 const TAGS = [
   'en', 'en-US', 'en-GB', 'EN_us', 'es', 'es-MX', 'es-419', 'fr-CA', 'fr', 'de-AT', 'de-CH', 'pt', 'pt-BR', 'pt-PT', 'pt_br',
   'it', 'nl-BE', 'pl', 'tr', 'id', 'in', 'in-ID', 'uk', 'uk-UA', 'ru', 'ru-UA', 'be', 'ja', 'ja-JP', 'ko-KR', 'zh', 'zh-CN',
-  'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant', 'zh-Hant-HK', 'ZH-tw', 'ar', 'ar-SA', 'ar-EG',
+  'zh-SG', 'zh-Hans', 'zh-Hans-CN', 'zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant', 'zh-Hant-HK', 'ZH-tw', 'zh-Hans-HK', 'zh-Hans-TW', 'zh-Hans-MO', 'zh-Hant-CN', 'ar', 'ar-SA', 'ar-EG',
   'he', 'hi-IN', 'vi', 'th', 'sv', '', ' ', 'x-pseudo', 'enx',
 ]
 
@@ -20,6 +20,10 @@ describe('locale matching', () => {
     expect(localeForTag('zh-HK')).toBe('zh-Hant')
     expect(localeForTag('zh-Hant-HK')).toBe('zh-Hant')
     expect(localeForTag('zh-TW')).toBe('zh-Hant')
+    // A named script wins over the region
+    expect(localeForTag('zh-Hans-HK')).toBe('zh-Hans')
+    expect(localeForTag('zh-Hans-TW')).toBe('zh-Hans')
+    expect(localeForTag('zh-Hant-CN')).toBe('zh-Hant')
     expect(localeForTag('pt-PT')).toBe('pt-BR')
     expect(localeForTag('in')).toBe('id')
     expect(localeForTag('ru')).toBeUndefined()

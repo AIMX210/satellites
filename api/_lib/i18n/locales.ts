@@ -88,7 +88,8 @@ export function localeForTag(tag: string, listedOnly = true): Locale | undefined
   const [lang, ...rest] = t.split('-')
   let hit: Locale | undefined
   if (lang === 'zh') {
-    const traditional = rest.some((s) => s === 'hant' || s === 'tw' || s === 'hk' || s === 'mo')
+    // By script when the tag names one (zh-Hans-HK is Simplified, zh-Hant-CN Traditional), else by region
+    const traditional = rest.includes('hant') || (!rest.includes('hans') && rest.some((s) => s === 'tw' || s === 'hk' || s === 'mo'))
     hit = traditional ? 'zh-Hant' : 'zh-Hans'
   } else if (lang === 'pt') hit = 'pt-BR'
   else if (lang === 'in') hit = 'id' // the old code for Indonesian, still sent by some Android browsers

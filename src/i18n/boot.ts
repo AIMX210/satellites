@@ -56,9 +56,14 @@ export function bootLocale(d: BootData): void {
     var lang = parts[0]
     var hit: string | undefined
     if (lang === 'zh') {
-      var trad = false
-      for (var i = 1; i < parts.length; i++) if (parts[i] === 'hant' || parts[i] === 'tw' || parts[i] === 'hk' || parts[i] === 'mo') trad = true
-      hit = trad ? 'zh-Hant' : 'zh-Hans'
+      // By script when the tag names one (zh-Hans-HK is Simplified), else by region (locales.ts localeForTag)
+      var script = '',
+        region = false
+      for (var i = 1; i < parts.length; i++) {
+        if (parts[i] === 'hant' || parts[i] === 'hans') script = parts[i]
+        else if (parts[i] === 'tw' || parts[i] === 'hk' || parts[i] === 'mo') region = true
+      }
+      hit = script === 'hant' || (!script && region) ? 'zh-Hant' : 'zh-Hans'
     } else if (lang === 'pt') hit = 'pt-BR'
     else if (lang === 'in') hit = 'id'
     else
