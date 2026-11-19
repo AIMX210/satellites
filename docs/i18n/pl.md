@@ -17,7 +17,7 @@ the English disagree on a fact, the English wins: the guide is wrong, so report 
 **Notation.** `[PLACE]` is a place label from the gazetteer, `[SAT]` a satellite name, `[NUM]` a count (a mono span),
 `[TIME]` a 24-hour clock with its zone (`16:14:21 UTC`, `11:21 EST`), `[DATE]` a date from Intl and `[DIR]` a compass
 word. `*…*` marks the serif accent (one per screen) and `**…**` the bold (`strong`) phrase. Examples show ordinary
-spaces for readability. Where §6.3 asks for a no-break space, the catalog string has U+00A0, written as the ` `
+spaces for readability. Where §6.3 asks for a no-break space, the catalog string has U+00A0, written as the `\u00a0`
 escape in source so a reviewer can see it. Code examples use the real message API: TypeScript functions,
 `const f = fmt('pl')`, `f.plural(n, { one, few, many, other })`, `f.int`, `f.dec`, and the parts `num()`, `accent()`
 and `strong()`.
@@ -1237,7 +1237,7 @@ no ‚ ‘ single low quotes, no U+202F, no emoji, no *º* ordinal.
   multi-word ends, and every other span in the product is an arrow.
 - Ellipsis: the single character **…**, with no space before it: *Pobieranie…*, *Ustalanie…*.
 - No space before *: ; ? ! %* (Polish is not French): *25%*, *Czy mnie widać?*
-- **No-break spaces (U+00A0)**, written ` ` in source:
+- **No-break spaces (U+00A0)**, written `\u00a0` in source:
   - after one-letter words (*a, i, o, u, w, z* and their capitals) in display headlines, the sub line, share card
     text and every string of two lines or less. Polish typesetting forbids leaving them at the end of a line: *w ostatnich*,
     *i ich prawdziwe zdjęcia*;
@@ -1539,7 +1539,7 @@ katalogach.* State it plainly, without speculating about what they see.
 10. **Punctuation:** commas before *że, który, gdy, jeśli, więc, ale, a, czy* and around participles; none before a
     simple *i / lub*. „ ” quotes. *…* as one character. No space before *: ; ? ! %*. An unspaced en dash for ranges;
     the house arrow for date spans.
-11. **No-break spaces** (` `) after one-letter words in display text and short strings, between a number and its
+11. **No-break spaces** (`\u00a0`) after one-letter words in display text and short strings, between a number and its
     noun in a string, and inside multi-word satellite names in headlines.
 12. **Capitals:** sentence case; lowercase months and weekdays; *Ziemia / ziemia* and *Słońce / słońce* used correctly;
     no title case.

@@ -89,7 +89,7 @@ const landing: typeof en = {
   locationLabel: 'Lokalizacja',
   dismiss: 'Zamknij',
   locateErrors: {
-    denied: 'Dostęp do lokalizacji jest zablokowany. Włącz go w ustawieniach przeglądarki albo wyszukaj miejsce.',
+    denied: 'Dostęp do lokalizacji jest zablokowany. Włącz go w\u00a0ustawieniach przeglądarki albo wyszukaj miejsce.',
     unavailable: 'Nie da się teraz ustalić twojej pozycji. Zamiast tego wyszukaj miejsce.',
     timeout: 'Ustalanie pozycji trwało zbyt długo. Spróbuj ponownie albo wyszukaj miejsce.',
     unsupported: 'Ta przeglądarka nie może udostępnić lokalizacji. Zamiast tego wyszukaj miejsce.',

@@ -114,7 +114,9 @@ const pl: CardMessages = {
       post: (pct: number) => `Widać głównie chmury (${f.int(pct)}%).`,
       desc: (pct: number) => `Widać głównie chmury (${f.int(pct)}%).`,
     },
-    spot: { sub: 'Chmura nad samym punktem.', chip: 'Chmura nad punktem', post: 'Chmury zakryły ten punkt.', desc: 'Chmury zakryły ten punkt.' },
+    // «Chmury», plural, in all four, as the glossary's chip word and the app's own chip for the same state
+    // (passView.tag.cloudedAtSpot «Chmury nad punktem»): the post and the description already said «Chmury zakryły».
+    spot: { sub: 'Chmury nad samym punktem.', chip: 'Chmury nad punktem', post: 'Chmury zakryły ten punkt.', desc: 'Chmury zakryły ten punkt.' },
   },
 
   // ── The top row ───────────────────────────────────────────────────────────────────────────────────────────────────

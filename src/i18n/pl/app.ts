@@ -24,7 +24,7 @@ const app: typeof en = {
   },
 
   faults: {
-    catalog: 'Nie udało się wczytać katalogu orbit. Sprawdź połączenie i spróbuj ponownie.',
+    catalog: 'Nie udało się wczytać katalogu orbit. Sprawdź połączenie i\u00a0spróbuj ponownie.',
     compute: 'Coś poszło nie tak przy liczeniu przelotów dla tego miejsca. Spróbuj ponownie za chwilę.',
   },
 

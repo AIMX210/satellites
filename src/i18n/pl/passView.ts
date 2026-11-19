@@ -95,13 +95,13 @@ const passView: typeof en = {
   replay: 'Powtórka',
   // Only weather satellites (geostationary watchers) take this note, so the masculine «Satelita rejestrował» is right.
   fullDiscNote: (pixel: string, cadenceMin?: number) =>
-    `Obraz pełnej tarczy: jedno zdjęcie wszystkiego, co widzi satelita, tutaj ${pixel} na piksel. Mało szczegółowe, ale prawdziwe i najnowsze z opublikowanych. Satelita rejestrował takie obrazy ${cadence(cadenceMin)} przez cały tydzień.`,
+    `Obraz pełnej tarczy: jedno zdjęcie wszystkiego, co widzi satelita, tutaj ${pixel} na piksel. Mało szczegółowe, ale prawdziwe i\u00a0najnowsze z\u00a0opublikowanych. Satelita rejestrował takie obrazy ${cadence(cadenceMin)} przez cały tydzień.`,
   // «NASA łączy»: the present tense, so NASA (feminine) agrees with nothing.
   mosaicNote: (gsdM: number) =>
-    `Dzienna mozaika: NASA co dzień łączy pasy obrazowania w jedno zdjęcie, ${f.int(gsdM)}\u00a0m na piksel. Mało szczegółowa, ale prawdziwa, z dnia tego przelotu.`,
+    `Dzienna mozaika: NASA co dzień łączy pasy obrazowania w\u00a0jedno zdjęcie, ${f.int(gsdM)}\u00a0m na piksel. Mało szczegółowa, ale prawdziwa, z\u00a0dnia tego przelotu.`,
   radarNote:
-    'Obraz radarowy, nie zdjęcie: Sentinel-1 wysyła mikrofale i rejestruje ich echo, więc chmury i ciemność mu nie przeszkadzają. Jasność to siła odbicia: budynki i nierówny teren są jasne, spokojna woda ciemna.',
-  // Footnotes of a line or two: a one-letter word stays with the next one (§6.3).
+    'Obraz radarowy, nie zdjęcie: Sentinel-1 wysyła mikrofale i\u00a0rejestruje ich echo, więc chmury i\u00a0ciemność mu nie przeszkadzają. Jasność to siła odbicia: budynki i\u00a0nierówny teren są jasne, spokojna woda ciemna.',
+  // The notes above and these footnotes alike: a one-letter word stays with the next one (§6.3).
   noImage: {
     openArchive: (sat: string) => `Ten przelot satelity ${sat} nie dał obrazu tego punktu. Widok przelotu z\u00a0góry.`,
     // Public against «prywatny» (the glossary's "private"), as the English contrasts them.
