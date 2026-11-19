@@ -148,7 +148,9 @@ const pl: CardMessages = {
   distance: (km: number) => `${f.int(km)}\u00a0km`,
   // A round length (1, 2 or 5 × 10ⁿ, or half of one: 2.5 must not round to 3)
   scale: (km: number) => (km >= 1 ? `${count(km)}\u00a0km` : `${f.int(km * 1000)}\u00a0m`),
-  geometry: 'Geometria przelotu · północ u\u00a0góry',
+  // As long as the English (24): the chip shares the drawing's top edge with the scale bar, and «Geometria przelotu ·
+  // północ u góry» (34) ran into it on the share sheet's preview.
+  geometry: 'Geometria · północ u\u00a0góry',
   note: {
     imageInApp: 'Obraz zobaczysz w\u00a0aplikacji',
     imageUnavailable: 'Obraz chwilowo niedostępny',

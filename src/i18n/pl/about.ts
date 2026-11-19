@@ -78,7 +78,7 @@ const about: typeof en = {
       },
       tilting: {
         term: 'Wychylne kamery',
-        text: 'Wiele satelitów komercyjnych może się wychylić o\u00a030–45\u00a0stopni. Jeśli twoje miejsce było w\u00a0zasięgu, nazywamy to „Satelita mógł tu spojrzeć”.',
+        text: 'Wiele satelitów komercyjnych może się wychylić o\u00a030–45\u00a0stopni. Jeśli twoje miejsce było w\u00a0zasięgu, nazywamy to „Satelita mógł spojrzeć”.',
       },
       daylight: {
         term: 'Światło dzienne',

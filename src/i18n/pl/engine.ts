@@ -11,7 +11,7 @@
  *  - The footnotes are calm and impersonal: the archive or the service is the subject, or «nie udało się», or «my» in
  *    the present («przeloty pokazujemy…»). NASA GIBS takes the classifier «usługa» (f.) wherever a verb agrees with
  *    it; a foreign name after a preposition takes one too («z archiwum Earth Search»), so no name is ever declined.
- *  - Verdicts are quoted by their exact titles in „ ” («Pod okiem», «Prawdopodobnie pod okiem»), as every other
+ *  - Verdicts are quoted by their exact titles in „ ” («Pod okiem», «Zapewne pod okiem»), as every other
  *    screen names them (verdicts.ts).
  *  - A number is tied to its noun, and a one-letter word to the next, by a no-break space (§6.3).
  */
@@ -85,10 +85,10 @@ const engine: typeof en = {
       }),
     gibsSlowAll: 'Usługa NASA GIBS nie odpowiedziała na czas, więc nie pokazujemy obrazów z\u00a0satelitów pogodowych.',
     gibsSlowSome: ({ missing, total }: { missing: number; total: number }) =>
-      `Usługa NASA GIBS nie przesłała na czas ${ofTotal(missing, total)}; ${thosePasses(missing)} oznaczamy jako „Prawdopodobnie pod okiem”.`,
+      `Usługa NASA GIBS nie przesłała na czas ${ofTotal(missing, total)}; ${thosePasses(missing)} oznaczamy jako „Zapewne pod okiem”.`,
     gibsDownAll: 'Nie udało się połączyć z\u00a0usługą NASA GIBS, więc nie pokazujemy obrazów z\u00a0satelitów pogodowych.',
     gibsDownSome: ({ missing, total }: { missing: number; total: number }) =>
-      `Usługa NASA GIBS nie zwróciła ${ofTotal(missing, total)}; ${thosePasses(missing)} oznaczamy jako „Prawdopodobnie pod okiem”.`,
+      `Usługa NASA GIBS nie zwróciła ${ofTotal(missing, total)}; ${thosePasses(missing)} oznaczamy jako „Zapewne pod okiem”.`,
   },
 }
 export default engine

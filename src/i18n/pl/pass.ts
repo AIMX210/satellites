@@ -136,7 +136,7 @@ const pass: typeof en = {
   // «całej» says it is the archive's whole scene, not the spot.
   cloudCover: (pct: number): Rich => ['Zachmurzenie całej sceny: ', num(f.int(pct), '%'), '.'],
 
-  // ── «Prawdopodobnie pod okiem» ───────────────────────────────────────────────────────────
+  // ── «Zapewne pod okiem» ──────────────────────────────────────────────────────────────────
   likely: {
     // «obejmując je» picks up «nad tym miejscem» in the same sentence; with an offset the place is named again.
     crossed: (o: { sat: string; altKm: number; offset?: Offset; time: string; zone: string; swathKm?: number }): Rich => [
@@ -160,7 +160,7 @@ const pass: typeof en = {
     notPublished: 'Jego obrazy zasilają prognozy pogody; nie są publikowane jako zdjęcia, które możemy pokazać.',
   },
 
-  // ── «Satelita mógł tu spojrzeć» ──────────────────────────────────────────────────────────
+  // ── «Satelita mógł spojrzeć» ─────────────────────────────────────────────────────────────
   could: {
     withinView: (o: { sat: string; time: string; zone: string; offset?: Offset }): Rich => [
       `Satelita ${o.sat} był w\u00a0zasięgu o\u00a0`,

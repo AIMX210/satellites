@@ -315,7 +315,7 @@ const results: typeof en = {
     meta: (days: number, zoneLabel: string, zones: string) => `${count(days, DAYS)} · ${zoneLabel} · ${zones}`,
     zoneChange: (before: string, after: string) => `${before} → ${after}`,
     daylight: 'Dzień tutaj',
-    // Label: value pairs: «12 prawdopodobnie pod okiem» would read as nonsense (§3.6).
+    // Label: value pairs: «12 zapewne pod okiem» would read as nonsense (§3.6).
     summary: (days: number, counts: Record<Verdict, number>, titles: Readonly<Record<Verdict, string>>) =>
       `Oś czasu, ${count(days, DAYS)}. ` + VERDICT_ORDER.map((v) => `${titles[v]}: ${int(counts[v])}`).join('. ') + '.',
     keysHint: (summary: string) => `${summary} Użyj klawiszy strzałek w lewo i w prawo, by przechodzić między przelotami.`,

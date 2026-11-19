@@ -81,7 +81,7 @@ and `strong()`.
 | [SAT] as subject | Behind a classifier noun: **satelita [SAT]** (m.) everywhere, **stacja [SAT]** (f.) for a crewed station when the message knows it (§5.2). In nominal frames, the genitive: *satelity [SAT]*. |
 | Nameless satellite | The code passes `sat` undefined. Each sentence says *satelita* on its own (*Satelita przeleciał tu…*, *z nieznanego satelity*). `aSatellite` is *Satelita*, for chips and the callout only. |
 | Plurals | CLDR `one` / `few` / `many` / `other`, all four always written. `many` covers 0, 5–21, 25–31, 100, 101, 112 and 1000. `other` is fractions only. Zero is a branch in the message (`n <= 0 ? … :`). |
-| Verdicts | **Pod okiem** · **Prawdopodobnie pod okiem** · **Satelita mógł tu spojrzeć** · **Nad głową**. Lanes: *Zdjęcie · W kadrze · W zasięgu · Nad głową*. |
+| Verdicts | **Pod okiem** · **Zapewne pod okiem** · **Satelita mógł spojrzeć** · **Nad głową**. Lanes: *Zdjęcie · W kadrze · W zasięgu · Nad głową*. |
 | Photo vs image | Mirror the English key by key: photo → *zdjęcie*, image → *obraz*. The exception: a string that names or counts radar images says *obraz* (*obraz radarowy*, never *zdjęcie radarowe*). |
 | Time-lapse | The feature is **Rok po roku** (indeclinable, native). The loanword *timelapse* is not used. |
 | Buttons | 2nd-person singular imperative: *Udostępnij*, *Pobierz obraz*, *Kopiuj link*, *Odtwórz*, *Zaskocz mnie*. States in progress take the imperfective verbal noun: *Pobieranie…*, *Przygotowywanie obrazu…*, *Ponawianie…*. |
@@ -521,7 +521,7 @@ The headline also becomes the share page's title (its parts joined with a space)
 | `readout` | *Wysokość · Elewacja · Prędkość · Od pionu · Piksel · Piksel mozaiki · Najbliżej* |
 | `lane` | *Zdjęcie · W kadrze · W zasięgu · Nad głową* (columns 116 px: the longest is 9 characters, as *Overhead* is 8) |
 | `decimal` | `(n, d) => f.dec(n, d)` |
-| `geometry` | *Geometria przelotu · północ u góry* |
+| `geometry` | *Geometria · północ u góry* (as long as the English: *Geometria przelotu · …* ran into the scale bar beside it) |
 | `note` | imageInApp *Obraz zobaczysz w aplikacji* · imageUnavailable *Obraz chwilowo niedostępny* · commercial *Archiwum komercyjne, niepubliczne* · inSwath *W kadrze, jeszcze bez publicznego obrazu* · groundTrack *Ślad orbity przy największym zbliżeniu* |
 | `acquiring` | *Pobieranie…* |
 | `noPublicPhoto` / `noPhoto` | *Brak publicznego zdjęcia w tym tygodniu* / *Brak zdjęcia do pokazania* |
@@ -593,8 +593,8 @@ weekday.
 | Verdict | `title` | `short` (lane) | `unit` | `definition` | `verb` (aria list) |
 |---|---|---|---|---|---|
 | imaged | **Pod okiem** | Zdjęcie | *1 przelot · 3 przeloty · 31 przelotów · 1,5 przelotu* | *Prawdziwy obraz tego miejsca jest w publicznym archiwum.* | *pod okiem* |
-| likely | **Prawdopodobnie pod okiem** | W kadrze | as above | *To miejsce było w pasie obrazowania kamery, która zawsze patrzy w dół. Nie opublikowano zdjęcia tego miejsca.* | *w kadrze* |
-| could | **Satelita mógł tu spojrzeć** | W zasięgu | as above | *Wychylna lub prywatna kamera była w zasięgu. Jej operator nie podaje, czy tu patrzyła.* | *w zasięgu* |
+| likely | **Zapewne pod okiem** | W kadrze | as above | *To miejsce było w pasie obrazowania kamery, która zawsze patrzy w dół. Nie opublikowano zdjęcia tego miejsca.* | *w kadrze* |
+| could | **Satelita mógł spojrzeć** | W zasięgu | as above | *Wychylna lub prywatna kamera była w zasięgu. Jej operator nie podaje, czy tu patrzyła.* | *w zasięgu* |
 | overhead | **Nad głową** | Nad głową | as above | *Przelot po twoim niebie. Stacje kosmiczne i cała reszta.* | *nad głową* |
 
 About's extra sentences (`about.verdictMore`), said after each definition:
@@ -607,8 +607,12 @@ About's extra sentences (`about.verdictMore`), said after each definition:
 Why these words:
 - **The could title names the satellite, not a camera.** The could group includes radar satellites (Capella, ICEYE,
   Umbra), and a radar is not a camera. A bare *Mógł tu spojrzeć* under *31 PRZELOTÓW* would be made to agree with the
-  count (*mogło*). *Satelita mógł tu spojrzeć* is masculine by the noun and gender-safe. It is 25 characters (192 px
-  against 176 px for "COULD HAVE POINTED HERE") and wraps on the same phones the English does.
+  count (*mogło*). *Satelita mógł spojrzeć* is masculine by the noun and gender-safe.
+- **Every title fits one line of the summary tile at 1280 px**, as the English does (*COULD HAVE POINTED HERE*, 23
+  characters, fills it; a longer title wraps and pushes the last row under the panel's fold). *Zapewne pod okiem* (17;
+  *zapewne* is the written register's "presumably") replaced *Prawdopodobnie pod okiem* (24), and *Satelita mógł
+  spojrzeć* (22; the screen is about the place, so *tu* goes without saying) replaced *Satelita mógł tu spojrzeć* (25).
+  Sentences keep *prawdopodobnie* (`pass`, `share`). Both wrap on the same phones the English does.
 - **The likely lane is *W kadrze*,** "in the frame" (8 characters, 61 px, as wide as *OVERHEAD*). Alone in mono caps,
   *W PASIE* is first read as "at the waist", and on a timeline lane as "in the lane". *W kadrze* is the verdict
   exactly: the place was in a fixed camera's frame. The same root runs through the share frame (*w kadrze satelity
@@ -623,14 +627,14 @@ Why these words:
 - Readout aria: *[31] przelotów: Pod okiem*.
 
 **When a verdict is quoted in running text, quote its exact title in „ ”:** About `tilting`: *Wiele satelitów
-komercyjnych może się wychylić o 30–45 stopni. Jeśli twoje miejsce było w zasięgu, nazywamy to „Satelita mógł tu
+komercyjnych może się wychylić o 30–45 stopni. Jeśli twoje miejsce było w zasięgu, nazywamy to „Satelita mógł
 spojrzeć”.* The engine notes: *…więc ten przelot liczymy jako „Pod okiem”.* · *…te przeloty oznaczamy jako
-„Prawdopodobnie pod okiem”.*
+„Zapewne pod okiem”.*
 
-**Timeline summary (`timeline.summary`).** Write label: value pairs, never `count + title` (*12 prawdopodobnie pod
-okiem* reads as nonsense): *Oś czasu, 7 dni. Pod okiem: 3. Prawdopodobnie pod okiem: 12. Satelita mógł tu spojrzeć: 2.
+**Timeline summary (`timeline.summary`).** Write label: value pairs, never `count + title` (*12 zapewne pod
+okiem* reads as nonsense): *Oś czasu, 7 dni. Pod okiem: 3. Zapewne pod okiem: 12. Satelita mógł spojrzeć: 2.
 Nad głową: 1.* `Timeline.tsx` also builds an aria string as `${n} ${title.toLowerCase()}`. It gets a message instead,
-*Prawdopodobnie pod okiem: 12 przelotów* (engineering, free).
+*Zapewne pod okiem: 12 przelotów* (engineering, free).
 
 **Rejected:** *Obserwowane / Prawdopodobnie obserwowane* (on Instagram and X, *Obserwowane* means "Following"; §9),
 *Obserwacja / Możliwa obserwacja* (a report category, cut off from the headline), *Obserwował* or *Mógł tu celować* as
@@ -645,7 +649,7 @@ camera), the lanes *W PASIE* (the waist), *PRAWDOP.* (an abbreviation) and *MOŻ
 |---|---|
 | `strip` | altitude *Wysokość* · elevation *Elewacja* · offNadir *Od pionu* · pixel *Piksel* · band *Kanał* · sun *Słońce* · cloud *Chmury* · cloudAtSpot *Nad punktem* |
 | `band` | *Podczerwień* · *Widzialny* · *Kolor* |
-| `spotValue` | *Czysto* · *Cirrusy* · *Chmury* · *Cień* |
+| `spotValue` | *Czysto* · *Cirrus* · *Chmury* · *Cień* (21 px in the strip's last cell: *Cirrusy* ran past the panel's edge at 1280; *cirrus* is the genus' Polish name) |
 | `unit` | km, m, km/s · up *''* (empty: *Elewacja* already says "up") · mosaic *mozaika* · scene *sceny* (*25% SCENY*) · sun *dzień / półmrok / noc* |
 | `upCompass(c)` | the compass point alone: *SSW* |
 | `heading(c, asc)` | *SSW · na płd.* / *NNE · na płn.* (ascending = northbound) |
@@ -659,7 +663,7 @@ camera), the lanes *W PASIE* (the waist), *PRAWDOP.* (an abbreviation) and *MOŻ
 | `cloudChip` | *Chmury* |
 | `photosSection` / `planSection` | *Zdjęcia* / *Widok z góry* |
 | `geometry` / `replay` (section rules) | *Geometria* / *Powtórka* |
-| `imagedOrder` | *od ujęcia z najbliższa, potem najnowsze* |
+| `imagedOrder` | *z najbliższa, potem najnowsze* (the chip's *z najbliższa*; *od ujęcia z najbliższa, …*, 39 characters, ran past the panel's edge at 1280) |
 | `count` / `countStack` | *31 przelotów* (the unit in the form the number takes) |
 | `sats(n)` | *1 satelita · 3 satelity · 12 satelitów* (no abbreviation exists) |
 | `showAllSats` / `showAllRows` | *Pokaż wszystkie satelity (31)* / *Pokaż wszystkie wiersze (31)* |
@@ -784,7 +788,7 @@ the season and nothing else (§8).
 | `about.short.live` | *Czy to na żywo?* — *Nie do końca. Zdjęcia trafiają do archiwów od kilku godzin do paru dni po wykonaniu, więc najnowsze przeloty mogą jeszcze nie mieć zdjęcia.* |
 | `about.short.seeMe` | *Czy mnie widać?* — *Nie. Piksel ma tu w najlepszym razie 10 m. Samochód to jeden piksel. Ciebie w nim nie ma.* |
 | `about.short.every` | *Czy to wszystkie satelity?* — *Nie. Satelitów wojskowych i szpiegowskich zwykle nie ma w publicznych katalogach, a firmy nie mówią, gdzie kierują kamery.* |
-| `about.method.facts.tilting` | *Wychylne kamery* — *Wiele satelitów komercyjnych może się wychylić o 30–45 stopni. Jeśli twoje miejsce było w zasięgu, nazywamy to „Satelita mógł tu spojrzeć”.* |
+| `about.method.facts.tilting` | *Wychylne kamery* — *Wiele satelitów komercyjnych może się wychylić o 30–45 stopni. Jeśli twoje miejsce było w zasięgu, nazywamy to „Satelita mógł spojrzeć”.* |
 | `about.method.facts.daylight` | *Światło dzienne* — *Zwykłe kamery potrzebują słońca. Przelot w ciemności nigdy nie liczy się jako zdjęcie.* |
 | `about.privacy.kept` | *Liczymy wyszukiwania według miejscowości i przybliżonego obszaru ok. 10 km, nigdy według twojego dokładnego punktu, i prowadzimy licznik tego, co ktoś otwiera i udostępnia. Bez adresów IP, bez własnych plików cookie, bez niczego, co łączy jedną wizytę z następną.* |
 | `about.credits.madeBy` | who *Autor* · text *Armaan, @armaangupt0 na X* |
@@ -850,8 +854,8 @@ noted.
 | pass, overflight | przelot | m. *1 przelot · 3 przeloty · 5 przelotów*. Never *przejście*, *hasło* or *przepustka*. |
 | to watch (product verb) | obserwować | impf. *Coś cię obserwowało.* With a place, the frame *[PLACE] pod okiem …*. Never a standalone label or button (it means "Follow" on social media). |
 | watched (verdict) | Pod okiem | Title. Lane *Zdjęcie*. |
-| likely watched | Prawdopodobnie pod okiem | Title. Lane *W kadrze*. |
-| could have pointed here | Satelita mógł tu spojrzeć | Title. Lane *W zasięgu*. |
+| likely watched | Zapewne pod okiem | Title (one tile line; sentences say *prawdopodobnie*). Lane *W kadrze*. |
+| could have pointed here | Satelita mógł spojrzeć | Title (one tile line). Lane *W zasięgu*. |
 | passed overhead | Nad głową | Title and lane. |
 | watched continuously | Pod stałym okiem | The geostationary section. |
 | photo, picture | zdjęcie | n. *1 zdjęcie · 2 zdjęcia · 5 zdjęć*. Wherever the English says photo or picture, except a string that names or counts radar images. |
@@ -1217,7 +1221,7 @@ no ‚ ‘ single low quotes, no U+202F, no emoji, no *º* ordinal.
 
 ### 6.2 Quotation marks, apostrophe, file names
 
-- Primary: **„…”** (U+201E, U+201D): *nazywamy to „Satelita mógł tu spojrzeć”*. Nested: **«…»**.
+- Primary: **„…”** (U+201E, U+201D): *nazywamy to „Satelita mógł spojrzeć”*. Nested: **«…»**.
 - Never ASCII "…", never English “…”, never ,,…'' typed with commas.
 - The apostrophe **’** appears only in foreign names (*Côte d’Ivoire*, *Kennedy’ego*). Never build a case ending on a
   runtime name with an apostrophe: rephrase.
@@ -1384,8 +1388,8 @@ gives the same advance):
 | *ELEVATION* (strip, card) | *ELEWACJA* | 72 → 64 | ~80 px cell (*NAD HORYZONTEM* 112 ✗) |
 | *CLOUD AT SPOT* | *NAD PUNKTEM* | 104 → 88 | (*CHMURY W PUNKCIE* 128 ✗) |
 | *OFF-NADIR* | *OD PIONU* | 72 → 64 | |
-| *COULD HAVE POINTED HERE* (tile title) | *SATELITA MÓGŁ TU SPOJRZEĆ* | 176 → 192 | two-column tile: wraps like the English |
-| *LIKELY WATCHED* | *PRAWDOPODOBNIE POD OKIEM* | 107 → 184 | two-column tile: two lines |
+| *COULD HAVE POINTED HERE* (tile title) | *SATELITA MÓGŁ SPOJRZEĆ* | 176 → 169 | one line at 1280 px; wraps on phones like the English (*…TU SPOJRZEĆ*, 192, wrapped at 1280) |
+| *LIKELY WATCHED* | *ZAPEWNE POD OKIEM* | 107 → 130 | one line at 1280 px (*PRAWDOPODOBNIE POD OKIEM*, 184, wrapped) |
 | Lanes *OVERHEAD* | *W KADRZE · W ZASIĘGU · NAD GŁOWĄ · ZDJĘCIE* | 61 → 61 / 69 / 69 / 54 | lane gutter, about 8 characters |
 | *12 THIS WEEK* | *12 Z TYGODNIA* | 92 → 100 | counter sized to 12 characters (*12 W TYM TYGODNIU* 130 ✗) |
 | *RENDERING 42%* | *TWORZENIE 42%* | 104 → 104 | fixed 132 px button (*RENDEROWANIE 42%* 128 ✗) |
@@ -1481,7 +1485,7 @@ katalogach.* State it plainly, without speculating about what they see.
 | "closest look" | *najbliższe ujęcie* | *ujęcie z najbliższa* | With event nouns *najbliższy* means "upcoming" (*najbliższe spotkanie*). |
 | "in swath" as a label | *W PASIE* | *W KADRZE* | Alone, *w pasie* = at the waist (*obwód w pasie*), or "in the lane". |
 | "imaged" (radar) | *zobrazował* | *zarejestrował*, *zmapował* | *zobrazować* = to illustrate. |
-| "could have pointed here" | *Kamera mogła tu spojrzeć*, *mógł tu celować* | *Satelita mógł tu spojrzeć* | Radar is not a camera; *celować* is weapon wording. |
+| "could have pointed here" | *Kamera mogła tu spojrzeć*, *mógł tu celować* | *Satelita mógł spojrzeć* | Radar is not a camera; *celować* is weapon wording. |
 | "pass" | *przejście, hasło, przepustka* | *przelot* | |
 | "swath" | *pokos* | *pas obrazowania* | *pokos* is a mowing swath. |
 | "scene" | *scenka, widok* | *scena* | The archive's whole tile. The HUD's replay clock is *Powtórka*, never *Scena*. |
@@ -1585,7 +1589,7 @@ rejected.** Section E (checked and sound) is kept as written.
 | 6 | Share page and unfurl copy missing | Partly accepted. All frames written; `placeDescription` ends on the standard question, `opening` keeps the classifier, `cardAlt` and `bestFrom` reworded, nameless forms added (§3.5). |
 | 7 | Coordinates must keep the dot | Accepted. International notation as they arrive (HUD, pin, seat *(0.2°W)*, URLs); the decimal comma everywhere else; parser note kept as optional (§6.4). |
 | 8 | Font warming with Polish letters alone slows Polish | Accepted. Boot loads `FIRST_FONTS` with the hero's own text, and pl's latin-ext files are preloaded; the canvases already pass their text (Cost and speed). |
-| 9 | *Kamera mogła tu spojrzeć* calls a radar a camera | Accepted. Title *Satelita mógł tu spojrzeć*; `verb` values are gender-free phrases (§3.6). |
+| 9 | *Kamera mogła tu spojrzeć* calls a radar a camera | Accepted. Title *Satelita mógł spojrzeć* (*tu* dropped in QA so the tile title fits one line); `verb` values are gender-free phrases (§3.6). |
 | 10 | *W PASIE* reads as "at the waist" | Accepted. *W kadrze* for the likely lane, the geometry readout, the share frame and the card note; *pas obrazowania* for the width (§3.6). |
 | 11 | *Najbliższe ujęcie* reads as "the next shot" | Partly accepted. *Ujęcie z najbliższa* everywhere; the last clear tag is decided now as *Ostatnie bez chmur*, because the full form leaves ~2 px on the card chip (§3.5, §7). |
 | 12 | Strip labels too long; off-nadir term inconsistent | Partly accepted. *Elewacja*, *Od pionu*, *Nad punktem*, `unit.scene` *sceny*, `unit.up` empty, *Wysokość Słońca* as the stated exception; but `upCompass` prints the compass point alone, not a leading dot (§3.7). |

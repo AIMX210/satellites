@@ -42,7 +42,9 @@ const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
   empty:
     'Żaden znany nam satelita nie przeleciał tu w\u00a0tym okresie. To się rzadko zdarza. Uwagi powyżej podają, czy któreś źródło danych nie działało.',
-  imagedOrder: 'od ujęcia z\u00a0najbliższa, potem najnowsze',
+  // The lead chip's «z najbliższa» (never «najbliższe», which reads "upcoming", §9), near the English's length (25):
+  // «od ujęcia z najbliższa, potem najnowsze» (39) ran past the panel's edge beside «Pod okiem» at 1280.
+  imagedOrder: 'z\u00a0najbliższa, potem najnowsze',
   count: (n: number, _verdict: Verdict) => passCount(n),
   countStack: (n: number, _verdict: Verdict): NumPart => num(count(n), passes(n)),
   sats: (n: number) => `${count(n)}\u00a0${f.plural(n, { one: 'satelita', few: 'satelity', many: 'satelitów', other: 'satelity' })}`,
@@ -143,7 +145,9 @@ const passView: typeof en = {
   },
   // The adjectives agree with «kanał» (m.); «Kolor» is the noun.
   band: { infrared: 'Podczerwień', visible: 'Widzialny', colour: 'Kolor' },
-  spotValue: { clear: 'Czysto', cirrus: 'Cirrusy', cloud: 'Chmury', shadow: 'Cień' },
+  // At 21 px in the strip's last cell, no longer than the English «Cirrus»: «Cirrusy» ran past the panel's edge at 1280.
+  // «Cirrus» is the genus' own name in Polish (chmury cirrus).
+  spotValue: { clear: 'Czysto', cirrus: 'Cirrus', cloud: 'Chmury', shadow: 'Cień' },
   unit: {
     km: 'km',
     m: 'm',
