@@ -28,6 +28,7 @@ import {
   CARD_FS,
   HEAD,
   HEAD_CJK,
+  headTracking,
   PANEL,
   TONE_COLOR,
   hatchPath,
@@ -59,6 +60,7 @@ export function ShareCard({ spec }: { spec: CardSpec }) {
   const colW = PANEL.w / spec.readouts.length
   // Between two blocks of the headline: the place's clear space above it (or below it, when the place comes first).
   const blockGap = (i: number) => (i ? P * HEAD.placeGap : undefined)
+  const track = headTracking(spec.locale)
 
   return (
     // The wrap's height is CSS (aspect-ratio 1200 : 630 on its content box), so layout never waits on `k`: only the
@@ -77,7 +79,7 @@ export function ShareCard({ spec }: { spec: CardSpec }) {
         <div className={s.head} style={{ left: PANEL.x, top: PANEL.headTop, width: PANEL.w, height: PANEL.headBottom - PANEL.headTop }}>
           {spec.head.map((part, i) =>
             isAccent(part) ? (
-              <div key={i} className={s.place} style={{ fontSize: P, lineHeight: (spec.cjk ? HEAD_CJK : HEAD).placeLH, marginTop: blockGap(i), letterSpacing: -0.01 * P }}>
+              <div key={i} className={s.place} style={{ fontSize: P, lineHeight: (spec.cjk ? HEAD_CJK : HEAD).placeLH, marginTop: blockGap(i), letterSpacing: track.place * P }}>
                 {part.accent.map((q, j) => (
                   <Fragment key={j}>{plain([q])}</Fragment>
                 ))}
@@ -87,7 +89,7 @@ export function ShareCard({ spec }: { spec: CardSpec }) {
               <div
                 key={i}
                 className={s.lead}
-                style={{ fontSize: S, lineHeight: (spec.cjk ? HEAD_CJK : HEAD).leadLH, letterSpacing: -0.02 * S, marginTop: blockGap(i), whiteSpace: spec.cjk ? 'nowrap' : undefined }}
+                style={{ fontSize: S, lineHeight: (spec.cjk ? HEAD_CJK : HEAD).leadLH, letterSpacing: track.lead * S, marginTop: blockGap(i), whiteSpace: spec.cjk ? 'nowrap' : undefined }}
               >
                 {plain([part])}
               </div>

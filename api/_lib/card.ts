@@ -30,6 +30,7 @@ import {
   DEFAULT_CARD_ALT,
   HEAD,
   HEAD_CJK,
+  headTracking,
   PANEL,
   PLATE,
   TONE_COLOR,
@@ -202,15 +203,16 @@ function plate(locale: Locale, p: Plate, dataUri: string | null): ReactElement {
 /**
  * The headline block, centred in its band (PANEL.headTop … headBottom): the headline's parts as blocks in their order
  * (text in the condensed display face, the accent, the place, in the serif, P × placeGap between two blocks), then
- * the optional sub-line. The display text is tracked -0.02em in every language, as the app's own preview and PNG of
+ * the optional sub-line. The display text is tracked by script (headTracking), as the app's own preview and PNG of
  * this card are (src/ui/share/ShareCard.tsx and card.ts): the unfurl shows what the sharer saw.
  */
-function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk'>): ReactElement {
+function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale'>): ReactElement {
   const S = spec.size
   const P = S * HEAD.placeScale
   const gap = P * HEAD.placeGap
   // Chinese, Japanese and Korean: their leading, and each text part one phrase on one line (HEAD_CJK).
   const lh = spec.cjk ? HEAD_CJK : HEAD
+  const track = headTracking(spec.locale)
   const blocks = spec.head.map((part, i) =>
     isAccent(part)
       ? h(
@@ -223,7 +225,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk'>): ReactE
               fontSize: P,
               lineHeight: lh.placeLH,
               ...(i ? { marginTop: gap } : {}),
-              letterSpacing: -0.01 * P,
+              letterSpacing: track.place * P,
               color: C.bone,
             },
           },
@@ -240,7 +242,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk'>): ReactE
               lineHeight: lh.leadLH,
               ...(spec.cjk ? { whiteSpace: 'nowrap' as const } : {}),
               ...(i ? { marginTop: gap } : {}),
-              letterSpacing: -0.02 * S,
+              letterSpacing: track.lead * S,
               color: C.bone,
             },
           },

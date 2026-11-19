@@ -31,6 +31,7 @@ import {
   CHIP_BOX,
   HEAD,
   HEAD_CJK,
+  headTracking,
   PANEL,
   PLATE,
   TONE_COLOR,
@@ -703,8 +704,10 @@ export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   // the serif place), then the optional sub-line
   const S = spec.size
   const P = S * HEAD.placeScale
-  const lead: Face = { family: DISPLAY, size: S, weight: 560, stretch: 'condensed', tracking: -0.02 * S }
-  const place: Face = { family: SERIF, size: P, italic: true, tracking: -0.01 * P }
+  const track = headTracking(spec.locale)
+  // CJK at 600: system CJK fonts round 501–599 up to Semibold or Bold (scripts.css --w-display)
+  const lead: Face = { family: DISPLAY, size: S, weight: spec.cjk ? 600 : 560, stretch: 'condensed', tracking: track.lead * S }
+  const place: Face = { family: SERIF, size: P, italic: true, tracking: track.place * P }
   const sub: Face = { family: SANS, size: CARD_FS.sub }
   // Chinese, Japanese, Korean: their leading, and each text part one phrase on one line (HEAD_CJK)
   const lh = spec.cjk ? HEAD_CJK : HEAD

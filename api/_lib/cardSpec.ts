@@ -117,6 +117,16 @@ export const HEAD = { leadLH: 0.94, placeScale: 1.06, placeLH: 0.9, placeGap: 0.
  */
 export const HEAD_CJK = { leadLH: 1.12, placeLH: 1.1 } as const
 
+/**
+ * The headline's tracking in em, by script, as the page's --track-display (src/styles/scripts.css): Latin −0.02,
+ * Cyrillic's denser lowercase −0.015, CJK −0.01, Arabic none (tracking breaks its joins). The place's serif −0.01,
+ * none in Arabic. Every renderer of the card reads these, so the preview, the PNG and the unfurl agree.
+ */
+export function headTracking(locale: Locale): { lead: number; place: number } {
+  const script = LOCALE_INFO[locale].script
+  return script === 'arabic' ? { lead: 0, place: 0 } : { lead: script === 'cyrillic' ? -0.015 : script === 'cjk' ? -0.01 : -0.02, place: -0.01 }
+}
+
 // ── Spec ────────────────────────────────────────────────────────────────────────────────────
 
 export interface Readout {
