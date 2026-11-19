@@ -18,6 +18,7 @@
  */
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { DEFAULT_CARD_ALT } from '../api/_lib/cardSpec.ts'
 import { placeDescription, placeTitle } from '../api/_lib/share.ts'
 import { placeCardUrl } from '../api/s.ts'
 import { PLACES_VERSION } from '../src/imagery/localPlaces.gen.ts'
@@ -51,7 +52,7 @@ const landmarks = parseLandmarkRows(readFileSync(join(PLACES, 'l.txt'), 'utf8'))
 const places = selectPlaces(cities, landmarks, countryName, new Set(CITY_NAMES.map(([name]) => name)))
 
 /** The same words and card an address-bar link to the place unfurls into (api/s.ts). */
-const social = (p: SeoPlace) => ({ title: placeTitle(p), description: placeDescription(p), image: placeCardUrl(origin, p) })
+const social = (p: SeoPlace) => ({ title: placeTitle(p), description: placeDescription(p), image: placeCardUrl(origin, p), imageAlt: DEFAULT_CARD_ALT })
 
 const dir = join(DIST, PLACE_PREFIX.slice(1))
 rmSync(dir, { recursive: true, force: true })

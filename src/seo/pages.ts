@@ -82,6 +82,8 @@ export interface PlaceSocial {
   title: string
   description: string
   image: string
+  /** What the card shows. It is the default card (a photo of Palm Jumeirah), not a picture of the place: say so. */
+  imageAlt: string
 }
 
 export function placeMeta(origin: string, place: SeoPlace, social: PlaceSocial): HeadMeta {
@@ -90,7 +92,7 @@ export function placeMeta(origin: string, place: SeoPlace, social: PlaceSocial):
     title: pageTitle(place.label),
     description: placeDescription(place),
     canonical: url,
-    social: { ...social, imageType: 'image/jpeg', imageAlt: social.title },
+    social: { ...social, imageType: 'image/jpeg' },
     graph: [
       siteNode(origin),
       { '@type': 'WebPage', '@id': `${url}#page`, url, name: pageTitle(place.label), description: placeDescription(place), inLanguage: 'en', isPartOf: { '@id': `${origin}/#site` }, about: { '@id': `${url}#place` } },

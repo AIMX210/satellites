@@ -9,7 +9,7 @@ const PARIS: SeoPlace = { slug: 'paris', label: 'Paris', sublabel: 'Île-de-Fran
 const EIFFEL: SeoPlace = { slug: 'eiffel-tower', label: 'Eiffel Tower', sublabel: 'Paris, France', lat: 48.8584, lon: 2.2945, cc: 'fr', kind: 'landmark', p: 0 }
 const LONDON: SeoPlace = { slug: 'london', label: 'London', sublabel: 'England, United Kingdom', lat: 51.509, lon: -0.126, cc: 'gb', kind: 'city', p: 139 }
 const LONDON_ON: SeoPlace = { slug: 'london-ontario', label: 'London', sublabel: 'Ontario, Canada', lat: 42.983, lon: -81.233, cc: 'ca', kind: 'city', p: 113 }
-const SOCIAL = { title: 'What watched Paris this week', description: 'Every satellite…', image: `${ORIGIN}/api/og?kind=place&place=Paris&lat=48.85&lon=2.35&v=5` }
+const SOCIAL = { title: 'What watched Paris this week', description: 'Every satellite…', image: `${ORIGIN}/api/og?kind=place&place=Paris&lat=48.85&lon=2.35&v=5`, imageAlt: 'A real Sentinel-2 satellite photograph of Palm Jumeirah, Dubai' }
 const TEMPLATE = indexHtml.replaceAll('__SITE_ORIGIN__', ORIGIN)
 
 /** What is between the head markers. */
@@ -37,6 +37,8 @@ describe('a place page', () => {
     expect(head).toContain(`<meta property="og:url" content="${ORIGIN}/place/paris" />`)
     expect(head).toContain('<meta property="og:title" content="What watched Paris this week" />')
     expect(head).toContain('<meta property="og:image:type" content="image/jpeg" />')
+    // The card is the default one: its description says what it shows, not the place's name.
+    expect(head).toContain('<meta property="og:image:alt" content="A real Sentinel-2 satellite photograph of Palm Jumeirah, Dubai" />')
     // Everything outside the markers and #root is the template's, byte for byte.
     expect(html.slice(0, html.indexOf(HEAD_OPEN))).toBe(TEMPLATE.slice(0, TEMPLATE.indexOf(HEAD_OPEN)))
     expect(html.split(HEAD_CLOSE)[1].split('<script type="application/json"')[0]).toBe(TEMPLATE.split(HEAD_CLOSE)[1].split('<div id="root">')[0])
