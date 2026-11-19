@@ -171,7 +171,9 @@ const tr: CardMessages = {
   pixelSize: (metres: number) => (metres >= 1000 ? `${f.int(metres / 1000)} km` : `${metres < 1 ? f.dec(metres, 2) : f.int(metres)} m`),
   distance: (km: number) => `${f.int(km)} km`,
   scale: (km: number) => (km >= 1 ? `${f.int(km)} km` : `${f.int(km * 1000)} m`),
-  geometry: 'Geçiş geometrisi · kuzey yukarıda',
+  // About the English's length (24): the chip shares the drawing's top edge with the scale bar, and «Geçiş geometrisi ·
+  // kuzey yukarıda» (33) ended 6 px from it on the share sheet's preview.
+  geometry: 'Geometri · kuzey yukarıda',
   note: {
     imageInApp: 'Görüntü sitede açılır',
     imageUnavailable: 'Görüntü şu an alınamıyor',

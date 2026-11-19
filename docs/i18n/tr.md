@@ -394,7 +394,7 @@ olduğunda…* (long, the same opening on every paragraph).
 | `readout` | *İrtifa · Ufuktan açı · Hız · Bakış açısı · Piksel · Mozaik pikseli · En yakın* |
 | `lane` | *Görüntü · Muhtemel · Menzilde · Tepeden* |
 | `unit` | *km · m · km/sn* |
-| `geometry` | *Geçiş geometrisi · kuzey yukarıda* |
+| `geometry` | *Geometri · kuzey yukarıda* (about the English's length: *Geçiş geometrisi · …* ended 6 px from the scale bar beside it) |
 | `note` | *Görüntü sitede açılır · Görüntü şu an alınamıyor · Ticari arşiv, kamuya kapalı · Şeritte, henüz kamuya açık görüntü yok · En yakın anda yer izi* |
 | `acquiring` | *Alınıyor…* |
 | `noPublicPhoto` / `noPhoto` | *Bu hafta kamuya açık görüntü yok* / *Gösterilecek görüntü yok* |
