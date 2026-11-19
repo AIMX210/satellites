@@ -102,6 +102,19 @@
   src: url('../assets/fonts/noto-sans-arabic-wght400-700-wdth75-100.woff2') format('woff2');
   unicode-range: U+0600-06FF, U+200C-200F;
 }
+/* Its space, first in the Arabic page's mono stack: Martian Mono's space is a full 0.65 em cell, so two Arabic words in
+   a mono label read with a gap between them ("البحث  عن  مكان"). Latin mono text on an Arabic page takes this
+   narrower space too; no other page lists it. */
+@font-face {
+  font-family: 'Watched Arabic Space';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  size-adjust: 114%;
+  src: url('../assets/fonts/noto-sans-arabic-wght400-700-wdth75-100.woff2') format('woff2');
+  unicode-range: U+0020, U+00A0;
+}
 /* The serif accent (Amiri, Naskh). The upright file is declared italic on purpose: .serif asks for italic, so a Latin
    place name keeps Instrument Serif's real italic and Arabic is never slanted (Arabic has no italic). */
 @font-face {
@@ -114,7 +127,7 @@
 }
 :root[data-script='arabic'] {
   --font-sans: 'Instrument Sans Variable', 'Instrument Sans', 'Watched Arabic', system-ui, sans-serif;
-  --font-mono: 'Martian Mono Variable', 'Martian Mono', 'Watched Arabic Label', ui-monospace, monospace;
+  --font-mono: 'Watched Arabic Space', 'Martian Mono Variable', 'Martian Mono', 'Watched Arabic Label', ui-monospace, monospace;
   --font-serif: 'Instrument Serif', 'Watched Arabic Serif', serif;
   /* Arabic's ascenders and marks need room: hero 0.92 → 1.25, headline 0.98 → 1.33 */
   --lh-k: 1.36;

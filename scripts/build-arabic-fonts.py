@@ -21,8 +21,10 @@ from fontTools.varLib import instancer
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'src' / 'assets' / 'fonts'
-# The basic Arabic block, plus ZWNJ / ZWJ and the directional marks (LRM, RLM) that Arabic text carries.
-UNICODES = list(range(0x0600, 0x0700)) + list(range(0x200C, 0x2010))
+# The basic Arabic block, plus ZWNJ / ZWJ and the directional marks (LRM, RLM) that Arabic text carries, and the space
+# and no-break space: mono labels take them from this file ('Watched Arabic Space', scripts.css), or the space between
+# two Arabic words in a mono slot is Martian Mono's full cell.
+UNICODES = [0x0020, 0x00A0] + list(range(0x0600, 0x0700)) + list(range(0x200C, 0x2010))
 
 
 def subset_font(src: Path) -> TTFont:
