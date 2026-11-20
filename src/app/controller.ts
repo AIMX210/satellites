@@ -30,6 +30,7 @@ import { useApp } from '@/state/store'
 import type { Capture, Place, ProgressEvent, Report } from '@/types'
 import type { EngineReport } from '@/engine/report'
 import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/catalog'
+import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { msgs } from '@/i18n/runtime'
 import { ensureTz } from '@/imagery'
@@ -239,9 +240,10 @@ async function loadFirstFonts(): Promise<void> {
   if (!fonts) return
   try {
     const own = SCRIPT_FONTS[document.documentElement.getAttribute('data-script') ?? ''] ?? []
-    // With the page's own words (the tab title is the hero line in the visitor's language: src/i18n/bootText.ts), so a
-    // latin-ext face (Polish ł, Turkish ş) is fetched before the hero shows, not swapped in under its wipe.
-    const words = `${document.title} `
+    // With the page's own words (the landing's title is the hero line in the visitor's language), so a latin-ext face
+    // (Polish ł, Turkish ş) is fetched before the hero shows, not swapped in under its wipe. From the catalog, not
+    // document.title: on a place page the tab names the place instead (src/app/head.ts).
+    const words = `${msgs(enApp).documentTitle} `
     await Promise.all([...FIRST_FONTS.map((f) => fonts.load(f, words)), ...own.map(([f, text]) => fonts.load(f, text))])
     await fonts.ready
   } catch {
