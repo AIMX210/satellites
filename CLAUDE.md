@@ -148,7 +148,12 @@
   page's LCP; robots.txt never closes `/api/` (link previews fetch `/api/og`, and X's and Facebook's fetchers obey
   it). index.html's head between the `seo:head` markers is `headTags(homeMeta())`: change the generator, then the
   copy (a test compares them). Crawlers run the app on these pages: the client sends no events when the user agent
-  names one (`CRAWLER_RE`), and each rendering is a real search against the archives.
+  names one (`CRAWLER_RE`), and each rendering is a real search against the archives. `src/app/head.ts` is the only
+  writer of the tab title and the canonical link once the app runs: a place's title is the static page's sentence
+  in English (`pageTitle`) and "<place> · Watched" in any other language, and English's `app.documentTitle` must
+  stay index.html's title (`HOME_TITLE`; tests hold both). The pages themselves are English only (no `hreflang`:
+  a language is a preference, not an address). One page a point: a landmark listed twice at the same coordinates
+  gets the first name's page (`NAMED_TODAY` in `src/seo/places.ts` for the exceptions).
 - Back button: layers register with `src/lib/backStack.ts`. Never call `history.pushState` directly. The address is
   written through `addressOf` / `homePath` (`src/lib/placePage.ts`): a place page keeps its own path only while its
   place is on screen.

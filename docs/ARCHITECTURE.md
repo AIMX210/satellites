@@ -237,13 +237,26 @@ The rules behind it:
   every city of about half a million people, cities down to about 100,000 in countries where an English page is what
   a search shows, and each country's two largest towns. No page is ever made from a typed address or an `n=` label,
   which would put other people's words in titles on this site.
+- **One page a point.** Where the list names one point twice ("Golden Gate Bridge" and the landing's "Golden Gate"),
+  the page is the first name's, the one people type (`NAMED_TODAY` holds the exceptions: Uluru, not Ayers Rock). Two
+  pages would show the same passes and pictures under two titles, and a search engine keeps one of its choosing.
 - **A slug never changes once given.** The largest place of a name keeps the bare slug (`london`); a namesake says
   where it is (`london-ontario`, `valencia-spain`). Loosening a threshold adds pages and renames none.
 - **A place page is the app, not a door to it.** Its text says what the visitor is about to see and states no
   count: the week's numbers exist only once the browser has computed them.
 - **One address a place.** `index.html` is canonical to `/`, so every `?q=` and `?s=` link points search engines at
   the landing. A place page is canonical to itself, and `src/app/head.ts` keeps the title and the canonical link true
-  as the visitor moves on inside the app. The title is one function (`pageTitle`) for the static page and the app.
+  as the visitor moves on inside the app; it is their only writer once the app runs. In English the title is one
+  function (`pageTitle`) for the static page and the app, so a search engine that runs the app reads the sentence
+  the file carries.
+- **The pages are English; the app on them speaks the visitor's language.** The static head and text are English
+  (a crawler runs the app in English too). For a visitor in another language the app names the place and the brand
+  in the tab ("Pyramides de Gizeh · Watched": the English sentence is not translated), the landing's title is that
+  language's `app.documentTitle`, and a curated place keeps its page's address and canonical link under its
+  translated name (`isPagePlace` compares the English one, `canonicalLabel`). There are no per-language addresses
+  and so no `hreflang`: a language is a preference (`?hl=`, the switcher), not a page.
+- **Every view has one `<h1>`**: the landing's hero, the results headline, an open pass's satellite. A crawler that
+  runs the app on a place page reads "In the last 7 days, N satellites watched <place>." as its heading.
 - **The text under the app is for readers that run no JavaScript** (a crawler's first pass, an assistant, scripts
   off). With scripts on, React replaces it under the loading screen; `index.html` keeps it `display: none` until
   then, so it is never the page's first content in the speed numbers.
