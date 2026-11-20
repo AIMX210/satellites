@@ -5,7 +5,9 @@
  * offline place list the app already ships (public/places/<version>/, GeoNames): no page can be made by typing an
  * address, which is what keeps other people's words out of titles on this site. It is the places people look up:
  *   - every landmark in the list (scripts/landmarks.ts and the landing's own places), all of them curated, except a
- *     city's other name ("Kiev", "Bombay") where the city has its page already: one place, one page;
+ *     city's other name ("Kiev", "Bombay") where the city has its page already, and a second name for the very same
+ *     point ("Golden Gate" beside "Golden Gate Bridge"): one place, one page. Two pages for one point would show the
+ *     same passes and pictures under two titles, and a search engine keeps only one of such a pair, of its choosing;
  *   - every city of about half a million people or more;
  *   - smaller cities, down to about 100,000, in the countries where an English page is what a search would show;
  *   - each country's two largest towns, so no country is left without a page.
@@ -68,6 +70,12 @@ export const P_PER_COUNTRY = 80
 const SAME_PLACE_KM = 30
 /** A city listed among the landmarks under the name people type is the city this close to it. */
 const SAME_CITY_KM = 10
+/**
+ * Where the list names one point twice, the page is the first name's: scripts/landmarks.ts comes first and holds the
+ * names people type ("Mount Kilimanjaro", "Sydney Opera House"). These are the exceptions: the place's own name
+ * today, listed after the older one people still type ("Ayers Rock").
+ */
+export const NAMED_TODAY: ReadonlySet<string> = new Set(['Uluru'])
 
 export function parseCityRows(text: string): CityRow[] {
   const out: CityRow[] = []
@@ -135,7 +143,8 @@ export function pickCities(rows: CityRow[]): CityRow[] {
 /**
  * The pages: landmarks first (as curated), then cities, largest first. `countryName` says a country in English
  * ("US" → "United States"). `cityNames` are the landmark rows that are a city under another name
- * (scripts/landmarks.ts CITY_NAMES): each is left out where that city gets a page of its own. Throws if two places
+ * (scripts/landmarks.ts CITY_NAMES): each is left out where that city gets a page of its own. A landmark listed twice
+ * at one point gets one page (NAMED_TODAY says which name, where it is not the first). Throws if two places
  * cannot be told apart by name, state and country: the list is wrong then, and a page silently replacing another is
  * worse than a failed build.
  */
@@ -150,9 +159,18 @@ export function selectPlaces(cities: CityRow[], landmarks: LandmarkRow[], countr
     return slug
   }
 
+  // One point, one page: which of its names the page takes.
+  const spot = (l: LandmarkRow) => `${l.lat},${l.lon}`
+  const named = new Map<string, LandmarkRow>()
+  for (const l of landmarks) {
+    if (!slugOf(l.name)) continue
+    const first = named.get(spot(l))
+    if (!first || (NAMED_TODAY.has(l.name) && !NAMED_TODAY.has(first.name))) named.set(spot(l), l)
+  }
+
   for (const l of landmarks) {
     const base = slugOf(l.name)
-    if (!base) continue
+    if (!base || named.get(spot(l)) !== l) continue
     if (cityNames.has(l.name) && picked.some((c) => km(c, l) <= SAME_CITY_KM)) continue
     const slug = claim([base, `${base}-${slugOf(l.where)}`], `landmark ${l.name}`)
     out.push({ slug, label: l.name, sublabel: l.where || undefined, lat: l.lat, lon: l.lon, cc: l.cc.toLowerCase(), kind: 'landmark', p: 0 })

@@ -99,6 +99,22 @@ describe('selectPlaces', () => {
     expect(places.map((p) => p.slug)).toEqual(['ghent', 'kremlin', 'kyiv'])
   })
 
+  it('makes one page for a point the list names twice: the first name\'s, or the place\'s own name today', () => {
+    const places = selectPlaces(
+      [],
+      [
+        mark('Golden Gate Bridge', 'San Francisco, United States', 37.8199, -122.4783),
+        mark('Ayers Rock', 'Northern Territory, Australia', -25.3444, 131.0369, 'AU'),
+        mark('Golden Gate Park', 'San Francisco, United States', 37.7694, -122.4862),
+        mark('Uluru', 'Northern Territory, Australia', -25.3444, 131.0369, 'AU'),
+        mark('Golden Gate', 'San Francisco, United States', 37.8199, -122.4783),
+      ],
+      countryName,
+    )
+    // A sight a walk away is another place; only the very same point is one.
+    expect(places.map((p) => p.slug)).toEqual(['golden-gate-bridge', 'golden-gate-park', 'uluru'])
+  })
+
   it('refuses to build when two places cannot be told apart', () => {
     // same, same-ohio, same-united-states, same-ohio-united-states: a fifth has nowhere to go.
     const five = [1, 2, 3, 4, 5].map((i) => city('Same', 'US', 'Ohio', 125 - i, i))
@@ -131,8 +147,9 @@ describe('the shipped place list', () => {
 
   it('makes a page for every sight and about two thousand cities, each under its own slug', () => {
     const sights = landmarks.filter((l) => !CITY_NAMES.has(l.name))
-    const pages = places.filter((p) => p.kind === 'landmark').map((p) => p.label)
-    for (const s of sights) expect(pages, s.name).toContain(s.name)
+    const pages = places.filter((p) => p.kind === 'landmark')
+    // Every sight has a page at its point (under one name, where the list has two for it), and no point has two.
+    for (const s of sights) expect(pages.filter((p) => p.lat === s.lat && p.lon === s.lon).length, s.name).toBe(1)
     const n = places.filter((p) => p.kind === 'city').length
     expect(n).toBeGreaterThan(1500)
     expect(n).toBeLessThan(3000)
@@ -155,5 +172,8 @@ describe('the shipped place list', () => {
     expect(at('bombay')).toBeUndefined()
     expect(at('nyc')).toBeUndefined()
     expect(at('ghent')).toMatchObject({ kind: 'landmark', sublabel: 'East Flanders, Belgium' })
+    // One page a point: the name people type, or the place's own name today.
+    expect([at('golden-gate-bridge'), at('sydney-opera-house'), at('mount-kilimanjaro'), at('eye-of-the-sahara'), at('uluru')].every(Boolean)).toBe(true)
+    expect([at('golden-gate'), at('sydney-harbour'), at('kilimanjaro'), at('richat-structure'), at('ayers-rock')].some(Boolean)).toBe(false)
   })
 })
