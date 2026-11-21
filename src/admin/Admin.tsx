@@ -305,6 +305,24 @@ function Section({ n, title, children, className }: { n: number; title: string; 
   )
 }
 
+/** The map and its lists. Its own component, so pointing at a place in the list redraws the map's reticle and not the page. */
+function Places({ top, searches }: { top: AdminStats['top']; searches: number }) {
+  const [pointed, setPointed] = useState<string | null>(null)
+  return (
+    <div className="a-places">
+      <WorldMap cells={top['search.cell']} labels={top['search.label']} total={searches} focus={pointed} />
+      <div className="a-places-lists">
+        <Panel title="TOP PLACES">
+          <RankList rows={top['search.label']} total={searches} max={10} accent onPoint={setPointed} />
+        </Panel>
+        <Panel title="TOP COUNTRIES SEARCHED">
+          <RankList rows={top['search.country']} total={searches} max={8} label={countryName} />
+        </Panel>
+      </div>
+    </div>
+  )
+}
+
 /** `wide`: two columns of a three-column grid (the whole row in two- and one-column layouts). */
 function Panel({ title, children, note, wide }: { title: string; children: ReactNode; note?: string; wide?: boolean }) {
   return (
@@ -436,17 +454,7 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
       </div>
 
       <Section n={5} title="PLACES">
-        <div className="a-places">
-          <WorldMap cells={s.top['search.cell']} labels={s.top['search.label']} total={rec.search} />
-          <div className="a-places-lists">
-            <Panel title="TOP PLACES">
-              <RankList rows={s.top['search.label']} total={rec.search} max={10} accent />
-            </Panel>
-            <Panel title="TOP COUNTRIES SEARCHED">
-              <RankList rows={s.top['search.country']} total={rec.search} max={8} label={countryName} />
-            </Panel>
-          </div>
-        </div>
+        <Places top={s.top} searches={rec.search} />
       </Section>
 
       <Section n={6} title="SATELLITES">

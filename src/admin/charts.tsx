@@ -152,7 +152,8 @@ function tickIndexes(ts: number[], bucket: 'hour' | 'day', want: number): number
 
 /** `total`: the whole dimension (the RPC's dimTotals), so a share is of everything, not of the top 15. */
 /** `cols`: the list in two columns, read down then across (a long one in a wide panel). */
-export function RankList({ rows, total, max = 8, label, empty = 'Nothing yet', accent = false, cols = false }: { rows: Ranked | undefined; total?: number; max?: number; label?: (v: string) => ReactNode; empty?: string; accent?: boolean; cols?: boolean }) {
+/** `onPoint`: told which row the pointer is on (its value) and when it leaves (null): the places list lights its map. */
+export function RankList({ rows, total, max = 8, label, empty = 'Nothing yet', accent = false, cols = false, onPoint }: { rows: Ranked | undefined; total?: number; max?: number; label?: (v: string) => ReactNode; empty?: string; accent?: boolean; cols?: boolean; onPoint?: (v: string | null) => void }) {
   const list = (rows ?? []).filter(([v]) => v !== '').slice(0, max)
   if (!list.length) return <p className="a-empty">{empty}</p>
   total = Math.max(total ?? 0, (rows ?? []).reduce((a, r) => a + r[1], 0))
@@ -160,7 +161,7 @@ export function RankList({ rows, total, max = 8, label, empty = 'Nothing yet', a
   return (
     <ol className={cols ? 'a-rank a-rank-cols' : 'a-rank'}>
       {list.map(([v, n], i) => (
-        <li key={v}>
+        <li key={v} onPointerEnter={onPoint && (() => onPoint(v))} onPointerLeave={onPoint && (() => onPoint(null))}>
           <span className="a-rank-i">{String(i + 1).padStart(2, '0')}</span>
           <span className="a-rank-label">{label ? label(v) : v}</span>
           <span className="a-rank-n">{fmtInt(n)}</span>
