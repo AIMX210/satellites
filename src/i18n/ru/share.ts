@@ -3,8 +3,9 @@
  * Appendix A). The card and the share page speak from api/_lib/i18n/card/ru.ts.
  *
  * Why it is built this way:
- *  - Buttons are infinitives measured for the phone row (three in 360 px, ≤ 11 characters each): «Копировать» sits
- *    right beside the link field, so it needs no object; «Сохранить» without «PNG», which would not fit.
+ *  - Buttons are infinitives measured for the phone row (three in 360 px, ≤ 11 characters each): «Копировать» for the
+ *    link, since «Копировать ссылку» (17) does not fit; on laptops it stands beside «Копировать карточку», where only a
+ *    desktop key of its own could say «Копировать ссылку» (reported). «Сохранить» without «PNG», which would not fit.
  *  - The post opens on the place, alone and closed by a full stop, the one position where Russian needs no case for a
  *    name it cannot inflect; the sentence after it says «сюда» / «это место». The satellite always follows its head
  *    noun «спутник», so its verbs have a gender. The post gets no satellite category, so a crewed station is «спутник»
@@ -64,7 +65,7 @@ const share: typeof en = {
     clouded: (sat: string, place: string, altitudeKm: number, w: PostWhen, cloud: string) =>
       `${title(place)} Сюда смотрел спутник ${sat} с высоты ${km(altitudeKm)}, ${when(w)}. ${cloud}`,
     likely: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
-      `${title(place)} Спутник ${sat} пролетел на высоте ${km(altitudeKm)}, ${when(w)}. Это место попало в полосу обзора его камеры.`,
+      `${title(place)} Спутник ${sat} пролетел здесь на высоте ${km(altitudeKm)}, ${when(w)}. Это место попало в полосу обзора его камеры.`,
     could: (sat: string, place: string, w: PostWhen) =>
       `${title(place)} Спутник ${sat} пролетел в зоне видимости этого места ${when(w)}. Он мог смотреть сюда. Оператор не сообщает, так ли это было.`,
     overhead: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>

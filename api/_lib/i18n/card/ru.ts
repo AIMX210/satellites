@@ -76,10 +76,13 @@ const Sat = (s: SatName) => (s !== undefined ? `Спутник ${s}` : 'Неиз
 /** «спутника Sentinel-2C» / «неизвестного спутника» (genitive) */
 const satGen = (s: SatName) => (s !== undefined ? `спутника ${s}` : 'неизвестного спутника')
 
-/** «сюда смотрел 21 спутник» · «сюда смотрели 22 спутника» · «…7 спутников» · «…1,5 спутника»; zero: «ни один» */
+/**
+ * «сюда смотрел 21 спутник» · «сюда смотрели 22 спутника» · «…7 спутников» · «…1,5 спутника»; zero: «ни один известный
+ * нам спутник сюда не смотрел», the negation last, which also sets the week card's lead in three lines, not four
+ */
 const watchedHere = (n: number) =>
   n <= 0
-    ? 'сюда не смотрел ни один известный нам спутник'
+    ? 'ни один известный нам спутник сюда не смотрел'
     : f.plural(n, {
         one: `сюда смотрел ${count(n)}\u00a0спутник`,
         few: `сюда смотрели ${count(n)}\u00a0спутника`,
@@ -120,7 +123,7 @@ const ru: CardMessages = {
   archiveDownShort: 'Архивы снимков не ответили.',
   cloud: {
     only: {
-      sub: (_pct: number) => 'Под облаками. Видны только облака.',
+      sub: (_pct: number) => 'Сплошная облачность: видны только облака.',
       chip: (pct: number) => `Под облаками · ${f.int(pct)}%`,
       post: (_pct: number) => 'Видны только облака.',
       desc: (pct: number) => `Видны только облака (${f.int(pct)}%).`,
@@ -138,7 +141,8 @@ const ru: CardMessages = {
   // ── The top row ───────────────────────────────────────────────────────────────────────────────────────────────────
 
   stamp: (ms: number, timeZone: string, clock: string, zone: string) => `${dayYear(ms, timeZone)} · ${clock}\u00a0${zone}`,
-  weekTo: (ms: number, timeZone: string) => `7\u00a0дней до ${dateYear(ms, timeZone)}`,
+  // «по» marks the span's last day, as in «с 25 октября по 1 ноября»; «7 дней до 1 нояб.» reads as a countdown.
+  weekTo: (ms: number, timeZone: string) => `7\u00a0дней по ${dateYear(ms, timeZone)}`,
   lastWeek: 'Последние 7\u00a0дней',
 
   // ── Readouts ──────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -167,8 +171,9 @@ const ru: CardMessages = {
     imageInApp: 'Снимок открывается в приложении',
     imageUnavailable: 'Снимок сейчас недоступен',
     commercial: 'Закрытый коммерческий архив',
-    // "no public image yet": the image may exist and not be published, so «не опубликован», not «снимка нет».
-    inSwath: 'В полосе обзора, ещё не опубликован',
+    // "no public image yet": the image may exist and not be published, so «не опубликован», not «снимка нет»; the
+    // participle has its noun, «снимок», since nothing on the plate is masculine for it to agree with.
+    inSwath: 'В полосе обзора, снимок ещё не опубликован',
     groundTrack: 'Трасса в момент сближения',
   },
   acquiring: 'Приём…',
@@ -184,16 +189,18 @@ const ru: CardMessages = {
   lookDay: (ms: number, timeZone: string) => dayMonth(ms, timeZone),
   // A lone label (chips, the plan plate's callout); sentences say «неизвестный спутник» themselves.
   aSatellite: 'Спутник',
-  invite: 'Что смотрело на тебя?',
+  // English invites ("See what watched you"), it doesn't ask: the indirect question as a label, no question mark.
+  invite: 'Что смотрело на тебя',
 
   // ── The default card ──────────────────────────────────────────────────────────────────────────────────────────────
 
   // Five lines at the card's 88 px, one word each (237 / 229 / 205 / 307 px): the accent still ends the sentence.
   hero: [['На этой'], ['неделе'], ['что-то'], ['смотрело'], ['на ', accent('тебя'), '.']] as Rich[],
-  enterAnyPlace: 'Выбери место на Земле',
+  // The landing's and the share page's verb («Введи любое место на Земле»), in the footer's 20 characters.
+  enterAnyPlace: 'Введи место на Земле',
   defaultPlace: 'Пальма Джумейра',
   defaultAlt:
-    'Настоящий снимок Пальмы Джумейра (Дубай) со спутника Sentinel-2, а рядом строка «На этой неделе что-то смотрело на тебя. Выбери место на Земле».',
+    'Настоящий снимок Пальмы Джумейра (Дубай) со спутника Sentinel-2, а рядом строка «На этой неделе что-то смотрело на тебя. Введи место на Земле».',
 
   // ── The share page ────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -208,8 +215,12 @@ const ru: CardMessages = {
   },
   crossed: (p: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) => {
     const alt = p.altitudeKm !== undefined ? ` на высоте ${f.int(p.altitudeKm)}\u00a0км` : ''
-    // Overhead: the place is what it crossed («Над этим местом пролетел…»); a picture's pass says how high it flew.
-    const lead = p.verdict === 'overhead' ? `Над этим местом${alt} пролетел ${sat(p.sat)}` : `${Sat(p.sat)} пролетел${alt || ' над этим местом'}`
+    // Overhead: the place is what it crossed («Над этим местом пролетел…»); a picture's pass says where and how high it
+    // flew («пролетел здесь на высоте 795 км»), so the place is never dropped.
+    const lead =
+      p.verdict === 'overhead'
+        ? `Над этим местом${alt} пролетел ${sat(p.sat)}`
+        : `${Sat(p.sat)} пролетел ${alt ? `здесь${alt}` : 'над этим местом'}`
     return `${title(p.place)} ${lead}${at(p.when)}${moving(p.heading)}.`
   },
   // The satellite is the subject, so «двигаясь» says the satellite moved, not the place.

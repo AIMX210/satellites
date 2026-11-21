@@ -110,7 +110,7 @@ const results: typeof en = {
     },
     none: (place: string, past: boolean): Rich => [
       accent(place),
-      `${stop(place)} ${past ? 'В ту неделю' : 'На этой неделе'} сюда не смотрел ни один известный нам спутник.`,
+      `${stop(place)} ${past ? 'В ту неделю' : 'На этой неделе'} ни один известный нам спутник сюда не смотрел.`,
     ],
   },
 
