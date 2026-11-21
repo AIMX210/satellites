@@ -7,13 +7,21 @@
  *  - Every satellite is masculine in Hindi (उपग्रह, स्टेशन), so a bare name agrees masculine («गुज़रा», «जा रहा था»)
  *    and «वह» points back to it. Wherever the English says "watched" or "imaged", the verb takes «ने» and a «को» object,
  *    so it agrees with nothing.
- *  - The place never governs a verb: it is followed by «को», «का», «तक», and «यहाँ», «इस जगह» point back to it. "The
- *    place was inside its swath" becomes «इसकी पट्टी ने [PLACE] को ढका», or «यह जगह … थी» with our own noun.
+ *  - The place never governs a verb: it is followed by «को», «का», «तक», «के ऊपर से», and «यहाँ», «इस जगह» point
+ *    back to it. "The place was inside its swath" becomes «उसकी पट्टी [PLACE] के ऊपर से गुज़री» (the swath, our own
+ *    noun, is the subject, as in the likely verdict), or «यह जगह … थी».
  *  - The English one-sentence "crossed …, moving south at 7.46 km/s" is two Hindi sentences, as a Hindi report would
  *    write it. The clock opens the sentence («16:14:21 UTC पर Sentinel-2C …»): after the name it would run into a
- *    name that ends in a number («Landsat 9 16:14»). A clock takes «पर»; directions use one word table with two postpositions: «पश्चिम में» (where it was
- *    from the place) and «दक्षिण की ओर» (where it was heading). Readouts keep the Latin abbreviations (compass16).
- *  - Numbers with units are num() parts in the mono face, units in Hindi's symbols «किमी», «मी», «किमी/से».
+ *    name that ends in a number («Landsat 9 16:14»). A clock takes «पर»; directions use one word table with three
+ *    postpositions: «61 किमी पश्चिम से गुज़रा» (the path it passed by: गुज़रना takes «से»), «140 किमी पूर्व में था»,
+ *    «उत्तर-पश्चिम में» (where it was) and «दक्षिण की ओर» (where it was heading). Readouts keep the Latin
+ *    abbreviations (compass16).
+ *  - "Passed within view" is «पहुँच के दायरे में आया», the verdict's spoken verb, then where it was in its own
+ *    sentence («वह यहाँ से 140 किमी पूर्व में था», «वह ठीक ऊपर था»: a second «गुज़रा» would echo the swath's
+ *    «गुज़री»). A radar that imaged looks «… के कोण पर» to the side (the English "looking"); one that could have
+ *    pointed turns («मुड़कर», the English "pointing"), as a steerable camera does.
+ *  - Numbers with units are num() parts in the mono face, units in Hindi's symbols «किमी», «मी»; a speed in prose is
+ *    «किमी प्रति सेकंड» (a bare «से» after «किमी/» would read as the postposition).
  */
 import type en from '../en/pass'
 import type { Offset } from '../en/pass'
@@ -39,8 +47,8 @@ const km = (n: number) => num(f.int(n), 'किमी')
 const m = (n: number) => num(f.int(n), 'मी')
 const deg1 = (n: number) => num(f.dec(n, 1), '°')
 const clock = (time: string, zone: string) => num(time, zone)
-/** «ठीक ऊपर से» / «यहाँ से 61 किमी पश्चिम में» */
-const where = (offset?: Offset): Part[] => (offset ? ['यहाँ से ', km(offset.km), ` ${WORD[offset.dir]} में`] : ['ठीक ऊपर से'])
+/** «ठीक ऊपर से» / «यहाँ से 61 किमी पश्चिम से»: the path it passed by (गुज़रना takes «से») */
+const where = (offset?: Offset): Part[] => (offset ? ['यहाँ से ', km(offset.km), ` ${WORD[offset.dir]} से`] : ['ठीक ऊपर से'])
 
 const pass: typeof en = {
   compass16: {
@@ -65,7 +73,7 @@ const pass: typeof en = {
   // ── a geostationary scan ──
   geo: {
     sits: (o: { sat: string; altKm: number; seat?: string; cadenceMin?: number }): Rich => [
-      `${o.sat} गुज़रता नहीं। वह `,
+      `${o.sat} ऊपर से गुज़रता नहीं। वह `,
       ...(o.seat !== undefined ? [`${o.seat} पर `] : []),
       'भूमध्य रेखा से ',
       km(o.altKm),
@@ -79,7 +87,7 @@ const pass: typeof en = {
       clock(o.time, o.zone),
       ` पर ${o.place} तक पहुँची और ${WORD[o.heading]} की ओर बढ़ रही थी।`,
     ],
-    infrared: 'यहाँ अंधेरा था, इसलिए यह इन्फ्रारेड तस्वीर है: बादलों की चोटियाँ तापमान के हिसाब से, जो जितनी ठंडी, उतनी हल्की।',
+    infrared: 'यहाँ अंधेरा था, इसलिए यह इन्फ्रारेड तस्वीर है: बादलों की चोटियाँ तापमान के हिसाब से, जितनी ठंडी, उतनी सफ़ेद।',
   },
 
   // ── a pass with a picture ──
@@ -90,7 +98,7 @@ const pass: typeof en = {
     ' गुज़रा। वह ',
     km(o.altKm),
     ' की ऊँचाई पर ',
-    num(f.dec(o.speedKmS, 2), 'किमी/से'),
+    num(f.dec(o.speedKmS, 2), 'किमी प्रति सेकंड'),
     ` की रफ़्तार से ${WORD[o.heading]} की ओर जा रहा था।`,
   ],
   mosaic: (o: { sensor: string; place: string; gsdM: number }): Rich => [
@@ -101,7 +109,7 @@ const pass: typeof en = {
   radarImaged: (o: { deg: number; place: string; gsdM: number; dark: boolean }): Rich => [
     'उसके रडार ने एक तरफ़ ',
     deg1(o.deg),
-    ` झुककर ${o.dark ? 'अंधेरे में ' : ''}${o.place} की तस्वीर `,
+    ` के कोण पर देखते हुए ${o.dark ? 'अंधेरे में ' : ''}${o.place} की तस्वीर `,
     m(o.gsdM),
     ' प्रति पिक्सेल पर ली।',
   ],
@@ -127,31 +135,31 @@ const pass: typeof en = {
       'दिन का उजाला था, इसलिए लगभग तय है कि उसने इस जगह को दर्ज किया। ' +
       'इस उड़ान का कोई दृश्य अभी प्रकाशित नहीं हुआ है। संग्रहों में दृश्य एक दिन या उससे ज़्यादा देर से आ सकते हैं।',
     dark: 'यहाँ अंधेरा था। मौसम इमेजर रात में भी इन्फ्रारेड में स्कैन करते रहते हैं, इसलिए उसने आपके बादल देखे, आपकी सड़कें नहीं।',
-    mosaicUnconfirmed: 'इस उड़ान के लिए NASA का दैनिक मोज़ेक आपकी जगह पर पक्का नहीं हो सका।',
-    notPublished: 'उसकी तस्वीरें मौसम के पूर्वानुमान में काम आती हैं। वे ऐसी तस्वीरों के तौर पर प्रकाशित नहीं होतीं जिन्हें हम दिखा सकें।',
+    mosaicUnconfirmed: 'इस उड़ान के NASA दैनिक मोज़ेक में आपकी जगह है या नहीं, इसकी पुष्टि नहीं हो सकी।',
+    notPublished: 'उसकी तस्वीरें मौसम के पूर्वानुमान में काम आती हैं, पर ऐसे प्रकाशित नहीं होतीं कि हम उन्हें दिखा सकें।',
   },
 
   // ── "Could have pointed here" ──
   could: {
     withinView: (o: { sat: string; time: string; zone: string; offset?: Offset }): Rich => [
       clock(o.time, o.zone),
-      ` पर ${o.sat} पहुँच के भीतर से गुज़रा`,
-      ...(o.offset ? [', यहाँ से ', km(o.offset.km), ` ${WORD[o.offset.dir]} में।`] : [', ठीक ऊपर से।']),
+      ` पर ${o.sat} पहुँच के दायरे में आया।`,
+      ...(o.offset ? [' वह यहाँ से ', km(o.offset.km), ` ${WORD[o.offset.dir]} में था।`] : [' वह ठीक ऊपर था।']),
     ],
     insideSwath: (o: { place: string; swathKm: number }): Rich => [
       'उसकी ',
       km(o.swathKm),
-      ` चौड़ी पट्टी ने ${o.place} को ढका। उसका संचालक यह प्रकाशित नहीं करता कि उसने कहाँ की तस्वीरें लीं, इसलिए हम नहीं जान सकते कि उसने यहाँ की तस्वीर ली या नहीं।`,
+      ` चौड़ी पट्टी ${o.place} के ऊपर से गुज़री। उसका संचालक यह नहीं बताता कि उपग्रह ने कहाँ की तस्वीरें लीं, इसलिए हम नहीं जान सकते कि उसने यहाँ की तस्वीर ली या नहीं।`,
     ],
     radar: (o: { place: string; deg?: number; openArchive: boolean }): Rich => [
       'रडार बादलों और अंधेरे के पार देखता है। वह ',
       ...(o.deg === undefined ? [] : ['एक तरफ़ ', deg1(o.deg), ' मुड़कर ']),
-      `${o.place} का नक्शा बना सकता था।`,
-      o.openArchive ? ' हमें इस उड़ान से इस जगह की कोई प्रकाशित तस्वीर नहीं मिली।' : ' हम नहीं जान सकते कि उसने ऐसा किया या नहीं।',
+      `${o.place} की रडार तस्वीर ले सकता था।`,
+      o.openArchive ? ' हमें इस उड़ान में ली गई इस जगह की कोई प्रकाशित तस्वीर नहीं मिली।' : ' हम नहीं जान सकते कि उसने ऐसा किया या नहीं।',
     ],
     camera: (o: { place: string; deg?: number }): Rich => [
       'वह ',
-      ...(o.deg === undefined ? ['सीधे नीचे देखते हुए '] : ['सीधे नीचे से ', deg1(o.deg), ' मुड़कर ']),
+      ...(o.deg === undefined ? ['बिना मुड़े ही '] : ['सीधे नीचे से ', deg1(o.deg), ' मुड़कर ']),
       `${o.place} को देख सकता था। हम नहीं जान सकते कि उसने देखा या नहीं।`,
     ],
   },
@@ -165,6 +173,6 @@ const pass: typeof en = {
     num(f.int(o.elevationDeg), '°'),
     o.toward === undefined ? ' ऊपर, लगभग सीधे सिर के ऊपर।' : ` ऊपर, ${WORD[o.toward]} में।`,
   ],
-  darkStation: 'जहाँ आप हैं, वहाँ अंधेरा था। अगर तब भी स्टेशन पर धूप पड़ रही थी, तो वह एक चमकीले, स्थिर बिंदु की तरह आपके आसमान से गुज़रा।',
+  darkStation: 'जहाँ आप हैं, वहाँ अंधेरा था। अगर तब भी स्टेशन पर धूप पड़ रही थी, तो वह बिना टिमटिमाए चमकते एक बिंदु की तरह आपके आसमान से गुज़रा।',
 }
 export default pass

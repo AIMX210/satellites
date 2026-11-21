@@ -5,10 +5,13 @@
  * Why these forms: the four titles are one gradient on the product's verb, so a reader sees degrees of one question:
  * «देखा गया» (was watched; also how Hindi messengers mark a message "Seen"), «संभवतः देखा गया» (probably watched),
  * «यहाँ देख सकता था» (could have looked here), «ऊपर से गुज़रा» (passed over). Each is the default masculine, which is
- * also the satellite's gender (§5.2), so none guesses anything. The lanes pair «संभवतः» (probable) with «मुमकिन»
- * (possible). Every verdict counts passes, and Hindi counts them as times: «31 बार», invariant, so «देखा गया · 31 बार»
- * reads "watched 31 times". A fixed camera is «सीधे नीचे देखने वाला कैमरा», a steerable one «मुड़ने वाला कैमरा»:
- * never «स्थिर», which is a camera that stands still. The spoken verb follows a bare satellite name in a comma list.
+ * also the satellite's gender (§5.2), so none guesses anything. The lanes name what each verdict rests on: «तस्वीर»,
+ * «संभवतः» (probably), «पहुँच में» (in reach: the could verdict's fact; «मुमकिन», "possible", read as a synonym of
+ * «संभवतः»), «ऊपर से». Every verdict counts passes, and Hindi counts them as times: «31 बार», invariant, so «देखा गया ·
+ * 31 बार» reads "watched 31 times". A fixed camera is «न मुड़ने वाला कैमरा», the exact opposite of a steerable «मुड़ने
+ * वाला कैमरा» (not «सीधे नीचे देखने वाला»: VIIRS and MODIS see far to the side), never «स्थिर», which is a camera that
+ * stands still. The could verdict's words all rest on «पहुँच» (reach). The spoken verb follows a bare satellite name in
+ * a comma list.
  */
 import type en from '../en/verdicts'
 
@@ -27,15 +30,15 @@ const verdicts: typeof en = {
     title: 'संभवतः देखा गया',
     short: 'संभवतः',
     unit: times,
-    definition: 'सीधे नीचे देखने वाले कैमरे की पट्टी इस जगह के ऊपर से गुज़री। इसकी कोई तस्वीर प्रकाशित नहीं हुई है।',
+    definition: 'न मुड़ने वाले कैमरे की पट्टी इस जगह के ऊपर से गुज़री। इस जगह की कोई तस्वीर प्रकाशित नहीं हुई है।',
     verb: 'पट्टी ऊपर से गुज़री',
   },
   could: {
     title: 'यहाँ देख सकता था',
-    short: 'मुमकिन',
+    short: 'पहुँच में',
     unit: times,
-    definition: 'मुड़ने वाला या निजी कैमरा पहुँच में था। उसका संचालक नहीं बताता कि उसने इधर देखा या नहीं।',
-    verb: 'पहुँच के भीतर से गुज़रा',
+    definition: 'मुड़ने वाला या निजी कैमरा पहुँच में था। उसका संचालक नहीं बताता कि कैमरे ने इधर देखा या नहीं।',
+    verb: 'पहुँच के दायरे में आया',
   },
   overhead: {
     title: 'ऊपर से गुज़रा',
