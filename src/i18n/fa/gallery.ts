@@ -34,12 +34,14 @@ const gallery: typeof en = {
   // ── the bar over the photos ──────────────────────────────────────────────────────────────
   barLabel: 'تصویرها',
   filterLabel: 'نمایش تصویرها',
-  filter: { all: 'همه', detailed: 'دقیق', weather: 'هواشناسی', radar: 'رادار' },
+  // «پرجزئیات» (detailed): «دقیق» is "accurate", which would call the other images inaccurate
+  filter: { all: 'همه', detailed: 'پرجزئیات', weather: 'هواشناسی', radar: 'رادار' },
   filterTitle: {
     all: 'همهٔ تصویرها، پس از نزدیک‌ترین نما از تازه‌ترین به قدیمی‌ترین',
-    detailed: `Sentinel-2 و Landsat، 10 تا 30${nb}متر در هر پیکسل`,
-    weather: `موزاییک‌های هواشناسی روزانه، 250${nb}متر در هر پیکسل و درشت‌تر`,
-    radar: `تصویرهای راداری Sentinel-1، 20${nb}متر در هر پیکسل: از پشت ابر، در روز یا شب`,
+    // A Persian word after each Latin name: «Landsat، 10» would merge into one left-to-right run
+    detailed: `ماهواره‌های Sentinel-2 و Landsat، با 10 تا 30${nb}متر در هر پیکسل`,
+    weather: `موزاییک‌های هواشناسی روزانه، با پیکسل‌های 250${nb}متری و بزرگ‌تر`,
+    radar: `تصویرهای راداری Sentinel-1 با 20${nb}متر در هر پیکسل: از پشت ابر، در روز یا شب`,
   },
   position: (k: number, n: number) => `${f.int(k)} / ${f.int(n)}`,
   photosThisWeek: (n: number) => `این هفته: ${f.int(n)}`,
@@ -65,7 +67,8 @@ const gallery: typeof en = {
   view: 'دیدن',
   sharePass: 'اشتراک‌گذاری این گذر',
   radarTag: 'رادار',
-  noteMostlyCloud: 'گذرهای این هفته بیشتر ابر دیدند',
+  // Impersonal: a pass does not "see" in Persian
+  noteMostlyCloud: 'در گذرهای این هفته بیشتر ابر دیده شد',
   noteLastClear: 'این آخرین نمای بی‌ابر است',
   clouded: {
     pct: (p: number) => `پوشیده از ابر · ${pct(p)}`,
@@ -75,7 +78,7 @@ const gallery: typeof en = {
   status: {
     cloudedPct: (p: number) => `ابری · ${pct(p)}`,
     cloudAtSpot: 'ابر روی نقطه',
-    clear: 'صاف',
+    clear: 'بی‌ابر',
     cirrus: 'سیروس نازک',
     shadow: 'سایهٔ ابر',
     cloudPct: (p: number) => `ابر ${pct(p)}`,
@@ -87,7 +90,7 @@ const gallery: typeof en = {
   // The place stands in an ezafe after «تصویر»; «از ماهوارهٔ» brings in the satellite, so their names never touch.
   photoAlt: (sat: string, place: string) => `تصویر ${place} از ماهوارهٔ ${sat}. این مکان در مرکز تصویر است.`,
   acquiring: 'در حال دریافت',
-  noImage: 'تصویری نیامد',
+  noImage: 'تصویری دریافت نشد',
   retry: 'تلاش دوباره',
   scaleKm: (km: number) => `${km >= 1 ? f.int(km) : f.dec(km, 1)}${nb}کیلومتر`,
   // The cartographic N, as every map shows it

@@ -51,9 +51,13 @@ const time: typeof en = {
   dayCompact: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, DAY_NUMBER),
   day: (ms: number, timeZone: string) => date(ms, timeZone, DAY),
   dayMonth: (ms: number, timeZone: string) => date(ms, timeZone, DAY_MONTH),
-  // Intl's own range: «1 تا 8 نوامبر», «29 اکتبر تا 5 نوامبر» (the month once when both ends share it)
-  dayRange: (startMs: number, endMs: number, timeZone: string, _a: DateFields, _b: DateFields) =>
-    glue(dateFormat('fa', timeZone, DAY_MONTH).formatRange(startMs, endMs)),
+  // «1 تا 8 نوامبر», «29 اکتبر تا 5 نوامبر»: the month once when both ends share it. Intl does that only with a year
+  // (the landing's «1 تا 8 نوامبر 2026»): CLDR fa has no day–month interval, so formatRange repeats the month
+  // («1 نوامبر تا 8 نوامبر»), and the results header and the landing would write the same week two ways.
+  dayRange: (startMs: number, endMs: number, timeZone: string, a: DateFields, b: DateFields) =>
+    a.year === b.year && a.month === b.month
+      ? glue(`${formatDate('fa', startMs, timeZone, DAY_NUMBER)} تا ${formatDate('fa', endMs, timeZone, DAY_MONTH)}`)
+      : glue(dateFormat('fa', timeZone, DAY_MONTH).formatRange(startMs, endMs)),
   daySpoken: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, DAY),
   stamp: (ms: number, timeZone: string, _p: DateFields, clock: string, zone: string) =>
     `${date(ms, timeZone, DAY)} · \u2066${clock}${nb}${zone}\u2069`,

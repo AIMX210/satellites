@@ -9,9 +9,12 @@
  *    the CSS caps change only the Latin names.
  *  - A counted noun is singular after its number («16,912 جسم», «31 صحنه»); a counter reads «12 از 31»: «/» between
  *    two numbers after Persian words would swap its ends.
- *  - Footnotes say what failed and what that means, flatly, in the results' own words: a pass "counts as watched"
- *    («رصدشده به حساب می‌آید»), passes "shown as likely" («محتمل نشان داده می‌شوند»: the likely verdict's lane word).
+ *  - Footnotes say what failed and what that means, flatly, in the results' own words: they quote the verdict's
+ *    title as the pass list shows it, in «»: a pass "counts as watched" («در دستهٔ «رصد کرد» شمرده می‌شود»), passes
+ *    "shown as likely" («در دستهٔ «احتمالاً رصد کرد» نشان داده می‌شوند»). One pass takes a singular («آن گذر»).
  *    "One" is a word in a sentence, tested on `n === 1` (CLDR's one also holds 0).
+ *  - Passes are shown «بر پایهٔ هندسهٔ مداری» (on the basis of), never «از هندسه» ("from", a calque); times that may
+ *    be "off" «خطا داشته باشند»; elements "N days old" have an age («عمر»), never «قدمت» (antiquity).
  *  - Proper names stay: NASA GIBS, VIIRS, Sentinel-2, Landsat, Earth Search, Planetary Computer.
  */
 import type en from '../en/engine'
@@ -23,6 +26,11 @@ const nb = '\u00a0'
 const count = (n: number, noun: string) => `${f.int(n)}${nb}${noun}`
 /** «یکی» · «3 تصویر»: how many of them, after «از N تصویر» */
 const some = (n: number) => (n === 1 ? 'یکی' : count(n, 'تصویر'))
+/** "those passes are shown as likely", quoting the verdict's title; one image is one pass */
+const likely = (n: number) =>
+  n === 1
+    ? 'آن گذر در دستهٔ «احتمالاً رصد کرد» نشان داده می‌شود.'
+    : 'آن گذرها در دستهٔ «احتمالاً رصد کرد» نشان داده می‌شوند.'
 
 const engine: typeof en = {
   progress: {
@@ -40,28 +48,30 @@ const engine: typeof en = {
   },
 
   note: {
-    archiveSlow: 'آرشیوهای Sentinel-2 و Landsat دیر پاسخ دادند؛ گذرها فقط از هندسهٔ مداری نشان داده می‌شوند.',
-    archiveDown: 'به آرشیوهای Sentinel-2 و Landsat دسترسی نبود؛ گذرها فقط از هندسهٔ مداری نشان داده می‌شوند.',
+    // "Too slow to answer": they did not answer in time («به‌موقع پاسخ ندادند»), not "answered late"
+    archiveSlow: 'آرشیوهای Sentinel-2 و Landsat به‌موقع پاسخ ندادند؛ گذرها فقط بر پایهٔ هندسهٔ مداری نشان داده می‌شوند.',
+    archiveDown: 'به آرشیوهای Sentinel-2 و Landsat دسترسی نبود؛ گذرها فقط بر پایهٔ هندسهٔ مداری نشان داده می‌شوند.',
     sentinel2Thumbnails: 'فهرست Sentinel-2 از Earth Search آمد؛ بعضی صحنه‌ها به‌جای برش، تصویر کوچک کل صحنه را نشان می‌دهند.',
     sentinel2EarthSearch: 'فهرست Sentinel-2 از Earth Search آمد (جستجوی Planetary Computer در دسترس نبود).',
-    sentinel2Down: 'آرشیو Sentinel-2 در دسترس نیست؛ ممکن است تصویرهای Sentinel-2 کم باشند.',
-    landsatDown: 'آرشیو Landsat در دسترس نیست؛ ممکن است تصویرهای Landsat کم باشند.',
+    // "May be missing" («نشان داده نشوند»), not «کم باشند» ("may be few")
+    sentinel2Down: 'آرشیو Sentinel-2 در دسترس نیست؛ ممکن است تصویرهای Sentinel-2 نشان داده نشوند.',
+    landsatDown: 'آرشیو Landsat در دسترس نیست؛ ممکن است تصویرهای Landsat نشان داده نشوند.',
     openOcean: 'این نقطه بیرون از برنامهٔ تصویربرداری Sentinel-2 است (دریای آزاد).',
     elementsOld: ({ days }: { days: number }) =>
-      `عناصر مداری ${count(days, 'روز')} قدمت دارند، پس زمان گذرها ممکن است چند دقیقه جابه‌جا باشد.`,
-    elementsNewer: 'این گذرها از روی عناصر مداری تازه‌تر بازسازی شده‌اند، پس زمانشان ممکن است چند دقیقه جابه‌جا باشد.',
+      `عمر عناصر مداری ${count(days, 'روز')} است، پس زمان گذرها ممکن است چند دقیقه خطا داشته باشد.`,
+    elementsNewer: 'این گذرها از روی عناصر مداری تازه‌تر بازسازی شده‌اند، پس زمانشان ممکن است چند دقیقه خطا داشته باشد.',
     // "VIIRS images the whole globe": a verb, «از کل زمین تصویر می‌گیرد».
     gibsUnconfirmed: ({ n }: { n: number }) =>
       n === 1
-        ? 'سرویس NASA GIBS در تأیید یک تصویر VIIRS کند بود؛ VIIRS هر روز از کل زمین تصویر می‌گیرد، پس آن گذر رصدشده به حساب می‌آید.'
-        : `سرویس NASA GIBS در تأیید ${count(n, 'تصویر')} VIIRS کند بود؛ VIIRS هر روز از کل زمین تصویر می‌گیرد، پس آن گذرها رصدشده به حساب می‌آیند.`,
+        ? 'سرویس NASA GIBS در تأیید یک تصویر VIIRS کند بود؛ VIIRS هر روز از کل زمین تصویر می‌گیرد، پس آن گذر در دستهٔ «رصد کرد» شمرده می‌شود.'
+        : `سرویس NASA GIBS در تأیید ${count(n, 'تصویر')} VIIRS کند بود؛ VIIRS هر روز از کل زمین تصویر می‌گیرد، پس آن گذرها در دستهٔ «رصد کرد» شمرده می‌شوند.`,
     gibsSlowAll: 'سرویس NASA GIBS به‌موقع پاسخ نداد، پس تصویرهای ماهواره‌های هواشناسی نشان داده نمی‌شوند.',
     // «از N تصویر …، M تصویر»: the service's Latin name and a number never touch.
     gibsSlowSome: ({ missing, total }: { missing: number; total: number }) =>
-      `سرویس NASA GIBS از ${count(total, 'تصویر')} ماهواره‌های هواشناسی، ${some(missing)} را به‌موقع نفرستاد؛ آن گذرها محتمل نشان داده می‌شوند.`,
+      `سرویس NASA GIBS از ${count(total, 'تصویر')} ماهواره‌های هواشناسی، ${some(missing)} را به‌موقع نفرستاد؛ ${likely(missing)}`,
     gibsDownAll: 'به سرویس NASA GIBS دسترسی نبود، پس تصویرهای ماهواره‌های هواشناسی نشان داده نمی‌شوند.',
     gibsDownSome: ({ missing, total }: { missing: number; total: number }) =>
-      `سرویس NASA GIBS از ${count(total, 'تصویر')} ماهواره‌های هواشناسی، ${some(missing)} را نتوانست بفرستد؛ آن گذرها محتمل نشان داده می‌شوند.`,
+      `سرویس NASA GIBS از ${count(total, 'تصویر')} ماهواره‌های هواشناسی، ${some(missing)} را نتوانست بفرستد؛ ${likely(missing)}`,
   },
 }
 export default engine

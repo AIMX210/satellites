@@ -4,7 +4,8 @@
  *
  * Why these forms: a fault says first what failed, impersonally («… بارگیری نشد», «مشکلی پیش آمد»), then the one step
  * as a polite imperative («دوباره امتحان کنید»), with no «لطفاً» and no apology, as the English does. The label is
- * «اشکال», an instrument's word for a malfunction, not «خطا!». Buttons are nouns («تلاش دوباره», «بازگشت»); the busy
+ * «خطا», the terse word every Persian instrument and app uses, with no exclamation mark: «اشکال», unvowelled and alone,
+ * also reads «اَشکال» ("shapes"). Buttons are nouns («تلاش دوباره», «بازگشت»); the busy
  * state is «در حال …». The tab title keeps the brand first and the hero line without its full stop. The usage stats
  * never read this file: they log the English sentence of the same ref.
  */
@@ -14,7 +15,7 @@ const app: typeof en = {
   documentTitle: 'Watched · چیزی این هفته شما را رصد کرد',
 
   notice: {
-    label: 'اشکال',
+    label: 'خطا',
     fallback: 'مشکلی پیش آمد.',
     tryAgain: 'تلاش دوباره',
     trying: 'در حال تلاش…',

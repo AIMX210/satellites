@@ -59,7 +59,8 @@ const globe: typeof en = {
     searchTitle: 'جستجو در این‌جا (Enter)',
     removeAria: 'برداشتن سنجاق',
     removeTitle: 'برداشتن سنجاق (Esc)',
-    moveHint: 'برای جابه‌جایی، کره را نگه دارید',
+    // The pin is named: «برای جابه‌جایی، کره را نگه دارید» reads as moving the globe
+    moveHint: 'برای جابه‌جایی سنجاق، کره را نگه دارید',
     droppedAt: (coords: string) => `سنجاق در ${LRI}${coords}${PDI} گذاشته شد.`,
     droppedIn: (place: string) => `سنجاق در ${place} گذاشته شد. Enter یا پیکان را بزنید تا ببینید چه چیزی از فراز آن گذشت.`,
     droppedUnnamed: 'سنجاق گذاشته شد. Enter یا پیکان را بزنید تا ببینید چه چیزی از فراز آن گذشت.',

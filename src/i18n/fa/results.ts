@@ -47,8 +47,11 @@ const list = (items: readonly string[]) =>
 
 /** Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong): no message carries a crewed flag */
 const CREWED = /^(ISS|Tiangong)\b/
-/** «ماهوارهٔ Sentinel-2C» / «ایستگاه فضایی ISS»; a nameless one is «یک ماهواره» */
-const theSat = (sat: string) => (CREWED.test(sat) ? `ایستگاه فضایی${nb}${sat}` : `ماهوارهٔ${nb}${sat}`)
+/**
+ * «ماهوارهٔ Sentinel-2C» / «ایستگاه فضایی ISS»; a nameless one is «یک ماهواره». The name is its own left-to-right
+ * island: a name that ends in a bracket («ISS (ZARYA)», an older share's) would otherwise mirror it before Persian text.
+ */
+const theSat = (sat: string) => (CREWED.test(sat) ? `ایستگاه فضایی${nb}${ltr(sat)}` : `ماهوارهٔ${nb}${ltr(sat)}`)
 const aSat = (sat: string | undefined) => (sat ? theSat(sat) : 'یک ماهواره')
 /** "[SAT] watched [PLACE]", object first, so the place and the satellite's name never touch */
 const watchedBy = (sat: string | undefined, place: string) => `${place}${nb}را ${aSat(sat)} رصد کرد`
@@ -105,51 +108,57 @@ const results: typeof en = {
   archiveDown: 'آرشیوهای تصویر پاسخ ندادند، پس فعلاً نمی‌توانیم تصویرهای منتشرشده را بشماریم.',
   tryAgain: 'تلاش دوباره',
   share: 'اشتراک‌گذاری',
-  shareWeekLabel: (place: string, past: boolean) => `اشتراک‌گذاری ${past ? 'آن' : 'این'} هفته در ${place}`,
+  // «خلاصهٔ … هفته»: after a verbal noun a bare «این هفته» reads as "this week" the adverb
+  shareWeekLabel: (place: string, past: boolean) => `اشتراک‌گذاری خلاصهٔ ${past ? 'آن' : 'این'} هفته در ${place}`,
 
   why: {
     sunNeverRose: 'خورشید اصلاً طلوع نکرد، پس هیچ دوربینی که به نور روز نیاز دارد نمی‌توانست این‌جا را ببیند.',
     sunBarelyRose: 'خورشید به‌زحمت بالا آمد، پس هیچ دوربینی که به نور روز نیاز دارد نمی‌توانست این‌جا را ببیند.',
     // "Swept it in infrared" is «پوشش دادند», the likely verdict's verb.
     infrared: (n: number): Rich => ['با این حال، ماهواره‌های هواشناسی ', ...times(n), ' این‌جا را با فروسرخ پوشش دادند.'],
-    // The plural head noun leads the names once; «در بُرد این‌جا» stands between the last name and the number.
+    // The place is the subject: «این‌جا … در بُرد ماهوارهٔ راداری X بود», so the range is the satellites' and the count
+    // stands before every name. The plural head noun leads the names once; each name is its own island, or two names
+    // with only «، » between them merge into one left-to-right run and read in the wrong order.
     radar: (names: readonly string[], others: number, passes: number): Rich => {
       const many = names.length + Math.max(0, others) > 1
+      const isolated = names.map(ltr)
+      const rest = (n: number, what: string) => `${n === 1 ? 'یک' : int(n)}${nb}${what}`
       let who: string
-      if (others > 0 && names.length) who = `ماهواره‌های راداری ${list([...names, `${int(others)}${nb}ماهوارهٔ دیگر`])}`
-      else if (others > 0) who = `${int(others)}${nb}ماهوارهٔ راداری`
-      else if (names.length === 1) who = `ماهوارهٔ راداری ${names[0]}`
-      else if (names.length) who = `ماهواره‌های راداری ${list(names)}`
+      if (others > 0 && names.length) who = `ماهواره‌های راداری ${list([...isolated, rest(others, 'ماهوارهٔ دیگر')])}`
+      else if (others > 0) who = rest(others, 'ماهوارهٔ راداری')
+      else if (names.length === 1) who = `ماهوارهٔ راداری ${isolated[0]}`
+      else if (names.length) who = `ماهواره‌های راداری ${list(isolated)}`
       else who = 'ماهواره‌های راداری'
       return [
-        `رادار به نور نیاز ندارد. ${who} ${many ? 'روی هم ' : ''}در بُرد این‌جا `,
+        `رادار به نور نیاز ندارد. این‌جا ${many ? 'در مجموع ' : ''}`,
         ...times(passes),
-        many ? ' گذشتند.' : ' گذشت.',
+        ` در بُرد ${who} بود.`,
       ]
     },
     unpublished: (n: number) =>
       n === 1
-        ? 'یکی از ماهواره‌های Sentinel-2 یا Landsat یک بار در روشنایی روز از فراز این‌جا گذشت، اما هنوز هیچ صحنه‌ای منتشر نشده است.'
-        : `ماهواره‌های Sentinel-2 یا Landsat ${int(n)}${nb}بار در روشنایی روز از فراز این‌جا گذشتند، اما هنوز هیچ صحنه‌ای منتشر نشده است.`,
+        ? 'یکی از ماهواره‌های Sentinel-2 یا Landsat در روشنایی روز یک بار از فراز این‌جا گذشت، اما هنوز هیچ صحنه‌ای منتشر نشده است.'
+        : // «در روشنایی روز» stands between the name and the count: «Landsat 3 بار» would read as the satellite Landsat 3
+          `ماهواره‌های Sentinel-2 یا Landsat در روشنایی روز ${int(n)}${nb}بار از فراز این‌جا گذشتند، اما هنوز هیچ صحنه‌ای منتشر نشده است.`,
     none: 'هیچ ماهوارهٔ تصویربرداری با آرشیو باز در روشنایی روز از فراز این‌جا نگذشت.',
   },
 
   // ── the summary's readouts ───────────────────────────────────────────────────────────────
-  verdictGroup: 'گذرها به تفکیک نوع. هر کدام به فهرست خودش می‌رود.',
+  verdictGroup: 'گذرها به تفکیک نوع. با هر کدام به فهرست همان دسته می‌روید.',
   verdictReadout: (n: number, _verdict: Verdict, title: string) => `${int(n)}${nb}گذر: ${title}`,
 
   // ── the footnotes ────────────────────────────────────────────────────────────────────────
   notes: {
     // The Latin names in the brackets are one isolated run; the ranges are said with «تا».
     counted: (o: { detailed: number; mosaics: number; radar: number; geo: number; passes: number; satellites: number }): Rich => {
-      const out: Part[] = [strong(int(o.detailed)), `${nb}تصویر دقیق (${ltr('Sentinel-2، Landsat')}، 10 تا 30${nb}متر)`]
+      const out: Part[] = [strong(int(o.detailed)), `${nb}تصویر پرجزئیات (${ltr('Sentinel-2، Landsat')}، 10 تا 30${nb}متر)`]
       if (o.mosaics) out.push(' · ', strong(int(o.mosaics)), `${nb}موزاییک هواشناسی روزانه (250 تا 375${nb}متر)`)
       if (o.radar) out.push(' · ', strong(int(o.radar)), `${nb}تصویر راداری (${ltr('Sentinel-1')}، 20${nb}متر)`)
       if (o.geo) {
         out.push(
           ' · ',
           strong(int(o.geo)),
-          `${nb}تصویر قرص کامل از ماهواره‌های هواشناسی زمین‌ایستا (2 تا 5${nb}کیلومتر؛ تازه‌ترینِ هر کدام نشان داده می‌شود)`,
+          `${nb}تصویر قرص کامل از ماهواره‌های هواشناسی زمین‌ایستا (2 تا 5${nb}کیلومتر؛ تازه‌ترین تصویر هر کدام نشان داده می‌شود)`,
         )
       }
       out.push(`. ${checked(o.passes, o.satellites)}`)
@@ -157,7 +166,7 @@ const results: typeof en = {
     },
     checked: (passes: number, satellites: number) => checked(passes, satellites),
     passTimes: (place: string, fetched: string | undefined, zoneLabel: string) =>
-      `زمان هر گذر لحظه‌ای است که ماهواره در نزدیک‌ترین فاصله از ${place} بود، و از عناصر مداری عمومی محاسبه شده است` +
+      `زمان هر گذر لحظه‌ای است که ماهواره در نزدیک‌ترین فاصله از ${place} بود و از عناصر مداری عمومی محاسبه شده است` +
       `${fetched ? ` (دریافت‌شده در ${ltr(fetched)})` : ''}. زمان‌های محلی به وقت ${iso(zoneLabel)} است.`,
   },
 
@@ -198,9 +207,9 @@ const results: typeof en = {
     change: 'تغییر',
     computing: 'محاسبه',
     recent: 'اخیر',
-    position: (k: number, n: number) => `گذر ${f.int(k)} از ${f.int(n)} از این نوع`,
-    previous: 'گذر قبلی از این نوع',
-    next: 'گذر بعدی از این نوع',
+    position: (k: number, n: number) => `گذر ${f.int(k)} از ${f.int(n)} در این دسته`,
+    previous: 'گذر قبلی در این دسته',
+    next: 'گذر بعدی در این دسته',
     // The arrows name the physical keys, which keep their meaning (fa.md §6.2.6).
     previousTitle: 'قبلی (←)',
     nextTitle: 'بعدی (→)',
@@ -228,8 +237,8 @@ const results: typeof en = {
       `${dayMonth(from.ms, 'UTC')} ${ltr(from.time)} تا ${dayMonth(to.ms, 'UTC')} ${ltr(`${to.time} UTC`)}`,
     ],
     percent: (pct: number) => `${f.int(pct)}%`,
-    slow: 'آرشیو Planetary Computer و ناسا تصویرها را در لحظهٔ درخواست می‌سازند؛ این مرحله ممکن است چند ثانیه طول بکشد.',
-    verySlow: 'آرشیوهای تصویر دیر پاسخ می‌دهند. اگر پاسخ ندهند، گذرها باز هم از هندسهٔ مداری نشان داده می‌شوند و این را می‌گوییم.',
+    slow: 'آرشیوهای Planetary Computer و ناسا تصویرها را در لحظهٔ درخواست می‌سازند؛ این مرحله ممکن است چند ثانیه طول بکشد.',
+    verySlow: 'آرشیوهای تصویر دیر پاسخ می‌دهند. اگر پاسخ ندهند، گذرها باز هم بر پایهٔ هندسهٔ مداری نشان داده می‌شوند و این را هم می‌گوییم.',
     sharedAlt: (sat: string | undefined, place: string) => `تصویری از ${place}، گرفته‌شده با ${aSat(sat)}، که برای شما فرستاده شد.`,
     sharedCaption: (sat: string | undefined, place: string, when?: PlaceWhen): Rich => [
       strong('برای شما فرستاده شد'),
@@ -265,9 +274,10 @@ const results: typeof en = {
     meta: (n: number, zoneLabel: string, zones: string) => `${days(n)} · ${iso(zoneLabel)} · ${iso(zones)}`,
     zoneChange: (before: string, after: string) => `${iso(before)} ← ${iso(after)}`,
     daylight: 'روشنایی روز در این‌جا',
-    // A verdict's name cannot follow a bare count in Persian, so each name is a label before its count.
+    // A verdict's name cannot follow a bare count in Persian, so each name is a label before its count, and «؛»
+    // separates the pairs (a colon inside a colon list blurs where each ends).
     summary: (n: number, counts: Record<Verdict, number>, titles: Readonly<Record<Verdict, string>>) =>
-      `خط زمانی، ${days(n)}: ` + VERDICT_ORDER.map((v) => `${titles[v]}: ${f.int(counts[v])}`).join('، ') + '.',
+      `خط زمانی، ${days(n)}. ` + VERDICT_ORDER.map((v) => `${titles[v]}: ${f.int(counts[v])}`).join('؛ ') + '.',
     keysHint: (summary: string) => `${summary} با کلیدهای پیکان چپ و راست میان گذرها جابه‌جا شوید.`,
     geoLane: (n: number): Rich => [strong('زمین‌ایستا · '), f.int(n)],
     geoNames: (names: readonly string[]) => names.join('، '),
@@ -286,17 +296,17 @@ const results: typeof en = {
     play: 'شروع بازپخش',
     pause: 'مکث بازپخش',
     speed: 'سرعت بازپخش',
-    inView: (duration: string) => `در میدان دید ${duration}`,
+    inView: (duration: string) => `در میدان دید: ${duration}`,
     closest: 'نزدیک‌ترین',
     spaceKey: 'فاصله',
     playPause: 'پخش / مکث',
-    stepKind: 'گذر قبلی / بعدی از این نوع',
+    stepKind: 'گذر قبلی / بعدی در این دسته',
   },
 
   // ── the plan view ────────────────────────────────────────────────────────────────────────
   plan: {
     label: (sat: string, km: number) =>
-      `نقشهٔ گذر: مسیر زمینی ${theSat(sat)}، در نزدیک‌ترین نقطه، ${f.int(km)}${nb}کیلومتر دور از این مکان.`,
+      `نقشهٔ گذر: مسیر زمینی ${theSat(sat)}، که در نزدیک‌ترین نقطه ${f.int(km)}${nb}کیلومتر با این مکان فاصله داشت.`,
     northUp: 'نقشه · شمال بالا',
     // The angle is isolated: after a Persian word «±30°» would display «°30±».
     fieldOfRegard: (deg: number) => `چرخش ${ltr(`±${deg}°`)}`,

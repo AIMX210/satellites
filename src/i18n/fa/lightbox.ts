@@ -19,7 +19,8 @@ const lightbox: typeof en = {
   spokenPosition: (k: number, n: number, lead?: 'closest' | 'clouded') =>
     `تصویر ${f.int(k)} از ${f.int(n)}${lead === 'closest' ? '، نزدیک‌ترین نما' : lead === 'clouded' ? '، پوشیده از ابر' : ''}`,
   spokenLastClear: 'آخرین نمای بی‌ابر، از پیش از این هفته',
-  timelapseLabel: 'گذر سال‌ها در این مکان، سال به سال',
+  // Not «… سال به سال» after the name: the years would be said twice
+  timelapseLabel: 'گذر سال‌ها در این مکان، با یک نما در هر سال',
   timelapse: 'گذر سال‌ها',
   zoomOut: 'کوچک‌نمایی',
   zoomOutTitle: 'کوچک‌نمایی (−)',
@@ -33,7 +34,7 @@ const lightbox: typeof en = {
   panProduct: (pixel: string) => `${ltr('Landsat C2 L2 + L1 pan')} · ${pixel}`,
   status: {
     clouded: (pct?: number) => `ابری${pct !== undefined ? ` · ${ltr(`${f.int(pct)}%`)}` : ''}`,
-    clearAtSpot: 'صاف روی نقطهٔ شما',
+    clearAtSpot: 'بی‌ابر روی نقطهٔ شما',
   },
   replayLabel: 'بازپخش این گذر روی کرهٔ زمین',
   replay: 'بازپخش',
