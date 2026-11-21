@@ -6,8 +6,9 @@
  * first clause takes *đã* (a finished event) and a pass's conditions *lúc đó* ("at that time"), never *đang*.
  * "Overhead" is *ngay trên đầu bạn*, the everyday phrase for anything passing straight above, with the reader in it.
  * Satellites get no pronoun (*nó* reads careless in writing): the subject is dropped, or it is *Camera*, *Radar của
- * vệ tinh*, *vệ tinh này*; a station is *trạm*. An English participle on a missing subject ("Pointing 12.3° …, it could
- * have…") becomes a condition, *Nếu …*, which Vietnamese can hang on the sentence's subject.
+ * vệ tinh*, *vệ tinh này*; a station is *trạm vũ trụ* on first mention, then *trạm*. An English participle on a missing
+ * subject ("Pointing 12.3° …, it could have…") becomes a condition, *Nếu …*, which Vietnamese can hang on the
+ * sentence's subject.
  *
  * Vietnamese says a direction the same way after "moving" and after "to the", so there is one table of words, but two
  * nouns before it: *hướng* for where the satellite moved (*di chuyển về hướng nam*) and *phía* for where it was from
@@ -73,14 +74,17 @@ const pass: typeof en = {
 
   // ── a geostationary scan ─────────────────────────────────────────────────────────────────
   geo: {
-    /** No seat: drop *tại [LON]*; no cadence: end at *bên dưới.* (vi.md §3.5) */
+    /**
+     * No seat: drop *tại [LON]*; no cadence: end at *bên dưới.* (vi.md §3.5). "The whole face of the Earth below it" is
+     * one disc, *cả nửa Trái Đất bên dưới* (About's *nửa hành tinh*): *toàn bộ mặt Trái Đất* would be the whole surface
+     */
     sits: (o: { sat: string; altKm: number; seat?: string; cadenceMin?: number }): Rich => [
       `${o.sat} không bay qua. Vệ tinh này đứng yên ở độ cao `,
       km(o.altKm),
       o.seat !== undefined ? ` trên xích đạo tại ${o.seat}` : ' trên xích đạo',
       ...(o.cadenceMin
-        ? [' và quét toàn bộ mặt Trái Đất bên dưới mỗi ', minutes(o.cadenceMin), '.']
-        : [' và quét toàn bộ mặt Trái Đất bên dưới.']),
+        ? [' và quét cả nửa Trái Đất bên dưới mỗi ', minutes(o.cadenceMin), '.']
+        : [' và quét cả nửa Trái Đất bên dưới.']),
     ],
     reached: (o: { place: string; time: string; zone: string; heading: Compass8 }): Rich => [
       `Đường quét lần này tới ${o.place} vào khoảng `,
@@ -97,24 +101,30 @@ const pass: typeof en = {
     num(f.dec(o.speedKmS, 2), 'km/s'),
     '.',
   ],
-  /** "swept X into NASA's mosaic" is a calque in Vietnamese: the sensor *ghi lại* the place *cho* the mosaic */
+  /**
+   * "swept X into NASA's mosaic" is a calque in Vietnamese: the sensor *ghi lại* the place *cho* the mosaic. "At 375 m
+   * per pixel" is *ở độ phân giải 375 m*, as Vietnamese remote sensing says it (never *với 375 m mỗi điểm ảnh*)
+   */
   mosaic: (o: { sensor: string; place: string; gsdM: number }): Rich => [
-    `Cảm biến ${o.sensor} đã ghi lại ${o.place} cho ảnh ghép màu thực hằng ngày của NASA, với `,
+    `Cảm biến ${o.sensor} đã ghi lại ${o.place} cho ảnh ghép màu thực hằng ngày của NASA, ở độ phân giải `,
     num(f.int(o.gsdM), 'm'),
-    ' mỗi điểm ảnh.',
+    '.',
   ],
   /** *ghi lại*, not *chụp*: radar does not photograph */
   radarImaged: (o: { deg: number; place: string; gsdM: number; dark: boolean }): Rich => [
     'Radar của vệ tinh, chếch ',
     num(f.dec(o.deg, 1), '°'),
-    ` sang một bên, đã ghi lại ${o.place} với `,
+    ` sang một bên, đã ghi lại ${o.place} ở độ phân giải `,
     num(f.int(o.gsdM), 'm'),
-    o.dark ? ' mỗi điểm ảnh, trong bóng tối.' : ' mỗi điểm ảnh.',
+    o.dark ? ', trong bóng tối.' : '.',
   ],
   lookingDown: 'Camera hướng thẳng xuống.',
   lookingOff: (deg: number): Rich => ['Camera nghiêng ', num(f.dec(deg, 1), '°'), ' so với phương thẳng đứng.'],
-  /** *Lượng mây*, the meteorologist's word for cloud cover; the colon does the work of "is" */
-  cloudCover: (pct: number): Rich => ['Lượng mây trên toàn ảnh: ', num(f.int(pct), '%'), '.'],
+  /**
+   * *Lượng mây*, the meteorologist's word for cloud cover; the colon does the work of "is". It is the archive's figure
+   * for the whole scene (*cả cảnh ảnh*), not for the crop on screen, which every screen calls *ảnh*
+   */
+  cloudCover: (pct: number): Rich => ['Lượng mây của cả cảnh ảnh: ', num(f.int(pct), '%'), '.'],
 
   // ── "Nhiều khả năng đã quan sát" ─────────────────────────────────────────────────────────
   likely: {
@@ -123,14 +133,15 @@ const pass: typeof en = {
       ...crossedAt(o.sat, o.altKm, o.time, o.zone, o.offset),
       ...(o.swathKm ? [', và chỗ của bạn nằm trong dải quét rộng ', km(o.swathKm), '.'] : ['.']),
     ],
-    archiveFailed: 'Lúc đó trời sáng, nên hẳn vệ tinh đã ghi lại điểm này. Hiện chưa tra cứu được kho lưu trữ.',
+    /** "would have": the likely verdict's hedge, *nhiều khả năng*, below notYet's *gần như chắc chắn* (never *hẳn*) */
+    archiveFailed: 'Lúc đó trời sáng, nên nhiều khả năng vệ tinh đã ghi lại điểm này. Hiện chưa tra cứu được kho lưu trữ.',
     noScene:
       'Không có cảnh ảnh nào từ lượt bay này. Sentinel-2 chỉ ghi ảnh đất liền và vùng nước ven biển, và có thể đã không lên lịch chụp điểm này.',
     notYet:
       'Lúc đó trời sáng, nên gần như chắc chắn vệ tinh đã ghi lại điểm này. ' +
       'Chưa có cảnh ảnh nào từ lượt bay này được công bố; các kho lưu trữ có thể chậm một ngày hoặc hơn.',
-    /** The two-beat ending kept, with *của bạn* twice on purpose: the reader's own clouds and streets */
-    dark: 'Lúc đó ở đây trời tối. Vệ tinh khí tượng vẫn quét suốt đêm bằng hồng ngoại, nên thứ vệ tinh thấy là mây của bạn, không phải phố của bạn.',
+    /** The two-beat ending, *của bạn* twice on purpose (the reader's own clouds and streets), as *X, chứ không phải Y* */
+    dark: 'Lúc đó ở đây trời tối. Vệ tinh khí tượng vẫn quét suốt đêm bằng hồng ngoại, nên thứ vệ tinh thấy là mây của bạn, chứ không phải phố của bạn.',
     mosaicUnconfirmed: 'Chưa xác nhận được ảnh ghép hằng ngày của NASA cho lượt bay này ở chỗ của bạn.',
     notPublished: 'Ảnh của vệ tinh này dùng cho dự báo thời tiết; chúng không được công bố thành hình ảnh mà chúng tôi có thể hiển thị.',
   },
@@ -161,19 +172,23 @@ const pass: typeof en = {
   },
 
   // ── "Bay qua trên đầu" ───────────────────────────────────────────────────────────────────
-  /** The angle in words a person says (*cao 64° trên đường chân trời*); near the zenith, *gần như ngay trên đầu* */
+  /**
+   * The clock before the altitude, as every pass sentence; the angle in words a person says (*cao 64° trên đường chân
+   * trời*); near the zenith, *gần như ngay trên đầu*
+   */
   overhead: (o: { sat: string; altKm: number; time: string; zone: string; elevationDeg: number; toward?: Compass8 }): Rich => [
-    `${o.sat} đã bay qua ở độ cao `,
-    km(o.altKm),
-    ' lúc ',
+    `${o.sat} đã bay qua lúc `,
     clock(o.time, o.zone),
+    ' ở độ cao ',
+    km(o.altKm),
     ', cao ',
     num(f.int(o.elevationDeg), '°'),
     o.toward === undefined
       ? ' trên đường chân trời của bạn, gần như ngay trên đầu.'
       : ` trên đường chân trời của bạn, về phía ${WORDS[o.toward]}.`,
   ],
+  /** The station is named on first mention (*trạm* alone is also a bus stop), and the condition closes with *thì* */
   darkStation:
-    'Lúc đó chỗ bạn trời tối. Nếu khi ấy còn được Mặt Trời chiếu sáng, trạm đã băng qua bầu trời của bạn như một chấm sáng đều, không nhấp nháy.',
+    'Lúc đó chỗ bạn trời tối. Nếu khi ấy trạm vũ trụ vẫn còn được Mặt Trời chiếu sáng, thì trạm đã băng qua bầu trời của bạn như một chấm sáng đều, không nhấp nháy.',
 }
 export default pass

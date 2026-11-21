@@ -63,9 +63,12 @@ const results: typeof en = {
       accent(place),
       '.',
     ],
-    /** Zero is its own sentence, with "we track" kept (the limit is our catalog); *mà* keeps the two verbs apart */
+    /**
+     * Zero is its own sentence. "We track" is *trong danh mục của chúng tôi* (the limit is our catalog), and a negated
+     * past takes no *đã* (*Không ai đến*, never *Không ai đã đến*)
+     */
     none: (place: string, past: boolean): Rich => [
-      `Không ${bind('vệ tinh')} nào mà ${bind('chúng tôi')} ${bind('theo dõi')} ${bind('đã quan sát')} `,
+      `Không ${bind('vệ tinh')} nào trong ${bind('danh mục')} của ${bind('chúng tôi')} ${bind('quan sát')} `,
       accent(place),
       past ? ` ${bind('tuần đó')}.` : ` ${bind('tuần này')}.`,
     ],
@@ -82,27 +85,28 @@ const results: typeof en = {
   tryAgain: 'Thử lại',
   share: 'Chia sẻ',
   /** The share sheet's own words (*Chia sẻ tóm tắt tuần này*, §3.6), never *Chia sẻ tuần này* */
-  shareWeekLabel: (place: string, past: boolean) => `Chia sẻ tóm tắt ${past ? 'tuần đó' : 'tuần này'} ở ${place}`,
+  shareWeekLabel: (place: string, past: boolean) => `Chia sẻ tóm tắt ${past ? 'tuần đó' : 'tuần này'} về ${place}`,
 
   /** "It" is the searched place: *nơi này* (§5.1 rule 4) */
   why: {
     sunNeverRose: 'Mặt Trời không hề mọc, nên không camera thường nào có thể thấy nơi này.',
     sunBarelyRose: 'Mặt Trời gần như không mọc, nên không camera thường nào có thể thấy nơi này.',
-    infrared: (n: number): Rich => ['Vệ tinh khí tượng vẫn quét qua nơi này bằng hồng ngoại, ', num(f.int(n)), ' lần.'],
+    /** The count stands by its verb (*quét qua nơi này 42 lần*), not after a comma as English adds it */
+    infrared: (n: number): Rich => ['Vệ tinh khí tượng vẫn quét qua nơi này ', num(f.int(n)), ' lần bằng hồng ngoại.'],
     /** "Umbra, Capella và 7 vệ tinh radar khác" (Intl.ListFormat: no serial comma, as Vietnamese writes it) */
     radar: (names: readonly string[], others: number, passes: number): Rich => {
       const who = f.list(others > 0 ? [...names, `${f.int(others)} vệ tinh radar khác`] : names)
-      return [`Radar không cần ánh sáng. ${who} đã bay qua trong tầm `, num(f.int(passes)), ' lần.']
+      return [`Radar không cần ánh sáng. ${who} đã bay qua trong tầm nhìn `, num(f.int(passes)), ' lần.']
     },
-    /** Digits even for one: *1 lần*, never *một lần* (§5.3) */
+    /** Plain prose, no number part: "once" is *một lần*, as English writes the word (vi.md §5.3 rule 1) */
     unpublished: (n: number) =>
-      `Sentinel-2 hoặc Landsat đã bay qua nơi này ${f.int(n)}\u00a0lần vào ban ngày, nhưng chưa có cảnh ảnh nào được công bố.`,
+      `Sentinel-2 hoặc Landsat đã bay qua nơi này ${n === 1 ? 'một' : f.int(n)}\u00a0lần vào ban ngày, nhưng chưa có cảnh ảnh nào được công bố.`,
     none: 'Không vệ tinh chụp ảnh công khai nào bay qua nơi này vào ban ngày.',
   },
 
   // ── the summary's four readouts ──────────────────────────────────────────────────────────
   /** The verdicts are "labels" on About (*Ý nghĩa các nhãn*) */
-  verdictGroup: 'Lượt bay theo nhãn. Mỗi mục đưa tới danh sách của nhãn đó.',
+  verdictGroup: 'Lượt bay theo nhãn. Mỗi mục dẫn tới danh sách của nhãn đó.',
   verdictReadout: (n: number, verdict: Verdict, title: string) => `${f.int(n)} ${viVerdicts[verdict].unit(n)}: ${title}`,
 
   // ── the footnotes ────────────────────────────────────────────────────────────────────────
@@ -120,7 +124,7 @@ const results: typeof en = {
     checked: (passes: number, satellites: number) => checkedVi(passes, satellites),
     passTimes: (place: string, fetched: string | undefined, zoneLabel: string) =>
       `Giờ bay qua là lúc mỗi vệ tinh ở gần ${place} nhất, tính từ tham số quỹ đạo công khai` +
-      `${fetched ? ` (lấy lúc ${fetched})` : ''}. Giờ địa phương theo ${zoneLabel}.`,
+      `${fetched ? ` (lấy lúc ${fetched})` : ''}. Giờ địa phương theo múi giờ ${zoneLabel}.`,
   },
 
   // ── the panel ────────────────────────────────────────────────────────────────────────────
@@ -129,9 +133,10 @@ const results: typeof en = {
   sections: { summary: 'Tóm tắt', passes: 'Lượt bay', watchedContinuously: 'Quan sát liên tục' },
   checkingArchives: 'Đang kiểm tra các kho lưu trữ',
   invite: {
-    /** The share hook, echoing the hero with *cũng* ("too") before the verb (§3.6) */
-    text: 'Tuần này, có thứ gì đó cũng quan sát bạn.',
-    checkPlace: 'Xem nơi của bạn',
+    /** The share hook, echoing the hero; *cũng có* puts "too" on the event (you as well), not on "something" (§3.6) */
+    text: 'Tuần này, cũng có thứ gì đó quan sát bạn.',
+    /** "Your place" is where you are, *nơi bạn ở*, not the calque *nơi của bạn* */
+    checkPlace: 'Xem nơi bạn ở',
     dismiss: 'Đóng',
   },
   searchAnother: 'Tìm nơi khác',
@@ -144,8 +149,8 @@ const results: typeof en = {
     shareLabel: { pass: 'Chia sẻ lượt bay này', image: 'Chia sẻ ảnh này' },
     /** Narrow phones drop the strong part: *Chia sẻ* alone */
     shareButton: { pass: ['Chia sẻ', strong(' lượt bay này')] as Rich, image: ['Chia sẻ', strong(' ảnh này')] as Rich },
-    /** …*nơi của bạn* alone */
-    checkPlace: [strong('Xem '), 'nơi của bạn'] as Rich,
+    /** …*nơi bạn ở* alone */
+    checkPlace: [strong('Xem '), 'nơi bạn ở'] as Rich,
     /** "The clearest look" is the least cloudy one: *ảnh ít mây nhất*, which reads alone too */
     clearest: [strong('Xem '), 'ảnh ít mây nhất'] as Rich,
     clearestLabel: 'Xem ảnh ít mây nhất',
@@ -157,7 +162,7 @@ const results: typeof en = {
       `${f.int(days)} ngày · ${viTime.dayRange(startMs, endMs, timeZone, localParts(startMs, timeZone), localParts(endMs, timeZone))}`,
     verifying: 'Đang kiểm tra ảnh thời tiết',
     cancel: 'Hủy',
-    newSearch: 'Tìm mới',
+    newSearch: 'Tìm kiếm mới',
     close: 'Đóng',
     escKey: 'Esc',
     searchBarLabel: (place: string) => `Tìm nơi khác (hiện tại: ${place})`,
@@ -201,7 +206,7 @@ const results: typeof en = {
     percent: (pct: number) => `${f.int(pct)}%`,
     slow: 'Planetary Computer và NASA tạo ảnh theo yêu cầu; bước này có thể mất vài giây.',
     verySlow:
-      'Các kho lưu trữ ảnh đang phản hồi chậm. Nếu không có phản hồi, các lượt bay vẫn sẽ được hiển thị theo hình học quỹ đạo, và chúng tôi sẽ nói rõ.',
+      'Các kho lưu trữ ảnh đang phản hồi chậm. Nếu không có phản hồi, các lượt bay vẫn sẽ được tính theo hình học quỹ đạo, và chúng tôi sẽ ghi rõ điều đó.',
     sharedAlt: (sat: string | undefined, place: string) =>
       sat ? `Ảnh ${place} do ${sat} ghi lại, được chia sẻ với bạn.` : `Ảnh vệ tinh của ${place}, được chia sẻ với bạn.`,
     /** "… · CN, 1/11, 16:14": the day, then its clock */
@@ -213,7 +218,8 @@ const results: typeof en = {
 
   // ── 03 / QUAN SÁT LIÊN TỤC ───────────────────────────────────────────────────────────────
   geo: {
-    none: 'Không vệ tinh khí tượng địa tĩnh nào đang hoạt động nhìn thấy nơi này ở góc ngẩng trên 5°.',
+    /** The elevation is the satellite's height in the place's sky, said as the pass sentences say it */
+    none: 'Từ nơi này, không vệ tinh khí tượng địa tĩnh nào đang hoạt động nằm cao hơn 5° trên đường chân trời.',
     /** *cao 34,5°*: the angle above the horizon, said as a person says it (§3.5) */
     facts: (lon: string, elevationDeg: number, cadenceMin: number) =>
       `${lon} · cao ${f.dec(elevationDeg, 1)}° · mỗi ${f.int(cadenceMin)} phút`,
@@ -221,10 +227,14 @@ const results: typeof en = {
     images: (n: number, days: number): Rich => [num(f.int(n)), days === 7 ? ' ảnh tuần này' : ` ảnh trong ${f.int(days)} ngày`],
     replay: 'Phát lại',
     replayLabel: (sat: string) => `${sat}: phát lại ảnh mới nhất`,
-    /** A 64 px square at 9.5 px mono caps: about 10 characters a line, three lines */
+    /**
+     * A 64 px square at 9.5 px mono caps (10.5 px on phones): about 9 characters a line, three lines. Never split a
+     * compound across lines (*công / khai*): the label form *Không ảnh công khai*, its compound held by a no-break
+     * space, sets as KHÔNG ẢNH / CÔNG KHAI at both sizes
+     */
     frame: {
       probing: 'Đang dò…',
-      noPublic: 'Không có ảnh công khai',
+      noPublic: 'Không ảnh công\u00a0khai',
       poorQuality: 'Chất lượng kém',
       noneNow: 'Hiện chưa có ảnh',
       unavailable: 'Không tải được ảnh',
@@ -265,11 +275,16 @@ const results: typeof en = {
   replay: {
     scrubLabel: 'Thời điểm trong lượt bay',
     scrubValue: (tMinus: string, utc: string) => `${tMinus}, ${utc}`,
-    play: 'Phát lại lượt bay',
-    pause: 'Tạm dừng phát lại',
+    /** The media pair (*Phát* / *Tạm dừng*), so it never shares the footer's name *Phát lại lượt bay* */
+    play: 'Phát',
+    pause: 'Tạm dừng',
     speed: 'Tốc độ phát lại',
-    /** The legend is one nowrap row (start clock, this, the closest tick, end clock): *Trong tầm* ("in range") */
-    inView: (duration: string) => `Trong tầm ${duration}`,
+    /**
+     * The legend is one nowrap row (start clock, this, the closest tick, end clock), about 21 characters on a 390 px
+     * phone: the noun *Tầm nhìn* labels the shaded span (*Trong tầm nhìn 37 giây* pushed the end clock off the screen;
+     * a bare *Trong tầm* is incomplete)
+     */
+    inView: (duration: string) => `Tầm nhìn ${duration}`,
     closest: 'Gần nhất',
     /** The key as Vietnamese keyboards print it (US layout) */
     spaceKey: 'Space',

@@ -20,8 +20,9 @@ const PLAN = 'Hình trên là sơ đồ lượt bay.'
 
 const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
+  /** "We track" is *trong danh mục của chúng tôi*, and a negated past takes no *đã* (as the headline's zero) */
   empty:
-    'Không vệ tinh nào mà chúng tôi theo dõi đã bay qua nơi này trong khoảng thời gian này. Điều đó hiếm khi xảy ra; ghi chú phía trên sẽ cho biết nếu có nguồn dữ liệu bị gián đoạn.',
+    'Trong khoảng thời gian này, không vệ tinh nào trong danh mục của chúng tôi bay qua nơi này. Điều đó hiếm khi xảy ra; ghi chú phía trên sẽ cho biết nếu có nguồn dữ liệu bị gián đoạn.',
   imagedOrder: 'chi tiết nhất, rồi mới nhất',
   count: (n: number, _verdict: Verdict) => `${f.int(n)} ${PASS}`,
   countStack: (n: number, _verdict: Verdict): NumPart => num(f.int(n), PASS),
@@ -66,12 +67,17 @@ const passView: typeof en = {
   planSection: 'Sơ đồ lượt bay',
   geometry: 'Hình học',
   replay: 'Phát lại',
+  /**
+   * The frame above can be infrared at night, so the satellite *ghi* it (never *chụp*); the pixel is a sentence of its
+   * own words (*mỗi điểm ảnh ở đây rộng 2 km*), "Coarse, but real" a whole clause (*Ảnh thô nhưng là ảnh thật*), and a
+   * repeated action "every N minutes" is *cứ N phút lại …*
+   */
   fullDiscNote: (pixel: string, cadenceMin?: number) =>
-    `Ảnh toàn đĩa: một bức ảnh chụp mọi thứ vệ tinh nhìn thấy, ở đây ${pixel} mỗi điểm ảnh. Thô, nhưng là ảnh thật, và là ảnh mới nhất được công bố; suốt tuần, vệ tinh này đã chụp một ảnh như vậy ${
-      cadenceMin === 1 ? 'mỗi phút' : cadenceMin ? `mỗi ${f.int(cadenceMin)} phút` : 'cứ vài phút một lần'
-    }.`,
+    `Ảnh toàn đĩa: một bức ảnh ghi lại mọi thứ vệ tinh nhìn thấy, mỗi điểm ảnh ở đây rộng ${pixel}. Ảnh thô nhưng là ảnh thật, và là ảnh mới nhất được công bố; suốt tuần, vệ tinh này cứ ${
+      cadenceMin === 1 ? 'mỗi phút' : cadenceMin ? `${f.int(cadenceMin)}\u00a0phút` : 'vài phút'
+    } lại ghi một ảnh như vậy.`,
   mosaicNote: (gsdM: number) =>
-    `Ảnh ghép hằng ngày: NASA ghép các dải quét trong ngày thành một bức ảnh, ${f.int(gsdM)} m mỗi điểm ảnh. Thô, nhưng là ảnh thật, và đúng ngày của lượt bay này.`,
+    `Ảnh ghép hằng ngày: NASA ghép các dải quét trong ngày thành một bức ảnh, mỗi điểm ảnh rộng ${f.int(gsdM)}\u00a0m. Ảnh thô nhưng là ảnh thật, và là ảnh của đúng ngày có lượt bay này.`,
   radarNote:
     'Ảnh radar, không phải ảnh chụp: Sentinel-1 phát sóng vi ba và ghi lại sóng phản xạ, nên mây và bóng tối không cản được. Độ sáng cho biết mặt đất phản xạ sóng mạnh đến đâu: nhà cửa và địa hình gồ ghề thì sáng, mặt nước lặng thì tối.',
   noImage: {
@@ -80,9 +86,10 @@ const passView: typeof en = {
     commercialPrivate: `Không có ảnh công khai: kho lưu trữ thương mại không công khai. ${PLAN}`,
     noneToShow: `Không có ảnh để hiển thị cho lượt bay này. ${PLAN}`,
     archiveDown: `Hiện chưa tra cứu được kho lưu trữ. ${PLAN}`,
-    noScene: `Không có cảnh ảnh nào cho lượt bay này. ${PLAN}`,
+    noScene: `Không có cảnh ảnh nào từ lượt bay này. ${PLAN}`,
     notYet: 'Chưa có cảnh ảnh nào được công bố khớp với lượt bay này. Ảnh Sentinel-2 và Landsat thường xuất hiện trong vòng một ngày.',
-    crewed: 'Các trạm có người ở đều mang camera, nhưng ảnh của họ không được công bố theo địa điểm và thời gian.',
+    /** Stations are named, never *họ* (that is people: the crews' own photos) */
+    crewed: 'Các trạm vũ trụ có người ở đều mang camera, nhưng ảnh từ các trạm này không được công bố theo địa điểm và thời gian.',
     unavailable: 'Hiện không có ảnh cho lượt bay này.',
   },
   links: {
@@ -118,8 +125,10 @@ const passView: typeof en = {
     kmS: 'km/s',
     up: 'cao',
     mosaic: 'ảnh ghép',
-    scene: 'toàn ảnh',
-    sun: { day: 'ngày', twilight: 'chạng vạng', night: 'đêm' },
+    /** The archive's figure for the whole scene, not the crop: *cảnh ảnh* (the card's word), never *toàn ảnh* */
+    scene: 'cảnh ảnh',
+    /** After an angle a bare *ngày* reads as a count of days (*31,1° ngày*): the phase is *ban ngày* / *ban đêm* */
+    sun: { day: 'ban ngày', twilight: 'chạng vạng', night: 'ban đêm' },
   },
 
   // ── 01 / Hình học ────────────────────────────────────────────────────────────────────────
@@ -151,7 +160,7 @@ const passView: typeof en = {
   northToSouth: 'Bắc → nam',
   southToNorth: 'Nam → bắc',
   timeRange: (from: string, to: string) => `${from} → ${to}`,
-  sunPhase: { day: 'Ngày', twilight: 'Chạng vạng', night: 'Đêm' },
+  sunPhase: { day: 'Ban ngày', twilight: 'Chạng vạng', night: 'Ban đêm' },
   fullDisc: 'Toàn đĩa',
   everyMin: (n: number) => `mỗi ${f.int(n)} phút`,
   upCompass: (compass: string) => `cao · ${compass}`,

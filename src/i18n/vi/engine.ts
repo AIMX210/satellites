@@ -31,12 +31,13 @@ const engine: typeof en = {
   note: {
     archiveSlow: 'Kho lưu trữ Sentinel-2 và Landsat phản hồi quá chậm; các lượt bay chỉ được tính theo hình học quỹ đạo.',
     archiveDown: 'Không kết nối được kho lưu trữ Sentinel-2 và Landsat; các lượt bay chỉ được tính theo hình học quỹ đạo.',
-    sentinel2Thumbnails: 'Sentinel-2 được liệt kê qua Earth Search; một số cảnh ảnh hiện ảnh thu nhỏ của cả cảnh, không phải phần ảnh cắt.',
-    sentinel2EarthSearch: 'Sentinel-2 được liệt kê qua Earth Search (không tìm được trên Planetary Computer).',
+    sentinel2Thumbnails: 'Sentinel-2 được liệt kê qua Earth Search; một số ảnh là ảnh thu nhỏ của cả cảnh ảnh, không phải phần ảnh cắt.',
+    /** The search failed (*không tìm kiếm được*), not "not found there" (*không tìm được*) */
+    sentinel2EarthSearch: 'Sentinel-2 được liệt kê qua Earth Search (không tìm kiếm được trên Planetary Computer).',
     sentinel2Down: 'Không kết nối được kho Sentinel-2; có thể thiếu ảnh Sentinel-2.',
     landsatDown: 'Không kết nối được kho Landsat; có thể thiếu ảnh Landsat.',
     openOcean: 'Điểm này nằm ngoài kế hoạch thu ảnh của Sentinel-2 (biển khơi).',
-    elementsOld: ({ days }: { days: number }) => `Tham số quỹ đạo đã cũ ${f.int(days)} ngày, nên giờ bay qua có thể lệch vài phút.`,
+    elementsOld: ({ days }: { days: number }) => `Tham số quỹ đạo có từ ${f.int(days)} ngày trước, nên giờ bay qua có thể lệch vài phút.`,
     elementsNewer: 'Các lượt bay này được dựng lại từ tham số quỹ đạo mới hơn, nên giờ bay qua có thể lệch vài phút.',
     /** "VIIRS images the whole globe" is a verb: *chụp*; the demonstrative follows the count (*lượt bay đó* / *các lượt bay đó*) */
     gibsUnconfirmed: ({ n }: { n: number }) =>

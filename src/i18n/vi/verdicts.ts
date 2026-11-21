@@ -35,14 +35,16 @@ const verdicts: typeof en = {
     title: 'Có thể đã hướng về\u00a0đây',
     short: 'Có thể',
     unit: passes,
-    definition: 'Một camera xoay hướng được hoặc của tư nhân đã ở trong tầm. Nhà vận hành không cho biết camera có nhìn về đây hay không.',
+    /** "In range" of a camera that can turn is *trong tầm với* (reach), as About explains the same verdict */
+    definition: 'Nơi này đã nằm trong tầm với của một camera xoay hướng được hoặc của tư nhân. Nhà vận hành không cho biết camera có nhìn về đây hay không.',
     verb: 'đã bay qua trong tầm nhìn',
   },
   overhead: {
     title: 'Bay qua trên đầu',
     short: 'Bay qua',
     unit: passes,
-    definition: 'Băng qua bầu trời của bạn. Các trạm vũ trụ và mọi thứ khác.',
+    /** The English fragment "Stations and everything else." needs a verb in Vietnamese: *Gồm …* */
+    definition: 'Đã băng qua bầu trời của bạn. Gồm các trạm vũ trụ và mọi thứ khác.',
     verb: 'đã bay qua trên đầu',
   },
 }
