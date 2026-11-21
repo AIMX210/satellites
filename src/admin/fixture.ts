@@ -28,10 +28,10 @@ const PLACES: [string, string, string, number][] = [
   ['Reykjavík, Iceland', 'is', '64.1,-21.9', 9],
 ]
 
-/** Each language's share of the tabs that named one (0027): every one of the 16 has a few. */
+/** Each language's share of the tabs that named one (0027): every language has a few. */
 const LANGS: [string, number][] = [
   ['en', 0.58], ['es', 0.085], ['de', 0.062], ['fr', 0.053], ['pt-BR', 0.046], ['ja', 0.038], ['it', 0.025], ['nl', 0.02],
-  ['pl', 0.017], ['tr', 0.015], ['ko', 0.013], ['zh-Hans', 0.012], ['id', 0.01], ['uk', 0.008], ['ar', 0.007], ['zh-Hant', 0.005],
+  ['pl', 0.017], ['tr', 0.015], ['ko', 0.013], ['zh-Hans', 0.012], ['id', 0.01], ['uk', 0.008], ['ar', 0.007], ['ru', 0.006], ['zh-Hant', 0.005], ['vi', 0.004], ['fa', 0.003], ['hi', 0.003],
 ]
 
 /** What admin_live would say a few minutes after `stats` were computed. */

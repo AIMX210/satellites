@@ -139,7 +139,7 @@ describe('languages (0027)', () => {
     expect(languageName('pt-BR')).toBe('Portuguese')
     expect(languageName('xx')).toBe('xx')
   })
-  it('is in the fixture: all 16, fewer tabs than sessions, nothing cut', () => {
+  it('is in the fixture: every language, fewer tabs than sessions, nothing cut', () => {
     const m = mockStats('7d', Date.UTC(2026, 10, 19, 12))
     const rows = m.top['session.lang']
     expect(rows.map((r) => r[0]).sort()).toEqual([...LOCALES].sort())

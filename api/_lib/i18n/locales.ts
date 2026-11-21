@@ -6,15 +6,16 @@
  * Why a hand-made matcher and not the browser's: the choice has to be made before any script but the inline boot one
  * runs (so the right glyphs, direction and preload start with the first paint), and it must agree to the letter with the
  * server and the tests. Chinese is matched by script, not region: zh-CN / zh-SG / zh-Hans read Simplified, zh-TW /
- * zh-HK / zh-MO / zh-Hant read Traditional. A language we don't speak never picks a neighbour: a browser asking for
- * Russian gets English, not Ukrainian.
+ * zh-HK / zh-MO / zh-Hant read Traditional. A language we don't speak never picks a neighbour (a browser asking for
+ * Belarusian gets English, not Russian or Ukrainian), with one exception chosen by the owner: Cantonese reads
+ * Traditional Chinese.
  */
 
-export const LOCALES = ['en', 'es', 'fr', 'de', 'pt-BR', 'it', 'nl', 'pl', 'tr', 'id', 'uk', 'ja', 'ko', 'zh-Hans', 'zh-Hant', 'ar'] as const
+export const LOCALES = ['en', 'es', 'fr', 'de', 'pt-BR', 'it', 'nl', 'pl', 'tr', 'id', 'uk', 'ja', 'ko', 'zh-Hans', 'zh-Hant', 'ar', 'ru', 'vi', 'fa', 'hi'] as const
 export type Locale = (typeof LOCALES)[number]
 
 /** Writing systems the design tunes type for (html[data-script]: fonts, leading, tracking, label sizes). */
-export type Script = 'latin' | 'cyrillic' | 'cjk' | 'arabic'
+export type Script = 'latin' | 'cyrillic' | 'cjk' | 'arabic' | 'devanagari'
 
 /** CLDR cardinal plural categories (Intl.PluralRules), the keys a translation must supply for a count. */
 export type PluralCategory = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other'
@@ -70,6 +71,12 @@ export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
   'zh-Hans': L('zh-Hans', '简体中文', 'Chinese (Simplified)', 'cjk', ['other'], { sentenceGap: '' }),
   'zh-Hant': L('zh-Hant', '繁體中文', 'Chinese (Traditional)', 'cjk', ['other'], { sentenceGap: '' }),
   ar: L('ar', 'العربية', 'Arabic', 'arabic', ['zero', 'one', 'two', 'few', 'many', 'other'], { dir: 'rtl', intl: 'ar-u-nu-latn' }),
+  // Added 2026-11-21, unlisted until reviewed (owner: 20 languages). Persian keeps Western digits as Arabic does (the
+  // mono face has no others; its guide may decide otherwise); Hindi's Intl digits are Western by default.
+  ru: L('ru', 'Русский', 'Russian', 'cyrillic', ['one', 'few', 'many', 'other'], { listed: false }),
+  vi: L('vi', 'Tiếng Việt', 'Vietnamese', 'latin', ['other'], { listed: false }),
+  fa: L('fa', 'فارسی', 'Persian', 'arabic', ['one', 'other'], { dir: 'rtl', intl: 'fa-u-nu-latn', listed: false }),
+  hi: L('hi', 'हिन्दी', 'Hindi', 'devanagari', ['one', 'other'], { listed: false }),
 }
 
 export const DEFAULT_LOCALE: Locale = 'en'

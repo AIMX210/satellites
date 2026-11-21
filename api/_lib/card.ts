@@ -386,7 +386,7 @@ export function defaultPlateDataUri(): Promise<string | null> {
  * Cyrillic lowercase is a denser picket fence than Latin, Han and kana denser again. Arabic is tracked as Latin until
  * the right-to-left card gives it the web's (none: tracking breaks its joins).
  */
-const HERO_TRACK: Record<Script, number> = { latin: -0.02, cyrillic: -0.015, cjk: -0.01, arabic: -0.02 }
+const HERO_TRACK: Record<Script, number> = { latin: -0.02, cyrillic: -0.015, cjk: -0.01, arabic: -0.02, devanagari: 0 }
 
 /**
  * The hero, set in explicit lines (satori has no inline formatting, and a free wrap left "week." as a

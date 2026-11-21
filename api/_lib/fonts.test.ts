@@ -93,7 +93,7 @@ describe('card fonts', () => {
       ['Overflight Serif Cyrillic', 400, 'italic'],
     ])
     expect(await cardFonts('en', 'Sentinel-2C watched Київ.')).toBe(uk)
-    expect(LOCALES.filter((l) => needsCyrillic(l, ''))).toEqual(['uk'])
+    expect(LOCALES.filter((l) => needsCyrillic(l, ''))).toEqual(['uk', 'ru'])
   })
 
   it('draws Turkish and Polish letters in each role’s own face, offline', async () => {
