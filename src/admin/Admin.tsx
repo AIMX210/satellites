@@ -584,7 +584,7 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
               <dd>
                 {mostAsked ? (
                   <>
-                    <span className="a-facts-name">{browserLanguageName(mostAsked.code)}</span> <small>{fmtInt(mostAsked.tabs)} TABS</small>
+                    <span className="a-facts-name">{browserLanguageName(mostAsked.code)}</span> <small>{fmtInt(mostAsked.tabs)} {mostAsked.tabs === 1 ? 'TAB' : 'TABS'}</small>
                   </>
                 ) : (
                   '—'
