@@ -44,7 +44,8 @@ const globe: typeof en = {
     searchTitle: 'Искать здесь (Enter)',
     removeAria: 'Убрать метку',
     removeTitle: 'Убрать метку (Esc)',
-    moveHint: 'Удерживай глобус, чтобы сдвинуть метку',
+    // One mono line on a 320 px phone: «Зажми», the word for press-and-hold on a touch screen (34 characters, as English).
+    moveHint: 'Зажми глобус, чтобы сдвинуть метку',
     droppedAt: (coords: string) => `Метка поставлена: ${coords}.`,
     droppedIn: (place: string) => `Метка поставлена: ${place}. Нажми Enter или стрелку, чтобы увидеть, что пролетало здесь.`,
     droppedUnnamed: 'Метка поставлена. Нажми Enter или стрелку, чтобы увидеть, что пролетало здесь.',

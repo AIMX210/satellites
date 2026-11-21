@@ -968,6 +968,9 @@ counts: **8.0 px a character at 11 px, 7.0 px at 9.5 px** (caps, +0.08em).
 | Plan corner labels | ≤ 15 / 20 characters | «Север вверху» 12 · «Зона обзора ±45°» 16 · «Наземная трасса» 15 · «Сближение 61 км» 15 |
 | Header button box (Cancel / New search / Close) | about the English | «Отмена» · «Новый поиск» · «Закрыть» |
 | Boot note at 320 px | one line | «Медленное соединение, ещё загружаем» (35) |
+| Pass strip labels (four cells on a 360 px phone, ≈ 62 px) | ≤ 7 characters a line | «Высота» · «От надира» (wraps) · «Пиксель» · «Облака» (never «Облачность», 68 px) |
+| Thumbnail cloud chip (48 px on phones ≤ 360 px) | ≤ 5 characters | «Облака» (6) is clipped there, as Polish «Chmury» is: reported to the layout, no shorter honest word |
+| Pin move hint at 320 px | one mono line | «Зажми глобус, чтобы сдвинуть метку» (34, as English) |
 | HUD top-left at 375 px (beside the sun line) | about the English's 14 | «Как это работает» (16) |
 
 Strategies, in order:
@@ -1215,7 +1218,7 @@ Pass detail readouts
 
 | English | ru |
 |---|---|
-| Altitude · Off-nadir · Pixel · Cloud (scene) · Cloud at spot | Высота · От надира · Пиксель · Облачность (кадра) · Облака в точке |
+| Altitude · Off-nadir · Pixel · Cloud (scene) · Cloud at spot | Высота · От надира · Пиксель · Облака (кадра) · Облака в точке |
 | Clear · Cirrus · Cloud · Shadow | Ясно · Тонкие · Облака · Тень |
 | Closest · UTC / Closest · local | Сближение · UTC / Сближение · местное |
 | Ground distance · Elevation from you · Ground speed · Heading | До трассы · Над горизонтом · Путевая скорость · Курс |

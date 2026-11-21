@@ -132,7 +132,8 @@ const passView: typeof en = {
     pixel: 'Пиксель',
     band: 'Канал',
     sun: 'Солнце',
-    cloud: 'Облачность',
+    // «Облака», not «Облачность»: the strip's four cells share a 360 px phone (≈ 62 px a label).
+    cloud: 'Облака',
     // Strip labels wrap in a ~75 px cell: the no-break space keeps «в» with its word («ОБЛАКА / В ТОЧКЕ»).
     cloudAtSpot: 'Облака в\u00a0точке',
   },
@@ -177,7 +178,7 @@ const passView: typeof en = {
     lineSpeed: 'Скорость линии',
     coverage: 'Охват',
     thisScan: 'Это сканирование',
-    noradScan: 'NORAD · сканирование',
+    noradScan: 'NORAD · скан',
   },
   northToSouth: 'Север → юг',
   southToNorth: 'Юг → север',
