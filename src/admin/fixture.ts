@@ -94,7 +94,8 @@ export function mockStats(range: Range, now = Date.now()): AdminStats {
   const funnel = { search: Math.round(sessions * 0.78), results: Math.round(sessions * 0.74), pass_open: Math.round(sessions * 0.41), lightbox_open: Math.round(sessions * 0.22), share_open: Math.round(shares * 1.2), share_action: Math.round(shares * 0.85) }
   const minsAgo = (m: number) => now - m * 60e3
   const weights = BROWSER_LANGS.reduce((a, l) => a + l[1], 0)
-  const browserTabs = BROWSER_LANGS.map(([l, w, f]) => [l, Math.max(1, Math.round((sessions * 0.92 * w) / weights)), f] as const)
+  // A language with no tab in a short range is not listed, as the database lists none: the tabs never outnumber the sessions.
+  const browserTabs = BROWSER_LANGS.map(([l, w, f]) => [l, Math.round((sessions * 0.92 * w) / weights), f] as const).filter(([, n]) => n > 0)
   const out: AdminStats = {
     range,
     generatedAt: now,

@@ -190,6 +190,10 @@ describe('browser languages (0028)', () => {
     const r = browserLangReach(tabs, m.top['session.browser_lang_searched'])
     expect(r.untranslated.tabs).toBeGreaterThan(0)
     expect(r.untranslated.searched / r.untranslated.tabs).toBeLessThan(r.translated.searched / r.translated.tabs)
+    for (const range of RANGES) {
+      const s = mockStats(range, Date.UTC(2026, 10, 21, 12))
+      expect(s.dimTotals['session.browser_lang']).toBeLessThanOrEqual(s.recorded.session)
+    }
   })
 })
 
