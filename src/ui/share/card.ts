@@ -323,6 +323,29 @@ function readStacks() {
   DISPLAY = get('--font-card-display', SANS)
 }
 
+/**
+ * Fetch a stack's faces for `text` as the page draws it: each family only for the characters the families before it
+ * do not claim (a face's unicode-range). FontFaceSet.load(stack) would fetch every family's faces for every character,
+ * and a Vietnamese page's stack, its own faces first with the brand faces behind them for a rare symbol, then fetched
+ * the brand faces' latin-ext files for its ă and đ, which its own faces draw. A Latin, Cyrillic or Arabic page fetches
+ * the same files as before.
+ */
+async function loadStack(font: string, stack: string, text: string): Promise<void> {
+  const fonts = typeof document !== 'undefined' ? document.fonts : undefined
+  if (!fonts) return
+  let rest = [...new Set(text)]
+  for (const family of stack.split(',').map((f) => f.trim())) {
+    if (!rest.length) return
+    if (!/^["']/.test(family)) continue // a generic or system family: nothing to fetch
+    const faces = await fonts.load(`${font} ${family}`, rest.join(''))
+    const ranges = faces.flatMap((f) => f.unicodeRange.split(',').map((r) => r.trim().replace(/^U\+/i, '').split('-').map((h) => parseInt(h, 16))))
+    rest = rest.filter((ch) => {
+      const c = ch.codePointAt(0)!
+      return !ranges.some(([a, z = a]) => c >= a && c <= z)
+    })
+  }
+}
+
 type Ctx = CanvasRenderingContext2D & { fontStretch?: string; letterSpacing?: string }
 interface Face {
   family: string
@@ -664,11 +687,11 @@ async function plateImage(spec: CardSpec): Promise<{ img: HTMLImageElement; rect
  */
 export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   readStacks()
-  const fontsToLoad = [`560 84px ${DISPLAY}`, `400 24px ${SANS}`, `350 13px ${MONO}`, `500 16px ${MONO}`, `italic 400 84px ${SERIF}`]
+  const fontsToLoad: [string, string][] = [['560 84px', DISPLAY], ['400 24px', SANS], ['350 13px', MONO], ['500 16px', MONO], ['italic 400 84px', SERIF]]
   // The card's own words, so a script face behind a unicode-range (Cyrillic, Arabic) is fetched before it is drawn.
   const sample = JSON.stringify(spec)
   const [, pic] = await Promise.all([
-    Promise.all(fontsToLoad.map((f) => document.fonts?.load(f, sample))).catch(() => undefined), // fall back to whatever is available
+    Promise.all(fontsToLoad.map(([font, stack]) => loadStack(font, stack, sample))).catch(() => undefined), // fall back to whatever is available
     plateImage(spec),
   ])
   const img = pic?.img ?? null
