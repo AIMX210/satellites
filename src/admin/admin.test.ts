@@ -355,4 +355,9 @@ describe('places map', () => {
     // no room at all
     expect(placeTags([one], [{ x: 0, y: 0, w: 400, h: 200 }], frame)).toEqual([])
   })
+  it('is in the fixture: a few places far ahead and a long tail', () => {
+    const m = placeMap(mockStats('7d').top['search.cell'])
+    expect(m.spots.length).toBeGreaterThan(200)
+    expect(m.spots[0].n).toBeGreaterThan(20 * m.spots[Math.floor(m.spots.length / 2)].n)
+  })
 })
