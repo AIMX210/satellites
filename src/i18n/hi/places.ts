@@ -4,10 +4,12 @@
  *
  * Why these names: each is the established Hindi name where one exists («गीज़ा के पिरामिड», «नियाग्रा जलप्रपात»,
  * «मृत सागर», «स्वेज़ नहर», «यूनान»), otherwise a transliteration as Hindi news writes it («लास वेगास स्ट्रिप»,
- * «सोसुसव्लाई»). Countries are the names Hindi readers use: «अमेरिका», never the formal «संयुक्त राज्य अमेरिका», in a
- * sublabel; «यूएई», «मिस्र», «तुर्किये». Garden City's circles are irrigated fields, so they are «गोल खेत», what they
- * are, not crop circles. Sublabels run most specific first, with commas, as Hindi addresses do. Usage stats,
- * record_lookup and shares keep the English label, so nothing here splits a count.
+ * «सोसुसव्लाई»). A country is written as the where line under a searched place writes it (Intl's names through
+ * shownCountryName: «मिस्र», «तुर्किये», «संयुक्त अरब अमीरात», «हाँग काँग»), so one country is never named two ways,
+ * except the US: Intl's «संयुक्त राज्य» is not how Hindi names it, so the sublabels say «अमेरिका» (docs/i18n/hi.md
+ * §4.3). Garden City's circles are irrigated fields, so they are «गोल खेत», what they are, not crop circles. Sublabels
+ * run most specific first, with commas, as Hindi addresses do. Usage stats, record_lookup and shares keep the English
+ * label, so nothing here splits a count.
  */
 import type en from '../en/places'
 
@@ -18,8 +20,8 @@ const places: typeof en = {
   giza: { chip: 'गीज़ा', label: 'गीज़ा के पिरामिड', sublabel: 'गीज़ा, मिस्र' },
   // "Surprise me"
   uluru: { label: 'उलुरु', sublabel: 'नॉर्दर्न टेरिटरी, ऑस्ट्रेलिया' },
-  palmJumeirah: { label: 'पाम जुमेराह', sublabel: 'दुबई, यूएई' },
-  worldIslands: { label: 'द वर्ल्ड द्वीपसमूह', sublabel: 'दुबई, यूएई' },
+  palmJumeirah: { label: 'पाम जुमेराह', sublabel: 'दुबई, संयुक्त अरब अमीरात' },
+  worldIslands: { label: 'द वर्ल्ड द्वीपसमूह', sublabel: 'दुबई, संयुक्त अरब अमीरात' },
   grandCanyon: { label: 'ग्रैंड कैन्यन', sublabel: 'एरिज़ोना, अमेरिका' },
   meteorCrater: { label: 'मीटियोर क्रेटर', sublabel: 'एरिज़ोना, अमेरिका' },
   lowerManhattan: { label: 'लोअर मैनहैटन', sublabel: 'न्यूयॉर्क, अमेरिका' },
@@ -42,13 +44,13 @@ const places: typeof en = {
   everest: { label: 'माउंट एवरेस्ट', sublabel: 'नेपाल और चीन' },
   angkorWat: { label: 'अंकोरवाट', sublabel: 'सिएम रीप, कंबोडिया' },
   singapore: { label: 'सिंगापुर', sublabel: 'मरीना बे, सिंगापुर' },
-  hongKong: { label: 'हांगकांग', sublabel: 'विक्टोरिया हार्बर, हांगकांग' },
+  hongKong: { label: 'हाँग काँग', sublabel: 'विक्टोरिया हार्बर, हाँग काँग' },
   tokyo: { label: 'टोक्यो', sublabel: 'टोक्यो, जापान' },
   fuji: { label: 'माउंट फ़ूजी', sublabel: 'शिज़ुओका, जापान' },
   sydneyHarbour: { label: 'सिडनी हार्बर', sublabel: 'सिडनी, ऑस्ट्रेलिया' },
   richat: { label: 'रिशात संरचना', sublabel: 'सहारा, मॉरिटानिया' },
   greatBlueHole: { label: 'ग्रेट ब्लू होल', sublabel: 'लाइटहाउस रीफ़, बेलीज़' },
-  boraBora: { label: 'बोरा बोरा', sublabel: 'सोसाइटी द्वीपसमूह, फ़्रेंच पॉलिनेशिया' },
+  boraBora: { label: 'बोरा बोरा', sublabel: 'सोसाइटी द्वीपसमूह, फ़्रेंच पोलिनेशिया' },
   hardyReef: { label: 'हार्डी रीफ़', sublabel: 'ग्रेट बैरियर रीफ़, ऑस्ट्रेलिया' },
   male: { label: 'माले', sublabel: 'उत्तरी माले एटॉल, मालदीव' },
   deadSea: { label: 'मृत सागर के नमक तालाब', sublabel: 'दक्षिणी बेसिन, इज़राइल और जॉर्डन' },
@@ -70,6 +72,6 @@ const places: typeof en = {
   victoriaFalls: { label: 'विक्टोरिया जलप्रपात', sublabel: 'ज़ाम्बिया और ज़िम्बाब्वे' },
   threeGorges: { label: 'थ्री गॉर्जेस बाँध', sublabel: 'हुबेई, चीन' },
   shanghai: { label: 'शंघाई', sublabel: 'हुआंगपु नदी, चीन' },
-  itaipu: { label: 'इताइपू बाँध', sublabel: 'ब्राज़ील और पैराग्वे' },
+  itaipu: { label: 'इताइपू बाँध', sublabel: 'ब्राज़ील और पराग्वे' },
 }
 export default places

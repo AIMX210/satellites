@@ -6,9 +6,12 @@
  *  - The hero opens on «किसी चीज़ ने», "some thing": a thing as the one who sees, the slight wrongness the English has.
  *    «ने» makes «देखा» the neutral masculine whatever watched, and Hindi's verb-final order lands the line on
  *    «*आपको* देखा।», the serif "you" and the verb.
- *  - Instructions are the polite imperative in -एँ (खोजें, डालें, आज़माएँ, लगाएँ), which has no gender; the reader is
- *    never the subject of a participle. The device's position is «लोकेशन», as Indian Hindi apps say it, so «जगह» can
- *    stay "a place on Earth".
+ *  - Instructions are the polite imperative in -एँ (खोजें, आज़माएँ, लगाएँ), which has no gender; the reader is
+ *    never the subject of a participle. "Enter any place" is «कोई भी जगह खोजें», as the field's placeholder says
+ *    («जगह डालें», "insert a place", is not Hindi). "Surprise me" is «कहीं भी», "anywhere": «मुझे चौंकाएँ» asks to
+ *    be startled, and «किस्मत आज़माएँ» would repeat the row's «या आज़माएँ» right before it. "Every satellite … the
+ *    pictures they took" is «गुज़रे सभी उपग्रह … उनकी», so the pronoun has a plural to agree with. The device's
+ *    position is «लोकेशन», as Indian Hindi apps say it, so «जगह» can stay "a place on Earth".
  *  - Status lines are nouns or short «… रहे हैं» clauses with the product's «हम», no final mark. The coordinates in
  *    searchDown are kept exactly as written: the field parses them.
  *  - Dates come from Intl (full month names), the window's ends tied by the landing's arrow, «UTC» kept.
@@ -42,7 +45,7 @@ const landing: typeof en = {
   },
   hero: [['किसी चीज़ ने'], ['इस हफ़्ते'], [accent('आपको'), ' देखा।']] as Rich[],
   sub: (days: number): Rich => [
-    `धरती की कोई भी जगह डालें। पिछले ${f.int(days)}\u00a0${pl(days, 'दिन', 'दिनों')} में उसके ऊपर से गुज़रा हर उपग्रह देखें, और उनकी ली हुई असली तस्वीरें भी।`,
+    `धरती की कोई भी जगह खोजें। पिछले ${f.int(days)}\u00a0${pl(days, 'दिन', 'दिनों')} में उसके ऊपर से गुज़रे सभी उपग्रह देखें, और उनकी ली हुई असली तस्वीरें भी।`,
   ],
   builtBy: (handle: string) => `${handle} ने बनाया`,
 
@@ -53,10 +56,10 @@ const landing: typeof en = {
   searchUnavailable: 'खोज उपलब्ध नहीं',
   matches: (n: number) => `${f.int(n)}\u00a0${pl(n, 'नतीजा', 'नतीजे')}`,
   noMatch: 'कोई नतीजा नहीं',
-  searchHint: 'नाम, पता या निर्देशांक',
+  searchHint: 'नाम, पता या अक्षांश, देशांतर',
   clearSearch: 'खोज साफ़ करें',
-  go: 'इस जगह के ऊपर से क्या गुज़रा, दिखाएँ',
-  searchDown: 'जगहों की खोज जवाब नहीं दे रही। 43.47, −80.54 जैसे निर्देशांक अब भी काम करते हैं।',
+  go: 'देखें कि इस जगह के ऊपर से क्या गुज़रा',
+  searchDown: 'जगह खोजने की सेवा जवाब नहीं दे रही है। 43.47, −80.54 जैसे निर्देशांक अब भी काम करते हैं।',
   nothingMatches: (query: string) => `“${query}” से कुछ मेल नहीं खाता। कोई शहर, मशहूर जगह या निर्देशांक आज़माएँ।`,
   suggestions: 'जगहें',
 
@@ -71,7 +74,7 @@ const landing: typeof en = {
   requestingPosition: 'लोकेशन माँग रहे हैं',
   namingPlace: 'जगह का नाम ढूँढ रहे हैं',
   elapsed: (seconds: number) => `${seconds.toFixed(0).padStart(2, '0')} सेकंड`,
-  locatingNote: 'जगह का नाम जानने के लिए आपकी लोकेशन Photon सेवा को भेजी जाती है। हम सिर्फ़ करीब 10\u00a0किमी का एक वर्ग सहेजते हैं।',
+  locatingNote: 'जगह का नाम जानने के लिए आपकी लोकेशन Photon सेवा को भेजी जाती है। हम सिर्फ़ करीब 10\u00a0किमी का एक इलाका सहेजते हैं।',
   locationLabel: 'लोकेशन',
   dismiss: 'बंद करें',
   locateErrors: {
@@ -86,10 +89,10 @@ const landing: typeof en = {
   // ── Examples ──
   orTry: 'या आज़माएँ',
   pinHint: 'या ग्लोब पर क्लिक करके पिन लगाएँ',
-  examplesLabel: 'उदाहरण की जगहें',
+  examplesLabel: 'उदाहरण के लिए कुछ जगहें',
   dropPin: 'पिन लगाएँ',
   chipName: (label: string, sublabel: string) => `${label}, ${sublabel}`,
-  surprise: 'मुझे चौंकाएँ',
-  surpriseName: 'मुझे चौंकाएँ: यूँ ही चुनी गई कोई मशहूर जगह',
+  surprise: 'कहीं भी',
+  surpriseName: 'कहीं भी: यूँ ही चुनी गई कोई मशहूर जगह',
 }
 export default landing
