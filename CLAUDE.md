@@ -16,8 +16,8 @@
 ## Quirks that trip agents up
 
 **Checks and style**
-- `npm test` covers `src/**` only. The serverless functions in `api/` and the Cloudflare Worker in `worker/` have their
-  own suite: `npm run test:backend`.
+- `npm test` covers `src/**` only. The serverless functions in `api/`, the Cloudflare Worker in `worker/` and the
+  scripts' tests (`scripts/**/*.test.ts`) have their own suite: `npm run test:backend`.
   Run both, plus `npm run build` (it runs `tsc -b`, two Vite builds: the app and `/admin`, then
   `scripts/build-seo.ts`, which writes the place pages, sitemap and robots.txt into `dist/`).
 - There is no Prettier or ESLint config. Never run `npx prettier`: it downloads Prettier and rewrites files in its
@@ -76,6 +76,10 @@
   every one of its catalog requests with a full 200 (zone analytics: GraphQL `httpRequestsAdaptiveGroups`).
 - Ad-hoc queries on production: at most an hour or two of `public.events` at a time. A 12-hour scan on 2026-11-12
   stalled the API on the small machine.
+- The orbit catalog bot (`.github/workflows/catalog.yml`, `scripts/fetch-catalog.ts`) asks CelesTrak through
+  `scripts/celestrak.ts`: any answer but 200 ends the run's asking (CelesTrak's usage policy; an address that keeps
+  asking goes to its firewall, and a runner's address is shared). Only a request with no answer is asked again. The
+  retry is the next slot: every 3 hours, skipped while the catalog is under 4 hours old. Never add fast retries.
 - `VITE_*` env vars are bundled into the browser. Server secrets (`CDSE_CLIENT_ID` / `CDSE_CLIENT_SECRET`) are only
   read in `api/`. Never print env values.
 - Cloud sessions cannot delete GitHub branches, change repo settings or use GitHub GraphQL (`gh` REST only). The
