@@ -1,11 +1,12 @@
 # Watched: Russian (ru) localisation style guide
 
-Draft for native review, 2026-11-21. Binding for every `ru` string the product shows, speaks or sends: the landing,
-results, pass detail, gallery and photo viewer, the time-lapse, the share sheet, share cards, share pages and post text,
-the HUD and globe, About, errors, the loading screen, alt text and aria labels. Written in English for the team; every
-example is the Russian a translator ships. Scope: one variety for every reader (Russia, Belarus, Kazakhstan, Central
-Asia, the Baltic states, Israel, the diaspora and Ukrainians who read Russian), current orthography (Правила 2006, the
-Grammar of the Russian Academy for agreement), **ё written everywhere** (§6.1).
+Written 2026-11-21 and revised the same day after two independent native reviews (see Review). Binding for every
+`ru` string the product shows, speaks or sends: the landing, results, pass detail, gallery and photo viewer, the
+time-lapse, the share sheet, share cards, share pages and post text, the HUD and globe, About, errors, the loading
+screen, alt text and aria labels. Written in English for the team; every example is the Russian a translator ships.
+Scope: one variety for every reader (Russia, Belarus, Kazakhstan, Central Asia, the Baltic states, Israel, the
+diaspora and Ukrainians who read Russian), current orthography (Правила 2006, the Grammar of the Russian Academy for
+agreement), **ё written everywhere** (§6.1).
 
 Sources of truth: `docs/DESIGN.md` §3 (type) and §7 (voice, verdict vocabulary), `docs/I18N.md`,
 `docs/i18n/TRANSLATING.md`, the English namespaces in `src/i18n/en/`, `api/_lib/i18n/card/en.ts`,
@@ -56,7 +57,7 @@ A third, smaller one: **a numeral governs its noun and its verb** (21 → «см
 | Numbers | `1 715` (NBSP, as Intl prints), `7,46`, `25%` and `98,6°` tight, NBSP before units: `786 км`. |
 | Coordinates and compass | International notation, as they arrive: `43.47, −80.54`, `16.2°S 063.0°E`. Readouts keep the compass point as it arrives (`SSW`); prose uses Russian words (§4.2). |
 | Clocks | 24-hour with a colon, as they arrive, after **в**: «в 16:14:21 UTC». About a minute: «около 07:49 CET». |
-| Punctuation | «ёлочки», nested „лапки“; one-character ellipsis …; em dash — with spaces (NBSP before it), used where Russian grammar puts it (noun — noun), not as decoration; no exclamation marks. |
+| Punctuation | «ёлочки», nested „лапки“; one-character ellipsis …; em dash — with spaces (NBSP before it), used where Russian grammar puts it (noun — noun), not as decoration, and never in About (§6.3); no exclamation marks. |
 | ё | Written everywhere («пролёт», «ещё», «всё», «её», «тёмный»): «пролет» is also a flight of stairs, «все» and «всё» are different words. Intl's own strings are left as they come. |
 | Euphony | «со» before «с», «з», «ш», «ж» + consonant and before «второго» (fixed words, and «Со 2 ноября», §5.6); «в», «с», «к», «о» everywhere else. |
 | Place exonyms in static copy | Standard Russian names: Киев, Харьков, Одесса, Львов, Днепр, Чернобыль, Киевская область (§8). Gazetteer data is shown as it comes. |
@@ -75,12 +76,12 @@ plural and the polite singular, so «на вас» reads either as "at all of yo
 in it."), close to the way a person talks, and that is ты in Russian. The Ukrainian edition (ти) and the Polish (ty)
 make the same choice; a Russian reader who also reads those sees one product.
 
-The product itself is **мы** («Мы не можем этого знать», «Мы храним только…»).
+The product itself is **мы** («Мы не можем этого знать», «Мы передаём твоё местоположение геокодеру Photon…»).
 
 ### 1.2 What вы would have solved, and why ты still wins
 
-Вы has one real advantage: its past tense is plural and has no gender («вы искали», «вы были в досягаемости»), so the
-gender trap of §1.4 would not exist. It also matches the default of Russian banks, ministries and most large
+Вы has one real advantage: its past tense is plural and has no gender («вы искали», «вы были в зоне досягаемости»), so
+the gender trap of §1.4 would not exist. It also matches the default of Russian banks, ministries and most large
 services, and some readers over forty find a website's ты presumptuous.
 
 It loses anyway:
@@ -98,7 +99,7 @@ Never mix: one ты string and one вы string on the same screen reads as two a
 | Surface | Decision | Example | Rejected alternative, and why it lost |
 |---|---|---|---|
 | Display headlines | **ты** in the hero; the results headline is about the place (third person, no address) | «На этой неделе что-то смотрело на *тебя*.» · «*Waterloo*. За последние 7 дней сюда **смотрели 256 спутников**.» | «…на *вас*.»: plural or official; the poster stops pointing at one person |
-| Sentences and prose | **ты** and **твой** where the reader is addressed; **мы** for the product | «Над твоей точкой ясно.» · «Мы храним только ячейку сетки ~10 км.» | Impersonal prose throughout: loses the second person DESIGN §7 asks for |
+| Sentences and prose | **ты** and **твой** where the reader is addressed; **мы** for the product | «Над твоей точкой ясно.» · «Мы передаём твоё местоположение геокодеру Photon, чтобы узнать название места.» | Impersonal prose throughout: loses the second person DESIGN §7 asks for |
 | Buttons | **Infinitive**, the Russian UI norm; «Отмена», «Назад» as nouns | «Поделиться» · «Сохранить» · «Повторить» · «Отмена» | ты-imperatives («Сохрани») shout like an advert; вы-imperatives («Сохраните») are formal and longer |
 | Mono caps labels | **Nouns** and noun phrases | «Высота» · «Последние 7 дней» · «02 / Пролёты» | Verbs in labels: a label is a name, not a request |
 | Prompts that are not buttons | **ты**-imperative | «02 / Или попробуй» · «Или поставь метку на глобусе» | Infinitive: reads like a button that does nothing |
@@ -110,18 +111,18 @@ Never mix: one ты string and one вы string on the same screen reads as two a
 
 ### 1.4 The gender trap, and every "you + past tense" rewrite
 
-Russian past tense and short adjectives agree in gender, so «ты искал», «ты был в досягаемости», «ты должен быть в
+Russian past tense and short adjectives agree in gender, so «ты искал», «ты был в зоне досягаемости», «ты должен быть в
 полосе», «ты готов» are wrong for half the readers. Use the present or future («ищешь», «увидишь», «поделишься»),
 make something else the subject («твоё место», «твоя точка»), or say it impersonally («нужно оказаться»). Never slash
 forms («искал(а)»). The English strings that need it, with their shipped forms:
 
 | English | Shipped |
 |---|---|
-| If you were in reach, we call it "could have pointed here" | Если твоё место было в досягаемости, мы пишем «Могли смотреть сюда». |
+| If you were in reach, we call it "could have pointed here" | Если твоё место было в зоне досягаемости, мы пишем «Могли смотреть сюда». |
 | You have to be in the strip | Нужно оказаться в этой полосе. |
 | Shared with you | С тобой поделились |
 | Made when you share | Появится, когда поделишься |
-| If you're on their side of Earth, you're in every frame | Если ты на их стороне Земли, ты в каждом кадре. |
+| If you're on their side of Earth, you're in every frame | Если ты на обращённой к ним стороне Земли, ты в каждом кадре. («на их стороне» also means "on their side" in a conflict) |
 | You're not in it | Тебя на снимке не видно. |
 | Your spot was in cloud shadow | Твоя точка была в тени от облаков. |
 | It was dark where you are | Там, где ты, было темно. |
@@ -162,7 +163,9 @@ table first.
 
 - **Marketing tone:** «Откройте для себя», «невероятный», «уникальный», «революционный», «Добро пожаловать», «Узнайте
   больше», exclamation marks, emoji, rhetorical questions. Two questions are allowed because the English asks them:
-  the share post's hook and the card's footer invitation (§3.7).
+  the share post's hook («Что пролетало над тобой на этой неделе?») and the last line of the share page's description
+  («Что смотрело на тебя на этой неделе?»). The card's footer is no question in English ("See what watched you"): it is
+  the indirect question as a label, «Что смотрело на тебя», with no question mark (§3.7).
 - **Канцелярит (bureaucratese):** «осуществлять» («осуществил пролёт» ✗ → «пролетел»), «являться» (✗ → «это», or
   nothing), «данный» meaning "this" (✗ → «этот»), «в целях», «в случае», «в течение» only for time («в течение суток»
   ✓), «производить съёмку» (✗ → «снимать»), «на сегодняшний день», long genitive chains («расчёт времени пролёта
@@ -182,7 +185,7 @@ table first.
 |---|---|---|---|
 | Something watched you this week. | Что-то наблюдало за вами на этой неделе. | На этой неделе что-то смотрело на *тебя*. | ты; the product verb, a gaze, not surveillance; "you" moves to the end, where Russian puts emphasis |
 | It was daylight, so it almost certainly recorded this spot. No scene from this pass has been published yet; archives can lag by a day or more. | Было дневное время, поэтому он почти наверняка записал это пятно. Ни одна сцена с этого прохода ещё не была опубликована; архивы могут отставать на день или больше. | Был день, так что эта точка почти наверняка попала в кадр. Снимок с этого пролёта ещё не опубликован. Архивы могут запаздывать на сутки и больше. | «пятно» is a stain and «сцена» a stage; «проход» is a corridor; the point is the subject, so no satellite gender is needed; «сутки», not «день», for 24 hours |
-| Its images feed weather forecasts; they are not published as pictures we can show. | Его изображения питают прогнозы погоды; они не являются опубликованными как картинки… | Его снимки идут в прогнозы погоды. Их не публикуют как изображения, которые мы могли бы показать. | No «являются»; impersonal «не публикуют»; «картинка» is too casual |
+| Its images feed weather forecasts; they are not published as pictures we can show. | Его изображения питают прогнозы погоды; они не являются опубликованными как картинки… | Его снимки используются в прогнозах погоды. В виде изображений, которые мы могли бы показать, их не публикуют. | No «являются»; «идут в прогнозы» is a spoken calque of "feed"; impersonal «не публикуют», the new fact last; «картинка» is too casual |
 | (a typical marketing rewrite) | Узнайте, какие спутники следят за вами из космоса! | Введи любое место на Земле. Увидишь все спутники, пролетавшие над ним за последние 7 дней… | The English never sells; neither does the Russian |
 | Can it see me? No. … You're not in it. | Может ли оно видеть меня? Нет. … Вы не в нём. | Меня видно? Нет. … Тебя на снимке не видно. | Short, spoken, ты |
 | …weather satellites scan at night too, in infrared, so it saw your clouds… | …поэтому он видел твои облака… | Метеоспутники продолжают снимать и ночью, в инфракрасном диапазоне, так что этот спутник видел твои облака, а не улицы. | «он» after a plural has no antecedent |
@@ -272,9 +275,10 @@ Examples: «*Waterloo*. За последние 7 дней сюда **смотр
 **смотрел 1 спутник**.» · «*Сочи*. За последние 7 дней сюда **смотрел 21 спутник**.» (21 is `one`.) With 2–4 both
 «смотрели» and «смотрело» are correct Russian; the plural is chosen because the satellites act.
 
-- **None** (its own message, never a plural form): «*[PLACE]*. На этой неделе сюда не смотрел ни один известный нам
-  спутник.» (an older week: «В ту неделю…»). The same words on the card. «известный нам» is honest about the
-  satellites About says no one lists.
+- **None** (its own message, never a plural form): «*[PLACE]*. На этой неделе ни один известный нам спутник сюда не
+  смотрел.» (an older week: «В ту неделю…»). The same words on the card. «известный нам» is honest about the
+  satellites About says no one lists. The negation comes last, where Russian puts the new fact, and the week card's
+  lead sets in three lines («…сюда не смотрел ни один известный нам спутник» took four).
 - **Old window:** «*[PLACE]*. С 29 октября по 5 ноября сюда **смотрели [NUM] спутников**.»; within one month «С 1 по
   8 ноября»; from the 2nd «Со 2 по 9 ноября» (§5.6).
 - **A place cut short** ends on the ellipsis alone: «*Очень длинное название…* За последние 7 дней…»
@@ -325,7 +329,7 @@ singular masculine. With 2–4 «опубликовано» and «опублик
 **Imaged, detailed photo** ("Sentinel-2C crossed 786 km overhead at 16:14:21 UTC, moving south at 7.46 km/s. It was
 looking straight down. Cloud cover across the scene: 25%."):
 
-> Спутник Sentinel-2C пролетел в 16:14:21 UTC прямо над головой на высоте 786 км, двигаясь на юг со скоростью
+> Спутник Sentinel-2C пролетел в 16:14:21 UTC прямо над этой точкой на высоте 786 км, двигаясь на юг со скоростью
 > 7,46 км/с. Он смотрел строго вниз. Облачность кадра: 25%.
 
 Time comes right after the verb, then where: «пролетел в [TIME] на высоте…» is how Russian tells it, and it keeps the
@@ -334,27 +338,33 @@ three «в»).
 
 Parts of the frame:
 
-- Overhead (ground distance < 15 km): «прямо над головой на высоте [ALT]»
+- Overhead (ground distance < 15 km): «прямо над этой точкой на высоте [ALT]». Never «прямо над головой»: it is the
+  overhead verdict's name («Над головой»), and the searched place need not be where the reader stands.
 - Offset: «на высоте [ALT], в [DIST] к [DIR-dative]» → «…в 16:14:21 UTC на высоте 786 км, в 61 км к западу, двигаясь…»
 - Off nadir: «Он смотрел вниз с отклонением [DEG] от вертикали.» (prose says «от вертикали»; only labels say «от
   надира»)
-- Radar: «Его радар, глядя на [DEG] в сторону, снял это место: [NUM] м на пиксель[, в темноте].»
+- Radar: «Его радар смотрел вбок под углом [DEG] и снял это место[ в темноте]: [NUM] м на пиксель.» Never «глядя на
+  [DEG]» (it reads first as "looking at"), and «в темноте» goes with «снял», never after the pixel size.
 - Daily mosaic: «Его сенсор VIIRS добавил это место в суточную мозаику NASA в естественных цветах: 375 м на пиксель.»
 - Likely, open optical, recent: «Был день, так что эта точка почти наверняка попала в кадр. Снимок с этого пролёта
   ещё не опубликован. Архивы могут запаздывать на сутки и больше.»
-- Likely, at night: «Здесь была ночь. Метеоспутники продолжают снимать и ночью, в инфракрасном диапазоне, так что этот
-  спутник видел твои облака, а не улицы.»
+- Likely, in the dark: «Здесь было темно. Метеоспутники продолжают снимать и ночью, в инфракрасном диапазоне, так что
+  этот спутник видел твои облака, а не улицы.» The line shows whenever the sun is below the horizon, civil twilight
+  included, so it says «темно», as English says "dark", never «ночь».
 - Could (commercial): «Спутник WorldView Legion 4 пролетел в 10:52 EST в зоне видимости, в 61 км к западу.» Then the
   camera: «Отклонив камеру на 18,2° от вертикали, он мог смотреть сюда. Мы не можем знать, так ли это было.»; passing
-  straight over: «Даже не отклоняя камеру, он мог смотреть сюда.»
+  straight over: «Не отклоняя камеру, он мог смотреть сюда.» (no «Даже»: the English adds no emphasis). Radar:
+  «Глядя вбок под углом 25,0°, он мог снять это место.»
 - Overhead (the message gets no satellite category, so a station is «спутник» here too, which is true: a station is
   an artificial satellite): «Спутник ISS (ZARYA) пролетел в 21:03 EET на высоте 420 км, на 45° над твоим горизонтом,
   на северо-западе.» Near the zenith: «…почти в зените.» At night (`darkStation`, which English words for a station):
   «Там, где ты, было темно. Если станцию ещё освещало солнце, она пролетела по твоему небу яркой немигающей точкой.»
-- Geostationary: «Спутник Meteosat-12 не пролетает. Он неподвижно висит на высоте 35 786 км над экватором (0.2°W) и
-  каждые 10 минут снимает всю обращённую к нему сторону Земли.» «Линия этого сканирования дошла сюда около 07:49 CET,
-  двигаясь на север.» Infrared: «Здесь была ночь, поэтому это инфракрасный снимок: яркость показывает температуру
-  верхушек облаков, чем холоднее, тем светлее.» The seat is a coordinate: international notation, in parentheses.
+- Geostationary: «Спутник Meteosat-12 не пролетает мимо, а неподвижно висит на высоте 35 786 км над экватором (0.2°W)
+  и каждые 10 минут снимает всю обращённую к нему сторону Земли.» «Линия сканирования дошла сюда около 07:49 CET,
+  двигаясь на север.» Infrared: «Здесь было темно, поэтому это инфракрасный снимок. Яркость показывает температуру
+  верхушек облаков: чем холоднее, тем светлее.» («темно»: an infrared frame is picked whenever the sun is below 6°,
+  sometimes still day; the explanation is its own sentence so it can take the colon.) The seat is a coordinate:
+  international notation, in parentheses.
 
 | Alternate | Why it loses |
 |---|---|
@@ -371,7 +381,7 @@ past tense that would need the satellite's gender.
 |---|---|---|---|---|---|
 | imaged | Увидено | СНИМОК | пролёт · пролёта · пролётов · пролёта | Настоящий снимок этого места есть в открытом архиве. | «*[PLACE]*. Сюда смотрел спутник [SAT].» / «…неизвестный спутник.» |
 | likely | Вероятно, увидено | ВЕРОЯТНО | same | Это место попало в полосу обзора неподвижной камеры. Снимок не опубликован. | «*[PLACE]*. Это место попало в полосу обзора спутника [SAT].» / «…неизвестного спутника.» |
-| could | Могли смотреть сюда | ВОЗМОЖНО | same | Это место было в досягаемости поворотной или частной камеры. Оператор не сообщает, смотрела ли она сюда. | «*[PLACE]*. Сюда мог смотреть спутник [SAT].» / «…неизвестный спутник.» |
+| could | Могли смотреть сюда | ВОЗМОЖНО | same | Это место было в зоне досягаемости поворотной камеры или камеры с закрытым архивом. Оператор не сообщает, смотрела ли она сюда. | «*[PLACE]*. Сюда мог смотреть спутник [SAT].» / «…неизвестный спутник.» |
 | overhead | Над головой | В НЕБЕ | same | Пролёт над твоей головой. Станции и всё остальное. | «*[PLACE]*. Над этим местом пролетел спутник [SAT].» / «…неизвестный спутник.» |
 
 - **Увидено** is a status form like «Отправлено», «Просмотрено», «Прочитано» in a messenger: no gender, no agent, and
@@ -387,8 +397,11 @@ past tense that would need the satellite's gender.
   title's picture.
 - The spoken verb in a row's summary («Sentinel-2C, увидено, пятница, 6 ноября…») is the title's own words in running
   case: «увидено», «вероятно, увидено», «могли смотреть сюда», «над головой». Never «пролетел» alone.
-- About's longer words: imaged «Если мы его показываем, это настоящий снимок.»; likely «Возможно, он ещё не вышел или
-  его отбраковали из-за облаков.»; could «Узнать, так ли было на самом деле, невозможно.»
+- English's "private" camera is «камера с закрытым архивом»: «частная камера» is a person's camera, and some of these
+  cameras are governments'. «в зоне досягаемости», never a bare «в досягаемости».
+- About's longer words: imaged «Если мы его показываем, это настоящий снимок.»; likely «Либо его ещё не выложили, либо
+  отбраковали из-за облаков.» (after «Снимок не опубликован.», so not «опубликовали» again); could «Узнать, так ли было
+  на самом деле, невозможно.»
 
 ### 3.7 Share card, share page and post
 
@@ -401,33 +414,36 @@ of about 24 characters at the largest size):
 | Key | ru |
 |---|---|
 | `headline` (the week's N, ≥ 1) | «*Waterloo.* Сюда смотрели 7 спутников.» (`one`: «Сюда смотрел 21 спутник.») |
-| `headlineWeek` | «*Waterloo.* На этой неделе сюда смотрел 31 спутник.» · none: «*Waterloo.* На этой неделе сюда не смотрел ни один известный нам спутник.» |
+| `headlineWeek` | «*Waterloo.* На этой неделе сюда смотрел 31 спутник.» · none: «*Waterloo.* На этой неделе ни один известный нам спутник сюда не смотрел.» (three lead lines) |
 | `headlineBy` (older shares) | the four verdict frames of §3.6, with `sat` undefined → the nameless forms |
 | `photos` | §3.4 |
 
 **Top row and readouts:** stamp «вс, 1 нояб. 2026 · 11:21 EST» (built from Intl parts, without Intl's «г.»); `weekTo`
-«7 дней до 1 нояб. 2026»; `lastWeek` «Последние 7 дней». Readouts «Высота · Над горизонтом · Скорость · От надира ·
+«7 дней по 1 нояб. 2026» («по» marks the span's last day, as in «с 25 октября по 1 ноября»; «7 дней до 1 нояб.» reads
+as a countdown); `lastWeek` «Последние 7 дней». Readouts «Высота · Над горизонтом · Скорость · От надира ·
 Пиксель · Пиксель мозаики · До трассы» (the longest, 15 characters, fits the 155 px column); week lanes «Снимок ·
 Вероятно · Возможно · В небе»; units «км · м · км/с».
 
 **Over the picture:** `aSatellite` (a lone label: chips and the plan plate's callout) «Спутник»; look chips «Самый
 близкий кадр · Sentinel-2B · 10 м», «Последний ясный кадр · 3 нояб.», «Под облаками», «Радар»; geometry «Геометрия
 пролёта · север вверху»; notes «Снимок открывается в приложении» · «Снимок сейчас недоступен» · «Закрытый коммерческий
-архив» · «В полосе обзора, ещё не опубликован» · «Трасса в момент сближения»; `acquiring` «Приём…»; `noPublicPhoto`
-«За неделю снимков не опубликовано» (the week's lead can be radar, which is not a photo); `noPhoto` «Нет снимка для
-показа».
+архив» · «В полосе обзора, снимок ещё не опубликован» (the participle needs its noun) · «Трасса в момент
+сближения»; `acquiring` «Приём…»; `noPublicPhoto` «За неделю снимков не опубликовано» (the week's lead can be
+radar, which is not a photo); `noPhoto` «Нет снимка для показа».
 
 **Clouds** (`sub` · `chip` · `post` · `desc`):
 
 | Case | ru |
 |---|---|
-| only (≥ 90%) | «Под облаками. Видны только облака.» · «Под облаками · 93%» · «Видны только облака.» · «Видны только облака (93%).» |
+| only (≥ 90%) | «Сплошная облачность: видны только облака.» · «Под облаками · 93%» · «Видны только облака.» · «Видны только облака (93%).» |
 | mostly (70–89%) | «В основном облака: 81% кадра.» · «В основном облака · 81%» · «Видны в основном облака (81%).» · same |
 | spot | «Облака над самой точкой.» · «Облака над точкой» · «Точку закрыли облака.» · same |
 
-**Footer:** `invite` «Что смотрело на тебя?» (21 characters beside the domain); `enterAnyPlace` «Выбери место на Земле»;
-`defaultPlace` «Пальма Джумейра»; `defaultAlt` «Настоящий снимок Пальмы Джумейра (Дубай) со спутника Sentinel-2, а рядом
-строка «На этой неделе что-то смотрело на тебя. Выбери место на Земле».» (it describes the ru default card).
+**Footer:** `invite` «Что смотрело на тебя» (20 characters beside the domain: English invites, "See what watched
+you", so the indirect question stands as a label, with no question mark); `enterAnyPlace` «Введи место на Земле» (20,
+the landing's and the share page's verb); `defaultPlace` «Пальма Джумейра»; `defaultAlt` «Настоящий снимок Пальмы
+Джумейра (Дубай) со спутника Sentinel-2, а рядом строка «На этой неделе что-то смотрело на тебя. Введи место на
+Земле».» (it describes the ru default card).
 
 **Share page:** `title` «На этой неделе что-то смотрело на тебя.»; `description` = the sub line (§3.2); `placeTitle`
 «Waterloo: что смотрело сюда на этой неделе»; `placeDescription` «Waterloo: все спутники, пролетавшие здесь за
@@ -438,7 +454,7 @@ of about 24 characters at the largest size):
 
 | Key | ru |
 |---|---|
-| `crossed` imaged / likely | «Waterloo. Спутник Sentinel-2C пролетел на высоте 795 км в 11:21 EST, 1 ноября 2026 года, двигаясь на юг.» |
+| `crossed` imaged / likely | «Waterloo. Спутник Sentinel-2C пролетел здесь на высоте 795 км в 11:21 EST, 1 ноября 2026 года, двигаясь на юг.» (no altitude: «…пролетел над этим местом в 11:21 EST…»; the place is never dropped) |
 | `crossed` overhead | «Waterloo. Над этим местом на высоте 420 км пролетел спутник ISS (ZARYA) в 21:03 EET, 1 ноября 2026 года, двигаясь на северо-восток.» |
 | nameless | «Waterloo. Неизвестный спутник пролетел…» |
 | `withinView` | «Waterloo. Спутник WorldView Legion 4 пролетел в зоне видимости этого места в 10:52 EST, 1 ноября 2026 года, двигаясь на север.» |
@@ -456,7 +472,7 @@ of about 24 characters at the largest size):
 |---|---|
 | imaged | «Waterloo. Сюда смотрел спутник Sentinel-2C с высоты 786 км, 1 ноября в 11:21 по местному времени. 10 м на пиксель. Это настоящий снимок.» |
 | clouded | «Waterloo. Сюда смотрел спутник Sentinel-2C с высоты 786 км, 1 ноября в 11:21 по местному времени. Видны только облака.» |
-| likely | «Waterloo. Спутник Sentinel-2A пролетел на высоте 786 км, 1 ноября в 10:41 по местному времени. Это место попало в полосу обзора его камеры.» |
+| likely | «Waterloo. Спутник Sentinel-2A пролетел здесь на высоте 786 км, 1 ноября в 10:41 по местному времени. Это место попало в полосу обзора его камеры.» |
 | could | «Waterloo. Спутник WorldView Legion 4 пролетел в зоне видимости этого места 1 ноября в 10:52 по местному времени. Он мог смотреть сюда. Оператор не сообщает, так ли это было.» |
 | overhead | «Waterloo. Над этим местом на высоте 420 км пролетел спутник ISS (ZARYA), 1 ноября в 21:03 по местному времени.» |
 | hooks | «На этой неделе что-то смотрело и на тебя.» / «Что пролетало над тобой на этой неделе?» |
@@ -480,14 +496,16 @@ of capture (§8).
 | How this works | Как это работает |
 | SUN 16.2°S 063.0°E | Солнце 16.2°S 063.0°E (coordinates as they arrive) |
 | Sub-solar point · GMST 18:41:50 | Подсолнечная точка · GMST 18:41:50 |
-| Scene (replay clock) | Кадр |
+| Scene (replay clock) | Повтор |
 | 12,847 OBJECTS · Objects · CATALOG | 12 847 объектов · объектов · Каталог |
-| Fetched [stamp] · Stale, 3 D ago | Получен [stamp] · Устарел, 3 дн. назад |
+| Fetched [stamp] · Stale, 3 D ago | Получен [stamp] · 3 дн. назад, устарел |
 | Catalog unavailable · Loading catalog | Каталог недоступен · Загрузка каталога |
 | Fault · Trying… · Back | Сбой · Пробуем… · Назад |
 
 «Приём» is the word of a ground station receiving a downlink: an instrument's word for a picture arriving, with no
-capture in it. «Устарел» agrees with «каталог» (masculine, always the subject here).
+capture in it. «устарел» follows the age: «Устарел, 3 дн. назад» read "went stale 3 days ago"; it agrees with
+«каталог» (masculine, always the subject here). The replay's clock is «Повтор», and its scrubber «Время в повторе
+пролёта»: «кадр» is an image's word, and this is the replay's simulated time, not the time anything was taken.
 
 ### 3.9 About page
 
@@ -498,15 +516,19 @@ nothing less than the English.
 |---|---|
 | How this / *works*. | Как это / *работает*. |
 | Pick a spot on Earth. We work out which satellites flew over it in the last week, then go find the photos they took. It all runs in your browser, on public data. | Выбери точку на Земле. Мы вычисляем, какие спутники пролетали над ней за последнюю неделю, и ищем снимки, которые они сделали. Всё работает в твоём браузере, на открытых данных. |
-| Sections | Коротко · Как мы находим пролёты · Что значат отметки · Чего мы не видим · Приватность · Благодарности · Клавиатура |
+| Sections | Коротко · Как мы находим пролёты · Что значат статусы · Чего мы не видим · Приватность · Благодарности · Клавиатура |
 | Is it live? Not quite… | Это в реальном времени? Не совсем. Снимки попадают в архивы через несколько часов или пару дней после съёмки, так что у самых свежих пролётов их может ещё не быть. |
-| Can it see me? No. At best a pixel here is 10 m across. A car is one pixel. You're not in it. | Меня видно? Нет. Самый мелкий пиксель здесь — 10 м. Автомобиль — это один пиксель. Тебя на снимке не видно. |
+| Can it see me? No. At best a pixel here is 10 m across. A car is one pixel. You're not in it. | Меня видно? Нет. Пиксель здесь не меньше 10 м. Автомобиль занимает один пиксель. Тебя на снимке не видно. |
 | Is this every satellite? No. Military and spy satellites mostly aren't in public catalogs… | Здесь все спутники? Нет. Военных и разведывательных спутников в основном нет в открытых каталогах, а компании не говорят, куда направляют свои камеры. |
 | You have to be in the strip. | Нужно оказаться в этой полосе. |
-| If you were in reach, we call it "could have pointed here". | Если твоё место было в досягаемости, мы пишем «Могли смотреть сюда». |
-| A few sit over the equator… If you're on their side of Earth, you're in every frame. | Несколько висят над экватором и каждые 10 минут смотрят на полпланеты. Если ты на их стороне Земли, ты в каждом кадре. |
-| Made from public data. We didn't take any of these photos. | Сделано из открытых данных. Ни одного из этих снимков мы не делали. |
+| If you were in reach, we call it "could have pointed here". | Если твоё место было в зоне досягаемости, мы пишем «Могли смотреть сюда». |
+| A few sit over the equator… If you're on their side of Earth, you're in every frame. | Несколько метеоспутников неподвижно висят над экватором и каждые 10 минут смотрят на полпланеты. Если ты на обращённой к ним стороне Земли, ты в каждом кадре. |
+| Made from public data. We didn't take any of these photos. | Сделано на открытых данных. Ни одного из этих снимков мы не делали. («сделано из» is about material) |
 | Close · Esc · Space | Закрыть · Esc · Пробел |
+
+About has no em dash, as the owner's English has none: a sentence Russian would build noun — noun is rebuilt
+(«Автомобиль занимает один пиксель», «здания и неровная земля светлые, спокойная вода тёмная»), and credits take a
+colon («Автор: @armaangupt0», on the landing too) or none («GOES через NOAA и CIRA»).
 
 Credits: licence lines ("Contains modified Copernicus Sentinel data 2026", "Contains modified EUMETSAT Meteosat data
 2026", "Landsat: USGS / NASA", "Himawari: JMA, via NASA GIBS") stay in English, word for word. OpenStreetMap's
@@ -531,10 +553,11 @@ Gender: m. / f. / n. / pl. Plural forms are `one · few · many`.
 | to watch (product verb) | смотреть (на / сюда) | Never следить, шпионить, наблюдать за, фотографировать. |
 | watched (verdict) | Увидено | «Вероятно, увидено» for likely. |
 | could have pointed here | Могли смотреть сюда | Never «навести» (§8). |
+| verdict (the four labels) | статус | m. «Что значат статусы», «Пролёты по статусам». Never «отметка» (a tick, a grade, a height mark). |
 | photo | фото | n., indeclinable. Only a certain Sentinel-2 / Landsat photo. «фотография» once, in "not a photograph". |
 | image | снимок | m.; снимок · снимка · снимков. Any image. |
 | picture (casual) | снимок; изображение in technical asides | Never «картинка». |
-| scene / frame / look | кадр | m.; кадр · кадра · кадров. «Облачность кадра», «Кадр 3 из 12». Never «сцена». |
+| scene / frame / look | кадр | m.; кадр · кадра · кадров. «Облачность кадра», «Кадр 3 из 12». Never «сцена». Never the replay's clock (that is «Повтор»). |
 | closest look | самый близкий кадр | 18 characters. Never «ближайший» (it means "the next one": «ближайший рейс»). |
 | clear look | ясный кадр | ясный кадр · ясных кадра · ясных кадров. «ясный» as the sky is clear. Never «ясный взгляд». |
 | last clear look | последний ясный кадр | 20 characters, the chip's limit. |
@@ -544,14 +567,16 @@ Gender: m. / f. / n. / pl. Plural forms are `one · few · many`.
 | swath | полоса обзора | f. «попало в полосу обзора», «ширина полосы обзора». Never «полоса захвата» (§8). |
 | field of regard | зона обзора | f. Readout «Зона обзора ±45°». |
 | field of view / within view | поле зрения / зона видимости | «В поле зрения» (replay); «пролетел в зоне видимости» (could). |
+| in reach / within range | в зоне досягаемости | Never a bare «в досягаемости». |
 | off-nadir | отклонение от вертикали (prose) · От надира (label) | |
 | nadir / straight down | надир / строго вниз | «надир» only in labels. |
 | ground track | трасса | f.; «наземная трасса». Never «трек». |
 | orbit | орбита | f. |
 | orbital elements / element sets | элементы орбит / наборы элементов | TLE stays. |
 | propagate (orbits) | рассчитать | «Расчёт орбит», «Орбиты рассчитаны». |
+| match (scenes to passes) | сверить / сверка | «Сверка кадров с пролётами», «Кадры сверены», «Сверка 128 кадров и 1 204 пролётов» (34 characters; «Сопоставление» ran past the phone row). |
 | altitude | высота | f. Not for angles. |
-| elevation (angle) | высота над горизонтом | Label «Над горизонтом»; «на 45° над твоим горизонтом». Sun: «Высота Солнца». The geostationary row's one mono line says «высота 39,6°» (the astronomer's word; the degree sign leaves no doubt there). |
+| elevation (angle) | высота над горизонтом | Label «Над горизонтом»; «на 45° над твоим горизонтом». Sun: «Высота Солнца» (the standard term, qualified by its noun). The geostationary row: «39,6° над горизонтом». Never a bare «высота» for an angle (§9.1). |
 | horizon | горизонт | |
 | ground speed | путевая скорость | Prose: «со скоростью 7,46 км/с». Card: «Скорость». |
 | heading | курс | m. Readout «194,6°» with unit «SSW · восх.». |
@@ -559,22 +584,24 @@ Gender: m. / f. / n. / pl. Plural forms are `one · few · many`.
 | closest approach | наибольшее сближение | Label «Сближение». |
 | ground distance | расстояние до трассы | Labels: «До трассы». |
 | cloud cover | облачность | f. |
-| cirrus / cloud shadow | перистые облака / тень от облаков | Short: «Перистые», «Тень облаков». |
+| cirrus / cloud shadow | тонкие (перистые) облака / тень от облаков | Prose «тонкие перистые облака»; status «Тонкие облака»; spot value «Тонкие» (≤ 7, so never «Перистые», 8); «Тень облаков». |
 | clear | ясно / ясный | «Над твоей точкой ясно.» |
 | pixel | пиксель | m.; пиксель · пикселя · пикселей. «10 м на пиксель». |
 | resolution | разрешение | Labels say «Пиксель». Never «резолюция». |
 | radar | радар | «радарный снимок», «радарный спутник». |
+| radar echo | отражённый сигнал | «излучает микроволны и принимает отражённый сигнал». Never «записывает эхо» (a calque). |
 | daily mosaic | суточная мозаика | f.; суточная мозаика · суточные мозаики · суточных мозаик. Tag «Мозаика». |
 | true colour | естественные цвета | «в естественных цветах». |
+| toned (photos) / touch-ups | обработанный / обработка | «обработанный так же, как все фото здесь». Never «тонированный» (tinted glass, sepia). |
 | geostationary / full disc | геостационарный / полный диск | «снимок полного диска». |
 | scan / scan line / line | сканирование / линия сканирования / строка | «Строка 412 → 1 100». |
 | band: infrared / visible / colour | канал: тепловой / видимый / цветной | Values ≤ 9 characters at 21 px. Prose keeps «инфракрасный»; chip «ИК». |
 | time-lapse | таймлапс | m.; таймлапс · таймлапса · таймлапсов. |
-| replay | повтор (noun) · воспроизвести (verb) | Short «Повтор», long `['Повтор', strong(' пролёта')]`. |
+| replay | повтор (noun) · воспроизвести (verb) | Short «Повтор», long `['Повтор', strong(' пролёта')]`. The HUD's replay clock «Повтор», the scrubber «Время в повторе пролёта». |
 | catalog | каталог | m. «каталог орбит». |
 | sub-solar point | подсолнечная точка | f. |
-| day / twilight / night | день / сумерки / ночь | «Был день», «Здесь была ночь». |
-| steerable / fixed camera | поворотная / неподвижная камера | f. |
+| day / twilight / night | день / сумерки / ночь | «Был день». English "dark" is «темно» («Здесь было темно»), never «ночь»: the code knows only that the sun is down, twilight included. After the sun's degrees, lowercase: «31,1° день». |
+| steerable / fixed camera | поворотная / неподвижная камера | f. A "private" camera is «камера с закрытым архивом», never «частная камера» (a person's). |
 | camera / sensor | камера / сенсор | Instrument names (MSI, OLI, VIIRS) stay. Never «датчик» for an imager. |
 | operator | оператор | «Оператор не сообщает». |
 | weather / imaging / radar satellite | метеоспутник / съёмочный спутник / радарный спутник | |
@@ -650,7 +677,7 @@ Russian writes, most specific first, joined with commas; «и» joins two countr
 | goldenGate | Мост Золотые Ворота | Сан-Франциско, США |
 | kennedySpaceCenter | Космический центр Кеннеди | Флорида, США |
 | washingtonDc | Вашингтон | Национальная аллея, США |
-| mountStHelens | Гора Сент-Хеленс | штат Вашингтон, США |
+| mountStHelens | Гора Сент-Хеленс | Штат Вашингтон, США |
 | niagaraFalls | Ниагарский водопад | Онтарио, Канада |
 | panamaCanal | Панамский канал | Шлюзы Гатун, Панама |
 | rioDeJaneiro | Рио-де-Жанейро | Сахарная Голова и Копакабана, Бразилия |
@@ -699,6 +726,10 @@ Russian writes, most specific first, joined with commas; «и» joins two countr
 - «Аризонский кратер» is the Russian name of Meteor Crater («Метеоритный кратер» names any crater). «Большой каньон»,
   not «Гранд-Каньон»: the established Russian name.
 - «Турция», not «Туркийе»: the Russian name of the country did not change with the English.
+- A sublabel is a line of its own, so it starts with a capital («Штат Вашингтон, США»).
+- The chip «Центральный парк» is 16 characters against the ~14 the English comment suggests: it is one nowrap line,
+  fits beside the other chips at 1280 px and scrolls with them on phones (checked 2026-11-21). «Сентрал-парк» was
+  rejected: the chip and its label would name the park two ways.
 - These are display names only: usage stats, `record_lookup` and shares keep the English label.
 
 ---
@@ -781,7 +812,7 @@ neuter singular («смотрели 256 спутников», «Опублико
 
 | Governing word | one | few / many | other |
 |---|---|---|---|
-| genitive: из, до, от, около, после a verbal noun («Расчёт», «Сопоставление») | 21 орбиты · 1 201 пролёта · из 21 снимка | 22 / 25 орбит · пролётов · из 35 снимков | 1,5 орбиты |
+| genitive: из, до, от, около, после a verbal noun («Расчёт», «Сверка») | 21 орбиты · 1 201 пролёта · из 21 снимка | 22 / 25 орбит · пролётов · из 35 снимков | 1,5 орбиты |
 | dative: к, по | по 21 кадру | по 22 / 25 кадрам | avoid |
 | instrumental: с ("with"), между, над | с 31 пролётом | с 32 / 35 пролётами | avoid |
 | prepositional: в, на, о | в 21 кадре | в 22 / 25 кадрах | avoid |
@@ -789,8 +820,8 @@ neuter singular («смотрели 256 спутников», «Опублико
 
 Prefer to restructure into a nominative position; when the case stays, every category still gets its own form.
 Examples: «Проверено 1 204 пролёта 412 съёмочных и пилотируемых спутников» (`one`: «Проверен 1 201 пролёт 421
-съёмочного и пилотируемого спутника»); engine row «Сопоставление 128 кадров и 1 204 пролётов» (`one`: «Сопоставление
-121 кадра и 1 201 пролёта»).
+съёмочного и пилотируемого спутника»); engine row «Сверка 128 кадров и 1 204 пролётов» (`one`: «Сверка 121 кадра и
+1 201 пролёта»).
 
 Rules:
 - Abbreviated units never inflect («5 мин», «41 ч», «786 км»).
@@ -859,8 +890,11 @@ Russian alternates few prepositions, and only before sounds code can know:
 ### 6.3 Dashes, ellipsis, spaces
 
 - **Em dash** — with spaces, an NBSP before it (`\u00a0—`), where Russian grammar puts it: between subject and
-  predicate when both are nouns («Автомобиль\u00a0— это один пиксель», «Каждый кадр\u00a0— один и тот же квадрат»),
-  for a missing verb («у Landsat\u00a0— 185 км»), in «Автор\u00a0— @armaangupt0». Never as decoration.
+  predicate when both are nouns («Каждый кадр\u00a0— один и тот же квадрат», «Время пролёта\u00a0— это момент…»). Never
+  as decoration. **About has none**, as the owner's English has none: there the sentence is rebuilt («Пиксель здесь
+  не меньше 10 м. Автомобиль занимает один пиксель.», «шириной около 290 км у Sentinel-2 и 185 км у Landsat») and a
+  credit takes a colon («Автор: @armaangupt0», the landing's too). Elsewhere, prefer the rebuilt sentence when it
+  reads as well.
 - **En dash** – without spaces for numeric ranges («10–30 м», «2015–2026», «30–45 градусов»).
 - **Hyphen** for compounds («что-то», «3D-вид», «IP-адресов», «15-метровый»).
 - **Ellipsis**: one character … (U+2026), no space before: «Поиск…».
@@ -892,7 +926,7 @@ Russian alternates few prepositions, and only before sounds code can know:
 | Standalone label with weekday (spoken) | «пятница, 6 ноября» | `{ weekday: 'long', day: 'numeric', month: 'long' }` |
 | Short (chips, timeline, lists) | «вс, 1 нояб.» | `{ weekday: 'short', day: 'numeric', month: 'short' }` |
 | Card stamp | «вс, 1 нояб. 2026 · 11:21 EST» | short parts + year, without Intl's «г.» |
-| Week stamp | «7 дней до 1 нояб. 2026» | no weekday |
+| Week stamp | «7 дней по 1 нояб. 2026» | no weekday; «по», never «до» (a countdown) |
 | Mono caps | «ВС, 1 НОЯБ. 2026» (CSS uppercases) | same |
 | Landing kicker | «Последние 7 дней · 14 → 21 нояб. 2026 UTC» | |
 | Time-lapse | «22 окт. 2015» (readout), «22 октября 2015 года» (spoken) | short / long parts at UTC |
@@ -963,7 +997,11 @@ counts: **8.0 px a character at 11 px, 7.0 px at 9.5 px** (caps, +0.08em).
 | Landing search hint (beside 01 / МЕСТО) | the English's 25 | «Название, адрес, координаты» (27, ellipsised if needed) |
 | Pin hint (beside 02 / ИЛИ ПОПРОБУЙ) | ≈ the English's 32 | «Или поставь метку на глобусе» (28) |
 | Search status | short | «Поиск» · «Не найдено» · «Поиск недоступен» · «1 место · 3 места · 5 мест» |
-| Card footer (beside the domain, 466 px row) | ≈ 20 characters | «Что смотрело на тебя?» 21 · «Выбери место на Земле» 21 |
+| Card footer (beside the domain, 466 px row) | ≈ 20 characters | «Что смотрело на тебя» 20 · «Введи место на Земле» 20 |
+| Pass list order label (after «Увидено ·», ellipsised, 208 px at most) | ≤ 24 characters | «сначала самый близкий» (21, 176 px); «самый близкий, затем новые» (215 px) never fits whole |
+| Geostationary frame note (72 px square, 9.5 px mono caps) | ≤ 9 characters a word | «Нет открытых снимков» · «Плохое качество» · «Кадр не пришёл» («загрузился» overflows by 3 px) |
+| Computing readout rows (390 px phone) | ≈ 40 characters | «Сверка 128 кадров и 1 204 пролётов» (34) |
+| Geostationary row facts (mono caps, may wrap) | wraps at a « · » | «0.0°E · 39,6° над горизонтом · каждые 10 мин», no-break spaces inside each fact |
 | Card readout labels (155 px column, 13 px) | ≤ 15 characters | «Пиксель мозаики» 15 |
 | Plan corner labels | ≤ 15 / 20 characters | «Север вверху» 12 · «Зона обзора ±45°» 16 · «Наземная трасса» 15 · «Сближение 61 км» 15 |
 | Header button box (Cancel / New search / Close) | about the English | «Отмена» · «Новый поиск» · «Закрыть» |
@@ -975,8 +1013,9 @@ counts: **8.0 px a character at 11 px, 7.0 px at 9.5 px** (caps, +0.08em).
 
 Strategies, in order:
 1. A noun instead of a verb phrase in labels («Курс», «Высота», «Повтор»).
-2. Drop what the screen already shows: «Копировать» directly beside the link field; «Где я» on phones; «До трассы»
-   (the readouts are all about the pass).
+2. Drop what the screen already shows: «Где я» on phones; «До трассы» (the readouts are all about the pass). The bare
+   «Копировать» for the link is the phone row's limit, not this rule: on laptops it stands beside «Копировать
+   карточку» and needs a key of its own to say «Копировать ссылку» (Appendix B).
 3. The established short term over the descriptive one («таймлапс», «надир», «метеоспутник», «ИК»).
 4. No «пожалуйста», no «Нажмите, чтобы…», no possessives the screen implies.
 5. Never truncate a word or invent an abbreviation. Units, month and weekday abbreviations, «восх.» / «нисх.», «дн.»
@@ -996,7 +1035,7 @@ Strategies, in order:
 | PASSES | ПРОЛЁТЫ | 6 → 7 | Count unit: 12 ПРОЛЁТОВ |
 | SHARE | ПОДЕЛИТЬСЯ | 5 → 10 | No shorter natural form |
 | SHARE IMAGE | ПОДЕЛИТЬСЯ КАРТОЧКОЙ | 11 → 20 | Full-width phone button |
-| COPY LINK | КОПИРОВАТЬ | 9 → 10 | «Копировать ссылку» (17) does not fit the phone's third |
+| COPY LINK | КОПИРОВАТЬ | 9 → 10 | «Копировать ссылку» (17) does not fit the phone's third (135 px); a laptop's 197 px button would hold it (Appendix B) |
 | COPY IMAGE | КОПИРОВАТЬ КАРТОЧКУ | 10 → 19 | Desktop only |
 | POST TO X | ПОСТ В X | 9 → 8 | |
 | SAVE PNG / TRY AGAIN | СОХРАНИТЬ / ПОВТОРИТЬ | 8 → 9 / 9 → 9 | «Сохранить PNG» (13) does not fit |
@@ -1043,7 +1082,8 @@ by vocabulary, never euphemises and never sloganises.
 - Names, if copy ever needs them: «Сектор Газа», «Западный берег реки Иордан» (then «Западный берег»), «Украина»,
   «Ливан», «Израиль».
 - **Ukraine:** if copy ever names the war, it is **«война»** and the agent is named: «война России против Украины»,
-  «полномасштабное вторжение России в Украину 24 февраля 2022 года». Never «специальная военная операция», «СВО»,
+  «полномасштабное вторжение России, начавшееся 24 февраля 2022 года» (never «вторжение … в Украину» or «на
+  Украину»: the preposition takes a side, as «в / на Украине» does). Never «специальная военная операция», «СВО»,
   «спецоперация», «конфликт на Украине», «украинский кризис», «события на Украине», «освобождённые территории», «новые
   регионы», «зона СВО». Areas under occupation, when they must be named: «оккупированные Россией территории Украины».
   No slogans in either direction («Слава Украине», «Z», «Нет войне» are not product copy).
@@ -1097,7 +1137,7 @@ Assembly's resolution 68/262, and says nothing about it in copy.
 | ближайший пролёт / ближайший кадр | reads "the next, upcoming" | наибольшее сближение (label «Сближение»); самый близкий кадр |
 | взгляд (for "look") | a gaze, an opinion | кадр |
 | пролёт / пролетел (alone, as a label) | «пролёт» alone is also a stairwell or a bridge span; «пролетел» alone is slang for "missed out" | a count («31 пролёт») or a full sentence with «спутник» |
-| высота (for an angle, unqualified) | that is altitude | высота над горизонтом |
+| высота (for an angle, unqualified) | that is altitude, and the pass view prints a geostationary satellite's 35 786 км | «над горизонтом» («39,6° над горизонтом»); «Высота Солнца» stays, qualified by its noun |
 | загрузить (for "download image") | also "upload", "load" | скачать |
 | локация, юзер, шерить, тапнуть, кликнуть, куки, апп | slang, anglicisms | местоположение, —, поделиться, нажать, нажать, файлы cookie, приложение |
 | вид (for "view", unqualified) | also "species, type" | вид only in «3D-вид»; «просмотр», «открыть крупно» |
@@ -1110,6 +1150,19 @@ Assembly's resolution 68/262, and says nothing about it in copy.
 | датчик (for an imager) | a gauge, a sensor in a car | сенсор, камера |
 | Солнце (everyday light) | capital only for the body in astronomy | солнце |
 | фото (for every image) | radar and mosaics are not photos | снимок |
+| ночь (for "dark") | the code knows only that the sun is down, twilight included | темно |
+| Кадр (for the replay clock) | reads as an image's capture time | Повтор |
+| над головой (in a pass sentence) | the overhead verdict's name; the reader may be elsewhere | над этой точкой |
+| глядя на N° (an angle) | reads "looking at" | вбок под углом N° |
+| N дней до [даты] (a span) | a countdown | N дней по [дату] |
+| эхо (radar) | calque | отражённый сигнал |
+| тонированный (photos) | tinted glass, sepia | обработанный |
+| частная камера | a person's camera | камера с закрытым архивом |
+| отметка (for a verdict) | a tick, a grade, a height mark | статус |
+| поиски (for searches) | a search effort («поиски пропавших») | поисковые запросы |
+| попробуй город | "taste a city" | попробуй ввести город |
+| кадр может занять N с | the frame "occupies" the time | на большой кадр может уйти N с |
+| сделано из данных | material («из дерева») | сделано на открытых данных |
 
 **Words that look simple and are not:**
 - "watched": the headline counts every pass; «смотрели» says only that they looked this way. «Увидено» is kept for
@@ -1140,7 +1193,8 @@ Assembly's resolution 68/262, and says nothing about it in copy.
 11. **Length:** within §7's budgets; mono labels counted in characters.
 12. **Register:** no канцелярит, calques, anglicisms, marketing words or emoji.
 13. **Honesty:** the label says exactly what is on screen («снимок» vs «фото», «опубликован» only for what is public,
-    «пиксель» not «разрешение», «Чернобыльская АЭС» for the plant).
+    «пиксель» not «разрешение», «Чернобыльская АЭС» for the plant, «темно» where the code knows only that the sun is
+    down, «Повтор» for the replay's clock).
 14. **Sensitive:** none of §8's banned words; war wording; exonyms in static copy; Crimea in Ukraine; no «на / в
     Украине».
 15. **Read it aloud.** If it sounds translated, rewrite it from the meaning.
@@ -1169,16 +1223,16 @@ Landing
 | Name, address or lat, lon | Название, адрес, координаты |
 | Searching · No match · Search unavailable | Поиск · Не найдено · Поиск недоступен |
 | 1 match / 3 matches / 5 matches | 1 место / 3 места / 5 мест |
-| Nothing matches "q". Try a city, a landmark, or coordinates. | Ничего не найдено по запросу «q». Попробуй город, достопримечательность или координаты. |
+| Nothing matches "q". Try a city, a landmark, or coordinates. | Ничего не найдено по запросу «q». Попробуй ввести город, достопримечательность или координаты. |
 | 02 / OR TRY · Or click the globe to drop a pin | 02 / Или попробуй · Или поставь метку на глобусе |
 | Use my location · Locate me · Near me · Locating… | Моё местоположение · Где я · Рядом · Ищем… |
 | Requesting position · Naming the place | Запрос местоположения · Определение названия |
-| Your position goes to the Photon geocoder to name the place. We store only a ~10 km cell. | Твоё местоположение уходит геокодеру Photon, чтобы определить название места. Мы храним только ячейку сетки ~10 км. |
+| Your position goes to the Photon geocoder to name the place. We store only a ~10 km cell. | Мы передаём твоё местоположение геокодеру Photon, чтобы узнать название места. Храним только ячейку сетки размером ~10 км. |
 | Your position isn't available right now. Search for a place instead. | Сейчас не удаётся определить твоё местоположение. Найди место через поиск. |
 | The place search isn't answering. Coordinates such as 43.47, −80.54 still work. | Поиск мест не отвечает. Координаты вроде 43.47, −80.54 по-прежнему работают. |
-| Surprise me · Drop a pin · Cancel | Наугад · Поставить метку · Отмена |
+| Surprise me · Drop a pin · Cancel | Наугад · Поставить метку · Отмена (Surprise me's name: «Наугад: случайное известное место») |
 | Pin dropped: Waterloo. Press Enter or an arrow to see what passed over it. | Метка поставлена: Waterloo. Нажми Enter или стрелку, чтобы увидеть, что пролетало здесь. |
-| Built by @armaangupt0 | Автор — @armaangupt0 |
+| Built by @armaangupt0 | Автор: @armaangupt0 |
 | Loading Watched · Slow connection, still loading | Загрузка Watched · Медленное соединение, ещё загружаем |
 | Watched · Something watched you this week (tab) | Watched · На этой неделе что-то смотрело на тебя |
 | 3D view unavailable · WebGL 2 is off in this browser | 3D-вид недоступен · В этом браузере отключён WebGL 2 |
@@ -1191,11 +1245,11 @@ Results
 | Computing · Orbital catalog → Catalog loaded | Расчёт · Каталог орбит → Каталог загружен |
 | Propagate orbits · 7 days → Orbits propagated | Расчёт орбит · 7 дней → Орбиты рассчитаны |
 | Sentinel-2 + Landsat archives → Archives searched | Архивы Sentinel-2 + Landsat → Архивы проверены |
-| Match scenes to passes → Scenes matched | Сопоставление кадров с пролётами → Кадры сопоставлены |
+| Match scenes to passes → Scenes matched | Сверка кадров с пролётами → Кадры сверены |
 | Verifying weather mosaics | Проверка суточных мозаик |
 | New search · Change · Recent · All passes | Новый поиск · Изменить · Недавние · Все пролёты |
 | The sun never rose, so no daylight camera could see it. | Солнце здесь так и не взошло, поэтому ни одна дневная камера не могла увидеть это место. |
-| Weather satellites still swept it in infrared, 42 times. | Метеоспутники всё равно снимали это место в инфракрасном диапазоне: 42 раза. |
+| Weather satellites still swept it in infrared, 42 times. | Зато метеоспутники снимали это место в инфракрасном диапазоне: 42 раза. |
 | Sentinel-2 or Landsat crossed it 3 times in daylight, but no scene has been published yet. | Sentinel-2 или Landsat пролетали здесь днём 3 раза, но ни одного кадра ещё не опубликовано. |
 | No open imaging satellite crossed it in daylight. | Днём здесь не пролетал ни один спутник, который публикует свои снимки. |
 | 12 detailed images (…) · 3 daily weather mosaics (…) · 2 radar images (…) · 1,008 full-disc images (…). 1,204 passes from 412 imaging and crewed satellites checked. | 12 детальных снимков (Sentinel-2, Landsat, 10–30 м) · 3 суточные мозаики (250–375 м) · 2 радарных снимка (Sentinel-1, 20 м) · 1 008 снимков полного диска с геостационарных метеоспутников (2–5 км; показан самый свежий снимок каждого). Проверено 1 204 пролёта 412 съёмочных и пилотируемых спутников. |
@@ -1208,11 +1262,11 @@ Results
 | Sentinel-2C image of Waterloo. The place is at the centre. (alt) | Снимок со спутника Sentinel-2C: Waterloo. Это место в центре кадра. |
 | Time-lapse · This place, year by year | Таймлапс · Это место год за годом |
 | Replay this pass · View · Share | Повтор пролёта · Открыть · Поделиться |
-| Show all 31 passes · Show all 31 satellites · Show 40 more · Show fewer · 12 left | Показать все строки (31) · Показать все спутники (31) · Показать ещё 40 · Свернуть · ещё 12 |
+| Show all 31 rows · Show all 31 satellites · Show 40 more · Show fewer · 12 left | Показать все строки (31) · Показать все спутники (31) · Показать ещё 40 · Свернуть · ещё 12 |
 | 31 passes · 12 sats (group header) | 31 пролёт · 12 спутников |
 | Shared with you · Sentinel-2C watched Waterloo | С тобой поделились · Waterloo. Сюда смотрел спутник Sentinel-2C. |
 | Something watched you this week too. (invite) | На этой неделе что-то смотрело и на тебя. |
-| No public image · Poor quality · No image just now | Нет открытых снимков · Плохое качество · Сейчас снимка нет |
+| No public image · Poor quality · No image just now · Frame unavailable | Нет открытых снимков · Плохое качество · Сейчас снимка нет · Кадр не пришёл |
 
 Pass detail readouts
 
@@ -1251,7 +1305,7 @@ Time-lapse
 | 12 clear looks · one a year / one each autumn | 12 ясных кадров · по одному в год / по одному каждую осень (каждую зиму, каждую весну, каждое лето) |
 | Listing the archive · Choosing clear looks · Developing frames | Просмотр архива · Выбор ясных кадров · Проявка кадров |
 | Too cloudy here for a time-lapse. · 2 clear looks since 2015 · 3 needed | Здесь слишком облачно для таймлапса. · 2 ясных кадра с 2015 года · нужно 3 |
-| Each frame is the same 10 km square… | Каждый кадр — один и тот же квадрат 10 × 10 км, снятый спутником Sentinel-2 и тонированный, как и все фото здесь. Для каждого года мы ищем кадр другого сезона. Год без ясного кадра пропущен. |
+| Each frame is the same 10 km square… | Каждый кадр — один и тот же квадрат 10 × 10 км, снятый спутником Sentinel-2 и обработанный так же, как все фото здесь. Для каждого года мы ищем кадр другого сезона. Год без ясного кадра пропущен. (one season: «Все кадры сняты в одном и том же сезоне. Год без ясного кадра в этом сезоне пропущен.») |
 | Video · Video failed · Save video · Rendering 42% · Link copied | Видео · Не удалось · Сохранить · Создание 42% · Ссылка скопирована |
 | Waterloo, year by year (share title) | Waterloo: год за годом |
 
@@ -1283,8 +1337,52 @@ Found while writing this guide, for the coordinator (none is a copy change):
    every font under `node_modules` from Vite (`server.fs.allow`), and Cyrillic then falls back to a system face at full
    width: the hero looks too wide. Allow the main checkout in `server.fs.allow` (or install `node_modules` in the
    worktree) before judging Cyrillic layout there.
+7. **Copy link on laptops** (`share.copyLink`, `src/ui/share/ShareSheet.tsx`): one key serves the phone row, where
+   «Копировать» (10) is all a third of 360 px holds, and the laptop row, where it stands beside «Копировать карточку»
+   and reads as "copy" what, the card? A laptop button is 197 px and holds «Копировать ссылку»: a second key, or the
+   component choosing a long form where it fits, fixes it for every language. Both reviewers and the translator
+   flagged it.
 
 ---
+
+## Review
+
+Two independent native reviews read every ru namespace, the card and this guide on 2026-11-21 (A: the prose, as a
+native reader; B: accuracy against the English and the code that shows each string). What changed:
+
+- **Honesty** (B): «Здесь было темно», not «ночь», for the likely-dark line (sun < 0°) and the infrared frame (sun <
+  6°); the replay clock «Повтор» (A, B); «39,6° над горизонтом», not «высота» (A, B: §4.1 contradicted §9.1).
+- **Misleading readings** (A): «3 дн. назад, устарел»; «7 дней по 1 нояб.»; «Отсюда ни один … не виден выше 5°»; «на
+  обращённой к ним стороне Земли»; «Мы передаём…, чтобы узнать…» (the «чтобы» clause had the wrong subject); «Фото …
+  мы готовим…: выравниваем цвета, сглаживаем…» («сглаживаем их» smoothed the colours).
+- **Calques and wording** (A, B): «фрагмент с твоей точкой в центре», «рассчитываем по SGP4 … путь», «принимает
+  отражённый сигнал», «обработанный», «вбок под углом», «снял это место в темноте», «Не отклоняя камеру» (no «Даже»),
+  «используются в прогнозах погоды», «Сплошная облачность», «Сделано на открытых данных», «Перемещаться по
+  подсказкам», «поисковые запросы», «Место без названия» (A's «Безымянное место» is literary), «Попробуй ввести…»,
+  and the satellites' blurbs.
+- **Consistency** (A, B): «в зоне досягаемости»; «камера с закрытым архивом»; «статус»; «C-диапазона»; the sun's
+  phase lowercase; «Штат Вашингтон»; «Введи место на Земле»; «прямо над этой точкой» (B); «пролетел здесь на высоте…»
+  on the post and the pass page (A, B); «Проверить моё место».
+- **About** (B): its eight em dashes are gone, rebuilt (§6.3). **Fit** (B, measured): the zero week card sets in three
+  lines; «Сверка 128 кадров и 1 204 пролётов»; «В полосе обзора, снимок ещё не опубликован».
+- **This guide** (A, B): §2.3's premise (the footer is a label now), the cirrus row, §8's «вторжение … в Украину»,
+  Appendix A's "Show all 31 rows", the §3.8 stale form, and §9.1's new rows.
+
+Decided between the reviewers, or against both where the screen said so:
+
+- Infrared: A's two sentences with a colon, not B's dash (one fact a sentence, §2.1). Radar: A's «вбок под углом»,
+  not B's kept «глядя на». Keys: A's «Перемещаться», not B's «Листать» (↑↓ move a selection; «листать» turns pages).
+  Timeline: A's «съёмочный с открытым архивом». Gallery chip: B's «Под облаками, включая твою точку». «Ещё готовится. На
+  большой кадр может уйти 10 с и больше.»: neither A's (the verb twice) nor B's.
+- Order label: both proposals were cut with an ellipsis on every screen (measured 253 and 215 px in a 208 px cell):
+  «сначала самый близкий» (176), as French and Dutch drop "then newest".
+- Frame note: «Кадр не загрузился» (both) overflows the 72 px square by 3 px: «Кадр не пришёл», as the gallery's
+  «Снимок не пришёл».
+- No satellite: B's «За неделю…» dropped "this week" and still set in four lines; the word order fixes it.
+
+Rejected: A's «Скан · UTC» for "Scan line here" («скан» drops "here", blurs with «Это сканирование» on the same grid,
+and «линия» is that screen's word: «Скорость линии», «Направление линии»); B's «Сентрал-парк» chip (§4.3). Copy link
+on laptops (A, B, the translator) is right, but no ru string can fix it: Appendix B, item 7.
 
 ## Decisions log
 
@@ -1305,3 +1403,13 @@ Found while writing this guide, for the coordinator (none is a copy change):
 | 13 | Crimea | Ukraine, no qualifier, nothing said in copy (§8). |
 | 14 | Compass in readouts | Latin abbreviations as they arrive; Russian words in prose, three tables (§4.2). |
 | 15 | Link field label | «Ссылка» (6 characters, checked in the 48 px column; «URL» if it ever does not fit) (§7). |
+| 16 | "dark" | «темно», never «ночь»: the code knows that the sun is down, not that it is night (§3.5). |
+| 17 | Replay clock | «Повтор» in the HUD, «Время в повторе пролёта» on the scrubber; «кадр» is an image's word (§3.8). |
+| 18 | Elevation angle | «над горизонтом» everywhere, the geostationary row included; the «высота 39,6°» exception is gone (§4.1, §9.1). |
+| 19 | Em dash in About | none, by rebuilding the sentence, as the owner's English has none (§3.9, §6.3). |
+| 20 | The word for a verdict | «статус» (§4.1). |
+| 21 | Card footer | «Что смотрело на тебя» (a label, not a question) · «Введи место на Земле» (§2.3, §3.7). |
+| 22 | Week stamp | «7 дней по [дату]»; «до» reads as a countdown (§3.7, §6.5). |
+| 23 | No satellite | «…ни один известный нам спутник сюда не смотрел.», the negation last (§3.3). |
+| 24 | Straight over the place | «прямо над этой точкой»; «над головой» is only the verdict (§3.5). |
+| 25 | Pass list order | «сначала самый близкий», the one phrase that fits its 208 px cell whole (§7). |
