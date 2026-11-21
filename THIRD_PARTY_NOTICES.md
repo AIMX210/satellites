@@ -12,6 +12,7 @@ here. npm dependencies are not vendored: their licenses travel with them in `nod
 | `api/_fonts/serif-italic-*.ttf` | Instrument Serif Italic, subsets | SIL OFL 1.1 | as above |
 | `api/_fonts/mono-*.ttf` | Martian Mono, static instances | SIL OFL 1.1 | as above |
 | (npm) `@fontsource*/instrument-sans`, `instrument-serif`, `martian-mono` | The same families, self-hosted in the web app | SIL OFL 1.1 | License ships in each package |
+| `api/_fonts/*-vietnamese.ttf` | Noto Sans, Noto Serif Display Italic and JetBrains Mono, static instances (Vietnamese cards) | SIL OFL 1.1 | as `api/_fonts` above |
 | `src/assets/fonts/noto-sans-latin-ext-a-*.woff2`, `noto-serif-display-vietnamese-*.woff2`, `jetbrains-mono-*.woff2` | Noto Sans, Noto Serif Display Italic and JetBrains Mono, subsets and instances (Vietnamese pages) | SIL OFL 1.1 | License text travels with the fonts: [`src/assets/fonts/OFL.txt`](src/assets/fonts/OFL.txt) |
 
 - Copyright 2022 The Instrument Sans Project Authors (https://github.com/Instrument/instrument-sans)

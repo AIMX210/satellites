@@ -14,7 +14,8 @@
  * uppercase the units), and the headline's blocks are set in the order the language's message gives them. The default
  * card takes its words from the card catalog in the same way.
  *
- * Every role names its face and then the face the web gives Cyrillic (fonts.ts FAMILY), so Ukrainian and Cyrillic
+ * Every role names its face and then the faces the web gives Cyrillic and Vietnamese (fonts.ts cardFamily: a
+ * Vietnamese card names its own first, for every letter, as its page does), so Ukrainian, Russian, Vietnamese and their
  * place names are set as the app sets them; a Chinese, Japanese or Korean card carries its language (`lang`), so its
  * Han characters take that language's forms.
  */
@@ -55,7 +56,7 @@ import { DEFAULT_LOCALE, LOCALE_INFO, type Locale, type Script } from './i18n/lo
 import { isAccent, plain, type Rich } from './i18n/parts.js'
 import { capsExceptUnits } from './i18n/units.js'
 import { bundled } from './bundled.js'
-import { FAMILY } from './fonts.js'
+import { cardFamily } from './fonts.js'
 import { WORDMARK_ASPECT, wordmarkSvg } from './wordmark.js'
 import { box, h, type Child } from './h.js'
 
@@ -67,16 +68,17 @@ export { CARD_H, CARD_W, PLATE, niceLength }
  * Mono caps text: tracking +0.08em, as `.label` in primitives.module.css. Uppercased here in the card's language,
  * except its units ("10 m", "1 km": ./i18n/units.ts), so satori's own text-transform is off: it would uppercase the
  * units too, and in no language's rules (Turkish i must become İ). `textTransform: 'none'` from a caller keeps the
- * text as it is (the host, a readout's unit).
+ * text as it is (the host, a readout's unit). `faces` is the language whose faces set it: the card's, also for words
+ * cased as another language's (the English licence credit on a Vietnamese card is in the card's mono).
  */
-function mono(locale: Locale, text: string, size: number, color: string, style: CSSProperties = {}): ReactElement {
+function mono(locale: Locale, text: string, size: number, color: string, style: CSSProperties = {}, faces: Locale = locale): ReactElement {
   const shown = style.textTransform === 'none' ? text : capsExceptUnits(text, LOCALE_INFO[locale].intl)
   return h(
     'div',
     {
       style: {
         display: 'flex',
-        fontFamily: FAMILY.mono,
+        fontFamily: cardFamily(faces).mono,
         fontSize: size,
         letterSpacing: size * TRACK.label,
         textTransform: 'none',
@@ -147,8 +149,8 @@ function chip(locale: Locale, c: Chip): ReactElement {
       background: C.chip,
       border: `1px solid ${C.lineStrong}`,
     },
-    // The licence credit is English in every language, so it is uppercased as English (Chip.lang).
-    c.segs.map((s) => mono(c.lang ?? locale, s.text, c.size, TONE_COLOR[s.tone])),
+    // The licence credit is English in every language, so it is uppercased as English (Chip.lang), in the card's faces.
+    c.segs.map((s) => mono(c.lang ?? locale, s.text, c.size, TONE_COLOR[s.tone], {}, locale)),
   )
 }
 
@@ -217,6 +219,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale
   // Chinese, Japanese and Korean: their leading, and each text part one phrase on one line (HEAD_CJK).
   const lh = spec.cjk ? HEAD_CJK : HEAD
   const track = headTracking(spec.locale)
+  const F = cardFamily(spec.locale)
   const blocks = spec.head.map((part, i) =>
     isAccent(part)
       ? h(
@@ -224,7 +227,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale
           {
             style: {
               display: 'flex',
-              fontFamily: FAMILY.serif,
+              fontFamily: F.serif,
               fontStyle: 'italic',
               fontSize: P,
               lineHeight: lh.placeLH,
@@ -242,7 +245,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale
           {
             style: {
               display: 'flex',
-              fontFamily: FAMILY.display,
+              fontFamily: F.display,
               fontWeight: 600,
               fontSize: S,
               lineHeight: lh.leadLH,
@@ -261,7 +264,7 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale
     spec.sub
       ? h(
           'div',
-          { style: { display: 'flex', fontFamily: FAMILY.sans, fontSize: CARD_FS.sub, lineHeight: HEAD.subLH, marginTop: HEAD.subGap, color: C.bone2 } },
+          { style: { display: 'flex', fontFamily: F.sans, fontSize: CARD_FS.sub, lineHeight: HEAD.subLH, marginTop: HEAD.subGap, color: C.bone2 } },
           spec.sub,
         )
       : null,
@@ -283,7 +286,7 @@ function readouts(spec: CardSpec): ReactElement[] {
     out.push(
       abs(
         { left: x, top: PANEL.roValue[0], height: PANEL.roValue[1], alignItems: 'baseline', gap: r.unit ? 8 : 0 },
-        h('div', { style: { display: 'flex', fontFamily: FAMILY.mono, fontSize: size, letterSpacing: TRACK.readout * size, color: C.bone, lineHeight: 1 } }, r.value),
+        h('div', { style: { display: 'flex', fontFamily: cardFamily(l).mono, fontSize: size, letterSpacing: TRACK.readout * size, color: C.bone, lineHeight: 1 } }, r.value),
         // A readout's unit is a unit symbol ("km", "m", "km/s"): it keeps its case.
         r.unit ? mono(l, r.unit, CARD_FS.readoutUnit, C.bone3, { lineHeight: 1, textTransform: 'none' }) : null,
       ),
@@ -313,7 +316,7 @@ const HAN_LANG: Partial<Record<Locale, string>> = { ja: 'ja-JP', ko: 'ko-KR', 'z
 /** The 1200×630 card itself, in its language. */
 function cardRoot(locale: Locale, ...children: (Child | Child[])[]): ReactElement {
   const lang = HAN_LANG[locale]
-  const style: CSSProperties = { display: 'flex', position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: FAMILY.sans, color: C.bone }
+  const style: CSSProperties = { display: 'flex', position: 'relative', width: CARD_W, height: CARD_H, background: C.ink0, fontFamily: cardFamily(locale).sans, color: C.bone }
   return h('div', lang ? { lang, style } : { style }, ...children)
 }
 
@@ -400,12 +403,13 @@ const HERO_TRACK: Record<Script, number> = { latin: -0.02, cyrillic: -0.015, cjk
  */
 function heroLines(locale: Locale, size: number, lines: Rich[]): ReactElement {
   const track = HERO_TRACK[LOCALE_INFO[locale].script]
+  const F = cardFamily(locale)
   const w = (s: string, serif = false, style: CSSProperties = {}) =>
     h(
       'span',
       {
         style: {
-          fontFamily: serif ? FAMILY.serif : FAMILY.display,
+          fontFamily: serif ? F.serif : F.display,
           fontStyle: serif ? 'italic' : 'normal',
           fontWeight: serif ? 400 : 600,
           // Instrument Serif sits smaller than the condensed sans at the same size: match cap height.
