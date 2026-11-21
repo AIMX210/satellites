@@ -9,8 +9,9 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Wordmark } from '@/ui/system/Wordmark'
 import { RANGES, currentSession, fetchLive, fetchStats, liveFor, sendMagicLink, signOut, supabase, takeAuthError, verifyCode, type AdminStats, type LiveCounts, type Range } from './api'
-import { ActivityChart, Funnel, RankList, Split, WorldMap } from './charts'
+import { ActivityChart, Funnel, RankList, Split } from './charts'
 import { liveSeries } from './live'
+import { WorldMap } from './WorldMap'
 import { ACTION_NAMES, DEVICE_NAMES, SOURCE_NAMES, TIMELAPSE_ACTION_NAMES, TIMELAPSE_FROM_NAMES, VERDICT_NAMES, countryName, fmtAgo, fmtClock, fmtInt, fmtUpdated, fmtPct, fmtSec, fmtStamp, languageName, maintBehind, type FunnelStage } from './format'
 import { LOCALES } from '../../api/_lib/i18n/locales'
 
@@ -436,7 +437,7 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
 
       <Section n={5} title="PLACES">
         <div className="a-places">
-          <WorldMap cells={s.top['search.cell']} />
+          <WorldMap cells={s.top['search.cell']} labels={s.top['search.label']} total={rec.search} />
           <div className="a-places-lists">
             <Panel title="TOP PLACES">
               <RankList rows={s.top['search.label']} total={rec.search} max={10} accent />

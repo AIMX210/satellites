@@ -6,7 +6,6 @@ import { mockLive, mockStats } from './fixture'
 import { fmtBucket, fmtPct, funnelShares, languageName, niceMax, SOURCE_NAMES, type FunnelStage } from './format'
 import { LOCALE_INFO, LOCALES } from '../../api/_lib/i18n/locales'
 import { liveSeries } from './live'
-import { dotRadius, GRID_STEP, legendCounts, placeGrid } from './placeGrid'
 import { BAND, DUST_BELOW, cellKey, dustCount, fmtLatLon, fmtShort, keyCounts, maxCircles, nameSpots, placeMap, placeTags, spotRadius, type Found } from './placeMap'
 
 describe('admin_stats parsing', () => {
@@ -239,35 +238,6 @@ describe('activity chart with the live counts (0025)', () => {
     expect(liveSeries(series, 'hour', null)).toBe(series)
     expect(liveSeries(series, 'hour', [])).toBe(series)
     expect(liveSeries([], 'hour', [[h8, 1, 0, 1, 1, null]])).toEqual([])
-  })
-})
-
-describe('places map grid', () => {
-  it('gathers cells into grid squares, largest first, and skips junk', () => {
-    const g = placeGrid([['37.2,-115.8', 10], ['37.4,-115.1', 5], ['51.5,-0.1', 40], ['nope', 3], ['95.0,10.0', 2], ['10.0,10.0', 0]])
-    expect(g.cells).toBe(3)
-    expect(g.dots.map((d) => d.n)).toEqual([40, 15])
-    expect(g.max).toBe(40)
-    // 51.5°N 0.1°W sits in the square 50–52.5°N, 2.5–0°W
-    expect(g.dots[0]).toMatchObject({ x: 178.75, y: 38.75 })
-  })
-  it('keeps the poles and the date line inside the map', () => {
-    const g = placeGrid([['-90.0,180.0', 1], ['90.0,-180.0', 1]])
-    expect(g.dots).toHaveLength(2)
-    for (const d of g.dots) {
-      expect(d.x).toBeGreaterThan(0)
-      expect(d.x).toBeLessThan(360)
-    }
-    expect([g.top, g.bottom]).toEqual([0, 180])
-    expect(placeGrid(undefined)).toMatchObject({ dots: [], max: 1, top: 10, bottom: 150 })
-  })
-  it('sizes dots on a log scale that never overflows a square', () => {
-    expect(dotRadius(13654, 13654)).toBeCloseTo(GRID_STEP / 2)
-    expect(dotRadius(1, 13654)).toBeGreaterThan(GRID_STEP * 0.12)
-    expect(dotRadius(100, 13654)).toBeGreaterThan(dotRadius(10, 13654))
-    expect(dotRadius(1, 1)).toBeCloseTo(GRID_STEP / 2)
-    expect(legendCounts(13654)).toEqual([1, 100, 13654])
-    expect(legendCounts(2)).toEqual([2])
   })
 })
 

@@ -1,13 +1,12 @@
 /**
  * Hand-rolled SVG charts for the admin page, drawn in the Instrument style (docs/DESIGN.md): hairlines,
- * bone marks, mono labels, signal used only for shares and the places people looked at.
+ * bone marks, mono labels, signal used only for shares and the places people looked at (the map: WorldMap.tsx).
  */
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { Ranked } from './api'
 import { etParts, fmtBucket, fmtInt, fmtPct, funnelShares, niceMax, type FunnelStage } from './format'
-import { dotLevel, dotRadius, GRID_STEP, legendCounts, placeGrid } from './placeGrid'
 
-function useWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
+export function useWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
   const ref = useRef<T>(null)
   const [w, setW] = useState(0)
   useLayoutEffect(() => {
@@ -194,47 +193,6 @@ export function Funnel({ stages, sessions }: { stages: FunnelStage[]; sessions: 
         )
       })}
     </ol>
-  )
-}
-
-// ── World map: searched cells on a 2.5° grid, no base map (placeGrid.ts) ────────────────────────
-
-const fmtKey = (n: number) => (n >= 1000 && n % 1000 === 0 ? `${n / 1000}K` : fmtInt(n))
-
-export function WorldMap({ cells }: { cells: Ranked | undefined }) {
-  const [ref, w] = useWidth<HTMLDivElement>()
-  const g = placeGrid(cells)
-  const px = w / 360 // the legend's dots are drawn at the map's own scale
-  const keyBox = Math.max(2, Math.ceil(GRID_STEP * px))
-  return (
-    <div className="a-map" ref={ref}>
-      <svg viewBox={`0 ${g.top} 360 ${g.bottom - g.top}`} role="img" aria-label={`Map of ${g.cells} searched cells`}>
-        {g.dots.map((d) => (
-          <circle key={`${d.x},${d.y}`} cx={d.x} cy={d.y} r={dotRadius(d.n, g.max)} fillOpacity={0.55 + 0.45 * dotLevel(d.n, g.max)} className="a-map-dot">
-            <title>{`${fmtInt(d.n)} searches`}</title>
-          </circle>
-        ))}
-      </svg>
-      <div className="a-map-legend">
-        <span>
-          {fmtInt(g.dots.length)} DOTS · {GRID_STEP}° GRID · {fmtInt(g.cells)} CELLS
-        </span>
-        {g.dots.length > 0 && w > 0 && (
-          <span className="a-map-key" aria-label="Dot size by searches, log scale">
-            <span>SEARCHES</span>
-            {legendCounts(g.max).map((n) => (
-              <span key={n} className="a-map-key-i">
-                <svg width={keyBox} height={keyBox} viewBox={`0 0 ${GRID_STEP} ${GRID_STEP}`} aria-hidden="true">
-                  <circle cx={GRID_STEP / 2} cy={GRID_STEP / 2} r={dotRadius(n, g.max)} fillOpacity={0.55 + 0.45 * dotLevel(n, g.max)} className="a-map-dot" />
-                </svg>
-                {fmtKey(n)}
-              </span>
-            ))}
-            <span>LOG</span>
-          </span>
-        )}
-      </div>
-    </div>
   )
 }
 
