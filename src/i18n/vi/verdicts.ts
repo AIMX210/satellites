@@ -1,0 +1,49 @@
+/**
+ * The Vietnamese verdict vocabulary (see src/i18n/en/verdicts.ts; docs/i18n/vi.md §3.7 is the authority). One table,
+ * read everywhere a verdict is named.
+ *
+ * Why these words: the ladder must read in order at a glance. *Đã quan sát* is the product verb, done. *Nhiều khả năng*
+ * ("most likely") is the measured hedge of the news register, well above *Có thể* ("could"); *Có lẽ* was rejected
+ * because it shares *có* with the could verdict and reads as a guess. The lanes are one or two words: the likely lane
+ * is the verdict's own verb, *Quét qua* ("swept over"), because a bare *Khả năng* reads "ability" as readily as
+ * "likelihood". Every verdict counts passes with *lượt*, which takes no plural (Vietnamese has none), so one function
+ * serves every count.
+ */
+import type en from '../en/verdicts'
+
+/** "1 lượt", "31 lượt": the count word for occurrences (*lượt xem*), standing for *lượt bay qua* */
+const passes = (_n: number) => 'lượt'
+
+const verdicts: typeof en = {
+  imaged: {
+    title: 'Đã quan sát',
+    short: 'Ảnh',
+    unit: passes,
+    definition: 'Có ảnh thật của nơi này trong một kho lưu trữ công khai.',
+    verb: 'đã quan sát',
+  },
+  likely: {
+    title: 'Nhiều khả năng đã quan sát',
+    short: 'Quét qua',
+    unit: passes,
+    /** *camera hướng cố định*: a camera whose pointing is fixed (*camera cố định* would be a CCTV) */
+    definition: 'Dải quét của một camera hướng cố định đã phủ nơi này. Chưa có ảnh nào của nơi này được công bố.',
+    verb: 'đã quét qua',
+  },
+  could: {
+    // The no-break space keeps *về đây* together where the tile wraps (phones: never *ĐÂY* alone on a line).
+    title: 'Có thể đã hướng về\u00a0đây',
+    short: 'Có thể',
+    unit: passes,
+    definition: 'Một camera xoay hướng được hoặc của tư nhân đã ở trong tầm. Nhà vận hành không cho biết camera có nhìn về đây hay không.',
+    verb: 'đã bay qua trong tầm nhìn',
+  },
+  overhead: {
+    title: 'Bay qua trên đầu',
+    short: 'Bay qua',
+    unit: passes,
+    definition: 'Băng qua bầu trời của bạn. Các trạm vũ trụ và mọi thứ khác.',
+    verb: 'đã bay qua trên đầu',
+  },
+}
+export default verdicts
