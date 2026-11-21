@@ -64,6 +64,7 @@ Self-hosted via `@fontsource-variable/*`, imported in `src/styles/fonts.css`.
 - **Body:** *Instrument Sans Variable* at `font-stretch: 100%`, weight 400, 15px/1.5. Secondary 13px.
 - **Mono / data:** *Martian Mono Variable* at `font-stretch: 87.5%`, weight 300–400. Labels are 10.5px uppercase with tracking `+0.08em`, their units aside (below). Readouts are 12–13px. Always `font-variant-numeric: tabular-nums`.
 - **Serif accent:** *Instrument Serif* italic. At most **one** phrase per screen, for the human moment ("*you*.", "*this week*"). Never for UI.
+- **Other scripts** add faces behind these, matched to them (docs/I18N.md, Typography by script). Vietnamese, whose letters the brand faces lack, sets every role in matched faces instead: Noto Sans, Noto Serif Display italic and JetBrains Mono at Martian Mono's cell and stems.
 
 Numbers are always mono. Units are smaller and in `--bone-3`: `786.2 km`, `7.46 km/s`, `98.6°`. A unit keeps its case in a
 caps row, in every language (owner, 2026-11-19): `786 km`, `10 m`, never `786 KM` (m is the metre, M is mega). A unit that
