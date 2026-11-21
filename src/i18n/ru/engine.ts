@@ -4,11 +4,12 @@
  *
  * Why these forms: the rows are mono status labels, so they are verbal nouns in sentence case («Расчёт орбит», CSS
  * uppercases them), and a count a verbal noun governs takes the genitive in every category («Сверка 121 кадра и 1 201
- * пролёта», «Расчёт 21 орбиты»; «Сверка», not «Сопоставление», keeps the row inside the ~40 characters a phone shows); a count standing alone is nominative («Каталог · 16 912 объектов»). The
- * footnotes say what failed as an impersonal fact, one fact a sentence (the English semicolons become full stops), and
- * name the verdicts in the results' own words in quotation marks («Увидено», «Вероятно, увидено»). NASA GIBS gets the
- * head noun «сервис», so its past tense has a gender. "One image … that pass" is said only for exactly 1: ru's `one`
- * also holds 21 and 31, which take the counted form.
+ * пролёта», «Расчёт 21 орбиты»; «Сверка», not «Сопоставление», keeps the row inside the ~40 characters a phone shows);
+ * a count standing alone is nominative («Каталог · 16 912 объектов»). The footnotes say what failed as an impersonal
+ * fact, one fact a sentence (the English semicolons become full stops), and name the verdicts in the results' own words
+ * in quotation marks («Увидено», «Вероятно, увидено»). NASA GIBS gets the head noun «сервис», so its past tense has a
+ * gender. "One image … that pass" is said only for exactly 1: ru's `one` also holds 21 and 31, which take the counted
+ * form.
  */
 import type en from '../en/engine'
 import { fmt } from '../../../api/_lib/i18n/format'

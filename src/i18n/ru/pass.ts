@@ -130,7 +130,7 @@ const pass: typeof en = {
     num(f.int(o.gsdM), 'м'),
     ' на пиксель.',
   ],
-  // «вбок под углом 32,1°»: «глядя на 32,1°» reads first as "looking at". «в темноте» belongs to «снял», not to the pixel.
+  // «вбок под углом 32,1°»: «глядя на 32,1°» reads first as "looking at". «в темноте» goes with «снял», not the pixel.
   radarImaged: (o: { deg: number; place: string; gsdM: number; dark: boolean }): Rich => [
     'Его радар смотрел вбок под углом ',
     deg1(o.deg),
