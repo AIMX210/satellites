@@ -5,8 +5,9 @@
  * Why these words: every corner line is a mono label, so the words are nouns («Повтор», «Каталог», «Подсолнечная
  * точка») kept close to the English length (on a 375 px phone «Как это работает» and the sun line nearly touch).
  * Coordinates, clocks, ISO stamps and "GMST" arrive as they are. Ages use the GOST unit symbols, which never inflect
- * («мин», «ч»); «дн.» keeps its period, as Intl prints it, so the age needs no plural forms. «Устарел» agrees with
- * «каталог», the only thing it is ever said of.
+ * («мин», «ч»); «дн.» keeps its period, as Intl prints it, so the age needs no plural forms. «устарел» follows the age
+ * («3 дн. назад, устарел»): before it, «Устарел, 3 дн. назад» read "went stale 3 days ago". It agrees with «каталог»,
+ * the only thing it is ever said of.
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
@@ -42,7 +43,7 @@ const hud: typeof en = {
   objectsPending: (count: string): Rich => [num(count), '\u00a0объектов'],
   catalog: 'Каталог',
   fetched: (stamp: string) => `Получен ${stamp}`,
-  catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Устарел, ' : ''}${age(unit, n)} назад`,
+  catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${age(unit, n)} назад${stale ? ', устарел' : ''}`,
   catalogUnavailable: 'Каталог недоступен',
   catalogLoading: 'Загрузка каталога',
 }
