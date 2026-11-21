@@ -8,7 +8,8 @@
  *    gender whatever the name. These messages get no satellite category, so a crewed station is «спутник» here too
  *    (true: a station is an artificial satellite); only «darkStation», which English words for stations, says
  *    «станция».
- *  - The place is never named: Russian would need a case for it. The sentences say «сюда», «это место», «эта точка».
+ *  - The place is never named: Russian would need a case for it. The sentences say «сюда», «это место», «эта точка»;
+ *    straight over it is «прямо над этой точкой», never «над головой», which is the overhead verdict's name.
  *  - Directions have three tables: moving takes на + accusative («двигаясь на юг»), an offset from the place к +
  *    dative after «в N км» («в 61 км к западу»), a point in the sky на + prepositional («на северо-западе»). Readouts
  *    keep the Latin abbreviations (compass16).
@@ -63,9 +64,9 @@ const IN_SKY: Record<Compass8, string> = {
 const km = (n: number) => num(f.int(n), 'км')
 const deg1 = (n: number) => num(f.dec(n, 1), '°')
 const clock = (time: string, zone: string) => num(time, zone)
-/** «прямо над головой на высоте 786 км» / «на высоте 786 км, в 61 км к западу» (after the clock) */
+/** «прямо над этой точкой на высоте 786 км» / «на высоте 786 км, в 61 км к западу» (after the clock) */
 const where = (altKm: number, offset?: Offset): Part[] =>
-  offset ? ['на высоте ', km(altKm), ', в ', km(offset.km), ` к ${OFF[offset.dir]}`] : ['прямо над головой на высоте ', km(altKm)]
+  offset ? ['на высоте ', km(altKm), ', в ', km(offset.km), ` к ${OFF[offset.dir]}`] : ['прямо над этой точкой на высоте ', km(altKm)]
 /** «каждую минуту», «каждую 21 минуту», «каждые 2 минуты», «каждые 10 минут»: the unit set with its number */
 const everyMinutes = (n: number): Part[] =>
   n === 1
@@ -98,14 +99,14 @@ const pass: typeof en = {
   // ── a geostationary scan ─────────────────────────────────────────────────────────────────
   geo: {
     sits: (o: { sat: string; altKm: number; seat?: string; cadenceMin?: number }): Rich => [
-      `Спутник ${o.sat} не пролетает. Он неподвижно висит на высоте `,
+      `Спутник ${o.sat} не пролетает мимо, а неподвижно висит на высоте `,
       km(o.altKm),
       o.seat !== undefined ? ` над экватором (${o.seat}) и ` : ' над экватором и ',
       ...(o.cadenceMin ? [...everyMinutes(o.cadenceMin), ' снимает всю обращённую к нему сторону Земли.'] : ['снимает всю обращённую к нему сторону Земли.']),
     ],
     // The line is the subject, so «двигаясь» is the line's; the place is «сюда».
     reached: (o: { place: string; time: string; zone: string; heading: Compass8 }): Rich => [
-      'Линия этого сканирования дошла сюда около ',
+      'Линия сканирования дошла сюда около ',
       clock(o.time, o.zone),
       `, двигаясь на ${TOWARD[o.heading]}.`,
     ],
@@ -129,12 +130,13 @@ const pass: typeof en = {
     num(f.int(o.gsdM), 'м'),
     ' на пиксель.',
   ],
+  // «вбок под углом 32,1°»: «глядя на 32,1°» reads first as "looking at". «в темноте» belongs to «снял», not to the pixel.
   radarImaged: (o: { deg: number; place: string; gsdM: number; dark: boolean }): Rich => [
-    'Его радар, глядя на ',
+    'Его радар смотрел вбок под углом ',
     deg1(o.deg),
-    ' в сторону, снял это место: ',
+    o.dark ? ' и снял это место в темноте: ' : ' и снял это место: ',
     num(f.int(o.gsdM), 'м'),
-    o.dark ? ' на пиксель, в темноте.' : ' на пиксель.',
+    ' на пиксель.',
   ],
   lookingDown: 'Он смотрел строго вниз.',
   lookingOff: (deg: number): Rich => ['Он смотрел вниз с отклонением ', deg1(deg), ' от вертикали.'],
@@ -159,7 +161,7 @@ const pass: typeof en = {
     // «темно», never «ночь»: this is said whenever the sun is below the horizon, civil twilight included.
     dark: 'Здесь было темно. Метеоспутники продолжают снимать и ночью, в инфракрасном диапазоне, так что этот спутник видел твои облака, а не улицы.',
     mosaicUnconfirmed: 'Не удалось подтвердить, что суточная мозаика NASA с этого пролёта покрывает твою точку.',
-    notPublished: 'Его снимки идут в прогнозы погоды. Их не публикуют как изображения, которые мы могли бы показать.',
+    notPublished: 'Его снимки используются в прогнозах погоды. В виде изображений, которые мы могли бы показать, их не публикуют.',
   },
 
   // ── «Могли смотреть сюда» ────────────────────────────────────────────────────────────────
@@ -168,7 +170,7 @@ const pass: typeof en = {
       `Спутник ${o.sat} пролетел в `,
       clock(o.time, o.zone),
       ' в зоне видимости',
-      ...(o.offset ? [', в ', km(o.offset.km), ` к ${OFF[o.offset.dir]}.`] : [', прямо над головой.']),
+      ...(o.offset ? [', в ', km(o.offset.km), ` к ${OFF[o.offset.dir]}.`] : [', прямо над этой точкой.']),
     ],
     insideSwath: (o: { place: string; swathKm: number }): Rich => [
       'Это место попало в его полосу обзора шириной ',
@@ -177,13 +179,13 @@ const pass: typeof en = {
     ],
     radar: (o: { place: string; deg?: number; openArchive: boolean }): Rich => [
       'Радар видит сквозь облака и темноту. ',
-      ...(o.deg === undefined ? ['Он мог снять это место.'] : ['Глядя на ', deg1(o.deg), ' в сторону, он мог снять это место.']),
+      ...(o.deg === undefined ? ['Он мог снять это место.'] : ['Глядя вбок под углом ', deg1(o.deg), ', он мог снять это место.']),
       o.openArchive ? ' Мы не нашли опубликованного снимка с этого пролёта.' : ' Мы не можем знать, так ли это было.',
     ],
     // «отклонив» / «не отклоняя» belong to the subject, the satellite.
     camera: (o: { place: string; deg?: number }): Rich => [
       ...(o.deg === undefined
-        ? ['Даже не отклоняя камеру, он мог смотреть сюда.']
+        ? ['Не отклоняя камеру, он мог смотреть сюда.']
         : ['Отклонив камеру на ', deg1(o.deg), ' от вертикали, он мог смотреть сюда.']),
       ' Мы не можем знать, так ли это было.',
     ],
