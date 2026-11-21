@@ -118,12 +118,18 @@ export function videoFileName(label: string, frames: readonly Pick<Frame, 'date'
 }
 
 const anyOf = (scripts: string[]) => `[${scripts.map((n) => `\\p{Script=${n}}`).join('')}]`
-/** Scripts whose letters join, which tracking would pull apart. */
-const JOINING = new RegExp(anyOf(['Arabic', 'Syriac', 'Nko', 'Adlam', 'Mandaic', 'Mongolian']), 'u')
+/**
+ * Scripts whose letters join (Arabic…) or hang from one headline stroke (Devanagari, Bengali, Gurmukhi), which tracking
+ * would pull apart: the stroke breaks into a dash per letter.
+ */
+const JOINING = new RegExp(anyOf(['Arabic', 'Syriac', 'Nko', 'Adlam', 'Mandaic', 'Mongolian', 'Devanagari', 'Bengali', 'Gurmukhi']), 'u')
 /** A first letter in a right-to-left script (anything that is not a letter before it is skipped, as bidi does). */
 const RTL_FIRST = new RegExp(`^\\P{L}*${anyOf(['Arabic', 'Hebrew', 'Syriac', 'Thaana', 'Nko', 'Adlam', 'Mandaic', 'Samaritan'])}`, 'u')
 
-/** Whether `s` has letters that join (Arabic, Syriac…), so it must be drawn without tracking. Pure. */
+/**
+ * Whether `s` has letters that join (Arabic, Syriac…) or share a headline stroke (Devanagari…), so it must be drawn
+ * without tracking. Pure.
+ */
 export const joins = (s: string): boolean => JOINING.test(s)
 
 /** Which way `s` runs, decided by its first letter as dir="auto" decides it: a place's name can be in any script. Pure. */
@@ -343,9 +349,10 @@ export async function renderVideo(frames: readonly Frame[], opts: VideoOptions):
   if (!ctx) throw new Error('No canvas')
   ctx.imageSmoothingQuality = 'high'
   const u = side / 1080
-  // The mono's tracking, except on letters that join (an Arabic readout, an Arabic place name in any language).
+  // The mono's tracking, except on letters that join or share a stroke (an Arabic or Hindi readout, an Arabic or
+  // Devanagari place name in any language).
   const track = 1.6 * u
-  const subTrack = info.script === 'arabic' || subs.some(joins) ? 0 : track
+  const subTrack = info.script === 'arabic' || info.script === 'devanagari' || subs.some(joins) ? 0 : track
   const art: Art = {
     ctx,
     side,
