@@ -268,12 +268,12 @@ const results: typeof en = {
   // ── 03 / СМОТРЯТ ПОСТОЯННО: geostationary weather satellites ──────────────────────────────
   geo: {
     none: 'Ни один действующий геостационарный метеоспутник не видит это место выше 5° над горизонтом.',
-    // One mono line like English's: the angle is the astronomer's «высота» (the degree sign leaves no doubt, and the
-    // row has no altitude in km), so the line is 37 characters, not 45. «каждые 10 мин», «каждую 21 мин» (ru's `one`),
-    // «каждую минуту»; «мин» never inflects.
+    // The angle is «над горизонтом», as in the pass strip, the geometry grid and the card: a bare «высота» is altitude,
+    // and the pass view prints this very satellite's 35 786 км. The no-break spaces keep each fact whole, so a narrow
+    // row wraps at a « · ». «каждые 10 мин», «каждую 21 мин» (ru's `one`), «каждую минуту»; «мин» never inflects.
     facts: (lon: string, elevationDeg: number, cadenceMin: number) =>
-      `${lon} · высота\u00a0${f.dec(elevationDeg, 1)}° · ${
-        cadenceMin === 1 ? 'каждую минуту' : `${f.category(cadenceMin) === 'one' ? 'каждую' : 'каждые'}\u00a0${int(cadenceMin)}\u00a0мин`
+      `${lon} · ${f.dec(elevationDeg, 1)}°\u00a0над\u00a0горизонтом · ${
+        cadenceMin === 1 ? 'каждую\u00a0минуту' : `${f.category(cadenceMin) === 'one' ? 'каждую' : 'каждые'}\u00a0${int(cadenceMin)}\u00a0мин`
       }`,
     images: (n: number, days: number): Rich => [
       num(int(n)),
@@ -291,7 +291,7 @@ const results: typeof en = {
     },
     frameAlt: (sat: string, infrared: boolean) => `${sat}: самый свежий ${infrared ? 'инфракрасный ' : ''}кадр вокруг этого места`,
     infraredChip: 'ИК',
-    infraredTitle: 'Инфракрасный снимок: яркость показывает температуру верхушек облаков, чем холоднее, тем светлее',
+    infraredTitle: 'Инфракрасный снимок. Яркость показывает температуру верхушек облаков: чем холоднее, тем светлее',
   },
 
   // ── 04 / ШКАЛА ВРЕМЕНИ ───────────────────────────────────────────────────────────────────
@@ -316,7 +316,8 @@ const results: typeof en = {
 
   // ── 02 / ПОВТОР ──────────────────────────────────────────────────────────────────────────
   replay: {
-    scrubLabel: 'Время кадра в пределах пролёта',
+    // The replay's clock, as the HUD's «Повтор»: «кадр» is an image's word, and this is no image's capture time.
+    scrubLabel: 'Время в повторе пролёта',
     scrubValue: (tMinus: string, utc: string) => `${tMinus}, ${utc}`,
     play: 'Воспроизвести повтор',
     pause: 'Приостановить повтор',
