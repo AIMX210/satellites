@@ -31,8 +31,10 @@ import {
   CHIP_BOX,
   DEFAULT_CARD_ALT,
   HEAD,
-  HEAD_CJK,
+  HEAD_DEVANAGARI,
+  headLeading,
   headTracking,
+  needsShaping,
   PANEL,
   PLATE,
   TONE_COLOR,
@@ -69,7 +71,9 @@ export { CARD_H, CARD_W, PLATE, niceLength }
  * except its units ("10 m", "1 km": ./i18n/units.ts), so satori's own text-transform is off: it would uppercase the
  * units too, and in no language's rules (Turkish i must become İ). `textTransform: 'none'` from a caller keeps the
  * text as it is (the host, a readout's unit). `faces` is the language whose faces set it: the card's, also for words
- * cased as another language's (the English licence credit on a Vietnamese card is in the card's mono).
+ * cased as another language's (the English licence credit on a Vietnamese card is in the card's mono). A row in a
+ * script that must not be tracked (Devanagari's headline stroke, Arabic's joins: needsShaping) is set without it, as
+ * the app's canvas draws it.
  */
 function mono(locale: Locale, text: string, size: number, color: string, style: CSSProperties = {}, faces: Locale = locale): ReactElement {
   const shown = style.textTransform === 'none' ? text : capsExceptUnits(text, LOCALE_INFO[locale].intl)
@@ -80,7 +84,7 @@ function mono(locale: Locale, text: string, size: number, color: string, style: 
         display: 'flex',
         fontFamily: cardFamily(faces).mono,
         fontSize: size,
-        letterSpacing: size * TRACK.label,
+        letterSpacing: needsShaping(shown) ? 0 : size * TRACK.label,
         textTransform: 'none',
         color,
         lineHeight: 1.3,
@@ -216,8 +220,8 @@ function headline(spec: Pick<CardSpec, 'head' | 'sub' | 'size' | 'cjk' | 'locale
   const S = spec.size
   const P = S * HEAD.placeScale
   const gap = P * HEAD.placeGap
-  // Chinese, Japanese and Korean: their leading, and each text part one phrase on one line (HEAD_CJK).
-  const lh = spec.cjk ? HEAD_CJK : HEAD
+  // Chinese, Japanese, Korean and Devanagari: their leading (headLeading); CJK's text parts one phrase on one line each.
+  const lh = headLeading(spec)
   const track = headTracking(spec.locale)
   const F = cardFamily(spec.locale)
   const blocks = spec.head.map((part, i) =>
@@ -385,11 +389,22 @@ export function defaultPlateDataUri(): Promise<string | null> {
 }
 
 /**
- * The landing hero's tracking per script, in em (--track-display in src/styles/tokens.css, overridden in scripts.css):
- * Cyrillic lowercase is a denser picket fence than Latin, Han and kana denser again. Arabic is tracked as Latin until
- * the right-to-left card gives it the web's (none: tracking breaks its joins).
+ * The landing hero per script, as the page's tokens set it (src/styles/tokens.css, overridden in scripts.css):
+ *  - track: its tracking in em (--track-display): Cyrillic lowercase is a denser picket fence than Latin, Han and kana
+ *    denser again, Devanagari none (tracking cuts its headline stroke). Arabic is tracked as Latin until the
+ *    right-to-left card gives it the web's (none: tracking breaks its joins).
+ *  - lh: its line height (the page's 0.92 × --lh-k; 0.94 here): Devanagari's vowel signs need HEAD_DEVANAGARI's.
+ *  - accent: the serif accent's size against the display's: 1.12 sets Instrument Serif's lowercase "you" as tall as
+ *    the condensed sans' letters; Devanagari's serif letters are as tall as the sans' already (--accent-k).
+ *  - size: the display's size against English's (--display-k): Hindi set as large reads larger, and taller.
  */
-const HERO_TRACK: Record<Script, number> = { latin: -0.02, cyrillic: -0.015, cjk: -0.01, arabic: -0.02, devanagari: 0 }
+const HERO: Record<Script, { track: number; lh: number; accent: number; size: number }> = {
+  latin: { track: -0.02, lh: 0.94, accent: 1.12, size: 1 },
+  cyrillic: { track: -0.015, lh: 0.94, accent: 1.12, size: 1 },
+  cjk: { track: -0.01, lh: 0.94, accent: 1.12, size: 1 },
+  arabic: { track: -0.02, lh: 0.94, accent: 1.12, size: 1 },
+  devanagari: { track: 0, lh: HEAD_DEVANAGARI.leadLH, accent: 1.04, size: 0.84 },
+}
 
 /**
  * The hero, set in explicit lines (satori has no inline formatting, and a free wrap left "week." as a
@@ -399,10 +414,10 @@ const HERO_TRACK: Record<Script, number> = { latin: -0.02, cyrillic: -0.015, cjk
  * Each line is the catalog's parts, each its own span: a part boundary with a space at it gets the word gap (0.2em,
  * a flex gap: satori has no inline spacing), so "watched" and the serif "you" stay two words while parts written
  * without a space between them (Chinese, Japanese) touch. The display words are tracked as the landing hero's are in
- * the card's language (HERO_TRACK).
+ * the card's language (HERO).
  */
 function heroLines(locale: Locale, size: number, lines: Rich[]): ReactElement {
-  const track = HERO_TRACK[LOCALE_INFO[locale].script]
+  const hero = HERO[LOCALE_INFO[locale].script]
   const F = cardFamily(locale)
   const w = (s: string, serif = false, style: CSSProperties = {}) =>
     h(
@@ -413,9 +428,9 @@ function heroLines(locale: Locale, size: number, lines: Rich[]): ReactElement {
           fontStyle: serif ? 'italic' : 'normal',
           fontWeight: serif ? 400 : 600,
           // Instrument Serif sits smaller than the condensed sans at the same size: match cap height.
-          fontSize: serif ? size * 1.12 : size,
-          letterSpacing: serif ? 0 : track * size,
-          lineHeight: 0.94,
+          fontSize: serif ? size * hero.accent : size,
+          letterSpacing: serif ? 0 : hero.track * size,
+          lineHeight: hero.lh,
           whiteSpace: 'nowrap',
           // "you" (the serif accent) in signal, as on the landing hero.
           color: serif ? C.signal : C.bone,
@@ -460,7 +475,7 @@ export function defaultCard({ host, plateDataUri, locale = DEFAULT_LOCALE }: { h
     row(PANEL.top, lockup(), mono(locale, m.lastWeek, CARD_FS.row, C.bone2)),
     rule(PANEL.rule1),
     // The hero is centred between the top rule and the footer rule, lifted as the pass headline is (owner: even spacing).
-    abs({ left: PANEL.x, top: PANEL.headTop, width: PANEL.w, height: PANEL.rule3 - 12 - PANEL.headTop, flexDirection: 'column', justifyContent: 'center' }, heroLines(locale, 88, m.hero)),
+    abs({ left: PANEL.x, top: PANEL.headTop, width: PANEL.w, height: PANEL.rule3 - 12 - PANEL.headTop, flexDirection: 'column', justifyContent: 'center' }, heroLines(locale, 88 * HERO[LOCALE_INFO[locale].script].size, m.hero)),
     rule(PANEL.rule3),
     row(PANEL.foot, mono(locale, m.enterAnyPlace, 15, C.bone), host ? mono(locale, host, CARD_FS.row, C.bone2, { textTransform: 'none', letterSpacing: 0.5 }) : undefined),
   )

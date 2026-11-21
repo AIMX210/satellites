@@ -117,16 +117,38 @@ export const HEAD = { leadLH: 0.94, placeScale: 1.06, placeLH: 0.9, placeGap: 0.
  * is never left alone on a line and a word is never cut ("注 / 视过"). headlineSize picks the size they all fit at.
  */
 export const HEAD_CJK = { leadLH: 1.12, placeLH: 1.1 } as const
+/**
+ * Hindi headlines (Devanagari): HEAD's leading × 1.3, the page's --lh-k (src/styles/scripts.css). Vowel signs rise to
+ * 0.9 em above the baseline (ि ी े ं) and hang to 0.37 em below it (ु ृ, stacked conjuncts): at 0.94 a line's े touched
+ * the conjunct hanging from the line above it.
+ */
+export const HEAD_DEVANAGARI = { leadLH: 1.22, placeLH: 1.17 } as const
+
+/** The headline's leading for a card: HEAD, or its script's (Chinese, Japanese and Korean; Devanagari). */
+export function headLeading(spec: Pick<CardSpec, 'cjk' | 'locale'>): { leadLH: number; placeLH: number } {
+  return spec.cjk ? HEAD_CJK : LOCALE_INFO[spec.locale].script === 'devanagari' ? HEAD_DEVANAGARI : HEAD
+}
 
 /**
  * The headline's tracking in em, by script, as the page's --track-display (src/styles/scripts.css): Latin −0.02,
- * Cyrillic's denser lowercase −0.015, CJK −0.01, Arabic none (tracking breaks its joins). The place's serif −0.01,
- * none in Arabic. Every renderer of the card reads these, so the preview, the PNG and the unfurl agree.
+ * Cyrillic's denser lowercase −0.015, CJK −0.01, Arabic and Devanagari none (tracking breaks Arabic's joins and cuts
+ * Devanagari's headline stroke between letters). The place's serif −0.01, none in Arabic and Devanagari. Every renderer
+ * of the card reads these, so the preview, the PNG and the unfurl agree.
  */
 export function headTracking(locale: Locale): { lead: number; place: number } {
   const script = LOCALE_INFO[locale].script
-  return script === 'arabic' ? { lead: 0, place: 0 } : { lead: script === 'cyrillic' ? -0.015 : script === 'cjk' ? -0.01 : -0.02, place: -0.01 }
+  if (script === 'arabic' || script === 'devanagari') return { lead: 0, place: 0 }
+  return { lead: script === 'cyrillic' ? -0.015 : script === 'cjk' ? -0.01 : -0.02, place: -0.01 }
 }
+
+/**
+ * Text that must be drawn as one run and never tracked: scripts whose letters a shaping engine joins and reorders
+ * (Arabic, Hebrew, the Indic scripts with their headline stroke and conjuncts, South-East Asian scripts). Spacing their
+ * letters apart breaks Arabic's joins and cuts Devanagari's stroke between letters. The canvas (src/ui/share/card.ts)
+ * and satori (./card.ts) both turn a mono row's tracking off for such text, as the page's scripts.css does.
+ */
+const SHAPED = /[\u0590-\u08FF\u0900-\u0DFF\u0E00-\u0FFF\u1000-\u109F\u1780-\u17FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
+export const needsShaping = (text: string): boolean => SHAPED.test(text)
 
 // ── Spec ────────────────────────────────────────────────────────────────────────────────────
 
@@ -449,9 +471,56 @@ export function headlineSizeCjk(head: Rich, sub?: string): number {
   return 36
 }
 
+/**
+ * Width in em of a Hindi card's text, per UTF-16 unit: the widest of the Hindi card's lines measured in each face
+ * (HarfBuzz, 2026-11-21: the condensed display 0.37, the serif place 0.39 with a Latin name, the sans 0.40). A vowel
+ * sign, a virama or a nukta is a unit that adds little or no width, so a count of units errs wide, never narrow.
+ */
+const DEVANAGARI_EM = { lead: 0.37, place: 0.4, sub: 0.41 } as const
+
+/** How many lines `text` takes in `width` px when each UTF-16 unit is `unit` px wide (greedy, by word). */
+function linesByUnits(text: string, unit: number, width: number): number {
+  let lines = 0
+  let w = 0
+  for (const word of text.split(/[^\S\u00a0]+/).filter(Boolean)) {
+    const ww = word.length * unit
+    if (lines && w + unit + ww <= width) w += unit + ww
+    else {
+      lines++
+      w = ww
+    }
+  }
+  return lines
+}
+
+/**
+ * A Hindi headline's size: at most headlineSize's (the lead in three lines, the place in two), and small enough that
+ * the whole block, at HEAD_DEVANAGARI's taller leading and with its sub-line, fits its band. At HEAD's sizes a
+ * two-line place, a two-line lead and a sub-line ran into the readouts.
+ */
+export function headlineSizeDevanagari(head: Rich, lead: string, place: string, sub?: string): number {
+  const leads = head.filter((p) => !isAccent(p)).map((p) => plain([p]).trim()).filter(Boolean)
+  const places = head.filter(isAccent).map((p) => plain(p.accent).trim())
+  const subH = sub ? HEAD.subGap + linesByUnits(sub, DEVANAGARI_EM.sub * CARD_FS.sub, PANEL.w) * CARD_FS.sub * HEAD.subLH : 0
+  for (let S = headlineSize(lead, place); S > 36; S -= 2) {
+    const P = S * HEAD.placeScale
+    const leadLines = leads.reduce((n, t) => n + linesByUnits(t, DEVANAGARI_EM.lead * S, PANEL.w), 0)
+    const placeLines = places.map((t) => linesByUnits(t, DEVANAGARI_EM.place * P, PANEL.w))
+    if (leadLines > 3 || placeLines.some((n) => n > 2)) continue
+    const blocks = leads.length + places.length
+    const h =
+      leadLines * S * HEAD_DEVANAGARI.leadLH + placeLines.reduce((a, n) => a + n * P * HEAD_DEVANAGARI.placeLH, 0) + Math.max(0, blocks - 1) * P * HEAD.placeGap + subH
+    if (h <= PANEL.headBottom - PANEL.headTop - 8) return S
+  }
+  return 36
+}
+
 /** The headline's size and script flags for a card in `locale` (English and every other script: headlineSize). */
 function headSizing(locale: Locale, head: Rich, lead: string, sub?: string): { size: number; cjk?: true } {
-  return LOCALE_INFO[locale].script === 'cjk' ? { size: headlineSizeCjk(head, sub), cjk: true } : { size: headlineSize(lead, accentText(head, locale)) }
+  const script = LOCALE_INFO[locale].script
+  if (script === 'cjk') return { size: headlineSizeCjk(head, sub), cjk: true }
+  if (script === 'devanagari') return { size: headlineSizeDevanagari(head, lead, accentText(head, locale), sub) }
+  return { size: headlineSize(lead, accentText(head, locale)) }
 }
 
 // ── Numbers and places ──────────────────────────────────────────────────────────────────────

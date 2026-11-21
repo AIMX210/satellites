@@ -32,8 +32,9 @@ import {
   CARD_W,
   CHIP_BOX,
   HEAD,
-  HEAD_CJK,
+  headLeading,
   headTracking,
+  needsShaping,
   PANEL,
   PLATE,
   TONE_COLOR,
@@ -379,13 +380,13 @@ function setFace(ctx: Ctx, f: Face) {
 const nativeTracking = (ctx: Ctx) => Reflect.has(ctx, 'letterSpacing')
 
 /**
- * Scripts whose letters a shaping engine joins and reorders (Arabic, Hebrew, the Indic and South-East Asian scripts):
- * such text is always drawn as one run and never tracked (spacing letters apart breaks Arabic's joins).
+ * Text in a script whose letters a shaping engine joins and reorders (Arabic, Hebrew, the Indic and South-East Asian
+ * scripts) is always drawn as one run and never tracked (needsShaping, cardSpec.ts): spacing its letters apart breaks
+ * Arabic's joins and cuts Devanagari's headline stroke.
  */
-const SHAPED = /[\u0590-\u08FF\u0900-\u0DFF\u0E00-\u0FFF\u1000-\u109F\u1780-\u17FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
+export { needsShaping }
 /** Right-to-left letters: a run whose first letter is one of them is laid out right to left (its own direction). */
 const RTL = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/
-export const needsShaping = (text: string) => SHAPED.test(text)
 const rtlRun = (text: string) => {
   // read outside its isolates, as the preview's unicode-bidi: plaintext reads it (bidi.ts)
   const first = /\p{L}/u.exec(outsideIsolates(text))
@@ -750,8 +751,8 @@ export async function renderCardPng(spec: CardSpec): Promise<Blob> {
   const lead: Face = { family: DISPLAY, size: S, weight: spec.cjk ? 600 : 560, stretch: 'condensed', tracking: track.lead * S }
   const place: Face = { family: SERIF, size: P, italic: true, tracking: track.place * P }
   const sub: Face = { family: SANS, size: CARD_FS.sub }
-  // Chinese, Japanese, Korean: their leading, and each text part one phrase on one line (HEAD_CJK)
-  const lh = spec.cjk ? HEAD_CJK : HEAD
+  // Chinese, Japanese, Korean and Devanagari: their leading (headLeading); CJK's text parts one phrase on one line each
+  const lh = headLeading(spec)
   const leadLH = S * lh.leadLH
   const placeLH = P * lh.placeLH
   const subLH = CARD_FS.sub * HEAD.subLH

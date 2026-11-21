@@ -151,6 +151,8 @@ describe('the PNG’s line breaking and shaping (canvas has no CSS)', () => {
     expect(needsShaping('東京')).toBe(false)
     expect(needsShaping('٧ أقمار صناعية')).toBe(true)
     expect(needsShaping('תל אביב')).toBe(true)
+    // Devanagari's conjuncts and reordered vowel signs, and its headline stroke that tracking would cut
+    expect(needsShaping('256 उपग्रहों ने देखा।')).toBe(true)
   })
 
   it('keeps the headline’s blocks, in order, for every renderer', () => {
