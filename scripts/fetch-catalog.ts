@@ -12,16 +12,21 @@
  *
  * Runs in GitHub Actions on a schedule (.github/workflows/catalog.yml; it must commit BOTH files).
  * CelesTrak asks clients not to re-download the same data more than once every 2 hours, and to stop asking on
- * any answer but 200: scripts/celestrak.ts asks that way, inside a deadline that fits the job's timeout.
+ * any answer but 200: scripts/celestrak.ts asks that way, inside a deadline that fits the job's timeout. The schedule
+ * comes every 3 hours and `--if-older-than` turns a slot away while the catalog is young, so the catalog is
+ * refreshed about every 6 hours and a failed run is followed 3 hours later, not at the next refresh (GitHub drops
+ * scheduled runs: in November 2026 it ran two of the four a day, and two failures in a row left the catalog 36 hours
+ * old).
  *
- * Usage: tsx scripts/fetch-catalog.ts [outPath] [--from <existing catalog.json>]
+ * Usage: tsx scripts/fetch-catalog.ts [outPath] [--from <existing catalog.json>] [--if-older-than <hours>]
  *   --from re-encodes an existing catalog file (v1 or v2) without contacting CelesTrak.
+ *   --if-older-than does nothing (writes nothing, asks nothing) while outPath was fetched less than <hours> ago.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import type { CatalogFile, CatalogRow } from '../src/types'
 import { resolveProfile } from '../src/engine/profiles'
-import { fetchGroup, Refused, type Omm } from './celestrak'
+import { fetchGroup, isFresh, Refused, type Omm } from './celestrak'
 
 const args = process.argv.slice(2)
 const flag = (name: string) => {
@@ -29,6 +34,7 @@ const flag = (name: string) => {
   return i >= 0 ? args[i + 1] : undefined
 }
 const FROM = flag('--from')
+const IF_OLDER = flag('--if-older-than')
 const OUT = args.filter((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'))[0] ?? 'public/data/catalog.json'
 const NAMES_OUT = join(dirname(OUT), 'catalog-names.json')
 /** How long the run may ask CelesTrak: the job's 10 minutes, less setting up, encoding and pushing. */
@@ -108,7 +114,26 @@ function readRows(path: string): { rows: CatalogRow[]; fetchedAt: string; source
   return { rows, fetchedAt: v2.fetchedAt, source: v2.source }
 }
 
+/** The fetch time of the catalog at `path`, if there is one. */
+function fetchedAtOf(path: string): string | undefined {
+  try {
+    const v = (JSON.parse(readFileSync(path, 'utf8')) as { fetchedAt?: unknown }).fetchedAt
+    return typeof v === 'string' ? v : undefined
+  } catch {
+    return undefined
+  }
+}
+
 async function main() {
+  if (IF_OLDER !== undefined && !FROM) {
+    const hours = Number(IF_OLDER)
+    if (!(hours > 0)) throw new Error(`--if-older-than takes hours, got ${IF_OLDER}`)
+    const at = fetchedAtOf(OUT)
+    if (isFresh(at, hours)) {
+      console.log(`[catalog] ${OUT} was fetched at ${at}, less than ${hours} h ago: nothing to do`)
+      return
+    }
+  }
   const { rows: raw, fetchedAt, source } = FROM ? readRows(FROM) : await fetchRows()
   const rows = raw.filter((r) => Number.isFinite(r[4]) && r[4] > 0).sort((a, b) => a[0] - b[0])
   if (rows.length < 5000) throw new Error(`suspiciously small catalog: ${rows.length}`)
