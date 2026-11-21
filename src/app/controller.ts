@@ -74,11 +74,15 @@ const LOGO_MIN_MS = 650
 const FIRST_FONTS = ['500 16px "Instrument Sans Variable"', '400 16px "Martian Mono Variable"', 'italic 400 16px "Instrument Serif"']
 /**
  * …and a script's own faces (src/styles/scripts.css), asked for with a letter of that script: their unicode-range
- * would never be fetched for the space a bare load() measures, and the hero would swap fonts after boot.
+ * would never be fetched for the space a bare load() measures, and the hero would swap fonts after boot. Keyed by
+ * script (faces added to the brand ones), or by language for one whose page sets every role in faces of its own
+ * (Vietnamese, its Latin letters too): that page waits for those instead of the brand faces, which it never draws (asked
+ * with its words, they would fetch their latin-ext files for its ă and đ).
  */
 const SCRIPT_FONTS: Record<string, [font: string, text: string][]> = {
   cyrillic: [['560 16px "Watched Cyrillic"', 'щ'], ['italic 400 16px "Watched Cyrillic Serif"', 'т']],
   arabic: [['600 16px "Watched Arabic"', 'ب'], ['italic 400 16px "Watched Arabic Serif"', 'أ']],
+  vi: [['560 16px "Watched Vietnamese"', 'Việt'], ['italic 400 16px "Watched Vietnamese Serif"', 'Việt'], ['350 16px "Watched Vietnamese Mono"', 'VIỆT']],
 }
 /** Boot never waits longer than this for the faces (system fallbacks are fine on a very slow link). */
 const FONTS_CAP_MS = 4000
@@ -234,11 +238,13 @@ async function loadFirstFonts(): Promise<void> {
   const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
   if (!fonts) return
   try {
-    const own = SCRIPT_FONTS[document.documentElement.getAttribute('data-script') ?? ''] ?? []
+    const root = document.documentElement
+    const language = SCRIPT_FONTS[root.lang]
+    const own = language ?? SCRIPT_FONTS[root.getAttribute('data-script') ?? ''] ?? []
     // With the page's own words (the tab title is the hero line in the visitor's language: src/i18n/bootText.ts), so a
     // latin-ext face (Polish ł, Turkish ş) is fetched before the hero shows, not swapped in under its wipe.
     const words = `${document.title} `
-    await Promise.all([...FIRST_FONTS.map((f) => fonts.load(f, words)), ...own.map(([f, text]) => fonts.load(f, text))])
+    await Promise.all([...(language ? [] : FIRST_FONTS).map((f) => fonts.load(f, words)), ...own.map(([f, text]) => fonts.load(f, text))])
     await fonts.ready
   } catch {
     /* system fallbacks */

@@ -148,8 +148,9 @@ function localePreloads(bundle: OutputBundle, base: string): Record<string, stri
 
 /**
  * A script's faces the first screen paints (src/styles/scripts.css), preloaded by the boot script only for that
- * script: the hero is the largest paint, and its Cyrillic or Arabic face would otherwise be discovered late. The Arabic
- * accent (one word) and every Latin page's fonts are not on this list.
+ * script, or for that language (a key that is a locale): the hero is the largest paint, and its Cyrillic, Arabic or
+ * Vietnamese face would otherwise be discovered late. The Arabic accent (one word) and the brand faces every page
+ * preloads (CRITICAL_FONTS) are not on this list.
  */
 const LATIN_EXT = /^(?:.*\/)?(instrument-sans-latin-ext-standard-normal|martian-mono-latin-ext-standard-normal|instrument-serif-latin-ext-400-italic)-[\w-]+\.woff2$/
 const SCRIPT_FONTS: Record<string, RegExp> = {
@@ -158,6 +159,9 @@ const SCRIPT_FONTS: Record<string, RegExp> = {
   // Latin languages whose own letters (ł ż ś, ş ğ ı) live in the brand faces' latin-ext files (keyed by locale)
   pl: LATIN_EXT,
   tr: LATIN_EXT,
+  // Vietnamese sets every role in faces of its own (scripts.css): their latin and Vietnamese files, the accent's one.
+  // Not the Latin Extended-A files, which only a Polish or Czech name asks for.
+  vi: /^(?:.*\/)?(noto-sans-latin-wdth-normal|noto-sans-vietnamese-wdth-normal|jetbrains-mono-(latin|vietnamese)-wght300-700|noto-serif-display-vietnamese-italic-320-62)-[\w-]+\.woff2$/,
 }
 function scriptFonts(bundle: OutputBundle, base: string): Record<string, string[]> {
   const out: Record<string, string[]> = {}
