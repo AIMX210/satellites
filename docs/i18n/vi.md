@@ -32,7 +32,7 @@ glyph check. Run `node -e` with `s.normalize('NFC') === s` over a file before co
 | image / photo / picture | **ảnh** for every image, radar, mosaics and full-disc frames included; **bức ảnh** after a count in a display sentence; **ảnh chụp** only where the item is certainly an optical photograph; **hình ảnh** for "pictures" uncounted in prose. |
 | pass / swath / scene | **lượt bay qua** (unit after a count: **lượt**) / **dải quét** / **cảnh ảnh** (remote-sensing term) or **ảnh**. |
 | Verdicts | *Đã quan sát* · *Nhiều khả năng đã quan sát* · *Có thể đã hướng về đây* · *Bay qua trên đầu*; lanes `ẢNH` · `QUÉT QUA` · `CÓ THỂ` · `BAY QUA`. |
-| Hero | **Tuần này, / có thứ gì đó / đã quan sát *bạn*.** (landing: three lines; the default share card: four, §3.1). |
+| Hero | **Tuần này, / có thứ gì đó / quan sát *bạn*.** (landing: three lines; the default share card: four, §3.1). The fronted *Tuần này* carries the time, so the headline needs no *đã*; every other sentence keeps it. |
 | Plural | One CLDR category, `other`. One noun form for 1 and 1,000; never *các* / *những* after a number. |
 | Numbers | `1.715` · `7,46` · `25%` · `5,4°` · `786 km` · `7,46 km/s` |
 | Clocks | `16:14:21` (colon), as they arrive, in prose too: *lúc 16:14:21 UTC*. Never *16h14*. |
@@ -57,7 +57,7 @@ writer speaking to one person: not a bank, not a ministry, not a friend on Zalo.
 
 | Surface | Address | Form | Example | Why |
 |---|---|---|---|---|
-| Display headlines (hero, results headline, About title, panel heads) | *bạn* when the reader is addressed, last in the line where it is the accent | Short declarative, no particle | *Tuần này, có thứ gì đó đã quan sát \*bạn\*.* | *bạn* is a free word, so it can carry the serif accent alone; ending on it puts the weight where Vietnamese puts emphasis, at the end. |
+| Display headlines (hero, results headline, About title, panel heads) | *bạn* when the reader is addressed, last in the line where it is the accent | Short declarative, no particle | *Tuần này, có thứ gì đó quan sát \*bạn\*.* | *bạn* is a free word, so it can carry the serif accent alone; ending on it puts the weight where Vietnamese puts emphasis, at the end. |
 | Sentences (results, pass detail, notes, post text) | *bạn*; the product is *chúng tôi* | Declarative, standard grammar | *Lúc đó ở đây trời tối. … nên thứ vệ tinh thấy là mây của bạn, không phải phố của bạn.* | Second person is the product's voice. |
 | Buttons and links | No pronoun; the user's own voice is *tôi* | Bare verb (*Chia sẻ*, *Sao chép liên kết*, *Thử lại*), never *Hãy*, *Vui lòng*, *Xin* | *Dùng vị trí của tôi* · *Gần tôi* · *Chia sẻ* · *Thử lại* | A button is the user's own command. Where the English speaks as the user ("my", "me"), Vietnamese does too, with *tôi*. |
 | Mono caps labels | None | Nouns and short verb phrases | `7 NGÀY QUA` · `ĐỘ CAO` · `ĐỘ NGHIÊNG` | Labels name things. |
@@ -91,7 +91,7 @@ writer speaking to one person: not a bank, not a ministry, not a friend on Zalo.
 | *anh/chị* | Gendered, age-coded, and the register of banks and call centres (*Kính gửi anh/chị*). *Có thứ gì đó đã quan sát anh/chị* is a form letter. |
 | *quý khách* | Customer service. The reader is not our customer, and the hero would read like a hotel notice. |
 | *cậu*, *bạn ơi*, *mày* | Youthful, chatty or rude: wrong for an instrument. |
-| No pronoun at all in the hero (*Tuần này, có thứ gì đó đã quan sát.*) | Removes the human moment the serif accent exists for. |
+| No pronoun at all in the hero (*Tuần này, có thứ gì đó quan sát.*) | Removes the human moment the serif accent exists for. |
 | Mixing (*bạn* in sentences, *quý vị* in About) | One persona or none. Translation memory will try to insert *quý khách* and *Vui lòng*: reject them in review. |
 
 ### 1.4 Standard written words, not colloquial or bureaucratic
@@ -125,8 +125,11 @@ fault sentence, where a bare verb would read as a label (*Thay vào đó, hãy t
   about the same pass need no *đã*. A pass's conditions take ***lúc đó*** ("at that time"): *Lúc đó ở đây trời tối*,
   never *Ở đây đang tối* (that says it is dark now, false for a pass three days ago). ***đang*** is only for live
   states: *Đang tải…*, *Đang định vị…*.
-- **The hero takes *đã*.** *Có thứ gì đó đã quan sát bạn*: something watched you, and it is done. *đang quan sát*
-  ("is watching") would be stronger and false: nothing here is live.
+- **The hero is a headline, and a Vietnamese headline lets its time phrase carry the tense.** *Tuần này, có thứ gì đó
+  quan sát bạn*: the fronted *Tuần này* ("this week") says when, as *Tuần này có người nhắc đến bạn* does, so the verb
+  stands bare, and its line fits the landing's column at 1280 px (with *đã* it wrapped to a fourth line and pushed the
+  chips into the HUD, §3.1). Never *đang quan sát* ("is watching"): stronger, and false, since nothing here is live.
+  Every sentence about a pass or a count keeps *đã* (*256 vệ tinh đã quan sát Waterloo*).
 - **One idea per sentence, 10 to 25 words.** Vietnamese words are one syllable each, so word counts run higher than in
   English for the same sentence; count a number with its unit (*786 km*) and a clock with its zone (*16:14:21 UTC*)
   as one word. Where English chains three clauses, split into two sentences.
@@ -184,7 +187,7 @@ Landing (`landing.hero`), three lines:
 ```
 Tuần này,
 có thứ gì đó
-đã quan sát *bạn*.
+quan sát *bạn*.
 ```
 
 - Accent: ***bạn*** alone, serif italic, signal orange. The full stop after it is sans.
@@ -192,28 +195,31 @@ có thứ gì đó
   where the language stresses. The English puts the time last; a Vietnamese line ending on *tuần này.* would end on the
   least important words. *Tuần này,* opens with its comma, as Vietnamese fronts a time phrase.
 - *thứ gì đó* is "some thing": not a person (*ai đó*, "someone", would make it a stalker), and the indefinite *gì đó*
-  keeps it unnamed. *đã* makes it done (§2.1).
-- Lines are 9 / 12 / 16 characters (English 9 / 11 / 10). The last line, which carries the accent, is the longest,
-  where the English puts its weight on the middle one. Where the display size leaves the last line too wide for the
-  column it wraps at its one space before the accent (*đã quan sát / \*bạn\*.*), giving the card's four-line form. That is
-  the only break allowed: never `nowrap`, never a manual break elsewhere, never a break inside *quan sát* or *thứ gì đó*.
-- Screen readers get one sentence: *Tuần này, có thứ gì đó đã quan sát bạn.*
-- Tab title and boot title: *Watched · Tuần này, có thứ gì đó đã quan sát bạn* (no full stop). Share page title: *Tuần
-  này, có thứ gì đó đã quan sát bạn.*
+  keeps it unnamed. No *đã*: the fronted *Tuần này* carries the time (§2.1).
+- Lines are 9 / 12 / 13 characters (English 9 / 11 / 10). The last line, which carries the accent, is as long as the
+  middle one, where the English puts its weight. Seen at 1280 × 800: with *đã* the last line (16) was too wide for the
+  column and wrapped to *đã quan sát / \*bạn\*.*; the fourth line pushed the example chips into the HUD's bottom-left
+  readout. Without it the hero is three lines at 1280 px and at 375 px. Where a display size still leaves the last line
+  too wide it wraps at its one space before the accent, giving the card's four-line form. That is the only break
+  allowed: never `nowrap`, never a manual break elsewhere, never a break inside *quan sát* or *thứ gì đó*.
+- Screen readers get one sentence: *Tuần này, có thứ gì đó quan sát bạn.*
+- Tab title and boot title: *Watched · Tuần này, có thứ gì đó quan sát bạn* (no full stop). Share page title: *Tuần
+  này, có thứ gì đó quan sát bạn.* The share hook keeps it: *Tuần này, có thứ gì đó cũng quan sát bạn.*
 
 Default share card (`card.hero`), four lines, because the card never re-wraps and its column is 466 px: at 88 px the
-condensed face sets about 35 px a character, so *đã quan sát bạn.* (16) is about 560 px. *có thứ gì đó* (12, ≈ 420 px)
-is the widest of the four.
+condensed face sets about 35 px a character, so *quan sát bạn.* (13) is about 450 px: it would fit, with no margin.
+*có thứ gì đó* (12, ≈ 420 px) is the widest of the four, and the reader stands alone on the last line.
 
 ```
 Tuần này,
 có thứ gì đó
-đã quan sát
+quan sát
 *bạn*.
 ```
 
 | Alternate | Why it lost |
 |---|---|
+| *Tuần này, / có thứ gì đó / đã quan sát \*bạn\*.* | The first version. Correct, but the last line wraps on a laptop (above), and a headline with a fronted time phrase does not need *đã*. |
 | *Có thứ gì đó / đã quan sát \*bạn\* / tuần này.* | The English order. Grammatical, but it ends on *tuần này*, so the line after the accent deflates it. |
 | *Tuần này, / có ai đó / đã quan sát \*bạn\*.* | *ai đó* is a person: a stalker, not a satellite. |
 | *Tuần này, / có thứ gì đó / đã theo dõi \*bạn\*.* | *theo dõi* is "followed, tracked": the escalation §8 forbids, and false (a pass does not follow anyone). |
@@ -392,8 +398,8 @@ Card words:
 | `invite` | *Thứ gì đã quan sát bạn?* |
 | `enterAnyPlace` | *Chọn một nơi trên Trái Đất* |
 | `defaultPlace` | *Palm Jumeirah* |
-| `defaultAlt` | *Ảnh vệ tinh Sentinel-2 thật chụp Palm Jumeirah, Dubai, bên cạnh dòng chữ: Tuần này, có thứ gì đó đã quan sát bạn. Chọn một nơi trên Trái Đất.* |
-| `page.title` / `page.description` | *Tuần này, có thứ gì đó đã quan sát bạn.* / §3.2 sub line |
+| `defaultAlt` | *Ảnh vệ tinh Sentinel-2 thật chụp Palm Jumeirah, Dubai, bên cạnh dòng chữ: Tuần này, có thứ gì đó quan sát bạn. Chọn một nơi trên Trái Đất.* |
+| `page.title` / `page.description` | *Tuần này, có thứ gì đó quan sát bạn.* / §3.2 sub line |
 | `page.placeTitle` | *Thứ gì đã quan sát [PLACE] tuần này* (no full stop) |
 | `page.placeDescription` | *Mọi vệ tinh đã bay qua [PLACE] trong 7 ngày qua, cùng những hình ảnh thật chúng ghi lại. Tuần này, thứ gì đã quan sát bạn?* |
 | `page.opening` | *Đang mở* + accent *Watched* |
@@ -410,7 +416,8 @@ Card words:
 - `withinView` starts with the place, which Vietnamese allows (no case, no capital to lose: a place name starts with
   its own capital), because "[SAT] passed within view of [PLACE]" has no natural Vietnamese verb; a nameless satellite
   is *một vệ tinh* after *của*.
-- The question is *thứ gì* ("what thing"), echoing the hero's *thứ gì đó*.
+- The question is *thứ gì* ("what thing"), echoing the hero's *thứ gì đó*. It keeps *đã*: a question asks what
+  happened, where the hero states it.
 
 **Post** (`share.post`; X counts 280; the code drops the hook first, then trims the lead). `[WHEN]` is *lúc [CLOCK] giờ
 địa phương, Chủ Nhật 1/11*: the clock first, as Vietnamese says a moment, then the day.
@@ -423,7 +430,7 @@ Card words:
 | could | *[PLACE] đã nằm trong tầm nhìn của [SAT] [WHEN]. Vệ tinh này có thể đã hướng về đây. Nhà vận hành không cho biết điều đó có xảy ra hay không.* |
 | overhead | *[SAT] đã bay qua [PLACE] ở độ cao [ALT] [WHEN].* |
 | week | *31 vệ tinh đã quan sát Waterloo tuần này. 12 bức ảnh đã được công bố.* |
-| hooks | *Tuần này, có thứ gì đó cũng đã quan sát bạn.* · *Tuần này, thứ gì đã bay qua trên đầu bạn?* |
+| hooks | *Tuần này, có thứ gì đó cũng quan sát bạn.* · *Tuần này, thứ gì đã bay qua trên đầu bạn?* |
 | credit | *via @armaangupt0* (the X convention; never *qua*) |
 | file names | `watched-sentinel-2c-waterloo-2026-11-01.png` · `watched-waterloo-tuan-2026-11-01.png` · video fallback word `dia-diem` |
 
@@ -673,6 +680,7 @@ Vietnamese has no inflection, no grammatical gender and no plural form. "Notes" 
 | field of regard | tầm nhìn | `TẦM NHÌN ±45°`. |
 | in swath / in view / in range / window | trong dải quét / trong tầm nhìn / trong tầm / khung thời gian | |
 | above the equator at / in your sky | trên xích đạo tại / trên bầu trời bạn | |
+| scan line here · UTC / local | quét qua đây · UTC / địa phương | The moment the scan line was here, in three words. |
 | scan direction / line speed here | hướng quét / tốc độ đường quét | *Bắc → nam*. |
 | coverage / full disc / this scan | vùng phủ / toàn đĩa / lần quét này | |
 | cloud cover / cloud at spot | lượng mây / mây tại điểm | *lượng mây* is the meteorologist's word. |
@@ -937,7 +945,7 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
 | Ellipsis | One character U+2026, attached: *Đang tải…* |
 | Dashes | No em dash (owner rule). En dash for ranges, no spaces (*2015–2026*, *10–30 m*); `→` in mono ranges; true minus `−`. The `—` marking an unknown value is a glyph, not punctuation. Hyphen only in loans (*time-lapse*, *mô-đun*) and names. |
 | Space before punctuation | Never. One space after a colon, comma, semicolon. |
-| No-break space (U+00A0) | Between a number and its unit or count noun in prose (*7 ngày*, *10 km*), written as ` ` in source, never as an invisible literal. |
+| No-break space (U+00A0) | Between a number and its unit or count noun in prose (*7 ngày*, *10 km*), written as `\u00a0` in source, never as an invisible literal. |
 
 ### 6.2 Numbers and notation
 
@@ -977,8 +985,11 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
 ### 6.5 Line breaking and abbreviations
 
 - Vietnamese breaks at spaces between syllables, so a line can break inside a word (*quan / sát*). In display lines
-  (the hero, the About title, the card headline) every break is chosen in the catalog; never let a word's two
-  syllables split there. In body text, accept the browser's breaks but hold a number to its unit and a count to its
+  every break is chosen in the catalog; never let a word's two syllables split there. Lines set by hand (the hero, the
+  About title, the default card) choose their own breaks; lines that wrap (the results headline and its second line,
+  the card's lead) hold each compound together with U+00A0 (`bind()` in `results.ts` and `card/vi.ts`: *vệ tinh*,
+  *quan sát*, *bức ảnh*, *công bố*, *chúng tôi*, *theo dõi*, *tuần này*). Seen at 1280 and 390 px before the fix: *256
+  vệ / tinh đã quan sát Waterloo.* In body text, accept the browser's breaks but hold a number to its unit and a count to its
   noun with U+00A0 where the sentence is short enough that a break would strand them.
 - Abbreviations: only the 16-point compass (§4.2), `UTC`, `GMST`, `IR`, `TLE`, `CN` and `T2`–`T7`, no full stops. In
   prose none except units and acronyms. Never *v.v.*, *ko*, *đc*, *TP.* in copy; never `~` (write *khoảng*; `±` for a
@@ -1008,11 +1019,11 @@ Strategies, in order:
 
 | English | Vietnamese | Chars (en → vi) | Notes |
 |---|---|---|---|
-| Something / watched *you* / this week. (landing) | Tuần này, / có thứ gì đó / đã quan sát *bạn*. | 9/11/10 → 9/12/16 | The accent line is the longest (§3.1). |
+| Something / watched *you* / this week. (landing) | Tuần này, / có thứ gì đó / quan sát *bạn*. | 9/11/10 → 9/12/13 | Three lines at 1280 × 800 and 375 px (§3.1). |
 | (card, 88 px) | 4 lines | 384 → ≈ 420 px for the widest | The card's column is 466 px. |
 | Enter any place on Earth (card footer) | CHỌN MỘT NƠI TRÊN TRÁI ĐẤT | 24 → 26 | *bất kỳ* dropped to fit beside the host. |
 | No satellite we track watched (zero card lead) | Không vệ tinh nào mà chúng tôi theo dõi đã quan sát | 29 → 51 | Three lines at most. Accepted. |
-| HOW THIS WORKS + SUN 16.2°S 063.0°E (HUD pair) | CÁCH HOẠT ĐỘNG + MẶT TRỜI 16.2°S 063.0°E | 14 + 18 → 14 + 23 | Checked at 375 px. |
+| HOW THIS WORKS + SUN 16.2°S 063.0°E (HUD pair) | CÁCH HOẠT ĐỘNG + MẶT TRỜI 16.2°S 063.0°E | 14 + 18 → 14 + 23 | Checked at 375 px: clear (the sun line steps aside when crowded). The landing during a replay is tight in every language; there the switcher's *TIẾNG VIỆT* (the language's own name, not copy) meets *LÚC ĐÓ 11:21:13 EST* (reported to the HUD's owner). |
 | USE MY LOCATION / LOCATE ME / NEAR ME | DÙNG VỊ TRÍ CỦA TÔI / ĐỊNH VỊ / GẦN TÔI | 15 → 19 / 9 → 7 / 7 → 7 | |
 | SURPRISE ME / HOW THIS WORKS (link) | NGẪU NHIÊN / CÁCH HOẠT ĐỘNG | 11 → 10 / 14 → 14 | |
 | LAST 7 DAYS | 7 NGÀY QUA | 11 → 10 | |
@@ -1021,7 +1032,7 @@ Strategies, in order:
 | LINK / POST (48 px column) | LIÊN KẾT / BÀI ĐĂNG | 4 → 8 / 4 → 8 | Each wraps to two lines in the column where it must; the column is not nowrap. |
 | SHARE THIS WEEK | CHIA SẺ TÓM TẮT TUẦN NÀY | 15 → 24 | One line beside the close button. |
 | IMAGE / LIKELY / COULD / OVERHEAD (lanes) | ẢNH / QUÉT QUA / CÓ THỂ / BAY QUA | ≤ 8 | |
-| CLOSEST · LOCAL / SCAN LINE HERE · LOCAL | GẦN NHẤT · ĐỊA PHƯƠNG / ĐƯỜNG QUÉT · ĐỊA PHƯƠNG | 15 → 21 / 22 → 23 | Two-column geometry grid; *ở đây* dropped from the local one to fit. |
+| CLOSEST · LOCAL / SCAN LINE HERE · LOCAL | GẦN NHẤT · ĐỊA PHƯƠNG / QUÉT QUA ĐÂY · ĐỊA PHƯƠNG | 15 → 21 / 22 → 25 | Two-column geometry grid: *Quét qua đây* ("scanned past here") says the moment in three words. |
 | OFF-NADIR / PIXEL / ALTITUDE / PASSES | ĐỘ NGHIÊNG / ĐIỂM ẢNH / ĐỘ CAO / LƯỢT BAY | 9 → 10 / 5 → 8 / 8 → 6 / 6 → 8 | |
 | SHARE / DOWNLOAD IMAGE / COPY LINK / POST TO X | CHIA SẺ / TẢI ẢNH XUỐNG / SAO CHÉP LIÊN KẾT / ĐĂNG LÊN X | 5 → 7 / 14 → 13 / 9 → 17 / 9 → 10 | The share row fits its labels in any language (`useFitRow`): it goes to two rows rather than cut one. |
 | REPLAY | PHÁT LẠI | 6 → 8 | |
@@ -1099,8 +1110,8 @@ coast). The copy stays the same factual copy: no condolence formulas (*xin chia 
 | Intl relative | *sau 3 giờ nữa* | *3 giờ nữa* |
 | Intl units | *7,46 km/giây* | *7,46 km/s* |
 | Present for a past pass | *Ở đây đang tối.* | *Lúc đó ở đây trời tối.* |
-| *đang* in the hero | *đang quan sát bạn* (live: false) | *đã quan sát bạn* |
-| Adversative passive | *bạn bị quan sát* | *có thứ gì đó đã quan sát bạn* |
+| *đang* in the hero | *đang quan sát bạn* (live: false) | *quan sát bạn* after the fronted *Tuần này* |
+| Adversative passive | *bạn bị quan sát* | *có thứ gì đó quan sát bạn* |
 | *bởi* passive | *được chụp bởi Sentinel-2C* | *do Sentinel-2C ghi lại* |
 | *nó* for a satellite | *Nó nhìn thẳng xuống.* | *Camera hướng thẳng xuống.* |
 | *của bạn* everywhere | *Kiểm tra kết nối của bạn* | *Kiểm tra kết nối* |
@@ -1108,7 +1119,7 @@ coast). The copy stays the same factual copy: no condolence formulas (*xin chia 
 | *các / những* after a number | *31 các bức ảnh* | *31 bức ảnh* |
 | A count before a time noun | *12 tuần này* ("these 12 weeks") | *Tuần này: 12* |
 | Number spelled out | *một vệ tinh đã quan sát* (with a count slot) | *1 vệ tinh đã quan sát* |
-| Decomposed text | *ể* as e + ̂ + ̉ | NFC *ể* |
+| Decomposed text | *ể* typed as *e* + U+0302 + U+0309 | NFC *ể* (U+1EC3) |
 | Old tone placement | *huỷ*, *hoà*, *toạ độ* | *hủy*, *hòa*, *tọa độ* |
 | *hàng ngày* | *ảnh ghép hàng ngày* | *ảnh ghép hằng ngày* |
 | *chụp* for radar | *radar đã chụp Waterloo* | *radar đã ghi lại Waterloo* |
@@ -1194,7 +1205,7 @@ what they did before.
 | 1 | Address | *bạn*; *tôi* in the user's own voice; *chúng tôi* for the product (§1). *anh/chị* and *quý khách* rejected on voice and on the hero. |
 | 2 | Product verb | *quan sát*: the remote-sensing verb (*vệ tinh quan sát Trái Đất*) and an everyday one, uncanny with *bạn* as its object. *theo dõi* rejected (tracking, Facebook's Follow, an overclaim for a single pass); *dõi theo* rejected (tender). |
 | 3 | Hero order | Time first, reader last: Vietnamese puts emphasis at the end, and the accent lands there (§3.1). |
-| 4 | Aspect | *đã* in the hero and in each pass's first clause; *lúc đó* for a pass's conditions; *đang* only for live states (§2.1). |
+| 4 | Aspect | *đã* in each pass's first clause and every count sentence; the hero is a headline whose fronted *Tuần này* carries the time, so no *đã* (it also made the line wrap on a laptop); *lúc đó* for a pass's conditions; *đang* only for live states (§2.1, §3.1). |
 | 5 | Image words | *ảnh* for everything (Vietnamese *ảnh vệ tinh*, *ảnh radar* are standard and honest); *bức ảnh* after a count in prose, bare *ảnh* in labels; *ghi lại* where radar can be the sensor (§0, §5.3). |
 | 6 | Pass | *lượt bay qua*, counted *lượt* (*lượt xem*, *lượt truy cập* are the model); *lần* kept for "times" (§4.1). |
 | 7 | Verdict ladder | *Đã quan sát* · *Nhiều khả năng đã quan sát* · *Có thể đã hướng về đây* · *Bay qua trên đầu*; the likely lane is its verb *Quét qua*, because *Khả năng* and *Có lẽ* blur the ladder (§3.7). |
