@@ -26,9 +26,9 @@ import { num, type Part, type Rich } from '../../../api/_lib/i18n/parts'
 import type { Compass8 } from '@/ui/results/lib/copy'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 /** U+2066 LEFT-TO-RIGHT ISOLATE … U+2069 POP DIRECTIONAL ISOLATE (DOM-only text) */
-const ltr = (s: string) => `⁦${s}⁩`
+const ltr = (s: string) => `\u2066${s}\u2069`
 
 /** Moving (`heading`): «رو به جنوب» */
 const HEADING: Record<Compass8, string> = {

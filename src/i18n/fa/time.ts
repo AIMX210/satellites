@@ -13,6 +13,8 @@
  *  - Relative times are built by hand: Persian has no unit abbreviations, so the compact and spoken forms are the same
  *    words («12 دقیقه پیش», «30 ساعت پیش», «3 روز پیش»), the future is «… دیگر» (Intl's «3 ساعت بعد» reads "3 hours
  *    after"), and under a minute is «همین حالا». A noun after a number stays singular, so no plural table is needed.
+ *  - A day's number is glued to its month by a no-break space, so a wrapping headline never strands «2» at a line's
+ *    end and «نوامبر» at the next one's start.
  *  - Durations join their parts with «و», unpadded, as Persian says them («4 دقیقه و 12 ثانیه»).
  */
 import type en from '../en/time'
@@ -21,7 +23,7 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import type { DateFields } from '@/ui/results/lib/time'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 
 const G = { calendar: 'gregory' } as const
 const WEEKDAY: Intl.DateTimeFormatOptions = { ...G, weekday: 'long' }
@@ -30,6 +32,11 @@ const DAY_MONTH: Intl.DateTimeFormatOptions = { ...G, day: 'numeric', month: 'lo
 const DAY_NUMBER: Intl.DateTimeFormatOptions = { ...G, day: 'numeric' }
 
 const UNIT = { minute: 'دقیقه', hour: 'ساعت', day: 'روز' } as const
+
+/** A day's number never leaves its month at a line break («2 نوامبر» stays whole when a headline wraps) */
+const glue = (d: string) => d.replace(/(\d) (?=\D)/g, `$1${nb}`)
+/** An Intl date at a zone, its numbers glued to the words after them */
+const date = (ms: number, timeZone: string, opts: Intl.DateTimeFormatOptions) => glue(formatDate('fa', ms, timeZone, opts))
 
 /** «12 دقیقه پیش» · «30 ساعت پیش» · «3 روز پیش» · «3 ساعت دیگر» · «همین حالا» */
 function relative(ms: number, now: number): string {
@@ -42,14 +49,14 @@ function relative(ms: number, now: number): string {
 const time: typeof en = {
   weekdayShort: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, WEEKDAY),
   dayCompact: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, DAY_NUMBER),
-  day: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, DAY),
-  dayMonth: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, DAY_MONTH),
+  day: (ms: number, timeZone: string) => date(ms, timeZone, DAY),
+  dayMonth: (ms: number, timeZone: string) => date(ms, timeZone, DAY_MONTH),
   // Intl's own range: «1 تا 8 نوامبر», «29 اکتبر تا 5 نوامبر» (the month once when both ends share it)
   dayRange: (startMs: number, endMs: number, timeZone: string, _a: DateFields, _b: DateFields) =>
-    dateFormat('fa', timeZone, DAY_MONTH).formatRange(startMs, endMs),
+    glue(dateFormat('fa', timeZone, DAY_MONTH).formatRange(startMs, endMs)),
   daySpoken: (ms: number, timeZone: string) => formatDate('fa', ms, timeZone, DAY),
   stamp: (ms: number, timeZone: string, _p: DateFields, clock: string, zone: string) =>
-    `${formatDate('fa', ms, timeZone, DAY)} · ⁦${clock}${nb}${zone}⁩`,
+    `${date(ms, timeZone, DAY)} · \u2066${clock}${nb}${zone}\u2069`,
   relative: (ms: number, now: number) => relative(ms, now),
   relativeSpoken: (ms: number, now: number) => relative(ms, now),
   durationSeconds: (s: number) => `${s}${nb}ثانیه`,

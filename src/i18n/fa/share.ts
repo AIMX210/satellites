@@ -19,7 +19,7 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { formatDate } from '../../../api/_lib/i18n/dates'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 
 /** Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong): no message carries a crewed flag */
 const CREWED = /^(ISS|Tiangong)\b/

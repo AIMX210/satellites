@@ -32,13 +32,13 @@ import { localParts, type DateFields } from '@/ui/results/lib/time'
 import time from './time'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 type Verdict = Pass['verdict']
 
 /** U+2066 LEFT-TO-RIGHT ISOLATE … U+2069 POP DIRECTIONAL ISOLATE: one left-to-right run in a DOM-only string */
-const ltr = (s: string) => `⁦${s}⁩`
+const ltr = (s: string) => `\u2066${s}\u2069`
 /** Isolate a Latin label (a zone, a zone name), but leave one that holds Persian words or isolates already as it is */
-const iso = (s: string) => (/[؀-ۿ⁦-⁩]/.test(s) ? s : ltr(s))
+const iso = (s: string) => (/[؀-ۿ\u2066-\u2069]/.test(s) ? s : ltr(s))
 /** A whole count, or a fraction kept */
 const int = (n: number) => (Number.isInteger(n) ? f.int(n) : f.dec(n, 1))
 /** "A، B و C": Persian lists, no comma before «و» */
@@ -208,7 +208,7 @@ const results: typeof en = {
     shared: (sat: string, place: string) => `برای شما فرستاده شد · ${watchedBy(sat, place)}`,
     passWhen: (ms: number, timeZone: string, p: DateFields, clock: string, zone: string, approx: boolean) =>
       // The clock and its zone are one left-to-right island (LRI…PDI), or they read «EST 11:21» after the day.
-      `${time.day(ms, timeZone, p)} · ⁦${approx ? `≈${nb}` : ''}${clock}${nb}${zone}⁩`,
+      `${time.day(ms, timeZone, p)} · \u2066${approx ? `≈${nb}` : ''}${clock}${nb}${zone}\u2069`,
   },
 
   // ── the computing readout ────────────────────────────────────────────────────────────────

@@ -29,7 +29,7 @@ import { accent, type Rich } from '../parts.js'
 import type { CardMessages, CardWhen, PassFacts, SatName } from './index.js'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 
 // ── Days at the place, from Intl (Gregorian) ────────────────────────────────────────────────────────────────────────
 

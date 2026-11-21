@@ -13,7 +13,7 @@
  */
 import type en from '../en/sats'
 
-const nb = ' '
+const nb = '\u00a0'
 const km = (n: string) => `${n}${nb}کیلومتر`
 const m = (n: string) => `${n}${nb}متر`
 const cm = (n: string) => `${n}${nb}سانتی‌متر`

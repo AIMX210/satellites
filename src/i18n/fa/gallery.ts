@@ -18,9 +18,9 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { strong, type Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 /** U+2066 LEFT-TO-RIGHT ISOLATE … U+2069 POP DIRECTIONAL ISOLATE */
-const ltr = (s: string) => `⁦${s}⁩`
+const ltr = (s: string) => `\u2066${s}\u2069`
 /** «25%» as an island: after Persian words the sign would otherwise jump in front of the digits */
 const pct = (n: number) => ltr(`${f.int(n)}%`)
 

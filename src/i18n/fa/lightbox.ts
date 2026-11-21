@@ -3,7 +3,7 @@
  * everywhere come from the gallery namespace, so the viewer and the panel never disagree.
  *
  * Why it reads this way: buttons and tooltips are nouns («بزرگ‌نمایی», «بستن»), the keys in brackets as keyboards print
- * them. The zoom readout is a DOM-only number, so it is one left-to-right island («⁦2.5×⁩»), or «×» would jump to the
+ * them. The zoom readout is a DOM-only number, so it is one left-to-right island («2.5×»), or «×» would jump to the
  * other side. "Per pixel" is «در هر پیکسل», as every Persian technical text says it; the viewer is «نمایشگر تصویر»
  * (it shows radar images and mosaics too).
  */
@@ -12,7 +12,7 @@ import { fmt } from '../../../api/_lib/i18n/format'
 
 const f = fmt('fa')
 /** U+2066 LEFT-TO-RIGHT ISOLATE … U+2069 POP DIRECTIONAL ISOLATE */
-const ltr = (s: string) => `⁦${s}⁩`
+const ltr = (s: string) => `\u2066${s}\u2069`
 
 const lightbox: typeof en = {
   dialogLabel: 'تصویرها',
@@ -29,7 +29,7 @@ const lightbox: typeof en = {
   close: 'بستن نمایشگر تصویر',
   closeTitle: 'بستن (Esc)',
   perPixel: (pixel: string) => `${pixel} در هر پیکسل`,
-  panTitle: `با باند 15 متری Landsat تیزتر شده است`,
+  panTitle: `با باند 15\u00a0متری Landsat تیزتر شده است`,
   panProduct: (pixel: string) => `${ltr('Landsat C2 L2 + L1 pan')} · ${pixel}`,
   status: {
     clouded: (pct?: number) => `ابری${pct !== undefined ? ` · ${ltr(`${f.int(pct)}%`)}` : ''}`,

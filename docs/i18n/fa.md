@@ -15,7 +15,7 @@ line that mixes Persian with Latin names or digits can look scrambled. That is a
 browser under `dir="rtl"` before deciding it is out of order, and never reorder words to make an editor look right.
 
 **Notation.** In frames, `*…*` marks the one serif accent and `**…**` the strong part. `⟨LRI⟩`, `⟨FSI⟩`, `⟨PDI⟩` stand
-for U+2066, U+2068, U+2069 (type the characters, or `⁦` escapes, never the brackets). `⟨ZWNJ⟩` is U+200C, the
+for U+2066, U+2068, U+2069 (type the characters, or `\u2066` escapes, never the brackets). `⟨ZWNJ⟩` is U+200C, the
 half-space (نیم‌فاصله), which is typed as the character itself in every catalog, as Persian is typed. Slots are
 `[PLACE]`, `[SAT]`, `[NUM]`, `[TIME]` (a 24 h clock with its zone) and `[DAY]` (a day written by the `time`
 namespace).
@@ -332,9 +332,9 @@ so its `@` stays with the name). X weighs Persian letters as one, like Latin: th
 
 | Verdict | `title` | `short` | `unit` | `definition` | `verb` |
 |---|---|---|---|---|---|
-| imaged | `رصد کرد` | `تصویر` | `گذر` | `تصویری واقعی از این مکان در یک آرشیو عمومی هست.` | `رصد کرد` |
+| imaged | `رصد کرد` | `تصویر` | `گذر` | `تصویری واقعی از این مکان در یک آرشیو عمومی وجود دارد.` | `رصد کرد` |
 | likely | `احتمالاً رصد کرد` | `محتمل` | `گذر` | `نوار تصویربرداری یک دوربین ثابت این مکان را پوشاند. هیچ تصویری از آن منتشر نشده است.` | `پوشش داد` |
-| could | `می‌توانست به این‌جا نگاه کند` | `ممکن` | `گذر` | `یک دوربین چرخان یا خصوصی در دسترس بود. اپراتورش نمی‌گوید که نگاه کرد یا نه.` | `از دیدرس گذشت` |
+| could | `می‌توانست به این‌جا نگاه کند` | `ممکن` | `گذر` | `یک دوربین چرخان یا خصوصی در بُرد این‌جا بود. اپراتورش نمی‌گوید که نگاه کرد یا نه.` | `از دیدرس گذشت` |
 | overhead | `از بالای سر گذشت` | `بالای سر` | `گذر` | `از آسمان شما گذشت. ایستگاه‌های فضایی و هر چیز دیگر.` | `از بالای سر گذشت` |
 
 - Titles are past-tense verb phrases whose subject is the satellite, as the English ones are.
@@ -352,7 +352,7 @@ so its `@` stays with the name). X weighs Persian letters as one, like Latin: th
 `searchPlaceholder` `جستجوی مکان`; `placeLabel` `مکان`; `searching` `در حال جستجو`; `searchUnavailable` `جستجو در
 دسترس نیست`; `matches(n)` `6 نتیجه`; `noMatch` `نتیجه‌ای نیست`; `searchHint` `نام، نشانی یا مختصات`; `searchDown`
 `جستجوی مکان پاسخ نمی‌دهد. مختصاتی مثل ⟨LRI⟩43.47, −80.54⟨PDI⟩ همچنان کار می‌کند.`; `nothingMatches`
-`چیزی با «⟨FSI⟩[QUERY]⟨PDI⟩» جور نیست. یک شهر، یک جای شناخته‌شده یا مختصات را امتحان کنید.`; `useMyLocation`
+`هیچ نتیجه‌ای برای «⟨FSI⟩[QUERY]⟨PDI⟩» پیدا نشد. یک شهر، یک جای شناخته‌شده یا مختصات را امتحان کنید.`; `useMyLocation`
 `استفاده از موقعیت من`; `locateMe` `موقعیت من`; `nearMe` `نزدیک من`; `locating` `مکان‌یابی…`; `surprise`
 `غافلگیرم کن`; `orTry` `نمونه‌ها`; `dropPin` `گذاشتن سنجاق`; `builtBy` `ساختهٔ ⟨LRI⟩@armaangupt0⟨PDI⟩`.
 
@@ -526,7 +526,7 @@ form and takes a plural verb only for a fleet (`ماهواره‌های Sentinel
 
 Persian joins the last two items with ` و ` and the others with `، `, with **no comma before `و`**: `Umbra-08،
 Capella-14 و 7 ماهوارهٔ دیگر`. CLDR's `fa` list format puts a comma before `و` and a hidden RLM after the first comma
-(`A،‏ B، و C`): do not use `fmt('fa').list`; the catalogs build lists themselves (`list()` in `results.ts`).
+(`A،\u200f B، و C`): do not use `fmt('fa').list`; the catalogs build lists themselves (`list()` in `results.ts`).
 
 ### 5.6 Dates and times inside sentences
 
@@ -574,7 +574,7 @@ Persian letters have the bidi class AL, as Arabic's do, so every rule of the Ara
    `⟨LRI⟩…⟨PDI⟩`. In rich parts the `num()` part is the island (`[data-num]` is isolated in right-to-left pages), so
    `num('25', '%')` and `num('16:14', 'EST')` need nothing more.
 2. **Persian units are never inside `num()`.** `num(n, 'km')` puts the unit inside the left-to-right island; a Persian
-   word there would read before its number. Write `[num('786'), ' کیلومتر']`.
+   word there would read before its number. Write `[num('786'), '\u00a0کیلومتر']`.
 3. **Text the visitor typed** is first-strong isolated: `«⟨FSI⟩[QUERY]⟨PDI⟩»`.
 4. **A handle** (`@armaangupt0`) is isolated, or its `@` jumps to the far side.
 5. **Plain text has no bidi controls**: card text, the post, page titles and descriptions, file names, the video, the
@@ -643,8 +643,8 @@ Relative time is built by hand (§7 of `time.ts`): `همین حالا`, `12 دق
 - `،` comma, `؛` semicolon, `؟` question mark, `«»` quotes, `.` full stop, `:` colon; no space before any of them, one
   space after.
 - No exclamation mark. No em dash: the English avoids it too. A middle dot ` · ` separates fields in mono rows.
-- A no-break space (` `, written as the escape) ties a number to its unit or counted noun where a line could break
-  (`7 روز`، `10 کیلومتر`).
+- A no-break space (`\u00a0`, written as the escape) ties a number to its unit or counted noun where a line could break
+  (`7\u00a0روز`، `10\u00a0کیلومتر`).
 - Parentheses mirror by themselves in right-to-left text: type `(` first.
 
 ### 6.6 Mono caps labels
@@ -655,8 +655,9 @@ missing ZWNJ visibly joins two words.
 
 ### 6.7 Line breaking
 
-Persian breaks at spaces; the half-space never breaks. Keep a number with its unit (no-break space) and `را` with its
-object where a break would strand it at the start of a line.
+Persian breaks at spaces; the half-space never breaks. Keep a number with its unit (no-break space), a day's number
+with its month (`time.ts` glues Intl's `2 نوامبر`), and `را` with its object, where a break would strand one at the
+start or end of a line.
 
 ### 6.8 Type
 
@@ -727,7 +728,7 @@ Where a label overflows, choose a better word; never an abbreviation Persian rea
 | `fmt('fa').plural(0, …)` | returns `one` | test `n === 1` before writing `یک` |
 | `fmt('fa').list` | comma before `و`, hidden RLM | the catalog's own `list()` |
 | `formatDate('fa', …)` without `calendar` | Solar Hijri | always `calendar: 'gregory'` |
-| `num(n, 'کیلومتر')` | the unit reads before the number | `[num(n), ' کیلومتر']` |
+| `num(n, 'کیلومتر')` | the unit reads before the number | `[num(n), '\u00a0کیلومتر']` |
 | Arabic `ي`، `ك` | wrong characters | `ی`، `ک` |
 | a missing half-space | `میکند`، `ماهوارهها` | `می‌کند`، `ماهواره‌ها` |
 | `ماهواره‌ی` / bare `ماهواره X` | wrong or missing ezafe | `ماهوارهٔ X` |

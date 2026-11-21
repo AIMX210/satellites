@@ -20,7 +20,7 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { formatDate } from '../../../api/_lib/i18n/dates'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 const pad2 = (n: number) => String(n).padStart(2, '0')
 const dayMonth = (ms: number) => formatDate('fa', ms, 'UTC', { calendar: 'gregory', day: 'numeric', month: 'long' })
 const day = (ms: number) => formatDate('fa', ms, 'UTC', { calendar: 'gregory', day: 'numeric', month: 'long', year: 'numeric' })
@@ -66,7 +66,7 @@ const timelapse: typeof en = {
   noteOneSeason: (km: number) =>
     `${square(km)} همهٔ سال‌ها از یک فصل‌اند؛ سالی که در آن فصل نمای بی‌ابر ندارد کنار گذاشته می‌شود.`,
   // The service's name never breaks (it wrapped inside the 248 px side column)
-  source: 'Copernicus Sentinel-2، از طریق Planetary Computer',
+  source: 'Copernicus Sentinel-2، از طریق Planetary\u00a0Computer',
 
   // ── The waiting screen ────────────────────────────────────────────────────────────────────
   listing: 'فهرست‌گیری از آرشیو',
@@ -89,7 +89,7 @@ const timelapse: typeof en = {
   shareTitle: (place: string) => `گذر سال‌ها در ${place}`,
   video: 'ویدیو',
   // The percentage is a left-to-right island, or «06%» draws «%06» after the Persian word
-  rendering: (pct: number) => `ساخت ⁦${pad2(pct)}%⁩`,
+  rendering: (pct: number) => `ساخت \u2066${pad2(pct)}%\u2069`,
   videoFailed: 'خطای ویدیو',
   saveVideo: 'ذخیرهٔ ویدیو',
   noH264: 'این مرورگر رمزگذار H.264 ندارد: فایل در Chrome و Firefox پخش می‌شود',

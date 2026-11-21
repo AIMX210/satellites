@@ -19,7 +19,7 @@ import { dateFormat } from '../../../api/_lib/i18n/dates'
 import { accent, type Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 
 /** A count as it is set: grouped («1,715»), a fraction kept. */
 const count = (n: number) => (Number.isInteger(n) ? f.int(n) : f.dec(n, 1))
@@ -34,7 +34,7 @@ const landing: typeof en = {
   sub: (days: number): Rich => [
     `هر جای زمین را وارد کنید و همهٔ ماهواره‌هایی را ببینید که در ${count(days)}${nb}روز گذشته از فرازش گذشتند، همراه با تصویرهای واقعی‌ای که گرفتند.`,
   ],
-  builtBy: (handle: string) => `ساختهٔ ⁦${handle}⁩`,
+  builtBy: (handle: string) => `ساختهٔ \u2066${handle}\u2069`,
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'جستجوی مکان',
@@ -46,8 +46,8 @@ const landing: typeof en = {
   searchHint: 'نام، نشانی یا مختصات',
   clearSearch: 'پاک کردن جستجو',
   go: 'نمایش آنچه از فراز این مکان گذشت',
-  searchDown: 'جستجوی مکان پاسخ نمی‌دهد. مختصاتی مثل ⁦43.47, −80.54⁩ همچنان کار می‌کند.',
-  nothingMatches: (query: string) => `چیزی با «⁨${query}⁩» جور نیست. یک شهر، یک جای شناخته‌شده یا مختصات را امتحان کنید.`,
+  searchDown: 'جستجوی مکان پاسخ نمی‌دهد. مختصاتی مثل \u206643.47, −80.54\u2069 همچنان کار می‌کند.',
+  nothingMatches: (query: string) => `هیچ نتیجه‌ای برای «\u2068${query}\u2069» پیدا نشد. یک شهر، یک جای شناخته‌شده یا مختصات را امتحان کنید.`,
   suggestions: 'مکان‌ها',
 
   // ── Use my location ──────────────────────────────────────────────────────────────────────

@@ -7,7 +7,7 @@
  *    closest approach. Arabic script has no case, so the CSS capitals change only the Latin names beside them.
  *  - Units are words («کیلومتر», «متر») after their number, outside the bold value part (inside it they would read
  *    before the number); a no-break space ties them.
- *  - "NORAD" and its number are one left-to-right island, and so is a clock with its zone («⁦11:21:13 EST⁩»): after
+ *  - "NORAD" and its number are one left-to-right island, and so is a clock with its zone («11:21:13 EST»): after
  *    a Persian word the digits would otherwise turn and the zone jump in front.
  *  - The pin card speaks in nouns and impersonal past («سنجاق در … گذاشته شد»); the instructions are polite
  *    imperatives («Enter یا پیکان را بزنید»).
@@ -17,9 +17,9 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import type { Part, Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('fa')
-const nb = ' '
-const LRI = '⁦'
-const PDI = '⁩'
+const nb = '\u00a0'
+const LRI = '\u2066'
+const PDI = '\u2069'
 
 const globe: typeof en = {
   // ── Satellite callouts ──

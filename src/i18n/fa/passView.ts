@@ -21,11 +21,11 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { num, type NumPart } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 /** A whole count, or a fraction kept */
 const count = (n: number) => (Number.isInteger(n) ? f.int(n) : f.dec(n, 1))
 /** U+2066 LEFT-TO-RIGHT ISOLATE … U+2069 POP DIRECTIONAL ISOLATE: one left-to-right run in a DOM-only string */
-const ltr = (s: string) => `⁦${s}⁩`
+const ltr = (s: string) => `\u2066${s}\u2069`
 /** «یک گذر» · «31 گذر»: passes in a run of text */
 const passes = (n: number) => (n === 1 ? 'یک گذر' : `${count(n)}${nb}گذر`)
 /** «هر دقیقه» · «هر 10 دقیقه» */
@@ -33,7 +33,7 @@ const everyMinutes = (n: number) => (n === 1 ? 'هر دقیقه' : `هر ${count
 
 const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
-  empty: 'در این بازه هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم از فراز این مکان نگذشت. این کمیاب است؛ یادداشت‌های بالا می‌گویند اگر منبعی از داده‌ها از کار افتاده بود.',
+  empty: 'در این بازه هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم از فراز این مکان نگذشت. این کم پیش می‌آید؛ اگر یکی از منابع داده از کار افتاده بود، یادداشت‌های بالا آن را می‌گویند.',
   imagedOrder: 'نزدیک‌ترین نما، بعد تازه‌ترین‌ها',
   count: (n: number, _verdict: Verdict) => `${count(n)}${nb}گذر`,
   countStack: (n: number, _verdict: Verdict): NumPart => num(count(n), 'گذر'),
@@ -92,7 +92,7 @@ const passView: typeof en = {
     noneToShow: 'برای این گذر تصویری برای نشان دادن نیست. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
     archiveDown: 'فعلاً جستجو در آرشیو ممکن نشد. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
     noScene: 'برای این گذر هیچ صحنه‌ای وجود ندارد. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
-    notYet: 'هنوز هیچ صحنهٔ منتشرشده‌ای با این گذر جور نیست. صحنه‌های Sentinel-2 و Landsat معمولاً ظرف یک روز می‌رسند.',
+    notYet: 'هنوز هیچ صحنهٔ منتشرشده‌ای با این گذر مطابقت ندارد. صحنه‌های Sentinel-2 و Landsat معمولاً ظرف یک روز می‌رسند.',
     crewed: 'ایستگاه‌های سرنشین‌دار دوربین دارند، اما عکس‌هایشان بر اساس مکان و زمان منتشر نمی‌شود.',
     unavailable: 'تصویر این گذر در دسترس نیست.',
   },

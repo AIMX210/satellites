@@ -18,7 +18,7 @@ import type en from '../en/engine'
 import { fmt } from '../../../api/_lib/i18n/format'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 /** «16,912 جسم»: a grouped count and its (singular) noun */
 const count = (n: number, noun: string) => `${f.int(n)}${nb}${noun}`
 /** «یکی» · «3 تصویر»: how many of them, after «از N تصویر» */
@@ -48,7 +48,7 @@ const engine: typeof en = {
     landsatDown: 'آرشیو Landsat در دسترس نیست؛ ممکن است تصویرهای Landsat کم باشند.',
     openOcean: 'این نقطه بیرون از برنامهٔ تصویربرداری Sentinel-2 است (دریای آزاد).',
     elementsOld: ({ days }: { days: number }) =>
-      `عناصر مداری ${count(days, 'روز')} پیش دریافت شده‌اند، پس زمان گذرها ممکن است چند دقیقه جابه‌جا باشد.`,
+      `عناصر مداری ${count(days, 'روز')} قدمت دارند، پس زمان گذرها ممکن است چند دقیقه جابه‌جا باشد.`,
     elementsNewer: 'این گذرها از روی عناصر مداری تازه‌تر بازسازی شده‌اند، پس زمانشان ممکن است چند دقیقه جابه‌جا باشد.',
     // "VIIRS images the whole globe": a verb, «از کل زمین تصویر می‌گیرد».
     gibsUnconfirmed: ({ n }: { n: number }) =>

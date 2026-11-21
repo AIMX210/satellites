@@ -16,7 +16,7 @@ import { num, type Rich } from '../../../api/_lib/i18n/parts'
 import type { AgeUnit } from '@/ui/hud/readouts'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 
 /** A count as it is set: grouped («16,893»), a fraction kept. */
 const count = (n: number) => (Number.isInteger(n) ? f.int(n) : f.dec(n, 1))
@@ -37,14 +37,14 @@ const hud: typeof en = {
   regionSun: 'خورشید',
 
   scene: 'صحنه',
-  sun: (lat: string, lon: string) => `خورشید ⁦${lat} ${lon}⁩`,
+  sun: (lat: string, lon: string) => `خورشید \u2066${lat} ${lon}\u2069`,
   subsolar: 'نقطهٔ زیرخورشیدی',
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => `${count(n)}${nb}جسم`,
   objectsPending: (count: string): Rich => [num(count), `${nb}جسم`],
   catalog: 'کاتالوگ',
-  fetched: (stamp: string) => `دریافت ⁦${stamp}⁩`,
+  fetched: (stamp: string) => `دریافت \u2066${stamp}\u2069`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'کهنه، ' : ''}${age(unit, n)}`,
   catalogUnavailable: 'کاتالوگ در دسترس نیست',
   catalogLoading: 'بارگیری کاتالوگ',

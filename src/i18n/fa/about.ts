@@ -20,10 +20,10 @@ import { fmt } from '../../../api/_lib/i18n/format'
 import { accent, num, type Part, type Rich } from '../../../api/_lib/i18n/parts'
 
 const f = fmt('fa')
-const nb = ' '
+const nb = '\u00a0'
 
 const link = (...parts: Part[]): LinkPart => ({ link: parts })
-const handleLink = (handle: string): LinkPart => link(`⁦${handle}⁩`)
+const handleLink = (handle: string): LinkPart => link(`\u2066${handle}\u2069`)
 
 const about: typeof en = {
   bar: 'درباره',
@@ -65,8 +65,8 @@ const about: typeof en = {
     ] as AboutPart[],
     loaded: (count: number, stamp: string): AboutPart[] =>
       count === 1
-        ? ['این صفحه یک جسم را بارگیری کرد، دریافت‌شده در ', num(`⁦${stamp}⁩`), '.']
-        : ['این صفحه ', num(f.int(count)), `${nb}جسم را بارگیری کرد، دریافت‌شده در `, num(`⁦${stamp}⁩`), '.'],
+        ? ['این صفحه یک جسم را بارگیری کرد، دریافت‌شده در ', num(`\u2066${stamp}\u2069`), '.']
+        : ['این صفحه ', num(f.int(count)), `${nb}جسم را بارگیری کرد، دریافت‌شده در `, num(`\u2066${stamp}\u2069`), '.'],
     sgp4: 'ما هر ماهواره را برای هفت روز گذشته از SGP4، مدل استاندارد مدار، می‌گذرانیم و هر باری را که نقطهٔ شما در گسترهٔ دیدش بود یادداشت می‌کنیم.',
     facts: {
       straightDown: {
@@ -75,7 +75,7 @@ const about: typeof en = {
       },
       tilting: {
         term: 'دوربین‌های چرخان',
-        text: 'بسیاری از ماهواره‌های تجاری می‌توانند 30 تا 45 درجه کج شوند. اگر در دسترسشان بودید، آن را «می‌توانست به این‌جا نگاه کند» می‌نامیم.',
+        text: 'بسیاری از ماهواره‌های تجاری می‌توانند 30 تا 45 درجه کج شوند. اگر در بُردشان بودید، آن را «می‌توانست به این‌جا نگاه کند» می‌نامیم.',
       },
       daylight: { term: 'روشنایی روز', text: 'دوربین‌های معمولی به خورشید نیاز دارند. گذری که در تاریکی باشد هرگز عکس به حساب نمی‌آید.' },
       radar: {
