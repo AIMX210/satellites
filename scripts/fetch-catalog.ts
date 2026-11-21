@@ -11,8 +11,8 @@
  *                                   hover labels (src/engine/catalog.ts loadCatalogNames).
  *
  * Runs in GitHub Actions on a schedule (.github/workflows/catalog.yml; it must commit BOTH files).
- * CelesTrak asks clients not to re-download the same data more than once every 2 hours — the schedule
- * respects that.
+ * CelesTrak asks clients not to re-download the same data more than once every 2 hours, and to stop asking on
+ * any answer but 200: scripts/celestrak.ts asks that way, inside a deadline that fits the job's timeout.
  *
  * Usage: tsx scripts/fetch-catalog.ts [outPath] [--from <existing catalog.json>]
  *   --from re-encodes an existing catalog file (v1 or v2) without contacting CelesTrak.
@@ -21,49 +21,21 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import type { CatalogFile, CatalogRow } from '../src/types'
 import { resolveProfile } from '../src/engine/profiles'
+import { fetchGroup, Refused, type Omm } from './celestrak'
 
 const args = process.argv.slice(2)
-const fromIdx = args.indexOf('--from')
-const FROM = fromIdx >= 0 ? args[fromIdx + 1] : undefined
-const OUT = args.filter((a, i) => i !== fromIdx && i !== fromIdx + 1)[0] ?? 'public/data/catalog.json'
+const flag = (name: string) => {
+  const i = args.indexOf(name)
+  return i >= 0 ? args[i + 1] : undefined
+}
+const FROM = flag('--from')
+const OUT = args.filter((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'))[0] ?? 'public/data/catalog.json'
 const NAMES_OUT = join(dirname(OUT), 'catalog-names.json')
-const UA = 'overflight-catalog-bot/1.0 (+https://github.com/dev-Armaan/satellites)'
+/** How long the run may ask CelesTrak: the job's 10 minutes, less setting up, encoding and pushing. */
+const ASK_MS = 6 * 60_000
 
 // GROUP=active is ~12k+ payloads. We also pull a few groups that include non-"active" but relevant objects.
 const GROUPS = ['active', 'stations', 'weather', 'resource', 'planet', 'goes', 'noaa', 'sarsat']
-
-interface Omm {
-  OBJECT_NAME: string
-  OBJECT_ID: string
-  EPOCH: string
-  MEAN_MOTION: number
-  ECCENTRICITY: number
-  INCLINATION: number
-  RA_OF_ASC_NODE: number
-  ARG_OF_PERICENTER: number
-  MEAN_ANOMALY: number
-  NORAD_CAT_ID: number
-  BSTAR: number
-  MEAN_MOTION_DOT: number
-  MEAN_MOTION_DDOT: number
-}
-
-async function fetchGroup(group: string): Promise<Omm[]> {
-  const url = `https://celestrak.org/NORAD/elements/gp.php?GROUP=${group}&FORMAT=json`
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try {
-      const res = await fetch(url, { headers: { 'user-agent': UA } })
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-      const text = await res.text()
-      if (!text.trim().startsWith('[')) throw new Error(`unexpected body: ${text.slice(0, 120)}`)
-      return JSON.parse(text) as Omm[]
-    } catch (e) {
-      console.warn(`[catalog] ${group} attempt ${attempt + 1} failed: ${(e as Error).message}`)
-      await new Promise((r) => setTimeout(r, 2000 * 2 ** attempt))
-    }
-  }
-  throw new Error(`failed to fetch group ${group}`)
-}
 
 const round = (x: number, d: number) => Math.round(x * 10 ** d) / 10 ** d
 /** Round to `n` significant digits (BSTAR, ṅ/2, n̈/6: their published precision is ~4–5 digits). */
@@ -75,16 +47,21 @@ const epochMs = (iso: string) => Date.parse(/[zZ]|[+-]\d\d:\d\d$/.test(iso) ? is
 
 async function fetchRows(): Promise<{ rows: CatalogRow[]; fetchedAt: string; source: string }> {
   const byId = new Map<number, Omm>()
+  const deadline = Date.now() + ASK_MS
   for (const g of GROUPS) {
     try {
-      const list = await fetchGroup(g)
+      const list = await fetchGroup(g, { deadline })
       for (const o of list) {
         const prev = byId.get(o.NORAD_CAT_ID)
         if (!prev || prev.EPOCH < o.EPOCH) byId.set(o.NORAD_CAT_ID, o)
       }
       console.log(`[catalog] ${g}: ${list.length}`)
     } catch (e) {
+      const refused = e instanceof Refused
+      if (refused) console.warn(`[catalog] CelesTrak answered ${(e as Refused).message} for ${g}: asking nothing more this run`)
+      // Without the active group there is no catalog; the others mostly add to it.
       if (g === 'active') throw e
+      if (refused) break
       console.warn(`[catalog] skipping ${g}: ${(e as Error).message}`)
     }
   }
