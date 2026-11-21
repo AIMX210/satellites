@@ -2,9 +2,10 @@
  * Vietnamese copy for the landing (see src/i18n/en/landing.ts; docs/i18n/vi.md §3.1, §3.2 and §3.8).
  *
  * Why it reads this way: the hero ends on the reader, *Tuần này, / có thứ gì đó / quan sát \*bạn\*.*, because
- * Vietnamese puts a sentence's weight at its end; *thứ gì đó* is a thing, not a person, and the fronted *Tuần này*
- * carries the time, as a Vietnamese headline does, so the verb needs no *đã* (and its line fits the column at 1280 px). The sub line says *Chọn* (the chips and the pin are choices too, not a form to fill) and *hình ảnh
- * thật … ghi lại*, true for radar and mosaics. Buttons are bare verbs, and where the English speaks as the user they say
+ * Vietnamese puts a sentence's weight at its end; *thứ gì đó* is a thing, not a person. The existential *có …* with
+ * the fronted *Tuần này* reports a past event without *đã*, as Vietnamese does (*Hôm nay có người tìm bạn*). The sub
+ * line says *Chọn* (the chips and the pin are choices too, not a form to fill) and *hình ảnh thật mà chúng đã ghi
+ * lại*, true for radar and mosaics. Buttons are bare verbs, and where the English speaks as the user they say
  * *tôi* (*Dùng vị trí của tôi*, *Gần tôi*). Faults say what happened, then what to do, with no *Vui lòng* or *Rất
  * tiếc*; *của bạn* only where whose it is matters. The kicker's dates are digits, day before month (*1 → 8/11/2026
  * UTC*), the month and year written once when both ends share them. Mono labels are sentence case, uppercased by CSS.
@@ -33,7 +34,7 @@ const landing: typeof en = {
   },
   hero: [['Tuần này,'], ['có thứ gì đó'], ['quan sát ', accent('bạn'), '.']] as Rich[],
   sub: (days: number): Rich => [
-    `Chọn một nơi bất kỳ trên Trái Đất. Xem mọi vệ tinh đã bay qua nơi đó trong ${f.int(days)}\u00a0ngày qua, cùng những hình ảnh thật chúng ghi lại.`,
+    `Chọn một nơi bất kỳ trên Trái Đất. Xem mọi vệ tinh đã bay qua nơi đó trong ${f.int(days)}\u00a0ngày qua, cùng những hình ảnh thật mà chúng đã ghi lại.`,
   ],
   /** "Do … thực hiện", never the calque *Được xây dựng bởi* */
   builtBy: (handle: string) => `Do ${handle} thực hiện`,
@@ -42,13 +43,14 @@ const landing: typeof en = {
   searchPlaceholder: 'Tìm địa điểm',
   placeLabel: 'Địa điểm',
   searching: 'Đang tìm',
-  searchUnavailable: 'Không tìm được',
+  /** *tìm kiếm*, the act of searching: *Không tìm được* would say nothing was found (that is `noMatch`) */
+  searchUnavailable: 'Không tìm kiếm được',
   matches: (n: number) => f.plural(n, { other: `${f.int(n)} kết quả` }),
   noMatch: 'Không có kết quả',
   searchHint: 'Tên, địa chỉ hoặc tọa độ',
   clearSearch: 'Xóa tìm kiếm',
   go: 'Xem những gì đã bay qua nơi này',
-  searchDown: 'Tìm kiếm địa điểm không phản hồi. Bạn vẫn có thể nhập tọa độ như 43.47, −80.54.',
+  searchDown: 'Dịch vụ tìm địa điểm không phản hồi. Bạn vẫn có thể nhập tọa độ, chẳng hạn 43.47, −80.54.',
   nothingMatches: (query: string) => `Không có kết quả cho “${query}”. Thử một thành phố, một địa danh hoặc tọa độ.`,
   suggestions: 'Địa điểm',
 
@@ -56,8 +58,8 @@ const landing: typeof en = {
   useMyLocation: 'Dùng vị trí của tôi',
   locateMe: 'Định vị',
   nearMe: 'Gần tôi',
-  /** The ellipsis says it is under way, at the width of *Gần tôi* */
-  locating: 'Định vị…',
+  /** A live state takes *đang*: a bare *Định vị…* reads as a command. The chip row scrolls, so it may grow */
+  locating: 'Đang định vị…',
   cancelSearch: 'Hủy',
   cancelLocate: 'Hủy',
   cancelLocating: 'Hủy định vị',
@@ -81,7 +83,7 @@ const landing: typeof en = {
   // ── Examples ──
   orTry: 'Hoặc thử',
   pinHint: 'Hoặc bấm vào quả địa cầu để thả ghim',
-  examplesLabel: 'Ví dụ địa điểm',
+  examplesLabel: 'Địa điểm ví dụ',
   dropPin: 'Thả ghim',
   chipName: (label: string, sublabel: string) => (sublabel ? `${label}, ${sublabel}` : label),
   /** Never *Làm tôi bất ngờ* (a calque) */

@@ -3,7 +3,8 @@
  *
  * Why it reads this way: every picture is *ảnh*, whatever took it (radar, mosaics), and a satellite *ghi lại* (records)
  * rather than *chụp* (photographs) it. "Closest look" is the most detailed one, *Chi tiết nhất*, and the filter that
- * keeps such pictures is *Chi tiết*, the same word; never *gần nhất* (nearest, latest). A clear look is *ảnh không mây*
+ * keeps such pictures is *Chi tiết*, the same word; never *gần nhất* (nearest), and the last clear look is the latest,
+ * *mới nhất*. A clear look is *ảnh không mây*
  * (*ảnh quang* would read as optics). "Your spot" is *chỗ của bạn* in a sentence and *điểm* in a short label. A count
  * stands after its label (*Tuần này: 12*), since *12 tuần này* reads "these 12 weeks". "N of M" is *N trong số M*,
  * never *N/M*, which reads as a date. The north arrow is B (*bắc*): N is *nam*, south, to a Vietnamese reader.
@@ -18,7 +19,8 @@ const pct = (n: number) => `${f.int(n)}%`
 
 const LEAD: Record<CoverLead, string> = {
   closest: 'Chi tiết nhất',
-  lastClear: 'Không mây gần nhất',
+  /** "Last" is the latest, *mới nhất*: *gần nhất* is "closest" on these screens */
+  lastClear: 'Không mây mới nhất',
   clouded: 'Mây che kín',
 }
 
@@ -29,9 +31,9 @@ const gallery: typeof en = {
   filter: { all: 'Tất cả', detailed: 'Chi tiết', weather: 'Thời tiết', radar: 'Radar' },
   filterTitle: {
     all: 'Mọi ảnh: chi tiết nhất trước, rồi đến mới nhất',
-    detailed: 'Sentinel-2 và Landsat, 10–30 m mỗi điểm ảnh',
-    weather: 'Ảnh ghép thời tiết hằng ngày, từ 250 m mỗi điểm ảnh trở lên',
-    radar: 'Ảnh radar Sentinel-1, 20 m mỗi điểm ảnh: xuyên mây, cả ngày lẫn đêm',
+    detailed: 'Sentinel-2 và Landsat, điểm ảnh 10–30 m',
+    weather: 'Ảnh ghép thời tiết hằng ngày, điểm ảnh từ 250 m trở lên',
+    radar: 'Ảnh radar Sentinel-1, điểm ảnh 20 m: xuyên mây, cả ngày lẫn đêm',
   },
   position: (k: number, n: number) => `${f.int(k)} / ${f.int(n)}`,
   photosThisWeek: (n: number) => `Tuần này: ${f.int(n)}`,
@@ -52,14 +54,14 @@ const gallery: typeof en = {
   // Phones and laptops read *Phát lại*; portrait tablets the whole *Phát lại lượt bay này*.
   replay: ['Phát lại', strong(' lượt bay này')] as Rich,
   viewLabel: {
-    lastClear: (sat: string, day: string, time: string) => `Xem lớn ảnh không mây gần nhất: ${sat}, ${day} ${time}`,
+    lastClear: (sat: string, day: string, time: string) => `Xem lớn ảnh không mây mới nhất: ${sat}, ${day} ${time}`,
     photo: (sat: string, day: string, time: string) => `Xem lớn ảnh: ${sat}, ${day} ${time}`,
   },
   view: 'Xem',
   sharePass: 'Chia sẻ lượt bay này',
   radarTag: 'Radar',
   noteMostlyCloud: 'Các lượt bay tuần này chủ yếu chỉ thấy mây',
-  noteLastClear: 'Đây là ảnh không mây gần nhất',
+  noteLastClear: 'Đây là ảnh không mây mới nhất',
   clouded: {
     pct: (p: number) => `Mây che kín · ${pct(p)}`,
     coverAtSpot: 'Mây che kín · có mây ở chỗ của bạn',
@@ -69,7 +71,8 @@ const gallery: typeof en = {
   status: {
     cloudedPct: (p: number) => `Có mây · ${pct(p)}`,
     cloudAtSpot: 'Mây tại điểm',
-    clear: 'Quang',
+    /** *quang* does not stand alone (it lives in *trời quang*, and alone suggests *quang học*) */
+    clear: 'Không mây',
     cirrus: 'Mây ti mỏng',
     shadow: 'Bóng mây',
     cloudPct: (p: number) => `Mây ${pct(p)}`,

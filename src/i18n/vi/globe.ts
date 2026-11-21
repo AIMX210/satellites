@@ -38,15 +38,18 @@ const globe: typeof en = {
   pin: {
     card: 'Ghim đã thả',
     naming: 'Đang tìm tên chỗ này',
-    /** Must fit whole in 156 px at 13 px */
-    noName: 'Không có địa danh gần đây',
+    /** Must fit whole in 156 px at 13 px (146 px in the bundled sans); *gần đây* also reads "recently" */
+    noName: 'Không có địa danh ở gần',
     placeTitle: (name: string, area: string) => `${name}, ${area}`,
     searchAria: (place: string) => `Xem những gì đã bay qua ${place}`,
     searchTitle: 'Tìm tại đây (Enter)',
     removeAria: 'Gỡ ghim',
     removeTitle: 'Gỡ ghim (Esc)',
-    /** One mono caps line on a 320 px phone: the object (*ghim*) is named, since Vietnamese drops no pronoun here */
-    moveHint: 'Giữ quả địa cầu để dời ghim',
+    /**
+     * One mono caps line on a 320 px phone: *Nhấn giữ*, the interface term for press-and-hold (a bare *Giữ* is "keep");
+     * the object (*ghim*) is named, since Vietnamese drops no pronoun here
+     */
+    moveHint: 'Nhấn giữ quả địa cầu để dời ghim',
     droppedAt: (coords: string) => `Đã thả ghim tại ${coords}.`,
     droppedIn: (place: string) => `Đã thả ghim ở ${place}. Nhấn Enter hoặc mũi tên để xem những gì đã bay qua đó.`,
     droppedUnnamed: 'Đã thả ghim. Nhấn Enter hoặc mũi tên để xem những gì đã bay qua đó.',

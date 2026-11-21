@@ -3,10 +3,10 @@
  *
  * Why these words: on a 375 px phone the About link (top left) and the sun line (top right) nearly touch, so *Cách
  * hoạt động* keeps English's 14 characters and the sun is *Mặt Trời* (a celestial body's name, capitalised, §6.4).
- * The sub-solar point is said as what it is, the place where the sun stands at the zenith, in the words geography class
- * uses (*Mặt Trời ở thiên đỉnh*). The replay's clock is *Lúc đó* ("at that moment"). Ages are written out (*42 phút*,
- * *5 giờ*, *3 ngày*): Vietnamese has no abbreviations for them and needs none. Coordinates, clocks, UTC and ISO stamps
- * arrive as they are.
+ * The sub-solar point is named as a point, in the words geography class uses for the Sun at the zenith (*Điểm Mặt
+ * Trời lên thiên đỉnh*): without *Điểm* it reads as a statement under a line that already starts *Mặt Trời*. The
+ * replay's clock is *Lúc đó* ("at that moment"). Ages are written out (*42 phút*, *5 giờ*, *3 ngày*): Vietnamese has no
+ * abbreviations for them and needs none. Coordinates, clocks, UTC and ISO stamps arrive as they are.
  */
 import type en from '../en/hud'
 import { fmt } from '../../../api/_lib/i18n/format'
@@ -32,7 +32,7 @@ const hud: typeof en = {
 
   scene: 'Lúc đó',
   sun: (lat: string, lon: string) => `Mặt Trời ${lat} ${lon}`,
-  subsolar: 'Mặt Trời ở thiên đỉnh',
+  subsolar: 'Điểm Mặt Trời lên thiên đỉnh',
   gmst: (time: string) => `GMST ${time}`,
 
   objects: (n: number) => f.plural(n, { other: `${f.int(n)} vật thể` }),
@@ -40,7 +40,8 @@ const hud: typeof en = {
   catalog: 'Danh mục',
   fetched: (stamp: string) => `Lấy lúc ${stamp}`,
   catalogAge: (unit: AgeUnit, n: number, stale: boolean) => `${stale ? 'Cũ, ' : ''}${ageVi(unit, n)} trước`,
-  catalogUnavailable: 'Không có danh mục',
+  /** It could not be loaded (*không tải được*); *Không có danh mục* would say there is none */
+  catalogUnavailable: 'Không tải được danh mục',
   catalogLoading: 'Đang tải danh mục',
 }
 export default hud

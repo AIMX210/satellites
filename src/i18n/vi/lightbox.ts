@@ -15,7 +15,7 @@ const lightbox: typeof en = {
   dialogLabel: 'Ảnh',
   spokenPosition: (k: number, n: number, lead?: 'closest' | 'clouded') =>
     `Ảnh ${f.int(k)} trong số ${f.int(n)}${lead === 'closest' ? ', chi tiết nhất' : lead === 'clouded' ? ', mây che kín' : ''}`,
-  spokenLastClear: 'Ảnh không mây gần nhất, từ trước tuần này',
+  spokenLastClear: 'Ảnh không mây mới nhất, từ trước tuần này',
   timelapseLabel: 'Time-lapse của nơi này, qua từng năm',
   timelapse: 'Time-lapse',
   zoomOut: 'Thu nhỏ',
@@ -30,7 +30,7 @@ const lightbox: typeof en = {
   panProduct: (pixel: string) => `Landsat C2 L2 + L1 pan · ${pixel}`,
   status: {
     clouded: (pct?: number) => `Có mây${pct !== undefined ? ` · ${f.int(pct)}%` : ''}`,
-    clearAtSpot: 'Quang tại điểm',
+    clearAtSpot: 'Điểm không mây',
   },
   replayLabel: 'Phát lại lượt bay này trên quả địa cầu',
   replay: 'Phát lại',
