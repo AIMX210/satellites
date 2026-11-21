@@ -7,9 +7,10 @@
  *  - The headline is the results headline in three blocks, time first: «این هفته» | *«Waterloo را»* | «31 ماهواره رصد
  *    کردند.». The place is the fronted object, so the count and the verb end the sentence, the part the English puts
  *    first; the serif block holds the place with its «را», the words on its line. One is a word («یک ماهواره رصد
- *    کرد.»), zero its own sentence («هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم رصد نکرد.»). The full stop closes the last
- *    text block, so a cut place needs nothing special. Joined with spaces, the parts are the page title, and it starts
- *    with a Persian word.
+ *    کرد.»). Zero keeps subject–object–verb, as the app's results.headline.none does: «این هفته هیچ‌یک از ماهواره‌هایی
+ *    که ردیابی می‌کنیم | *Waterloo را* | رصد نکرد.» (with the object first two verbs would meet, «…ردیابی می‌کنیم رصد
+ *    نکرد»). The full stop closes the last text block, so a cut place needs nothing special. Joined with spaces, the
+ *    parts are the page title, and it starts with a Persian word.
  *  - An older share's headline puts a Persian word between the satellite's name and the place («ماهوارهٔ Sentinel-2C از
  *    بالا | *Waterloo را* | رصد کرد.»), so the two Latin names never run together in the title. The satellite always
  *    follows its head noun («ماهوارهٔ», a crewed station «ایستگاه فضایی», recognised by its display name); a nameless
@@ -41,11 +42,15 @@ const dayMonth = (ms: number, timeZone: string) => formatDate('fa', ms, timeZone
 
 // ── Pieces the sentences share ──────────────────────────────────────────────────────────────────────────────────────
 
-/** «31 ماهواره رصد کردند.» · «یک ماهواره رصد کرد.» · «هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم رصد نکرد.» */
-const watched = (n: number) =>
-  n <= 0 ? 'هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم رصد نکرد.' : n === 1 ? 'یک ماهواره رصد کرد.' : `${f.int(n)}${nb}ماهواره رصد کردند.`
+/** «31 ماهواره رصد کردند.» · «یک ماهواره رصد کرد.» */
+const watched = (n: number) => (n === 1 ? 'یک ماهواره رصد کرد.' : `${f.int(n)}${nb}ماهواره رصد کردند.`)
 /** The serif block: the place and its object marker («Waterloo را»), the words on its line */
 const object = (place: string) => accent(place, `${nb}را`)
+/** The week's headline: «این هفته | *Waterloo را* | 31 ماهواره رصد کردند.»; zero puts its negative subject first */
+const week = (n: number, place: string): Rich =>
+  n <= 0
+    ? ['این هفته هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم', object(place), 'رصد نکرد.']
+    : ['این هفته', object(place), watched(n)]
 
 /** Display names of the crewed stations (src/engine/profiles.ts: ISS, Tiangong): no message carries a crewed flag */
 const CREWED = /^(ISS|Tiangong)\b/
@@ -66,14 +71,15 @@ const percent = (n: number) => `${f.int(n)}${nb}درصد`
 const fa: CardMessages = {
   // ── The headline: time, the place in the serif, then the count and the verb ───────────────────────────────────────
 
-  headline: (satellites: number, place: string, _cut: boolean): Rich => ['این هفته', object(place), watched(satellites)],
+  headline: (satellites: number, place: string, _cut: boolean): Rich => week(satellites, place),
   headlineBy: {
     imaged: (sat: SatName, place: string, _cut: boolean): Rich => [`${theSat(sat)} از بالا`, object(place), 'رصد کرد.'],
     likely: (sat: SatName, place: string, _cut: boolean): Rich => [`${theSat(sat)} از بالا`, object(place), 'پوشش داد.'],
-    could: (sat: SatName, place: string, _cut: boolean): Rich => [`${theSat(sat)} از دیدرس`, accent(place), 'گذشت.'],
+    // «در دیدرس» ("within view"); «از دیدرس» pulls towards «از دیدرس خارج شد», "went out of sight"
+    could: (sat: SatName, place: string, _cut: boolean): Rich => [`${theSat(sat)} در دیدرس`, accent(place), 'گذشت.'],
     overhead: (sat: SatName, place: string, _cut: boolean): Rich => [`${theSat(sat)} از فراز`, accent(place), 'گذشت.'],
   },
-  headlineWeek: (satellites: number, place: string, _cut: boolean): Rich => ['این هفته', object(place), watched(satellites)],
+  headlineWeek: (satellites: number, place: string, _cut: boolean): Rich => week(satellites, place),
 
   // ── The line under the headline ───────────────────────────────────────────────────────────────────────────────────
 
@@ -88,10 +94,11 @@ const fa: CardMessages = {
       post: (_pct: number) => 'جز ابر چیزی ندید.',
       desc: (p: number) => `جز ابر چیزی ندید (${percent(p)}).`,
     },
-    // «… صحنه»: the percentage is the scene's, not the place's.
+    // «… صحنه»: the percentage is the scene's, not the place's. As a label «عمدتاً ابری»: a bare «بیشتر ابر» reads
+    // "more cloud"; the sentences' «بیشتر ابر دید» ("saw mostly cloud") is adverbial and stays.
     mostly: {
-      sub: (p: number) => `بیشتر ابر: ${pct(p)} صحنه.`,
-      chip: (p: number) => `بیشتر ابر · ${pct(p)}`,
+      sub: (p: number) => `عمدتاً ابری: ${pct(p)} صحنه.`,
+      chip: (p: number) => `عمدتاً ابری · ${pct(p)}`,
       post: (p: number) => `بیشتر ابر دید (${percent(p)} صحنه).`,
       desc: (p: number) => `بیشتر ابر دید (${percent(p)} صحنه).`,
     },
@@ -136,7 +143,8 @@ const fa: CardMessages = {
     groundTrack: 'مسیر زمینی در نزدیک‌ترین نقطه',
   },
   acquiring: 'در حال دریافت…',
-  noPublicPhoto: 'این هفته تصویر عمومی نیست',
+  // «هیچ … عمومی‌ای»: a bare «تصویر عمومی نیست» reads "the image is not public"
+  noPublicPhoto: 'این هفته هیچ تصویر عمومی‌ای نیست',
   noPhoto: 'تصویری برای نشان دادن نیست',
   look: {
     closest: 'نزدیک‌ترین نما',
@@ -154,15 +162,16 @@ const fa: CardMessages = {
 
   // "Something this week / watched *you*." (fa.md §3.1): two lines, the accent on «شما».
   hero: [['چیزی این هفته'], [accent('شما'), ' را رصد کرد.']] as Rich[],
-  enterAnyPlace: 'هر جای زمین را وارد کنید',
+  // One searches a place; only a name is «وارد کردن» (entered)
+  enterAnyPlace: 'هر جای زمین را جستجو کنید',
   defaultPlace: 'نخل جمیرا',
-  defaultAlt: `عکسی واقعی از نخل جمیرا در دبی، گرفته‌شده با ماهوارهٔ${nb}Sentinel-2، کنار این جمله: چیزی این هفته شما را رصد کرد. هر جای زمین را وارد کنید.`,
+  defaultAlt: `عکسی واقعی از نخل جمیرا در دبی، گرفته‌شده با ماهوارهٔ${nb}Sentinel-2، کنار این جمله: چیزی این هفته شما را رصد کرد. هر جای زمین را جستجو کنید.`,
 
   // ── The share page ────────────────────────────────────────────────────────────────────────────────────────────────
 
   page: {
     title: 'چیزی این هفته شما را رصد کرد.',
-    description: `هر جای زمین را وارد کنید و همهٔ ماهواره‌هایی را ببینید که در 7${nb}روز گذشته از فرازش گذشتند، همراه با تصویرهای واقعی‌ای که گرفتند.`,
+    description: `هر جای زمین را جستجو کنید و همهٔ ماهواره‌هایی را ببینید که در 7${nb}روز گذشته از فرازش گذشتند، همراه با تصویرهای واقعی‌ای که گرفتند.`,
     // «چه چیزی» is the subject and comes first, so the title starts with a Persian word.
     placeTitle: (place: string) => `چه چیزی این هفته ${place} را رصد کرد`,
     placeDescription: (place: string) =>
@@ -175,7 +184,7 @@ const fa: CardMessages = {
     const alt = o.altitudeKm !== undefined ? ` در ارتفاع ${f.int(o.altitudeKm)}${nb}کیلومتری` : ''
     return `${theSat(o.sat)}${at(o.when)}${alt} از فراز ${o.place} گذشت${moving(o.heading)}.`
   },
-  withinView: (o: PassFacts) => `${theSat(o.sat)}${at(o.when)} از دیدرس ${o.place} گذشت${moving(o.heading)}.`,
+  withinView: (o: PassFacts) => `${theSat(o.sat)}${at(o.when)} در دیدرس ${o.place} گذشت${moving(o.heading)}.`,
   couldHave: 'می‌توانست به این‌جا نگاه کند. اپراتورش نمی‌گوید که نگاه کرد یا نه.',
   straightDown: 'درست رو به پایین نگاه می‌کرد.',
   offNadir: (deg: number) => `با ${f.dec(deg, 1)}${nb}درجه انحراف از راستای قائم رو به پایین نگاه می‌کرد.`,
@@ -189,8 +198,9 @@ const fa: CardMessages = {
   },
   question: 'این هفته چه چیزی شما را رصد کرد؟',
   cardAlt: {
-    withPhoto: (sat: SatName) => `کارت اشتراک، با نزدیک‌ترین تصویر این هفته، از ${theSat(sat)}.`,
-    plain: 'کارت اشتراک.',
+    // «اشتراک» alone is a subscription («کارت اشتراک», a membership card): sharing is «اشتراک‌گذاری»
+    withPhoto: (sat: SatName) => `کارت اشتراک‌گذاری، با نزدیک‌ترین تصویر این هفته که ${theSat(sat)} گرفته است.`,
+    plain: 'کارت اشتراک‌گذاری.',
   },
 }
 
