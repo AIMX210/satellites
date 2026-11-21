@@ -5,13 +5,14 @@
  * file tracer follows, and vercel.json `includeFiles` ships the folder regardless. The cwd-based
  * path is a second chance for runtimes that relocate the compiled module.
  *
- * Every role's text is split over several files: fontsource's latin and latin-ext subsets of the brand face, and for
- * Cyrillic and Vietnamese the faces the web gives those pages (src/styles/scripts.css). satori keeps one face per name,
- * weight and style (a second file under a name it already has is never asked for a glyph), so each file has a name of
- * its own: `<role>` (latin), `<role> Ext` (latin-ext: İ Ş Ğ, Ł ą ę ś ź ż …), `<role> Cyrillic` and `<role> Vietnamese`.
- * Each role's `fontFamily` names its files in order (cardFamily), as the web's stacks and unicode-ranges do, and a
- * family a card did not register is skipped. A glyph none of them has is drawn from any other registered font that has
- * it, else from a Noto subset fetched for the card (fallbackFonts.ts).
+ * Every role's text is split over several files: fontsource's latin and latin-ext subsets of the brand face, for
+ * Cyrillic and Vietnamese the faces the web gives those pages (src/styles/scripts.css), and for Devanagari the faces the
+ * web gives Hindi (fetched, not read from disk: DEVANAGARI_NAME). satori keeps one face per name, weight and style (a
+ * second file under a name it already has is never asked for a glyph), so each file has a name of its own: `<role>`
+ * (latin), `<role> Ext` (latin-ext: İ Ş Ğ, Ł ą ę ś ź ż …), `<role> Cyrillic`, `<role> Vietnamese` and
+ * `<role> Devanagari`. Each role's `fontFamily` names its files in order (cardFamily), as the web's stacks and
+ * unicode-ranges do, and a family a card did not register is skipped. A glyph none of them has is drawn from any other
+ * registered font that has it, else from a Noto subset fetched for the card (fallbackFonts.ts).
  *
  * A Vietnamese card names its Vietnamese cut first in every role, as the page does: the cut has every Latin letter and
  * digit too, so no word is half in Instrument and half in Noto. Any other card names it last, so the brand faces draw
@@ -39,9 +40,15 @@ const EXT_NAME = (name: string) => `${name} Ext`
 const CYRILLIC_NAME = (name: string) => `${name} Cyrillic`
 /** The Vietnamese faces' names: Noto Sans wdth 67.5 / 100, JetBrains Mono, Noto Serif Display italic (each whole Latin). */
 const VIETNAMESE_NAME = (name: string) => `${name} Vietnamese`
+/**
+ * The Devanagari faces' names, one per role as the web sets Hindi (Noto Sans Devanagari condensed for the display, at
+ * full width for the sans and, 20% larger, for the mono's labels; Noto Serif Devanagari for the serif). They are not
+ * bundled: fallbackFonts.ts fetches each as a subset of the card's own Devanagari and registers it under this name.
+ */
+export const DEVANAGARI_NAME = (name: string) => `${name} Devanagari`
 
 /** A role's files, in the order a glyph is looked for in them. */
-const stack = (name: string) => `${name}, ${EXT_NAME(name)}, ${CYRILLIC_NAME(name)}, ${VIETNAMESE_NAME(name)}`
+const stack = (name: string) => `${name}, ${EXT_NAME(name)}, ${CYRILLIC_NAME(name)}, ${VIETNAMESE_NAME(name)}, ${DEVANAGARI_NAME(name)}`
 /** …on a Vietnamese card: its own face first, for every letter. */
 const stackVi = (name: string) => `${VIETNAMESE_NAME(name)}, ${name}, ${EXT_NAME(name)}, ${CYRILLIC_NAME(name)}`
 

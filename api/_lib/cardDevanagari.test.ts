@@ -1,10 +1,11 @@
 /**
  * A Hindi card is set as the Hindi page is (src/styles/scripts.css): no tracking anywhere on Devanagari (it cuts the
- * headline stroke between letters), the taller leading its vowel signs need, and a headline size that keeps the taller
- * block in its band. English and every other card keep what they had.
+ * headline stroke between letters), the taller leading its vowel signs need, a headline size that keeps the taller block
+ * in its band, and in satori the faces the web gives each role, fetched once per card. English and every other card keep
+ * what they had.
  */
 import type { ReactElement } from 'react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defaultCard, shareCard } from './card.js'
 import {
   CARD_FS,
@@ -20,9 +21,12 @@ import {
   type CardInput,
   type CardSpec,
 } from './cardSpec.js'
-import { FAMILY } from './fonts.js'
+import { CACHE_SIZE, loadFallbackAsset, mergeShared, scaledFont } from './fallbackFonts.js'
+import { DEVANAGARI_NAME, FAMILY, FONT, type SatoriFont } from './fonts.js'
 import { LOCALES, LOCALE_INFO } from './i18n/locales.js'
 import { accent, plain, type Rich } from './i18n/parts.js'
+
+afterEach(() => vi.unstubAllGlobals())
 
 type Styled = ReactElement<{ style?: Record<string, unknown>; children?: unknown }>
 
@@ -128,5 +132,77 @@ describe('the Hindi headline’s size', () => {
       const spec = buildCardSpec(PASS, l)
       expect(spec.size).toBe(headlineSize(spec.lead, spec.place + spec.tail.replace(/[.。]$/, '')))
     }
+  })
+})
+
+describe('the unfurl’s Devanagari', () => {
+  const sheet = (url: string) => {
+    const name = /family=([^:&]+)/.exec(url)![1]
+    const axes = /:([^&]+)&/.exec(url)?.[1] ?? ''
+    return `@font-face { font-family: '${name}'; font-weight: ${axes.endsWith('600') ? 600 : 400}; src: url(https://f/${name}/${encodeURIComponent(axes)}.ttf) format('truetype'); }`
+  }
+  /** A TrueType file of one table, `head`, whose em is 1000 (enough for scaledFont) */
+  const ttf = () => {
+    const b = new DataView(new ArrayBuffer(12 + 16 + 54))
+    b.setUint32(0, 0x00010000)
+    b.setUint16(4, 1)
+    b.setUint32(12, 0x68656164) // 'head'
+    b.setUint32(12 + 8, 28)
+    b.setUint32(12 + 12, 54)
+    b.setUint16(28 + 18, 1000)
+    return b.buffer
+  }
+
+  it('is a face per role as the page sets Hindi: three style sheets, the sans shared with the mono', async () => {
+    const asked: string[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        asked.push(url)
+        return url.startsWith('https://fonts.googleapis.com/') ? new Response(sheet(decodeURIComponent(url))) : new Response(ttf())
+      }),
+    )
+    const fonts = (await loadFallbackAsset('devanagari', 'नमस्ते')) as SatoriFont[]
+    expect(fonts.map((f) => [f.name, f.weight, f.style, f.lang])).toEqual([
+      [DEVANAGARI_NAME(FONT.sans), 400, 'normal', undefined],
+      [DEVANAGARI_NAME(FONT.display), 600, 'normal', undefined],
+      [DEVANAGARI_NAME(FONT.mono), 400, 'normal', undefined],
+      [DEVANAGARI_NAME(FONT.serif), 400, 'italic', undefined],
+    ])
+    const css = asked.filter((u) => u.startsWith('https://fonts.googleapis.com/')).map((u) => decodeURIComponent(u).replace(/&text=.*/, ''))
+    expect(css).toEqual([
+      'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400',
+      'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wdth,wght@75,600',
+      'https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wdth,wght@87.5,400',
+    ])
+    // the mono's labels drawn 20% larger, as the page's size-adjust: the em shrunk, nothing else
+    const upem = (f: SatoriFont) => new DataView(f.data).getUint16(28 + 18)
+    expect([upem(fonts[0]), upem(fonts[2])]).toEqual([1000, 833])
+    // each name in its role's stack, after the role's own faces
+    for (const role of ['display', 'sans', 'mono', 'serif'] as const) expect(FAMILY[role].split(', ')).toContain(DEVANAGARI_NAME(FONT[role]))
+  })
+
+  it('takes the danda with the card’s Devanagari, not five other scripts’ subsets', () => {
+    const indic = 'bn-IN|ta-IN|ml-IN|te-IN|devanagari|kannada'
+    expect(
+      mergeShared([
+        { code: 'devanagari', text: 'देखा' },
+        { code: indic, text: '।' },
+      ]),
+    ).toEqual([{ code: 'devanagari', text: 'देखा।' }])
+    // a danda alone (no Devanagari to join), and Han shared by CJK languages, are left as satori names them
+    expect(mergeShared([{ code: indic, text: '।' }])).toEqual([{ code: indic, text: '।' }])
+    const han = [
+      { code: 'ja-JP', text: 'の' },
+      { code: 'ja-JP|zh-CN|zh-TW|zh-HK', text: '東京' },
+    ]
+    expect(mergeShared(han)).toEqual(han)
+  })
+
+  it('scales a font by its em alone', () => {
+    const f = ttf()
+    const big = scaledFont(f, 1.2)
+    expect([new DataView(f).getUint16(46), new DataView(big).getUint16(46)]).toEqual([1000, 833])
+    expect(CACHE_SIZE).toBeGreaterThan(0)
   })
 })
