@@ -2,7 +2,8 @@
  * Hindi copy for the app's own words (see docs/i18n/hi.md §1.3, §3.1): the fault notice, the controller's progress
  * lines and the tab title.
  *
- * Why these words: the notice's label is an instrument's word for a failure, «गड़बड़ी», not an alarm. Each message
+ * Why these words: the notice's label is an instrument's word for a failure, «खराबी» (as in «तकनीकी खराबी»), not an
+ * alarm and not the colloquial «गड़बड़ी», which the message body keeps («कुछ गड़बड़ हो गई»). Each message
  * says what failed impersonally («… लोड नहीं हो सकी»: the verb agrees with «सूची», our own noun), then the one step to
  * take in the polite imperative («जाँचें», «कोशिश करें»), with no «कृपया». The retrying state is a noun with «जारी»,
  * so it has no gender either. The tab title is the hero in one line, without the danda (a title takes no full stop).
@@ -13,7 +14,7 @@ const app: typeof en = {
   documentTitle: 'Watched · किसी चीज़ ने इस हफ़्ते आपको देखा',
 
   notice: {
-    label: 'गड़बड़ी',
+    label: 'खराबी',
     fallback: 'कुछ गड़बड़ हो गई।',
     tryAgain: 'फिर कोशिश करें',
     trying: 'कोशिश जारी…',
