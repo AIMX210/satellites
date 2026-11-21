@@ -41,7 +41,8 @@ const NAMES_OUT = join(dirname(OUT), 'catalog-names.json')
 const ASK_MS = 6 * 60_000
 
 // GROUP=active is ~12k+ payloads. We also pull a few groups that include non-"active" but relevant objects.
-const GROUPS = ['active', 'stations', 'weather', 'resource', 'planet', 'goes', 'noaa', 'sarsat']
+// CelesTrak has no 'noaa' group any more (its answer: "GROUP=noaa not found"); NOAA's satellites are in 'weather'.
+const GROUPS = ['active', 'stations', 'weather', 'resource', 'planet', 'goes', 'sarsat']
 
 const round = (x: number, d: number) => Math.round(x * 10 ** d) / 10 ** d
 /** Round to `n` significant digits (BSTAR, ṅ/2, n̈/6: their published precision is ~4–5 digits). */
