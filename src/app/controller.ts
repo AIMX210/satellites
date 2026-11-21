@@ -83,6 +83,7 @@ const SCRIPT_FONTS: Record<string, [font: string, text: string][]> = {
   cyrillic: [['560 16px "Watched Cyrillic"', 'щ'], ['italic 400 16px "Watched Cyrillic Serif"', 'т']],
   arabic: [['600 16px "Watched Arabic"', 'ب'], ['italic 400 16px "Watched Arabic Serif"', 'أ']],
   vi: [['560 16px "Watched Vietnamese"', 'Việt'], ['italic 400 16px "Watched Vietnamese Serif"', 'Việt'], ['350 16px "Watched Vietnamese Mono"', 'VIỆT']],
+  devanagari: [['560 16px "Watched Devanagari"', 'क'], ['italic 400 16px "Watched Devanagari Serif"', 'क']],
 }
 /** Boot never waits longer than this for the faces (system fallbacks are fine on a very slow link). */
 const FONTS_CAP_MS = 4000

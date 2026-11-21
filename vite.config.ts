@@ -148,14 +148,16 @@ function localePreloads(bundle: OutputBundle, base: string): Record<string, stri
 
 /**
  * A script's faces the first screen paints (src/styles/scripts.css), preloaded by the boot script only for that
- * script, or for that language (a key that is a locale): the hero is the largest paint, and its Cyrillic, Arabic or
- * Vietnamese face would otherwise be discovered late. The Arabic accent (one word) and the brand faces every page
- * preloads (CRITICAL_FONTS) are not on this list.
+ * script, or for that language (a key that is a locale): the hero is the largest paint, and its Cyrillic, Arabic,
+ * Vietnamese or Devanagari face would otherwise be discovered late. The Arabic accent (one word) and the brand faces
+ * every page preloads (CRITICAL_FONTS) are not on this list. The Devanagari accent is: Hindi's hero opens its last line
+ * with it («आपको देखा।»), so a late swap would move the rest of the line.
  */
 const LATIN_EXT = /^(?:.*\/)?(instrument-sans-latin-ext-standard-normal|martian-mono-latin-ext-standard-normal|instrument-serif-latin-ext-400-italic)-[\w-]+\.woff2$/
 const SCRIPT_FONTS: Record<string, RegExp> = {
   cyrillic: /^(?:.*\/)?(noto-sans-cyrillic-wdth-normal|noto-serif-display-cyrillic-italic-320-62)-[\w-]+\.woff2$/,
   arabic: /^(?:.*\/)?noto-sans-arabic-wght400-700-wdth75-100-[\w-]+\.woff2$/,
+  devanagari: /^(?:.*\/)?(noto-sans-devanagari-wght400-700-wdth75-100|noto-serif-devanagari-350-87)-[\w-]+\.woff2$/,
   // Latin languages whose own letters (ł ż ś, ş ğ ı) live in the brand faces' latin-ext files (keyed by locale)
   pl: LATIN_EXT,
   tr: LATIN_EXT,
