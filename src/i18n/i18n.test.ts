@@ -29,13 +29,20 @@ describe('locale matching', () => {
     // Cantonese: Traditional Chinese, the one neighbour chosen over English
     expect(localeForTag('yue')).toBe('zh-Hant')
     expect(localeForTag('yue-Hant-HK')).toBe('zh-Hant')
-    expect(localeForTag('ru')).toBeUndefined()
+    expect(localeForTag('ru-RU')).toBe('ru')
+    expect(localeForTag('fa-IR')).toBe('fa')
+    expect(localeForTag('vi-VN')).toBe('vi')
+    expect(localeForTag('hi-IN')).toBe('hi')
+    // A neighbour is never assumed: Belarusian and Tajik get English, not Russian or Persian
+    expect(localeForTag('be')).toBeUndefined()
+    expect(localeForTag('tg')).toBeUndefined()
     expect(localeForTag('enx')).toBeUndefined()
   })
   it('takes the first language we speak, English when none', () => {
-    expect(matchLocale(['ru-RU', 'uk-UA', 'en'])).toBe('uk')
+    expect(matchLocale(['be-BY', 'uk-UA', 'en'])).toBe('uk')
+    expect(matchLocale(['ru-RU', 'uk-UA', 'en'])).toBe('ru')
     expect(matchLocale(['en-US', 'ja'])).toBe('en')
-    expect(matchLocale(['ru', 'he'])).toBe('en')
+    expect(matchLocale(['be', 'he'])).toBe('en')
     expect(matchLocale([])).toBe('en')
   })
 })

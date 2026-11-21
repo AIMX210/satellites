@@ -71,12 +71,12 @@ export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
   'zh-Hans': L('zh-Hans', '简体中文', 'Chinese (Simplified)', 'cjk', ['other'], { sentenceGap: '' }),
   'zh-Hant': L('zh-Hant', '繁體中文', 'Chinese (Traditional)', 'cjk', ['other'], { sentenceGap: '' }),
   ar: L('ar', 'العربية', 'Arabic', 'arabic', ['zero', 'one', 'two', 'few', 'many', 'other'], { dir: 'rtl', intl: 'ar-u-nu-latn' }),
-  // Added 2026-11-21, unlisted until reviewed (owner: 20 languages). Persian keeps Western digits as Arabic does (the
-  // mono face has no others; its guide may decide otherwise); Hindi's Intl digits are Western by default.
-  ru: L('ru', 'Русский', 'Russian', 'cyrillic', ['one', 'few', 'many', 'other'], { listed: false }),
-  vi: L('vi', 'Tiếng Việt', 'Vietnamese', 'latin', ['other'], { listed: false }),
-  fa: L('fa', 'فارسی', 'Persian', 'arabic', ['one', 'other'], { dir: 'rtl', intl: 'fa-u-nu-latn', listed: false }),
-  hi: L('hi', 'हिन्दी', 'Hindi', 'devanagari', ['one', 'other'], { listed: false }),
+  // Added 2026-11-21 (owner: 20 languages). Persian keeps Western digits as Arabic does (the mono face has no others);
+  // Hindi's Intl digits are Western by default.
+  ru: L('ru', 'Русский', 'Russian', 'cyrillic', ['one', 'few', 'many', 'other']),
+  vi: L('vi', 'Tiếng Việt', 'Vietnamese', 'latin', ['other']),
+  fa: L('fa', 'فارسی', 'Persian', 'arabic', ['one', 'other'], { dir: 'rtl', intl: 'fa-u-nu-latn' }),
+  hi: L('hi', 'हिन्दी', 'Hindi', 'devanagari', ['one', 'other']),
 }
 
 export const DEFAULT_LOCALE: Locale = 'en'

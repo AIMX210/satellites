@@ -17,11 +17,14 @@ import { setLocale, useLocale, useMsgs } from '@/i18n/runtime'
 import { useBackLayer } from '@/lib/backStack'
 import s from './LanguageSwitcher.module.css'
 
-/** English first, then the Latin-script languages by their own names, then the others by script. */
 /** Least distance from the menu to the viewport's edges. */
 const EDGE = 12
 
-const ORDER: readonly Locale[] = ['en', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt-BR', 'tr', 'uk', 'ar', 'ja', 'ko', 'zh-Hans', 'zh-Hant']
+/** English first, then the Latin-script languages by their own names, then the others by script, in Unicode's order. */
+const ORDER: readonly Locale[] = [
+  'en', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt-BR', 'vi', 'tr',
+  'ru', 'uk', 'ar', 'fa', 'hi', 'ja', 'ko', 'zh-Hans', 'zh-Hant',
+]
 
 /**
  * The name the trigger shows, on every screen: the language's own name, as the list writes it ("English", "Deutsch",

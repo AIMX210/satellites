@@ -23,6 +23,10 @@ import ko from './ko/boot.ts'
 import zhHans from './zh-Hans/boot.ts'
 import zhHant from './zh-Hant/boot.ts'
 import ar from './ar/boot.ts'
+import ru from './ru/boot.ts'
+import vi from './vi/boot.ts'
+import fa from './fa/boot.ts'
+import hi from './hi/boot.ts'
 
 export interface BootText {
   /** aria-label of the loading screen: "Loading Watched" */
@@ -50,4 +54,8 @@ export const BOOT_TEXT: Partial<Record<Locale, BootText>> = {
   'zh-Hans': zhHans,
   'zh-Hant': zhHant,
   ar,
+  ru,
+  vi,
+  fa,
+  hi,
 }
