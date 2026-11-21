@@ -29,7 +29,7 @@ const day = (ms: number, timeZone: string) => viTime.day(ms, timeZone, localPart
 
 /**
  * A compound word held together in a display line: Vietnamese breaks at the space between syllables, so a wrapping
- * headline could split *vệ / tinh* or *quan / sát* (vi.md §6.5). Only the display lines (the headline and its second
+ * headline could split *vệ / tinh* or *quan / sát*, or end a line on the aspect marker *đã* (vi.md §6.5). Only the display lines (the headline and its second
  * line) bind their compounds; body text wraps as it will.
  */
 const bind = (s: string) => s.replace(/ /g, '\u00a0')
@@ -56,16 +56,16 @@ const results: typeof en = {
     /** vi.md §3.3: bold *[NUM] vệ tinh đã quan sát* (the number inside it), serif the place */
     watched: (n: number, place: string, when: WindowWhen): Rich => [
       'lastDays' in when
-        ? `Trong ${f.int(when.lastDays)}\u00a0ngày qua, `
-        : `Từ ${dayMonth(when.fromMs, when.timeZone)} đến ${dayMonth(when.toMs, when.timeZone)}, `,
-      strong(num(f.int(n)), ` ${bind('vệ tinh')} đã ${bind('quan sát')}`),
+        ? `Trong ${bind(`${f.int(when.lastDays)} ngày qua`)}, `
+        : `${bind(`Từ ${dayMonth(when.fromMs, when.timeZone)}`)} ${bind(`đến ${dayMonth(when.toMs, when.timeZone)}`)}, `,
+      strong(num(f.int(n)), `\u00a0${bind('vệ tinh')} ${bind('đã quan sát')}`),
       ' ',
       accent(place),
       '.',
     ],
     /** Zero is its own sentence, with "we track" kept (the limit is our catalog); *mà* keeps the two verbs apart */
     none: (place: string, past: boolean): Rich => [
-      `Không ${bind('vệ tinh')} nào mà ${bind('chúng tôi')} ${bind('theo dõi')} đã ${bind('quan sát')} `,
+      `Không ${bind('vệ tinh')} nào mà ${bind('chúng tôi')} ${bind('theo dõi')} ${bind('đã quan sát')} `,
       accent(place),
       past ? ` ${bind('tuần đó')}.` : ` ${bind('tuần này')}.`,
     ],
@@ -73,7 +73,7 @@ const results: typeof en = {
 
   // ── the second line ──────────────────────────────────────────────────────────────────────
   /** *Ít nhất* is the strong part, outside the number: the sentence reads with and without it (§3.4) */
-  imagesPublic: (k: number): Rich => [strong(`${bind('Ít nhất')} `), num(f.int(k)), ` ${bind('bức ảnh')} đã được ${bind('công bố')}.`],
+  imagesPublic: (k: number): Rich => [strong(`${bind('Ít nhất')} `), num(f.int(k)), `\u00a0${bind('bức ảnh')} đã được ${bind('công bố')}.`],
   noImages: {
     thisWeek: `${bind('Tuần này')} không có ${bind('bức ảnh')} nào được ${bind('công bố')}.`,
     thatWeek: `${bind('Tuần đó')} không có ${bind('bức ảnh')} nào được ${bind('công bố')}.`,

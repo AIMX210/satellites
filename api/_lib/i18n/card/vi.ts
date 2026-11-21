@@ -70,8 +70,8 @@ const bind = (s: string) => s.replace(/ /g, '\u00a0')
 /** "31 vệ tinh đã quan sát" / "1 vệ tinh đã quan sát" / "Không vệ tinh nào mà chúng tôi theo dõi đã quan sát" */
 const watched = (n: number) =>
   n > 0
-    ? f.plural(n, { other: `${f.int(n)} ${bind('vệ tinh')} đã ${bind('quan sát')}` })
-    : `Không ${bind('vệ tinh')} nào mà ${bind('chúng tôi')} ${bind('theo dõi')} đã ${bind('quan sát')}`
+    ? f.plural(n, { other: `${f.int(n)}\u00a0${bind('vệ tinh')} ${bind('đã quan sát')}` })
+    : `Không ${bind('vệ tinh')} nào mà ${bind('chúng tôi')} ${bind('theo dõi')} ${bind('đã quan sát')}`
 /** The full stop after the place, unless the place was cut short ("…." reads as a typo). */
 const stop = (cut: boolean, tail = '.') => (cut ? [] : [tail])
 
@@ -94,10 +94,10 @@ const card: CardMessages = {
 
   headline: (satellites: number, place: string, cut: boolean): Rich => [watched(satellites), accent(place, ...stop(cut))],
   headlineBy: {
-    imaged: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} đã ${bind('quan sát')}`, accent(place, ...stop(cut))],
-    likely: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} đã ${bind('quét qua')}`, accent(place, ...stop(cut))],
-    could: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} ${bind('có thể')} đã ${bind('hướng về')}`, accent(place, ...stop(cut))],
-    overhead: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} đã ${bind('bay qua')}`, accent(place, ...stop(cut))],
+    imaged: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} ${bind('đã quan sát')}`, accent(place, ...stop(cut))],
+    likely: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} ${bind('đã quét qua')}`, accent(place, ...stop(cut))],
+    could: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} ${bind('có thể đã hướng về')}`, accent(place, ...stop(cut))],
+    overhead: (sat: SatName, place: string, cut: boolean): Rich => [`${named(sat)} ${bind('đã bay qua')}`, accent(place, ...stop(cut))],
   },
   headlineWeek: (satellites: number, place: string, cut: boolean): Rich => [watched(satellites), accent(place, ...stop(cut, ` ${bind('tuần này')}.`))],
 

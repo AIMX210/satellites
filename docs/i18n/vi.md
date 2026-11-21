@@ -988,8 +988,11 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
   every break is chosen in the catalog; never let a word's two syllables split there. Lines set by hand (the hero, the
   About title, the default card) choose their own breaks; lines that wrap (the results headline and its second line,
   the card's lead) hold each compound together with U+00A0 (`bind()` in `results.ts` and `card/vi.ts`: *vệ tinh*,
-  *quan sát*, *bức ảnh*, *công bố*, *chúng tôi*, *theo dõi*, *tuần này*). Seen at 1280 and 390 px before the fix: *256
-  vệ / tinh đã quan sát Waterloo.* In body text, accept the browser's breaks but hold a number to its unit and a count to its
+  *đã quan sát* (so no line ends on the aspect marker *đã*), *bức ảnh*, *công bố*, *chúng tôi*, *theo dõi*, *tuần
+  này*), a count to its noun (*256 vệ tinh*) and each end of a date span to its preposition (*Từ 26/10*, *đến 2/11*).
+  Seen before the fix: *256 vệ / tinh đã quan sát Waterloo.* (1280 and 390 px), *Từ 26/10 đến / 2/11, …* (390 px),
+  *…, 256 / vệ tinh …* (1280 px); after it, both widths read *Từ 26/10 đến 2/11, / 256 vệ tinh / đã quan sát
+  \*Waterloo\*.* In body text, accept the browser's breaks but hold a number to its unit and a count to its
   noun with U+00A0 where the sentence is short enough that a break would strand them.
 - Abbreviations: only the 16-point compass (§4.2), `UTC`, `GMST`, `IR`, `TLE`, `CN` and `T2`–`T7`, no full stops. In
   prose none except units and acronyms. Never *v.v.*, *ko*, *đc*, *TP.* in copy; never `~` (write *khoảng*; `±` for a
