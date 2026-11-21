@@ -1,6 +1,7 @@
 # Watched: Persian (fa) localisation style guide
 
-First edition, 2026-11-21, written before the catalogs and then followed by them. It binds every `fa` string the product
+First edition, 2026-11-21, written before the catalogs and then followed by them; revised the same day after two
+independent reviews (see "Review" at the end). It binds every `fa` string the product
 shows, speaks or sends: the app, the share card and share page, the post text, alt text and aria labels, the
 time-lapse video, About and the loading screen. One catalog in standard written Persian of Iran (فارسی معیار) serves
 Iran, the diaspora and Persian readers in Afghanistan and Tajikistan who read Iranian Persian (see §8.6).
@@ -167,12 +168,14 @@ Tab title (`app.documentTitle`, boot `title`): `Watched · چیزی این هف�
 
 ### 3.2 The sub line
 
-`هر جای زمین را وارد کنید و همهٔ ماهواره‌هایی را ببینید که در 7 روز گذشته از فرازش گذشتند، همراه با تصویرهای
+`هر جای زمین را جستجو کنید و همهٔ ماهواره‌هایی را ببینید که در 7 روز گذشته از فرازش گذشتند، همراه با تصویرهای
 واقعی‌ای که گرفتند.`
 
 - One sentence, one piece, a no-break space between `7` and `روز`.
 - The two English imperatives become one sentence with two polite imperatives joined by `و`: Persian does not stack
   two short commands as English does.
+- `جستجو کنید`, not `وارد کنید`: one searches a place; only a name is "entered" (`نام مکان را وارد کنید`).
+  `هر جای زمین را وارد کنید` is a calque of "Enter any place". The card's footer and the share page say the same.
 - `از فرازش` ("over it") points back to `هر جای زمین`, our own noun, never to a slot.
 - `واقعی` carries "actual": real pictures, not illustrations. `گرفتند`: the pictures the satellites took (a picture
   is "taken", `تصویر گرفتن`; this is not the product verb and not "photographed").
@@ -219,13 +222,16 @@ without it. An inanimate counted subject takes a singular verb (`31 تصویر �
 | `sunNeverRose` | `خورشید اصلاً طلوع نکرد، پس هیچ دوربینی که به نور روز نیاز دارد نمی‌توانست این‌جا را ببیند.` |
 | `sunBarelyRose` | `خورشید به‌زحمت بالا آمد، پس هیچ دوربینی که به نور روز نیاز دارد نمی‌توانست این‌جا را ببیند.` |
 | `infrared(n)` | `با این حال، ماهواره‌های هواشناسی ` + num + ` بار این‌جا را با فروسرخ پوشش دادند.` (1: `یک بار`) |
-| `radar` | `رادار به نور نیاز ندارد. ماهواره‌های راداری Umbra-08، Capella-14 و 7 ماهوارهٔ دیگر روی هم 1,204 بار در بُرد این‌جا گذشتند.` One name: `ماهوارهٔ راداری Umbra-08 در بُرد این‌جا 3 بار گذشت.` |
+| `radar` | `رادار به نور نیاز ندارد. این‌جا در مجموع 1,204 بار در بُرد ماهواره‌های راداری Umbra-08، Capella-14 و 7 ماهوارهٔ دیگر بود.` One name: `این‌جا 3 بار در بُرد ماهوارهٔ راداری Umbra-08 بود.` One other: `… و یک ماهوارهٔ دیگر بود.` |
 | `unpublished(n)` | `ماهواره‌های Sentinel-2 یا Landsat در روشنایی روز 3 بار از فراز این‌جا گذشتند، اما هنوز هیچ صحنه‌ای منتشر نشده است.` (1: `یکی از ماهواره‌های … یک بار … گذشت`) |
 | `none` | `هیچ ماهوارهٔ تصویربرداری با آرشیو باز در روشنایی روز از فراز این‌جا نگذشت.` |
 
 "Swept it in infrared" is `پوشش دادند`, the likely verdict's verb (§3.6), never `اسکن کردند` with a place as object.
-A Persian word always stands between a Latin name and a number (`Umbra-08 در بُرد این‌جا 3 بار`), or the reader sees
-`Umbra-08 3` as one name.
+A Persian word always stands between a Latin name and a number, or the reader sees `Umbra-08 3` (or `Landsat 3`, a
+real satellite) as one name: in `unpublished`, `در روشنایی روز` stands between `Landsat` and the count. The range is
+the satellites', so the place is the subject (`این‌جا … در بُرد … بود`): `در بُرد این‌جا` would be "in this place's
+range". "In all" is `در مجموع`: `روی هم` after a plural subject reads "on top of each other". Each name in the list is
+its own left-to-right island (§5.2).
 
 ### 3.4 The pass paragraph (`pass`)
 
@@ -233,29 +239,33 @@ A Persian word always stands between a Latin name and a number (`Umbra-08 در �
 > بر ثانیه رو به جنوب می‌رفت. درست رو به پایین نگاه می‌کرد. پوشش ابر در کل صحنه: 25%.`
 
 Persian order: subject, time, altitude and place, verb, then how it moved as a second clause. The clock and its zone
-are one `num()` part. Altitude is adjectival (`در ارتفاع 786 کیلومتری`), a ground offset is `در 61 کیلومتری غرب این
-مکان` ("at 61 km west of this place"), which is how Persian says it.
+are one `num()` part. Altitude is adjectival (`در ارتفاع 786 کیلومتری`). The path of `گذشتن` is marked by `از`: a
+ground offset is `از 61 کیلومتری غرب این مکان گذشت` ("passed 61 km west of this place"), as `از فراز`, `از کنار`.
+
+**Written Persian is verb-final.** What English tacks on after a comma (`…, in the dark`, `…, 61 km to the west`,
+`…, 62° above your horizon`) goes before the verb, or into a second clause with a verb of its own. Never end a
+sentence on a phrase after its verb.
 
 | Message | Persian |
 |---|---|
 | `crossed`, overhead | `ماهوارهٔ [SAT] ساعت [TIME] در ارتفاع 786 کیلومتری درست از فراز این مکان گذشت و با سرعت 7.46 کیلومتر بر ثانیه رو به جنوب می‌رفت.` |
-| `crossed`, offset | `ماهوارهٔ [SAT] ساعت [TIME] در ارتفاع 786 کیلومتری، در 61 کیلومتری غرب این مکان گذشت و با سرعت … رو به جنوب می‌رفت.` |
+| `crossed`, offset | `ماهوارهٔ [SAT] ساعت [TIME] در ارتفاع 786 کیلومتری، از 61 کیلومتری غرب این مکان گذشت و با سرعت … رو به جنوب می‌رفت.` |
 | `lookingDown` / `lookingOff` | `درست رو به پایین نگاه می‌کرد.` / `با 5.4° انحراف از راستای قائم رو به پایین نگاه می‌کرد.` |
 | `cloudCover` | `پوشش ابر در کل صحنه: 25%.` |
 | `mosaic` | `تصویربردار MODIS این ماهواره تصویر [PLACE] را با 250 متر در هر پیکسل به موزاییک روزانهٔ رنگ طبیعی ناسا افزود.` |
-| `radarImaged` | `رادار این ماهواره با نگاهی 32.1° به پهلو، [PLACE] را با 20 متر در هر پیکسل رصد کرد، در تاریکی.` |
-| `likely.crossed` | `… گذشت، و این مکان درون نوار تصویربرداری 290 کیلومتری‌اش بود.` (no swath: ends at `گذشت.`) |
-| `likely.archiveFailed` | `روز بود، پس باید این نقطه را ثبت کرده باشد. فعلاً جستجو در آرشیو ممکن نشد.` |
-| `likely.noScene` | `برای این گذر هیچ صحنه‌ای وجود ندارد. Sentinel-2 فقط خشکی و آب‌های ساحلی را ثبت می‌کند و شاید این نقطه در برنامه‌اش نبوده است.` |
-| `likely.notYet` | `روز بود، پس تقریباً به‌یقین این نقطه را ثبت کرده است. هنوز هیچ صحنه‌ای از این گذر منتشر نشده است؛ آرشیوها ممکن است یک روز یا بیشتر عقب باشند.` |
-| `likely.dark` | `این‌جا تاریک بود. تصویربردارهای هواشناسی شب‌ها با فروسرخ کار می‌کنند، پس ابرهای شما را دید، نه خیابان‌هایتان را.` |
-| `could.withinView` | `ماهوارهٔ [SAT] ساعت [TIME] از دیدرس این مکان گذشت، درست از بالای سر.` / `…، در 61 کیلومتری غرب.` |
-| `could.insideSwath` | `[PLACE] درون نوار 24 کیلومتری‌اش بود. اپراتورش منتشر نمی‌کند کجا را تصویر کرده است، پس نمی‌توانیم بدانیم رصد کرد یا نه.` |
-| `could.radar` | `رادار از پشت ابر و در تاریکی هم می‌بیند. اگر 25.0° به پهلو نگاه می‌کرد، می‌توانست از [PLACE] تصویر راداری بگیرد.` + `هیچ تصویر منتشرشده‌ای از این گذر نیافتیم.` or `نمی‌توانیم بدانیم گرفت یا نه.` |
+| `radarImaged` | `رادار این ماهواره با زاویهٔ 32.1° به پهلو، [PLACE] را در تاریکی با دقت 20 متر در هر پیکسل رصد کرد.` |
+| `likely.crossed` | `… گذشت و این‌جا درون نوار تصویربرداری 290 کیلومتری‌اش بود.` (no swath: ends at `گذشت.`) |
+| `likely.archiveFailed` | `روز بود، پس باید این نقطه را ثبت کرده باشد. فعلاً جستجو در آرشیو ممکن نیست.` (`فعلاً` takes the present) |
+| `likely.noScene` | `برای این گذر هیچ صحنه‌ای وجود ندارد. ماهواره‌های Sentinel-2 فقط خشکی و آب‌های ساحلی را ثبت می‌کنند و شاید این نقطه در برنامه‌شان نبوده است.` |
+| `likely.notYet` | `روز بود، پس به احتمال قریب به یقین این نقطه را ثبت کرده است. هنوز هیچ صحنه‌ای از این گذر منتشر نشده است؛ انتشار در آرشیوها ممکن است یک روز یا بیشتر طول بکشد.` |
+| `likely.dark` | `این‌جا تاریک بود. تصویربردارهای هواشناسی شب‌ها هم با فروسرخ اسکن می‌کنند، پس این ماهواره ابرهای شما را دید، نه خیابان‌هایتان را.` (the subject of the singular `دید` is named) |
+| `could.withinView` | `ماهوارهٔ [SAT] ساعت [TIME] از 61 کیلومتری غرب این مکان گذشت و این‌جا در دیدرسش بود.` / `… درست از بالای سر این مکان گذشت و این‌جا در دیدرسش بود.` |
+| `could.insideSwath` | `[PLACE] درون نوار 24 کیلومتری‌اش بود. اپراتورش اعلام نمی‌کند از کجا تصویر گرفته است، پس نمی‌توانیم بدانیم این‌جا را رصد کرد یا نه.` |
+| `could.radar` | `رادار از پشت ابر و در تاریکی هم می‌بیند. اگر 25.0° به پهلو نگاه می‌کرد، می‌توانست از [PLACE] تصویر راداری بگیرد.` + `در این گذر هیچ تصویر منتشرشده‌ای از این‌جا نیافتیم.` or `نمی‌توانیم بدانیم چنین تصویری گرفت یا نه.` |
 | `could.camera` | `اگر دوربینش را 18.0° از راستای قائم می‌چرخاند، می‌توانست [PLACE] را رصد کند. نمی‌توانیم بدانیم رصد کرد یا نه.` Overhead: `با نگاهی رو به پایین، می‌توانست …` |
-| `overhead` | `ماهوارهٔ [SAT] ساعت [TIME] در ارتفاع 420 کیلومتری گذشت، 62° بالای افق شما، در سمت شمال غربی.` Zenith: `…، تقریباً درست بالای سر.` Station: `ایستگاه فضایی ISS …` |
-| `darkStation` | `جای شما تاریک بود. اگر ایستگاه هنوز در نور خورشید بود، مانند نقطه‌ای روشن که چشمک نمی‌زند از آسمان شما گذشت.` |
-| `geo.sits` | `ماهوارهٔ Meteosat-12 گذر نمی‌کند. در ارتفاع 35,778 کیلومتری بالای استوا در 0.2°W می‌ایستد و هر 10 دقیقه تمام نیمه‌ای از زمین را که رو به آن است اسکن می‌کند.` |
+| `overhead` | `ماهوارهٔ [SAT] ساعت [TIME] در ارتفاع 420 کیلومتری گذشت و در سمت شمال غربی به 62° بالای افق شما رسید.` Zenith: `… گذشت و به 85° بالای افق شما، تقریباً درست بالای سرتان، رسید.` Station: `ایستگاه فضایی ISS …` |
+| `darkStation` | `در محل شما هوا تاریک بود. اگر ایستگاه هنوز در نور خورشید بوده باشد، مانند نقطه‌ای روشن که چشمک نمی‌زد از آسمان شما گذشته است.` (an inference about the past: `اگر … بوده باشد، … گذشته است`; `اگر … بود، … گذشت` is the counterfactual mixed with a fact) |
+| `geo.sits` | `ماهوارهٔ Meteosat-12 گذر نمی‌کند. در ارتفاع 35,778 کیلومتری بالای استوا، در 0.2°W، قرار دارد و هر 10 دقیقه تمام نیمه‌ای از زمین را که رو به آن است اسکن می‌کند.` (`می‌ایستد` is "stands up" or "stops") |
 | `geo.reached` | `خط این اسکن حدود ساعت [TIME] به [PLACE] رسید و رو به شمال پیش می‌رفت.` |
 | `geo.infrared` | `این‌جا تاریک بود، پس این تصویر فروسرخ است: دمای بالای ابرها؛ هرچه سردتر، روشن‌تر.` |
 
@@ -264,7 +274,12 @@ are one `num()` part. Altitude is adjectival (`در ارتفاع 786 کیلوم�
   its verb match).
 - `از فراز` ("over") in prose, `از بالای سر` ("overhead") where the English says overhead.
 - "Steady" is `چشمک نمی‌زند` (does not twinkle), never `ثابت` (stationary, the geostationary word).
-- "Mapped" (radar) is `تصویر راداری گرفتن`: `نقشه‌برداری` is surveying.
+- "Mapped" (radar) is `تصویر راداری گرفتن`: `نقشه‌برداری` is surveying. A blurb that does mean mapping says
+  `نقشه تهیه کردن`; `نقشه کردن` is no verb and `نقشه کشیدن` is also "to scheme".
+- "Imaged" is `تصویر گرفتن`; `تصویر کردن` is "to depict".
+- "Within view" is a clause of its own with the place in the satellite's view, `این‌جا در دیدرسش بود`, or the set
+  phrase `در دیدرس [PLACE] گذشت` (the card, the post, the verdict's verb). Never `از دیدرس … گذشت`: it gives the
+  view to the place and pulls towards `از دیدرس خارج شد` ("went out of sight").
 
 ### 3.5 Share card, share page and post
 
@@ -276,8 +291,9 @@ are one `num()` part. Altitude is adjectival (`در ارتفاع 786 کیلوم�
 31 ماهواره رصد کردند.
 ```
 
-`['این هفته', accent(place, ' را'), '31 ماهواره رصد کردند.']`. Zero: `['این هفته', accent(place, ' را'), 'هیچ‌یک از
-ماهواره‌هایی که ردیابی می‌کنیم رصد نکرد.']`. The serif block holds the place and its `را` (the words on its line).
+`['این هفته', accent(place, ' را'), '31 ماهواره رصد کردند.']`. Zero keeps subject–object–verb, as the app's
+`results.headline.none` does: `['این هفته هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم', accent(place, ' را'), 'رصد
+نکرد.']` (with the object first, two verbs meet: `…ردیابی می‌کنیم رصد نکرد`). The serif block holds the place and its `را` (the words on its line).
 The full stop closes the last text block, so a cut place (`…`) needs no special case. Joined with spaces the parts are
 the page title, and it starts with a Persian word.
 
@@ -288,7 +304,7 @@ never run together in the title:
 |---|---|
 | imaged | `ماهوارهٔ [SAT] از بالا` \| `*[PLACE]* را` \| `رصد کرد.` |
 | likely | `ماهوارهٔ [SAT] از بالا` \| `*[PLACE]* را` \| `پوشش داد.` |
-| could | `ماهوارهٔ [SAT] از دیدرس` \| `*[PLACE]*` \| `گذشت.` |
+| could | `ماهوارهٔ [SAT] در دیدرس` \| `*[PLACE]*` \| `گذشت.` |
 | overhead | `ماهوارهٔ [SAT] از فراز` \| `*[PLACE]*` \| `گذشت.` (station: `ایستگاه فضایی ISS …`) |
 | nameless | `یک ماهواره از بالا` … |
 
@@ -300,7 +316,7 @@ never run together in the title:
 |---|---|
 | `photos` | `هیچ تصویری منتشر نشد.` · `31 تصویر منتشر شد.` · `دست‌کم 31 تصویر منتشر شد.` · `یک تصویر منتشر شد.` |
 | `cloud.only` | sub `پوشیده از ابر. جز ابر چیزی ندید.` · chip `پوشیده از ابر · 92%` · post `جز ابر چیزی ندید.` · desc `جز ابر چیزی ندید (92%).` |
-| `cloud.mostly` | sub `بیشتر ابر: 81% صحنه.` · chip `بیشتر ابر · 81%` · post/desc `بیشتر ابر دید (81% صحنه).` |
+| `cloud.mostly` | sub `عمدتاً ابری: 81% صحنه.` · chip `عمدتاً ابری · 81%` · post/desc `بیشتر ابر دید (81% صحنه).` (as a label, `بیشتر ابر` reads "more cloud"; in the sentence it is adverbial) |
 | `cloud.spot` | sub `ابر درست روی همان نقطه.` · chip `ابر روی نقطه` · post/desc `ابر نقطه را پوشانده بود.` |
 | `stamp` | `یکشنبه 1 نوامبر 2026 · 11:21 EST` |
 | `weekTo` / `lastWeek` | `7 روز تا یکشنبه 1 نوامبر 2026` / `7 روز گذشته` |
@@ -308,11 +324,13 @@ never run together in the title:
 | `lane` | `تصویر` · `محتمل` · `ممکن` · `بالای سر` |
 | `unit` | `کیلومتر` · `متر` · `کیلومتر بر ثانیه` |
 | `geometry` | `هندسهٔ گذر · شمال بالا` |
-| `note` | `تصویر در برنامه باز می‌شود` · `تصویر فعلاً در دسترس نیست` · `آرشیو تجاری، غیرعمومی` · `درون نوار، هنوز بی‌تصویر عمومی` · `مسیر زمینی در نزدیک‌ترین نقطه` |
+| `note` | `تصویر در Watched باز می‌شود` · `تصویر فعلاً در دسترس نیست` · `آرشیو تجاری، غیرعمومی` · `درون نوار؛ هنوز تصویر عمومی ندارد` · `مسیر زمینی در نزدیک‌ترین نقطه` (the app is named: `برنامه` is also "schedule", the catalogs' word for an acquisition plan) |
+| `noPublicPhoto` | `این هفته هیچ تصویر عمومی‌ای نیست` (`تصویر عمومی نیست` reads "the image is not public") |
 | `look` | `نزدیک‌ترین نما` · `آخرین نمای بی‌ابر` · `پوشیده از ابر` · `رادار` |
 | `aSatellite` | `یک ماهواره` |
 | `invite` | `چه چیزی شما را رصد کرد؟` (a question for the English imperative, as the page's question) |
-| `enterAnyPlace` | `هر جای زمین` |
+| `cardAlt` | `کارت اشتراک‌گذاری، با نزدیک‌ترین تصویر این هفته که ماهوارهٔ X گرفته است.` · `کارت اشتراک‌گذاری.` (`اشتراک` alone is a subscription) |
+| `enterAnyPlace` | `هر جای زمین را جستجو کنید` |
 | `defaultPlace` | `نخل جمیرا` |
 
 **Share page.** `page.title` = the hero sentence. `page.placeTitle(place)`: `چه چیزی این هفته [PLACE] را رصد کرد` (no
@@ -323,18 +341,20 @@ full stop: a heading). `placeDescription`: `همهٔ ماهواره‌هایی �
 ارتفاع 795 کیلومتری از فراز Waterloo گذشت و رو به جنوب می‌رفت.` Each part (altitude, moment, heading) drops out
 cleanly when unknown. `couldHave`: `می‌توانست به این‌جا نگاه کند. اپراتورش نمی‌گوید که نگاه کرد یا نه.`
 
-**Post (`share.post`)**: `ماهوارهٔ Sentinel-2C روز یکشنبه 1 نوامبر ساعت 11:21 به وقت محلی، از ارتفاع 795 کیلومتری
-Waterloo را رصد کرد. 10 متر در هر پیکسل؛ این تصویر واقعی است.` then `چیزی این هفته شما را هم رصد کرد.` The altitude
-phrase stands between the two names. The credit is `از طریق @armaangupt0` (the sheet's preview isolates the handle,
-so its `@` stays with the name). X weighs Persian letters as one, like Latin: the English length budget holds.
+**Post (`share.post`)**: `ماهوارهٔ Sentinel-2C روز یکشنبه 1 نوامبر ساعت 11:21 به وقت محلی، Waterloo را از ارتفاع
+795 کیلومتری رصد کرد. 10 متر در هر پیکسل؛ این همان تصویر واقعی است.` then `چیزی این هفته شما را هم رصد کرد.` The
+moment stands between the two names, and the place comes before the altitude: `795 کیلومتری Waterloo` would read
+"795 km from Waterloo" (`در 61 کیلومتری تهران`). The credit is `از طریق @armaangupt0`, tied by a no-break space so it
+never breaks (X's mention parser accepts one before `@`; the sheet's preview isolates the handle, so its `@` stays
+with the name). X weighs Persian letters as one, like Latin: the English length budget holds.
 
 ### 3.6 The four verdicts (`verdicts`)
 
 | Verdict | `title` | `short` | `unit` | `definition` | `verb` |
 |---|---|---|---|---|---|
 | imaged | `رصد کرد` | `تصویر` | `گذر` | `تصویری واقعی از این مکان در یک آرشیو عمومی وجود دارد.` | `رصد کرد` |
-| likely | `احتمالاً رصد کرد` | `محتمل` | `گذر` | `نوار تصویربرداری یک دوربین ثابت این مکان را پوشاند. هیچ تصویری از آن منتشر نشده است.` | `پوشش داد` |
-| could | `می‌توانست به این‌جا نگاه کند` | `ممکن` | `گذر` | `یک دوربین چرخان یا خصوصی در بُرد این‌جا بود. اپراتورش نمی‌گوید که نگاه کرد یا نه.` | `از دیدرس گذشت` |
+| likely | `احتمالاً رصد کرد` | `محتمل` | `گذر` | `نوار تصویربرداری یک دوربین ثابت این مکان را پوشش داد. هیچ تصویری از این‌جا منتشر نشده است.` | `پوشش داد` |
+| could | `می‌توانست به این‌جا نگاه کند` | `ممکن` | `گذر` | `این‌جا در بُرد یک دوربین قابل‌چرخش یا خصوصی بود. اپراتورش نمی‌گوید که نگاه کرد یا نه.` | `در دیدرس گذشت` |
 | overhead | `از بالای سر گذشت` | `بالای سر` | `گذر` | `از آسمان شما گذشت. ایستگاه‌های فضایی و هر چیز دیگر.` | `از بالای سر گذشت` |
 
 - Titles are past-tense verb phrases whose subject is the satellite, as the English ones are.
@@ -343,12 +363,18 @@ so its `@` stays with the name). X weighs Persian letters as one, like Latin: th
 - The lane word is `تصویر` (image), never `عکس`: radar images and mosaics share the lane.
 - `احتمالاً` / `محتمل` mean "more likely than not"; `ممکن` means "possible". The gradient is the point.
 - `ثابت` in "fixed camera" is safe here (a camera that cannot be pointed); the geostationary word is `زمین‌ایستا`.
+- A camera that can be pointed is `قابل‌چرخش`, never `چرخان` ("spinning", and in Iran the CCTV camera's name, the
+  surveillance word §8.1 keeps out). Leaning is `دوربینش را … بچرخاند`, never `کج شدن` ("to go crooked").
+- Coverage is `پوشش دادن`; `پوشاندن` is to cover over or hide, as cloud does (`ابر نقطه را پوشانده بود`).
+- Footnotes that name a verdict quote its title as the pass list shows it: `در دستهٔ «احتمالاً رصد کرد» نشان داده
+  می‌شوند`, `در دستهٔ «رصد کرد» شمرده می‌شود`.
 - About's `verdictMore`: imaged `اگر نشانش می‌دهیم، همان تصویر واقعی است.` · likely `تصویر هنوز عمومی نشده، یا به
   خاطر ابر کنار گذاشته شده است.` · could `هیچ راهی نیست که بدانیم واقعاً نگاه کرد یا نه.` · overhead (empty).
 
 ### 3.7 Reference lines by namespace
 
-**`landing`**: kicker `7 روز گذشته`; range `1 تا 8 نوامبر 2026 UTC` (Intl's `formatRange`, Gregorian, as it comes);
+**`landing`**: kicker `7 روز گذشته`; range `1 تا 8 نوامبر 2026 UTC` (Intl's `formatRange`, Gregorian, as it comes:
+with a year, CLDR writes a shared month once);
 `searchPlaceholder` `جستجوی مکان`; `placeLabel` `مکان`; `searching` `در حال جستجو`; `searchUnavailable` `جستجو در
 دسترس نیست`; `matches(n)` `6 نتیجه`; `noMatch` `نتیجه‌ای نیست`; `searchHint` `نام، نشانی یا مختصات`; `searchDown`
 `جستجوی مکان پاسخ نمی‌دهد. مختصاتی مثل ⟨LRI⟩43.47, −80.54⟨PDI⟩ همچنان کار می‌کند.`; `nothingMatches`
@@ -356,7 +382,7 @@ so its `@` stays with the name). X weighs Persian letters as one, like Latin: th
 `استفاده از موقعیت من`; `locateMe` `موقعیت من`; `nearMe` `نزدیک من`; `locating` `مکان‌یابی…`; `surprise`
 `غافلگیرم کن`; `orTry` `نمونه‌ها`; `dropPin` `گذاشتن سنجاق`; `builtBy` `ساختهٔ ⟨LRI⟩@armaangupt0⟨PDI⟩`.
 
-**`app` and boot**: notice label `اشکال`; fallback `مشکلی پیش آمد.`; `تلاش دوباره`; `در حال تلاش…`; `بازگشت`.
+**`app` and boot**: notice label `خطا`; fallback `مشکلی پیش آمد.`; `تلاش دوباره`; `در حال تلاش…`; `بازگشت`.
 Faults: `کاتالوگ مداری بارگیری نشد. اتصالتان را بررسی کنید و دوباره امتحان کنید.` / `هنگام محاسبهٔ گذرها برای این
 مکان مشکلی پیش آمد. کمی بعد دوباره امتحان کنید.` Boot: `loading` `در حال بارگیری Watched`; `slow` `اتصال کند است؛
 بارگیری ادامه دارد`; `title` as §3.1.
@@ -369,17 +395,30 @@ age `همین حالا` / `42 دقیقه پیش` / `5 ساعت پیش` / `3 رو
 **`globe`**: callout `NORAD 39634 · 786 کیلومتر`; `ثبت تصویر ⟨LRI⟩11:21:13 EST⟨PDI⟩`; capture line
 `ثبت شد ⟨LRI⟩11:21:13 EST⟨PDI⟩ · 10 متر`; countdown labels `ثبت تصویر · SENTINEL-2C` / `نزدیک‌ترین نقطه ·
 SENTINEL-2C`; pin card `سنجاق` · `یافتن نام این نقطه` · `مکان نام‌داری در این نزدیکی نیست` · `نمایش آنچه از فراز
-[PLACE] گذشت` · `جستجو در این‌جا (Enter)` · `برداشتن سنجاق (Esc)` · `برای جابه‌جایی، کره را نگه دارید`; no 3D:
+[PLACE] گذشت` · `جستجو در این‌جا (Enter)` · `برداشتن سنجاق (Esc)` · `برای جابه‌جایی سنجاق، کره را نگه دارید`; no 3D:
 `نمای سه‌بعدی در دسترس نیست` / `WebGL 2 در این مرورگر خاموش است`.
 
 **`results`** (beyond §3.3): `اشتراک‌گذاری`; sections `خلاصه` · `گذرها` · `رصد پیوسته`; `در حال بررسی آرشیوها`;
 `جستجوی مکانی دیگر`; `همهٔ گذرها`; footer `بازپخش` · `[اشتراک‌گذاری، **این گذر**]` · `[**بررسی **، مکان شما]` ·
-`[**دیدن **، بی‌ابرترین نما]`; head `7 روز · 1 تا 8 نوامبر` · `لغو` · `جستجوی تازه` · `بستن` · `تغییر` ·
+`[**دیدن **، بی‌ابرترین نما]`; head `7 روز · 1 تا 8 نوامبر` (built by `time.ts`: without a year CLDR repeats the month,
+`1 نوامبر تا 8 نوامبر`) · `لغو` · `جستجوی تازه` · `بستن` · `تغییر` ·
 `محاسبه` · `اخیر` · `قبلی (←)` · `بعدی (→)`; shared tag `برای شما فرستاده شد · [PLACE] را ماهوارهٔ [SAT] رصد کرد`;
 computing `کاتالوگ مداری` / `کاتالوگ بارگیری شد` · `محاسبهٔ مدارها · 7 روز` / `مدارها محاسبه شد` · `آرشیوهای
 Sentinel-2 + Landsat` / `آرشیوها جستجو شد` · `تطبیق صحنه‌ها با گذرها` / `صحنه‌ها تطبیق داده شد`; `1.84 ثانیه`;
 timeline `خط زمانی`; plan `نقشهٔ گذر` · `نقشه · شمال بالا` · `چرخش ⟨LRI⟩±30°⟨PDI⟩` · `نوار 290 کیلومتری` · `مسیر زمینی`;
-time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
+time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`; share the week `اشتراک‌گذاری خلاصهٔ این هفته در [PLACE]` (a bare
+`اشتراک‌گذاری این هفته` reads "sharing, this week"); a pass's position `گذر 3 از 31 در این دسته`; replay `در میدان دید:
+4 دقیقه و 12 ثانیه`.
+
+**`passView`**: row labels `آخرین: ` / `نزدیک‌ترین: ` (with a colon: `آخرین یکشنبه` would be "the last Sunday");
+`نمایش همهٔ 1,565 ردیف` (`هر` before a large number reads "every"); `40 ردیف باقی مانده`; the spot's pixel in the past
+(`نقطهٔ شما بی‌ابر بود.`، `روی نقطهٔ شما ابر بود.`: it is the picture's, not today's sky); `کم‌جزئیات، اما واقعی`
+(`درشت` is first "large").
+
+**`about`**: title `این‌طور / *کار می‌کند*.` (declarative; the HUD's link `چطور کار می‌کند` is the question it
+answers); `لحظه‌ای است؟` ("Is it live?": `زنده است؟` reads "is it alive?"); touch-ups `اصلاح‌های جزئی` (never
+`دست‌کاری`, tampering); `صفحهٔ نمایش` for a screen (`صفحه` is a page); credits `سازنده` · `قلم‌ها` · `© مشارکت‌کنندگان
+OpenStreetMap` (OpenStreetMap's Persian attribution).
 
 ## 4. Glossary
 
@@ -393,10 +432,12 @@ time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
 | crewed station | ایستگاه فضایی | `ایستگاه فضایی ISS`; "crewed" `سرنشین‌دار` |
 | pass | گذر | `31 گذر`; plural `گذرها`; verb `گذشت` |
 | overhead | از بالای سر | lane `بالای سر` |
-| within view | از دیدرس | `دیدرس` = within sight |
+| within view | در دیدرس | `دیدرس` = range of sight; `این‌جا در دیدرسش بود`, `در دیدرس [PLACE] گذشت`; never `از دیدرس` |
 | within range (radar) | در بُرد | the damma marks بُرد (range), never `برد` (won) |
 | swath | نوار تصویربرداری | `نوار 290 کیلومتری`; label `پهنای نوار`; "in swath" `درون نوار` |
-| fixed / steerable camera | دوربین ثابت / دوربین چرخان | |
+| fixed / steerable camera | دوربین ثابت / دوربین قابل‌چرخش | never `چرخان` (spinning; Iran's word for the CCTV camera) |
+| cover (a swath covers a place) | پوشش دادن | never `پوشاندن` (to cover over, hide) |
+| map (a radar blurb) | نقشه تهیه کردن | never `نقشه کردن` |
 | field of regard | گسترهٔ چرخش | plan corner `چرخش ±30°` |
 | off-nadir | انحراف | prose `انحراف از راستای قائم`; never `میل` (orbital inclination) |
 | straight down | درست رو به پایین | |
@@ -413,6 +454,9 @@ time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
 | archive | آرشیو | |
 | frame (time-lapse, geostationary) | قاب | |
 | clear look | نمای بی‌ابر | never `نمای صاف` (reads "flat view") |
+| clear (a value, a status) | بی‌ابر | never `صاف` (flat, smooth): `بی‌ابر روی نقطهٔ شما` |
+| detailed (the filter) | پرجزئیات | never `دقیق` ("accurate", which would call the rest inaccurate) |
+| coarse (an image) | کم‌جزئیات | `درشت` is first "large" |
 | closest look | نزدیک‌ترین نما | |
 | last clear look | آخرین نمای بی‌ابر | |
 | clearest look | بی‌ابرترین نما | |
@@ -434,7 +478,7 @@ time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
 | replay | بازپخش | |
 | share | اشتراک‌گذاری | |
 | link | پیوند | |
-| time-lapse | گذر سال‌ها | the feature's name: "the passing of years"; `تایم‌لپس` is a loanword, `گذر زمان` is vaguer |
+| time-lapse | گذر سال‌ها | the feature's name: "the passing of years"; `تایم‌لپس` is a loanword, `گذر زمان` is vaguer. As a title or a button it stands alone; inside a sentence it is quoted and carried by a verb (`برای این مکان «گذر سال‌ها» ساخته نمی‌شود`، `برای ساختن «گذر سال‌ها»`), or it reads as the everyday phrase (`برای این مکان گذر سال‌ها نیست`: "the years don't pass here") |
 | timeline | خط زمانی | |
 | plan view | نقشهٔ گذر | the pass's map; `نمای بالا` reads as "the view above". The trailing note under it: `نقشهٔ بالا مسیر گذر را نشان می‌دهد.` |
 | spot (the searched place) | نقطه | "your spot" `نقطهٔ شما` |
@@ -442,7 +486,11 @@ time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
 | pin | سنجاق | `گذاشتن سنجاق` |
 | operator | اپراتور | the word Persian space news uses |
 | track (satellites we track) | ردیابی می‌کنیم | never `دنبال کردن` of a person |
-| fault (notice label) | اشکال | an instrument's word |
+| fault (notice label) | خطا | terse, the word every Persian instrument and app uses; no exclamation mark. `اشکال`, unvowelled and alone, also reads `اَشکال` ("shapes") |
+| share link / card | پیوند اشتراک‌گذاری / کارت اشتراک‌گذاری | `اشتراک` alone is a subscription or membership |
+| encoder (video) | کدگذار | `رمزگذار` is an encryptor |
+| typefaces (credit) | قلم‌ها | `حروف` is "letters" |
+| screen | صفحهٔ نمایش | `صفحه` alone is a page |
 | daylight | روشنایی روز | |
 | sub-solar point | نقطهٔ زیرخورشیدی | |
 | NASA (agency, in prose) | ناسا | `NASA GIBS` stays Latin |
@@ -469,7 +517,9 @@ direction values are `شمال ← جنوب` / `جنوب ← شمال` (the arro
 Persian exonyms where Persian has one (`اهرام جیزه`، `ونیز`، `جبل‌الطارق`، `چشم صحرا` for the Richat Structure, the
 name Persian readers met it by), otherwise the name as Persian writers spell it (`سنترال پارک`، `گرند کنیون`).
 Country names are exactly `Intl.DisplayNames('fa')`'s long names (`ایالات متحده`، `امارات متحدهٔ عربی`،
-`افریقای جنوبی`), Hong Kong its short one; two countries are joined with `و` in Persian alphabetical order (`اردن و
+`افریقای جنوبی`، `جمهوری آذربایجان`), Hong Kong its short one, so a curated row and a geocoder row (which takes the same
+names) never spell a country two ways. That is the one place CLDR's spelling beats §6.1: `افریقای جنوبی` keeps CLDR's
+`ا`, while our own prose writes the continent `آفریقا` (`صحرای بزرگ آفریقا`، `اروپا و آفریقا`); two countries are joined with `و` in Persian alphabetical order (`اردن و
 اسرائیل`، `چین و نپال`، `برزیل و پاراگوئه`). Chips start with a Persian letter and stay under about 14 characters
 (`منطقهٔ 51`، `سنترال پارک`، `جیزه`). `ایالت واشینگتن` keeps Mount St. Helens apart from the capital. The usage
 stats, lookups and shares keep the English label, so nothing here splits a count.
@@ -482,7 +532,7 @@ Persian nouns have no case and no gender, so an inserted name needs no inflectio
 
 - **Object:** the name, a space, `را`: `Waterloo را`، `تهران را`، `Bus stop, Ushuaia, Tierra del Fuego را`. `را` is
   always a separate word after a space (never attached, even after a Persian name).
-- **After a preposition:** `از فراز [PLACE]`، `به [PLACE]`، `در [PLACE]`، `از دیدرس [PLACE]`. Prepositions are
+- **After a preposition:** `از فراز [PLACE]`، `به [PLACE]`، `در [PLACE]`، `در دیدرس [PLACE]`. Prepositions are
   separate words; `به` is never attached (`بـ`).
 - **After a noun (ezafe):** `تصویر [PLACE]`. The ezafe vowel is unwritten after a consonant. Never build an ezafe on
   the place itself (`[PLACE]ِ …`): the name ends the phrase.
@@ -500,7 +550,15 @@ Persian nouns have no case and no gender, so an inserted name needs no inflectio
 - Inside mono labels and aria lists the bare name is fine (`Sentinel-2C، رصد کرد، …`).
 - **Two Latin names never meet** with only spaces or neutrals between them: put a Persian word between
   (`ماهوارهٔ X از بالا [PLACE] را`، `[PLACE] را ماهوارهٔ X رصد کرد`). A satellite name and a number likewise
-  (`Umbra-08 در بُرد این‌جا 3 بار`).
+  (`در روشنایی روز 3 بار`). The Persian comma `،` is a neutral for the bidi algorithm (class CS), so `A، B` merges
+  into one left-to-right run and a right-to-left reader meets B first; `؛` is a strong right-to-left letter (AL) and
+  does keep them apart. In DOM text a list of Latin names isolates each one (`⟨LRI⟩Umbra-08⟨PDI⟩، ⟨LRI⟩Capella-14⟨PDI⟩`);
+  where a Persian word can stand between them, it does (`تصویرهای GOES … و تصویرهای Himawari`).
+- In DOM text the inserted satellite name is its own island (`ماهوارهٔ ⟨LRI⟩[SAT]⟨PDI⟩`): a name that ends in a
+  bracket (`ISS (ZARYA)`, an older share's) would otherwise mirror it before Persian text. Plain text (the post, the
+  card) carries no controls; the card's renderers isolate Latin names as they draw.
+- A blurb or a note that leads with a satellite takes the head noun too (`ماهوارهٔ Sentinel-1 …`، `ماهواره‌های
+  Sentinel-2 و Landsat …`); a constellation is plural (`ماهواره‌های Sentinel-2 … ثبت می‌کنند`).
 - Nameless (`sat` undefined): subject `یک ماهواره`، after a preposition `یک ماهواره`، indefinite object
   `ماهواره‌ای`. The label `aSatellite` (`یک ماهواره`) is never inserted into a sentence.
 
@@ -517,10 +575,14 @@ form and takes a plural verb only for a fleet (`ماهواره‌های Sentinel
 - **`one` covers 0 and 1** in CLDR `fa` (`i = 0 or n = 1`): `fmt('fa').plural(0, …)` returns the `one` form. So a `one`
   branch never spells `یک`, and zero is handled before the plural. Every message that says "one" in words tests
   `n === 1`.
-- In running sentences 1 is `یک` (`یک ماهواره`، `یک بار`، `یک تصویر`); in readouts, counters, stacked counts and chips
-  the digit stays (`1 گذر`).
+- In running sentences 1 is `یک` (`یک ماهواره`، `یک بار`، `یک تصویر`، `یک ماهوارهٔ دیگر`، `حدود یک کیلومتر`، `یک‌متری`),
+  About and the satellites' blurbs included; in readouts, counters, stacked counts and chips the digit stays (`1 گذر`).
+- One thing takes a singular after it: one missing image is `آن گذر … نشان داده می‌شود`, never `آن گذرها`.
 - "N times": `3 بار` (1: `یک بار`). "every N minutes": `هر 10 دقیقه` (1: `هر دقیقه`).
-- "N more": `40 ردیف دیگر`؛ "N left": `40 تا باقی مانده`.
+- "N more": `40 ردیف دیگر`؛ "N left": `40 ردیف باقی مانده`؛ "3 needed": `3 نما لازم است`. The counter `تا` (`40 تا`)
+  is spoken Persian: written copy repeats the counted noun.
+- "All N": `همهٔ 1,565 ردیف`; `هر` before a number means "every" (`هر 10 دقیقه`) except with very small ones (`هر سه`).
+- A year after `از` takes `سال`: `از سال 2015` ("since 2015"); a bare `از 2015` can read "out of 2015".
 
 ### 5.5 Lists
 
@@ -532,7 +594,10 @@ Capella-14 و 7 ماهوارهٔ دیگر`. CLDR's `fa` list format puts a comma
 
 - A day before a clock: `روز یکشنبه 1 نوامبر ساعت 11:21` ("on Sunday 1 November at 11:21"). `روز` before a weekday
   date and `ساعت` before a clock are how Persian says "on" and "at".
-- A time span in prose: `از 29 اکتبر تا 5 نوامبر`. In mono rows: Intl's `1 تا 8 نوامبر`.
+- A time span in prose: `از 29 اکتبر تا 5 نوامبر`. In mono rows: `1 تا 8 نوامبر`, the month once when both ends share
+  it. Intl does that only when the format has a year (`1 تا 8 نوامبر 2026`); for day and month alone CLDR `fa` has no
+  interval pattern and `formatRange` writes `1 نوامبر تا 8 نوامبر`, so `time.ts dayRange` builds the shared-month form
+  itself and takes Intl's range only across months (`29 اکتبر تا 8 نوامبر`).
 - Ezafe before a year: Intl writes `ژانویهٔ 2027` itself; take its output as it comes.
 
 ### 5.7 Formatted slots
@@ -642,6 +707,10 @@ Relative time is built by hand (§7 of `time.ts`): `همین حالا`, `12 دق
 
 - `،` comma, `؛` semicolon, `؟` question mark, `«»` quotes, `.` full stop, `:` colon; no space before any of them, one
   space after.
+- **No comma before `و` or `یا`** joining two clauses or two commands (`… نیستند و شرکت‌ها …`، `… مجاز کنید یا مکانی را
+  جستجو کنید`): the comma is English's. Where a sentence needs a pause that long, make it two sentences.
+- A colon ends a label before its value (`در میدان دید: 4 دقیقه و 12 ثانیه`، `آخرین: یکشنبه 1 نوامبر`); pairs of label
+  and value are separated by `؛` (`رصد کرد: 12؛ احتمالاً رصد کرد: 3`), never by a comma or another colon.
 - No exclamation mark. No em dash: the English avoids it too. A middle dot ` · ` separates fields in mono rows.
 - A no-break space (`\u00a0`, written as the escape) ties a number to its unit or counted noun where a line could break
   (`7\u00a0روز`، `10\u00a0کیلومتر`).
@@ -678,7 +747,7 @@ verbs are longer (`نمی‌توانیم بدانیم`) and units are words, so 
 | Hero lines | the English column | `چیزی این هفته` / `شما را رصد کرد.`: 388 and 385 px at the Arabic page's 69 px hero (English: 459 / 526 / 431 px at 91 px); 244 / 242 px of a 334 px phone column. The block is shorter than English's (173 against 252 px); at the Latin size (×1.32) both lines would still fit the English 528 px block |
 | Locate button on phones | ~8 characters | `موقعیت من` |
 | Chips | ~14 characters | `منطقهٔ 51`، `سنترال پارک`، `جیزه`، `غافلگیرم کن`، `نزدیک من` |
-| Filter segments | ~8 characters | `همه` · `دقیق` · `هواشناسی` · `رادار` |
+| Filter segments | ~8 characters | `همه` · `پرجزئیات` · `هواشناسی` · `رادار` |
 | Lane words | ~8 characters | `تصویر` · `محتمل` · `ممکن` · `بالای سر` |
 | Header button (Cancel/New search/Close share one box) | English length | `لغو` · `جستجوی تازه` · `بستن` |
 | Share buttons on a phone | ~12 characters | `کپی پیوند` · `ارسال در X` · `ذخیرهٔ PNG` |
@@ -708,8 +777,16 @@ Where a label overflows, choose a better word; never an abbreviation Persian rea
 6. **Afghanistan and Tajikistan.** Dari readers read Iranian standard Persian comfortably; CLDR `fa` writes Iranian
    month names (`ژانویه`) where Afghan Dari writes `جنوری`. The catalog is Iranian Persian on purpose (one standard,
    the one the Persian web mostly uses); `fa-AF` is not a locale here and maps to `fa`.
-7. **Privacy text** (About §04) says exactly what the English says: no more, no less. `هیچ نشانی IP` means "no IP
-   addresses", `هیچ کوکی‌ای از خودمان` "no cookies of our own".
+7. **Privacy text** (About §04) says exactly what the English says: no more, no less, and its scope is unmistakable:
+   "never your exact spot" has its own `بر اساس` (`هرگز بر اساس نقطهٔ دقیق شما`), or it reads as the object of the
+   next verb ("we keep your exact spot"). A grid cell is `ناحیه`, never `خانه` (first read "a house"). `هیچ نشانی
+   IP` means "no IP addresses", `هیچ کوکی‌ای از خودمان` "no cookies of our own".
+8. **Azerbaijan.** The country is `جمهوری آذربایجان` (CLDR's name) in every sentence: a bare `آذربایجان` is also Iran's
+   own Azerbaijan provinces, and the distinction is political.
+9. **Crimea and Ukraine.** Crimea is `کریمه`, filed under `اوکراین` with no qualifier (the geocoder files Crimea under
+   Ukraine in every language, `inCrimea` in `src/imagery/geocode.ts`); never `کریمه (روسیه)`. Ukrainian places in our copy take their established
+   Persian names (`کی‌یف`، `چرنوبیل`) and, where Persian has a choice, the Ukrainian-based form (`خارکیف`، `لویو`), never a
+   Russian-only one (`خارکوف`، `لووف`).
 
 ## 9. Pitfalls and the reviewer's checklist
 
@@ -722,7 +799,7 @@ Where a label overflows, choose a better word; never an abbreviation Persian rea
 | `میل` for off-nadir | orbital inclination | `انحراف` |
 | `برد` without its mark | reads `بُرد` / `بَرد` (won) | `بُرد` |
 | `نمای صاف` | "flat view" | `نمای بی‌ابر` |
-| `آخرین` | fine for "latest"; only `آخرین نگاه` has a farewell ring | `آخرین نمای بی‌ابر` |
+| `آخرین` | fine for "latest"; only `آخرین نگاه` has a farewell ring; before a day it reads "the last Sunday" | `آخرین نمای بی‌ابر`، the label `آخرین: ` |
 | `ثابت` for "steady" light | "stationary" | `چشمک نمی‌زند` |
 | `روز گذشته` | "yesterday" | `24 ساعت گذشته` for a one-day window |
 | `fmt('fa').plural(0, …)` | returns `one` | test `n === 1` before writing `یک` |
@@ -733,6 +810,33 @@ Where a label overflows, choose a better word; never an abbreviation Persian rea
 | a missing half-space | `میکند`، `ماهوارهها` | `می‌کند`، `ماهواره‌ها` |
 | `ماهواره‌ی` / bare `ماهواره X` | wrong or missing ezafe | `ماهوارهٔ X` |
 | `توسط` | a calque passive | an active sentence |
+| `اشکال` as a lone label | also `اَشکال`, "shapes" | `خطا` |
+| `پوشاندن` for coverage | to cover over, hide | `پوشش دادن` |
+| `تصویر کردن` | to depict | `تصویر گرفتن` |
+| `نقشه کردن` | no verb; `نقشه کشیدن` is "to scheme" | `نقشه تهیه کردن` |
+| `قدمت` for days | antiquity | `عمر عناصر مداری 5 روز است` |
+| `می‌ایستد` (geostationary) | stands up, stops | `قرار دارد` |
+| `دست‌کاری` | tampering, a doctored photo | `اصلاح‌های جزئی` |
+| `اشتراک` alone | subscription, membership | `اشتراک‌گذاری` |
+| `دقیق` for "detailed" | accurate | `پرجزئیات` |
+| `صاف` for "clear" | flat, smooth | `بی‌ابر` |
+| `دوربین چرخان` | spinning; Iran's CCTV camera | `دوربین قابل‌چرخش` |
+| `رمزگذار` | encryptor | `کدگذار` |
+| `40 تا` | spoken counter | `40 ردیف` |
+| `هر 1,565 ردیف` | "every 1,565 rows" | `همهٔ 1,565 ردیف` |
+| `فعلاً … ممکن نشد` | "for now" with a past verb | `فعلاً … ممکن نیست` |
+| `از دیدرس … گذشت` | "out of sight" | `در دیدرس … گذشت`، `این‌جا در دیدرسش بود` |
+| `در بُرد این‌جا` | the place's range | `این‌جا در بُرد … بود` |
+| `795 کیلومتری Waterloo` | "795 km from Waterloo" | `Waterloo را از ارتفاع 795 کیلومتری` |
+| `زنده است؟` | "is it alive?" | `لحظه‌ای است؟` |
+| `خانه` for a grid cell | a house | `ناحیه` |
+| `مال`، `چند تایشان`، `نیامد` | spoken Persian | `متعلق به`، `برخی از آن‌ها`، `دریافت نشد` |
+| `تقریباً به‌یقین` | a calque of "almost certainly" | `به احتمال قریب به یقین` |
+| `از هندسهٔ مداری نشان داده می‌شوند` | "shown from" | `بر پایهٔ هندسهٔ مداری` |
+| `دیر پاسخ دادند` for "too slow to answer" | they did answer, late | `به‌موقع پاسخ ندادند` |
+| a phrase after the verb (`…گذشت، در تاریکی.`) | English word order | before the verb, or a clause with its own verb |
+| `، و` / `، یا` between clauses | English's comma | no comma |
+| kasra of the ezafe (`پیکسلِ`) | §6.1 allows no such mark | `پیکسل` |
 
 ### 9.2 Checklist (every string)
 
@@ -740,13 +844,16 @@ Where a label overflows, choose a better word; never an abbreviation Persian rea
 2. `شما` and polite imperatives; no `تو`, no `لطفاً`, no exclamation.
 3. The product verb is `رصد`; a pass is `گذر` and `گذشت`; the verdict words are §3.6's.
 4. Singular noun after every number; `یک` only for `n === 1`; zero handled before the plural.
-5. Every Latin name and every number has a Persian word between it and the next Latin name or number.
+5. Every Latin name and every number has a Persian word between it and the next Latin name or number (`،` is not
+   one: isolate the names in DOM text).
 6. Clocks, percentages, degrees, stamps, coordinates isolated in DOM text; plain text has no controls and starts with
    a Persian letter.
 7. Units are words, outside `num()`, tied with a no-break space.
 8. `ی`، `ک`، the half-space, `ـهٔ`; `«»`، `،`، `؟`.
 9. Dates Gregorian (`calendar: 'gregory'`), from Intl, never a table.
 10. It fits (§7), read at 390 px and 1280 px.
+11. The sentence ends on its verb; no comma before `و` or `یا`; no spoken forms (`تا`، `مال`، `ـش را بدهد`).
+12. Every word means what the English means in this product (§9.1): coverage, imaging, mapping, sharing, a screen.
 
 ### 9.3 Test values
 
@@ -767,10 +874,85 @@ Places: `Waterloo`، `تهران`، `Bus stop, Ushuaia, Tierra del Fuego`، `Was
 7. **Gregorian calendar** with CLDR months (§6.4), because the time-lapse's years and the licence lines are Gregorian.
 8. **Western digits for now** (§6.3), with the recommendation and the list of changes for Persian digits.
 9. **Pass = `گذر`**, verb `گذشت`; `پرواز` banned (§8.2). Time-lapse = `گذر سال‌ها`: the shared root is apt (both
-   are passing), and the context never leaves them ambiguous.
+   are passing), and as a title or a button nobody reads it as a pass. Inside a sentence it is quoted and carried by a
+   verb (`ساختن «گذر سال‌ها»`), or it reads as the everyday phrase (§4.1; review B).
 10. **Half-space typed as the character**, not as `‌`: it is a letter-level part of Persian spelling, and a
     reviewer reads the word, not an escape. No-break spaces and bidi controls stay escaped, as in every catalog.
 11. **Lists built by hand** (§5.5): CLDR's `fa` list pattern is not Persian punctuation.
 12. **`اشتراک‌گذاری`** for "share" (every Persian app's word) over the Academy's `هم‌رسانی`; **`پیوند`** for "link"
     (the label column has five characters; `لینک` is the spoken word, `پیوند` the written one).
 13. **`ناسا` in prose**, Latin in names that contain it (`NASA GIBS`), as Persian news writes it.
+14. **Fault label `خطا`** over `اشکال` (review A and B, and the translator's own doubt): terse, every Persian
+    product's word, and unambiguous alone.
+15. **Verb-final pass sentences** (§3.4; review A): what English adds after a comma goes before the verb or gets a
+    verb of its own.
+16. **`در دیدرس`** for "within view" (§3.4, §4.1; review A): the set phrase, with the view owned by the one who sees.
+17. **`قابل‌چرخش`** for "steerable" (§3.6; review A): `چرخان` is spinning, and the CCTV camera's name in Iran.
+
+## Review
+
+Two independent reviews (A: a native reader; B: accuracy) read every catalog against the English and this guide,
+2026-11-21. Both agreed on شما, the Gregorian calendar, the two-line hero and the «از طریق» credit, which stand. Digits
+stay Western until the product changes (§6.3).
+
+### Changed
+
+- **Meaning errors.** `why.unpublished` printed «Landsat 3 بار» (the satellite Landsat 3): `در روشنایی روز` now stands
+  between the name and the count. The post's «از ارتفاع 795 کیلومتری Waterloo» read "795 km from Waterloo": the place
+  now comes before the altitude. Privacy's «هرگز نقطهٔ دقیق شما را» read as the object of «نگه می‌داریم»: it has its own
+  «بر اساس» and the tally is its own sentence. «دست‌کاری‌ها» (tampering) headed the paragraph that says nothing is added
+  or removed: `اصلاح‌های جزئی`. `archiveSlow` said the archives answered late: `به‌موقع پاسخ ندادند`. `sentinel2Down`
+  said images may be few: `نشان داده نشوند`.
+- **Wrong words.** `تصویر کردن` → `تصویر گرفتن`; `نقشه کردن` → `نقشه تهیه کردن`; `پوشاندن` → `پوشش دادن` for coverage
+  (verdict, post, three blurbs); `قدمت` → `عمر`; `جابه‌جا باشد` → `خطا داشته باشد`; `می‌ایستد` → `قرار دارد`;
+  `رمزگذار` → `کدگذار`; `فهرست‌گیری` → `فهرست‌برداری`; `دقیق` → `پرجزئیات` for "detailed"; `صاف` → `بی‌ابر` (three
+  values, against the guide's own rule); `درشت` → `کم‌جزئیات`; `حروف` → `قلم‌ها`; `ساختهٔ` (a label) → `سازنده`;
+  `زنده است؟` → `لحظه‌ای است؟`; `خانه` (a grid cell) → `ناحیه`; `اشتراک` → `اشتراک‌گذاری` (a subscription);
+  `صفحه` → `صفحهٔ نمایش`; `دوربین چرخان` → `قابل‌چرخش` and `کج شدن` → `بچرخانند`; the fault label `اشکال` → `خطا`;
+  `آذربایجان` → `جمهوری آذربایجان`; `تقریباً به‌یقین` → `به احتمال قریب به یقین`.
+- **Grammar.** Tenses in `passView.empty` (`افتاده باشد`) and `darkStation` (`بوده باشد … گذشته است`); the subject of
+  the singular `دید` in `likely.dark`; `آن` → `آن‌ها` for plural numbers; one missing image takes `آن گذر`; `یک` for
+  one in `why.radar`, privacy and two blurbs; the spot's pixel in the past tense; `فعلاً … ممکن نیست`; `هیچ تصویر
+  عمومی‌ای` for "no public image"; `همهٔ N` for "all N".
+- **Word order and calques.** Phrases after the verb moved before it or got a verb (§3.4: `withinView`, `overhead`,
+  `radarImaged`, `loaded`); `از … گذشت` for an offset; `در دیدرس` for "within view" (pass, card, post, verdict verb);
+  the radar sentence with the place as subject, so the range is the satellites' (`در مجموع`, not `روی هم`); `بر پایهٔ
+  هندسهٔ مداری`; `جستجو کنید` for "enter any place"; SGP4 as a calculation; `هر سال می‌کوشد` → `انتخاب می‌شود`;
+  `تصویرهای این‌جا` → `این سایت`; `خلاصهٔ این هفته` as the thing shared; the zero card headline in the app's order.
+- **Register.** `مال`، `چند تایشان`، `تا` as a counter (`40 ردیف`، `3 نما`)، `نیامد`، `موقعیتش را بدهد`، `آدم‌ها`،
+  `خودش`; no comma before `و` or `یا` (thirteen strings); three kasras removed.
+- **Bidi.** Satellite names isolated in DOM text (a trailing bracket mirrored); Latin names with only `،` between them
+  isolated or separated by a Persian word or `؛` (`why.radar`, About's archives, privacy, credits, the filter's
+  tooltips); the credit's no-break space.
+- **Labels.** `آخرین: ` / `نزدیک‌ترین: ` with a colon; `در میدان دید: `; `؛` between the timeline's pairs; `از سال
+  2015`; `در این دسته`; the pin hint names the pin; the head noun before a satellite that leads a sentence.
+- **The guide.** The time-lapse rule in sentences (§4.1), the date-range fact (§5.6: CLDR repeats the month without
+  a year, so `time.ts` writes it once), punctuation (§6.5), Azerbaijan, Crimea and Ukrainian names (§8.8, §8.9), the
+  CLDR exception for `افریقای جنوبی` (§4.3), the traps (§9.1), decisions 14–17.
+
+### Rejected, and why
+
+- **Renaming the time-lapse** (A: `سال‌به‌سال` or `تایم‌لپس`). As a title or a button `گذر سال‌ها` reads at once as the
+  idiom; no one reads "passes of years". The real fault was in sentences, which B's rule fixes (quoted, with a verb).
+  The viewer's label no longer says the years twice.
+- **`اخیر` → `جستجوهای اخیر`** (B). `اخیر` alone is the established header for recent searches in the Persian apps
+  readers use, and it sits before the chips that show what it is.
+- **`تصویر در برنامه باز می‌شود`** (B, from this guide). `برنامه` is also "schedule", the catalogs' own word for an
+  acquisition plan; `تصویر در Watched باز می‌شود` names the app. The guide was wrong and now says so.
+- **`آفریقای جنوبی`** (B, one option). Country names stay CLDR's so a curated row and a geocoder row agree.
+- **`در حال ساختن پیوند…`** (A). Not every busy label is `در حال …`: `آماده‌سازی تصویر…` and `مکان‌یابی…` are verbal
+  nouns with an ellipsis, as `ساختن پیوند…` is.
+- **`این تصویر واقعی است`** in the post (A). `این همان تصویر واقعی است` is "this is the actual picture", the emphasis
+  the English has; `این تصویر واقعی است` also reads "this picture is real". The guide now matches the catalog.
+- **`با تصویربرداری فروسرخ`** (A). `با فروسرخ` matches `با رادار` throughout and is not clipped in Persian.
+- **A comma after `ردیابی می‌کنیم`** in `passView.empty` (A) and **`از فراز آن`** for `از فرازش` (A): taste; no verbs
+  meet there and the enclitic is standard written Persian.
+- **`دست‌کم 3 نما`** (A). The English says "3 needed", not "at least 3".
+- **Where the two disagreed:** the footnotes quote the verdict's title, `در دستهٔ «احتمالاً رصد کرد»` (B), not the lane
+  word (A), since the pass list's groups carry the title; `ماهوارهٔ X در این گذر هیچ تصویری … ندارد` (B), since A's
+  `تصویری از ماهوارهٔ X` keeps the "picture of the satellite" reading; `نقطهٔ شما بی‌ابر بود` (B), since A's `صاف` is
+  banned; `خلاصهٔ این هفته` (B), the product's own word for that line, over `گزارش` (A); `عمر عناصر مداری 5 روز است`
+  over both (`از عمر … گذشته است` is wordy, `5 روز کهنه‌اند` is not how Persian gives an age); `اصلاح‌های جزئی` over
+  `اصلاح‌ها` (A, which can sound like editing) and `تنظیم‌های تصویر` (B, which reads as "image settings"); `3 نما`
+  over `3 قاب` (the caption counts looks); `و این را هم می‌گوییم` (A) over `به شما خواهیم گفت` (B): the condition
+  already makes it future.
