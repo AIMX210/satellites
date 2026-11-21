@@ -20,7 +20,7 @@ Notation: `[NUM]` a count (a mono span), `[PLACE]` a place label from the gazett
 `[TIME]` a 24-hour clock with its zone (`16:14:21 UTC`, `11:21 EST`), `[DATE]` a date from Intl, `[ALT]` / `[DIST]` a
 distance with its unit, `[DEG]` an angle, `[DIR]` a compass word. `*…*` marks the serif accent, `**…**` the bold
 (`strong`) phrase. Examples show ordinary spaces for readability; where §6.3 says NBSP, the catalog string has U+00A0,
-written as the ` ` escape in source so a reviewer can see it.
+written as the `\u00a0` escape in source so a reviewer can see it.
 
 **Russian has two problems English doesn't.** Most of this guide follows from them:
 
@@ -288,12 +288,12 @@ Why the shipped one wins: the nominative title works for every name in every scr
 «Подмосковье», «Сочи», «Palm Jumeirah», «55.75, 37.62»).
 
 ```ts
-const head = (place: string) => [accent(place), '. За последние 7 дней сюда ']
+const head = (place: string) => [accent(place), '. За последние 7\u00a0дней сюда ']
 f.plural(n, {
-  one: [...head(place), strong('смотрел ', num(f.int(n)), ' спутник'), '.'],
-  few: [...head(place), strong('смотрели ', num(f.int(n)), ' спутника'), '.'],
-  many: [...head(place), strong('смотрели ', num(f.int(n)), ' спутников'), '.'],
-  other: [...head(place), strong('смотрели ', num(f.dec(n, 1)), ' спутника'), '.'],
+  one: [...head(place), strong('смотрел ', num(f.int(n)), '\u00a0спутник'), '.'],
+  few: [...head(place), strong('смотрели ', num(f.int(n)), '\u00a0спутника'), '.'],
+  many: [...head(place), strong('смотрели ', num(f.int(n)), '\u00a0спутников'), '.'],
+  other: [...head(place), strong('смотрели ', num(f.dec(n, 1)), '\u00a0спутника'), '.'],
 })
 ```
 
@@ -325,13 +325,17 @@ singular masculine. With 2–4 «опубликовано» and «опублик
 **Imaged, detailed photo** ("Sentinel-2C crossed 786 km overhead at 16:14:21 UTC, moving south at 7.46 km/s. It was
 looking straight down. Cloud cover across the scene: 25%."):
 
-> Спутник Sentinel-2C пролетел прямо над головой на высоте 786 км в 16:14:21 UTC, двигаясь на юг со скоростью
+> Спутник Sentinel-2C пролетел в 16:14:21 UTC прямо над головой на высоте 786 км, двигаясь на юг со скоростью
 > 7,46 км/с. Он смотрел строго вниз. Облачность кадра: 25%.
+
+Time comes right after the verb, then where: «пролетел в [TIME] на высоте…» is how Russian tells it, and it keeps the
+clock's «в» away from the offset's «в 61 км» (on screen, «…на высоте 795 км, в 73 км к востоку, в 11:21:13» stacked
+three «в»).
 
 Parts of the frame:
 
 - Overhead (ground distance < 15 km): «прямо над головой на высоте [ALT]»
-- Offset: «на высоте [ALT], в [DIST] к [DIR-dative]» → «на высоте 786 км, в 61 км к западу,»
+- Offset: «на высоте [ALT], в [DIST] к [DIR-dative]» → «…в 16:14:21 UTC на высоте 786 км, в 61 км к западу, двигаясь…»
 - Off nadir: «Он смотрел вниз с отклонением [DEG] от вертикали.» (prose says «от вертикали»; only labels say «от
   надира»)
 - Radar: «Его радар, глядя на [DEG] в сторону, снял это место: [NUM] м на пиксель[, в темноте].»
@@ -340,11 +344,11 @@ Parts of the frame:
   ещё не опубликован. Архивы могут запаздывать на сутки и больше.»
 - Likely, at night: «Здесь была ночь. Метеоспутники продолжают снимать и ночью, в инфракрасном диапазоне, так что этот
   спутник видел твои облака, а не улицы.»
-- Could (commercial): «Спутник WorldView Legion 4 пролетел в зоне видимости в 10:52 EST, в 61 км к западу.» Then the
+- Could (commercial): «Спутник WorldView Legion 4 пролетел в 10:52 EST в зоне видимости, в 61 км к западу.» Then the
   camera: «Отклонив камеру на 18,2° от вертикали, он мог смотреть сюда. Мы не можем знать, так ли это было.»; passing
   straight over: «Даже не отклоняя камеру, он мог смотреть сюда.»
 - Overhead (the message gets no satellite category, so a station is «спутник» here too, which is true: a station is
-  an artificial satellite): «Спутник ISS (ZARYA) пролетел на высоте 420 км в 21:03 EET, на 45° над твоим горизонтом,
+  an artificial satellite): «Спутник ISS (ZARYA) пролетел в 21:03 EET на высоте 420 км, на 45° над твоим горизонтом,
   на северо-западе.» Near the zenith: «…почти в зените.» At night (`darkStation`, which English words for a station):
   «Там, где ты, было темно. Если станцию ещё освещало солнце, она пролетела по твоему небу яркой немигающей точкой.»
 - Geostationary: «Спутник Meteosat-12 не пролетает. Он неподвижно висит на высоте 35 786 км над экватором (0.2°W) и
@@ -547,7 +551,7 @@ Gender: m. / f. / n. / pl. Plural forms are `one · few · many`.
 | orbital elements / element sets | элементы орбит / наборы элементов | TLE stays. |
 | propagate (orbits) | рассчитать | «Расчёт орбит», «Орбиты рассчитаны». |
 | altitude | высота | f. Not for angles. |
-| elevation (angle) | высота над горизонтом | Label «Над горизонтом»; «на 45° над твоим горизонтом». Sun: «Высота Солнца». |
+| elevation (angle) | высота над горизонтом | Label «Над горизонтом»; «на 45° над твоим горизонтом». Sun: «Высота Солнца». The geostationary row's one mono line says «высота 39,6°» (the astronomer's word; the degree sign leaves no doubt there). |
 | horizon | горизонт | |
 | ground speed | путевая скорость | Prose: «со скоростью 7,46 км/с». Card: «Скорость». |
 | heading | курс | m. Readout «194,6°» with unit «SSW · восх.». |
@@ -854,16 +858,16 @@ Russian alternates few prepositions, and only before sounds code can know:
 
 ### 6.3 Dashes, ellipsis, spaces
 
-- **Em dash** — with spaces, an NBSP before it (` —`), where Russian grammar puts it: between subject and
-  predicate when both are nouns («Автомобиль — это один пиксель», «Каждый кадр — один и тот же квадрат»),
-  for a missing verb («у Landsat — 185 км»), in «Автор — @armaangupt0». Never as decoration.
+- **Em dash** — with spaces, an NBSP before it (`\u00a0—`), where Russian grammar puts it: between subject and
+  predicate when both are nouns («Автомобиль\u00a0— это один пиксель», «Каждый кадр\u00a0— один и тот же квадрат»),
+  for a missing verb («у Landsat\u00a0— 185 км»), in «Автор\u00a0— @armaangupt0». Never as decoration.
 - **En dash** – without spaces for numeric ranges («10–30 м», «2015–2026», «30–45 градусов»).
 - **Hyphen** for compounds («что-то», «3D-вид», «IP-адресов», «15-метровый»).
 - **Ellipsis**: one character … (U+2026), no space before: «Поиск…».
 - **NBSP** (U+00A0) between a number and its unit or counted noun («786 км», «7 дней», «256 спутников»), inside grouped
-  numbers (Intl does it: «1 715»), before an em dash, between a clock and its zone («11:21 EST») where a line can
-  break, and after a one-letter preposition in short lines that wrap («в точке» in a narrow cell).
-- The NBSP between a `num()` part and the noun after it is in the translator's string (`num(…), ' спутников'`).
+  numbers (Intl does it: «1 715»), before an em dash, between a clock and its zone («11:21\u00a0EST») where a line can
+  break, and after a one-letter preposition in short lines that wrap («в\u00a0точке» in a narrow cell).
+- The NBSP between a `num()` part and the noun after it is in the translator's string (`num(…), '\u00a0спутников'`).
 - **No space** before . , : ; ? and no exclamation marks anywhere.
 
 ### 6.4 Numbers
@@ -951,11 +955,11 @@ counts: **8.0 px a character at 11 px, 7.0 px at 9.5 px** (caps, +0.08em).
 | Phone share secondaries (three in 360 px, ≈ 90 px each at 11 px) | ≤ 11 characters | «Копировать» 10 · «Пост в X» 8 · «Сохранить» 9 · «Скопировано» 11 · «Повторить» 9 |
 | Share link and post labels (48 px column) | ≤ 6 characters | «Ссылка» 6 · «Пост» 4 |
 | Gallery filter segments (with the counter, 350 px) | about 8 each, the four together as long as English's 23 | «Все · Детальные · Погода · Радар» (3 + 9 + 6 + 5 = 23) |
-| Gallery and lightbox status (box ≈ 14) | ≤ 14 characters | «Ясно в точке» · «Облака в точке» · «Перистые облака» (15) · «Тень облаков» · «Облачно · 93%» · «Облачность 25%» · «Суточная мозаика» (16) |
+| Gallery and lightbox status (box ≈ 14; on laptops after «10 м · 36 ч назад · ») | ≤ 14 characters, ≈ 12 after the photo's caption line | «Ясно в точке» · «Облака в точке» · «Тонкие облака» · «Тень облаков» · «Облачно · 93%» · «Облака 25%» · «Суточная мозаика» (16, measured) |
 | Gallery photo counter (box ≈ 12) | ≤ 12 characters | «12 за неделю» for this week and that week alike |
 | Cover lead chip | ≤ 20 characters | «Самый близкий кадр» 18 · «Последний ясный кадр» 20 · «Под облаками» 12 |
 | Band value (21 px) | ≤ 9 characters | «Тепловой» · «Видимый» · «Цветной» |
-| Spot value (21 px) | ≤ 7–8 characters | «Ясно» · «Перистые» · «Облака» · «Тень» |
+| Spot value (21 px, under «Облака в точке») | ≤ 7 characters | «Ясно» · «Тонкие» · «Облака» · «Тень» |
 | Landing search hint (beside 01 / МЕСТО) | the English's 25 | «Название, адрес, координаты» (27, ellipsised if needed) |
 | Pin hint (beside 02 / ИЛИ ПОПРОБУЙ) | ≈ the English's 32 | «Или поставь метку на глобусе» (28) |
 | Search status | short | «Поиск» · «Не найдено» · «Поиск недоступен» · «1 место · 3 места · 5 мест» |
@@ -1123,7 +1127,7 @@ Assembly's resolution 68/262, and says nothing about it in copy.
 5. **Vocabulary** matches the glossary: смотреть, Увидено, Могли смотреть сюда, пролёт, снимок / фото / кадр,
    опубликован, полоса обзора, зона обзора, таймлапс, точка, метка, приложение.
 6. **Euphony:** «со» where §5.6 says, never before a slot.
-7. **Numbers:** decimal comma, NBSP grouping and units (as ` ` in source), «25%» and «98,6°» tight; coordinates
+7. **Numbers:** decimal comma, NBSP grouping and units (as `\u00a0` in source), «25%» and «98,6°» tight; coordinates
    and compass points in readouts untouched.
 8. **Punctuation:** «ёлочки», „лапки“ inside, …, em dash with an NBSP before it and only where grammar needs it, the
    comma in «Вероятно, увидено», no exclamation marks.
@@ -1196,7 +1200,7 @@ Results
 | Closest look · Last clear look · Clouded over · Daily mosaic | Самый близкий кадр · Последний ясный кадр · Под облаками · Суточная мозаика |
 | This week's passes saw mostly cloud · Here's the last clear look | На этой неделе на снимках в основном облака · Вот последний ясный кадр |
 | 12 this week / 12 that week | 12 за неделю |
-| Clear · Thin cirrus · Cloud shadow · Cloud at spot · Clouded · 93% · Cloud 25% | Ясно · Перистые облака · Тень облаков · Облака в точке · Облачно · 93% · Облачность 25% |
+| Clear · Thin cirrus · Cloud shadow · Cloud at spot · Clouded · 93% · Cloud 25% | Ясно · Тонкие облака · Тень облаков · Облака в точке · Облачно · 93% · Облака 25% |
 | Reading the pixel at your spot… · Clear over your spot. · Your spot was in cloud shadow. | Читаем пиксель в твоей точке… · Над твоей точкой ясно. · Твоя точка была в тени от облаков. |
 | Sentinel-2C image of Waterloo. The place is at the centre. (alt) | Снимок со спутника Sentinel-2C: Waterloo. Это место в центре кадра. |
 | Time-lapse · This place, year by year | Таймлапс · Это место год за годом |
@@ -1212,7 +1216,7 @@ Pass detail readouts
 | English | ru |
 |---|---|
 | Altitude · Off-nadir · Pixel · Cloud (scene) · Cloud at spot | Высота · От надира · Пиксель · Облачность (кадра) · Облака в точке |
-| Clear · Cirrus · Cloud · Shadow | Ясно · Перистые · Облака · Тень |
+| Clear · Cirrus · Cloud · Shadow | Ясно · Тонкие · Облака · Тень |
 | Closest · UTC / Closest · local | Сближение · UTC / Сближение · местное |
 | Ground distance · Elevation from you · Ground speed · Heading | До трассы · Над горизонтом · Путевая скорость · Курс |
 | SSW · Asc / Desc | SSW · восх. / нисх. |
