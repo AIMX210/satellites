@@ -6,8 +6,9 @@
  * noun phrases («कक्षाओं की गणना · 400 कक्षाएँ»), never sentences, with the counts in Hindi's plural (zero too) and
  * the noun oblique before a postposition («12 दृश्यों का 340 उड़ानों से मिलान»). The footnotes say what failed and
  * what it means for the numbers, impersonally («… से समय पर जवाब नहीं मिला», «… दिखाई गई हैं»), so no service has
- * to be given a gender. "Watched" and "likely" quote the verdicts: «देखी गई» agrees with «उड़ान», «संभवतः देखा गया» is
- * the verdict's name, in quotation marks. Proper names stay as they are.
+ * to be given a gender. "Watched" and "likely" quote the verdicts' names in quotation marks, with a postposition to
+ * link them: «“देखा गया” में गिनी गई है» (counts as watched), «“संभवतः देखा गया” में दिखाई गई हैं» (shown as likely).
+ * Proper names stay as they are.
  */
 import type en from '../en/engine'
 import { fmt } from '../../../api/_lib/i18n/format'
@@ -49,15 +50,15 @@ const engine: typeof en = {
     gibsUnconfirmed: ({ n }: { n: number }) =>
       pl(
         n,
-        'NASA GIBS से एक VIIRS तस्वीर की पुष्टि देर से आई। VIIRS हर दिन पूरी धरती की तस्वीरें लेता है, इसलिए वह उड़ान देखी गई मानी गई है।',
-        `NASA GIBS से ${f.int(n)}\u00a0VIIRS तस्वीरों की पुष्टि देर से आई। VIIRS हर दिन पूरी धरती की तस्वीरें लेता है, इसलिए वे उड़ानें देखी गई मानी गई हैं।`,
+        'NASA GIBS से एक VIIRS तस्वीर की पुष्टि देर से आई। VIIRS हर दिन पूरी धरती की तस्वीरें लेता है, इसलिए वह उड़ान “देखा गया” में गिनी गई है।',
+        `NASA GIBS से ${f.int(n)}\u00a0VIIRS तस्वीरों की पुष्टि देर से आई। VIIRS हर दिन पूरी धरती की तस्वीरें लेता है, इसलिए वे उड़ानें “देखा गया” में गिनी गई हैं।`,
       ),
     gibsSlowAll: 'NASA GIBS से समय पर जवाब नहीं मिला, इसलिए मौसम उपग्रहों की तस्वीरें नहीं दिखाई गई हैं।',
     gibsSlowSome: ({ missing, total }: { missing: number; total: number }) =>
-      `NASA GIBS से मौसम उपग्रहों की ${f.int(total)} में से ${f.int(missing)} ${pl(missing, 'तस्वीर समय पर नहीं मिली, इसलिए वह उड़ान', 'तस्वीरें समय पर नहीं मिलीं, इसलिए वे उड़ानें')} “संभवतः देखा गया” दिखाई गई ${pl(missing, 'है', 'हैं')}।`,
+      `NASA GIBS से मौसम उपग्रहों की ${f.int(total)} में से ${f.int(missing)} ${pl(missing, 'तस्वीर समय पर नहीं मिली, इसलिए वह उड़ान', 'तस्वीरें समय पर नहीं मिलीं, इसलिए वे उड़ानें')} “संभवतः देखा गया” में दिखाई गई ${pl(missing, 'है', 'हैं')}।`,
     gibsDownAll: 'NASA GIBS से संपर्क नहीं हो सका, इसलिए मौसम उपग्रहों की तस्वीरें नहीं दिखाई गई हैं।',
     gibsDownSome: ({ missing, total }: { missing: number; total: number }) =>
-      `NASA GIBS से मौसम उपग्रहों की ${f.int(total)} में से ${f.int(missing)} ${pl(missing, 'तस्वीर नहीं मिल सकी, इसलिए वह उड़ान', 'तस्वीरें नहीं मिल सकीं, इसलिए वे उड़ानें')} “संभवतः देखा गया” दिखाई गई ${pl(missing, 'है', 'हैं')}।`,
+      `NASA GIBS से मौसम उपग्रहों की ${f.int(total)} में से ${f.int(missing)} ${pl(missing, 'तस्वीर नहीं मिल सकी, इसलिए वह उड़ान', 'तस्वीरें नहीं मिल सकीं, इसलिए वे उड़ानें')} “संभवतः देखा गया” में दिखाई गई ${pl(missing, 'है', 'हैं')}।`,
   },
 }
 export default engine

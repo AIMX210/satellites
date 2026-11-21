@@ -85,48 +85,55 @@ const results: typeof en = {
   shareWeekLabel: (place: string, past: boolean) => `${place} का ${past ? 'वह' : 'यह'} हफ़्ता शेयर करें`,
 
   why: {
-    sunNeverRose: 'सूरज निकला ही नहीं, इसलिए दिन में देखने वाला कोई कैमरा इसे नहीं देख सका।',
-    sunBarelyRose: 'सूरज मुश्किल से ही निकला, इसलिए दिन में देखने वाला कोई कैमरा इसे नहीं देख सका।',
+    sunNeverRose: 'सूरज निकला ही नहीं, इसलिए दिन के उजाले पर निर्भर कोई कैमरा इसे नहीं देख सका।',
+    sunBarelyRose: 'सूरज मुश्किल से ही निकला, इसलिए दिन के उजाले पर निर्भर कोई कैमरा इसे नहीं देख सका।',
     infrared: (n: number): Rich => ['फिर भी मौसम उपग्रहों ने इन्फ्रारेड में इसे ', num(f.int(n)), '\u00a0बार स्कैन किया।'],
-    // The names are a list, so the verb is plural unless one named satellite stands alone.
+    // The names are a list, so the verb is plural unless one named satellite stands alone. "Passed within view" is the
+    // could verdict's spoken verb, «पहुँच के दायरे में आया», and it stands between the names and the count, so a name
+    // that ends in a number never runs into it («Capella-14 1,204»).
     radar: (names: readonly string[], others: number, passes: number): Rich => {
       const rest = others > 0 ? [`${f.int(others)}\u00a0${names.length ? pl(others, 'दूसरा रडार उपग्रह', 'दूसरे रडार उपग्रह') : 'रडार उपग्रह'}`] : []
       const all = [...names, ...rest]
       // Hindi puts no comma before «और» (Intl's hi list does): «Umbra-08, Capella-14 और 7 दूसरे रडार उपग्रह».
       const who = all.length > 1 ? `${all.slice(0, -1).join(', ')} और ${all[all.length - 1]}` : (all[0] ?? 'रडार उपग्रह')
       const one = all.length === 1 && (names.length === 1 || others === 1)
-      return ['रडार को रोशनी की ज़रूरत नहीं होती। ', `${who} पहुँच के भीतर से `, num(f.int(passes)), `\u00a0बार ${one ? 'गुज़रा' : 'गुज़रे'}।`]
+      return ['रडार को रोशनी की ज़रूरत नहीं होती। ', `${who} पहुँच के दायरे में `, num(f.int(passes)), `\u00a0बार ${one ? 'आया' : 'आए'}।`]
     },
+    // Daylight is «दिन के उजाले में»: «दिन में 6 बार» would read "6 times a day".
     unpublished: (n: number) =>
       n === 1
-        ? 'Sentinel-2 या Landsat का एक उपग्रह दिन में यहाँ से एक बार गुज़रा, पर अभी तक कोई दृश्य प्रकाशित नहीं हुआ है।'
-        : `Sentinel-2 या Landsat के उपग्रह दिन में यहाँ से ${f.int(n)}\u00a0बार गुज़रे, पर अभी तक कोई दृश्य प्रकाशित नहीं हुआ है।`,
-    none: 'दिन में सार्वजनिक तस्वीरें देने वाला कोई उपग्रह यहाँ से नहीं गुज़रा।',
+        ? 'Sentinel-2 या Landsat का एक उपग्रह दिन के उजाले में एक बार यहाँ से गुज़रा, पर अभी तक कोई दृश्य प्रकाशित नहीं हुआ है।'
+        : `Sentinel-2 या Landsat के उपग्रह दिन के उजाले में ${f.int(n)}\u00a0बार यहाँ से गुज़रे, पर अभी तक कोई दृश्य प्रकाशित नहीं हुआ है।`,
+    none: 'सार्वजनिक तस्वीरें देने वाला कोई उपग्रह दिन के उजाले में यहाँ से नहीं गुज़रा।',
   },
 
   // ── the summary's four readouts ──
-  verdictGroup: 'नतीजे के हिसाब से उड़ानें। हर एक को दबाने पर उसकी सूची खुलती है।',
+  verdictGroup: 'नतीजे के हिसाब से उड़ानें। हर एक अपनी सूची पर ले जाता है।',
   verdictReadout: (n: number, _verdict: Verdict, title: string) => `${f.int(n)}\u00a0बार: ${title}`,
 
   // ── the footnotes ──
   notes: {
     counted: (o: { detailed: number; mosaics: number; radar: number; geo: number; passes: number; satellites: number }): Rich => {
-      const out: Part[] = [strong(f.int(o.detailed)), `\u00a0बारीक ${pl(o.detailed, 'तस्वीर', 'तस्वीरें')} (Sentinel-2, Landsat, 10–30\u00a0मी)`]
-      if (o.mosaics) out.push(' · ', strong(f.int(o.mosaics)), '\u00a0मौसम के दैनिक मोज़ेक (250–375\u00a0मी)')
+      // «बारीक ब्योरे वाली»: a bare «बारीक तस्वीरें» reads "thin pictures". «दैनिक मौसम मोज़ेक» is the same for 1 and 3.
+      // Each count is followed by its own noun, its sources in brackets: «1 भूस्थिर मौसम उपग्रहों से» read
+      // "1 satellites".
+      const out: Part[] = [strong(f.int(o.detailed)), `\u00a0बारीक ब्योरे वाली ${pl(o.detailed, 'तस्वीर', 'तस्वीरें')} (Sentinel-2, Landsat, 10–30\u00a0मी)`]
+      if (o.mosaics) out.push(' · ', strong(f.int(o.mosaics)), '\u00a0दैनिक मौसम मोज़ेक (250–375\u00a0मी)')
       if (o.radar) out.push(' · ', strong(f.int(o.radar)), `\u00a0रडार ${pl(o.radar, 'तस्वीर', 'तस्वीरें')} (Sentinel-1, 20\u00a0मी)`)
       if (o.geo)
         out.push(
           ' · ',
           strong(f.int(o.geo)),
-          `\u00a0भूस्थिर मौसम उपग्रहों से पूरी डिस्क की ${pl(o.geo, 'तस्वीर', 'तस्वीरें')} (2–5\u00a0किमी, हर एक की सबसे नई दिखाई गई है)`,
+          `\u00a0पूरी डिस्क की ${pl(o.geo, 'तस्वीर', 'तस्वीरें')} (भूस्थिर मौसम उपग्रहों से, 2–5\u00a0किमी, हर एक की सबसे नई दिखाई गई है)`,
         )
       out.push(`। ${checked(o.passes, o.satellites)}`)
       return out
     },
     checked: (passes: number, satellites: number) => checked(passes, satellites),
     passTimes: (place: string, fetched: string | undefined, zoneLabel: string) =>
-      `उड़ानों का समय वह पल है जब हर उपग्रह ${place} के सबसे नज़दीक था। इसकी गणना सार्वजनिक कक्षा के आँकड़ों से की गई है` +
-      `${fetched ? ` (प्राप्त ${fetched})` : ''}। स्थानीय समय ${zoneLabel} के हिसाब से है।`,
+      // The zone is a label after a colon: it can be «UTC−9 · समुद्र में», which takes no postposition.
+      `उड़ानों का समय वह पल है जब हर उपग्रह ${place} के सबसे नज़दीक था। इसकी गणना कक्षा के सार्वजनिक आँकड़ों से की गई है` +
+      `${fetched ? ` (प्राप्त ${fetched})` : ''}। स्थानीय समय: ${zoneLabel}।`,
   },
 
   // ── the panel ──
@@ -165,8 +172,8 @@ const results: typeof en = {
     searchBarLabel: (place: string) => `कोई और जगह खोजें (अभी: ${place})`,
     change: 'बदलें',
     computing: 'गणना जारी',
-    recent: 'हाल की',
-    position: (k: number, n: number) => `इस तरह की उड़ान ${f.int(k)}, कुल ${f.int(n)}`,
+    recent: 'हाल की खोजें',
+    position: (k: number, n: number) => `इस तरह की ${f.int(n)}\u00a0${pl(n, 'उड़ान', 'उड़ानों')} में से उड़ान ${f.int(k)}`,
     previous: 'इस तरह की पिछली उड़ान',
     next: 'इस तरह की अगली उड़ान',
     previousTitle: 'पिछली (←)',
@@ -198,13 +205,13 @@ const results: typeof en = {
     sharedAlt: (sat: string | undefined, place: string) => `${sat ?? 'एक उपग्रह'} से ली गई ${place} की तस्वीर, आपके साथ शेयर की गई।`,
     sharedCaption: (sat: string | undefined, place: string, when?: PlaceWhen): Rich => [
       strong('आपके साथ शेयर किया गया'),
-      ` · ${sat !== undefined ? `${sat} ने` : 'एक उपग्रह ने'} ${place} को देखा${when ? ` · ${day(when.ms, when.timeZone)}, ${when.time}` : ''}`,
+      ` · ${sat !== undefined ? `${sat} ने` : 'किसी उपग्रह ने'} ${place} को देखा${when ? ` · ${day(when.ms, when.timeZone)}, ${when.time}` : ''}`,
     ],
   },
 
   // ── 03 / Watched continuously ──
   geo: {
-    none: 'कोई भी चालू भूस्थिर मौसम इमेजर इस जगह को क्षितिज से 5° से ऊपर नहीं देखता।',
+    none: 'इस जगह के आसमान में कोई भी चालू भूस्थिर मौसम इमेजर क्षितिज से 5° से ज़्यादा ऊपर नहीं है।',
     facts: (lon: string, elevationDeg: number, cadenceMin: number) => `${lon} · ${f.dec(elevationDeg, 1)}° ऊपर · हर ${f.int(cadenceMin)}\u00a0मिनट`,
     images: (n: number, days: number): Rich =>
       days === 7
@@ -221,7 +228,7 @@ const results: typeof en = {
     },
     frameAlt: (sat: string, infrared: boolean) => `${sat}: इस जगह के आसपास का सबसे नया ${infrared ? 'इन्फ्रारेड ' : ''}फ़्रेम`,
     infraredChip: 'IR',
-    infraredTitle: 'इन्फ्रारेड: बादलों की चोटियाँ तापमान के हिसाब से, जो जितनी ठंडी, उतनी हल्की',
+    infraredTitle: 'इन्फ्रारेड: बादलों की चोटियाँ तापमान के हिसाब से, जितनी ठंडी, उतनी सफ़ेद',
   },
 
   // ── 04 / Timeline ──
@@ -245,14 +252,14 @@ const results: typeof en = {
 
   // ── 02 / Replay ──
   replay: {
-    scrubLabel: 'उड़ान के भीतर रीप्ले का समय',
+    scrubLabel: 'उड़ान के दौरान रीप्ले का समय',
     scrubValue: (tMinus: string, utc: string) => `${tMinus}, ${utc}`,
     play: 'रीप्ले चलाएँ',
     pause: 'रीप्ले रोकें',
     speed: 'रीप्ले की रफ़्तार',
     inView: (duration: string) => `पहुँच में ${duration}`,
     closest: 'सबसे नज़दीक',
-    spaceKey: 'स्पेस',
+    spaceKey: 'Space',
     playPause: 'चलाएँ / रोकें',
     stepKind: 'इस तरह की पिछली / अगली उड़ान',
   },
