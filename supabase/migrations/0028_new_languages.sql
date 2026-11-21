@@ -1,8 +1,10 @@
 -- 0028: the app's four new languages (Russian, Vietnamese, Persian, Hindi; owner, 2026-11-21) in log_events' list,
--- so a tab shown in one of them records its language (0027 stored null for a code it did not know).
+-- so a tab shown in one of them records its language (0027 stored null for a code it did not know), and in the admin
+-- page's Languages list (0027's admin_stats_compute keeps 16 values of it).
 --
--- log_events is 0027's with the longer list and nothing else changed. No table changes, no lock beyond the function's
--- own replacement: safe to apply at any time clear of :00 and :17. Idempotent (create or replace).
+-- log_events is 0027's with the longer list and nothing else changed; admin_stats_compute is 0027's listing 20. No
+-- table changes, no lock beyond the functions' own replacement: safe to apply at any time clear of :00 and :17.
+-- Idempotent (create or replace).
 
 -- ── log_events ──────────────────────────────────────────────────────────────────────────────
 -- 0027's, with ru, vi, fa and hi.
@@ -140,5 +142,185 @@ begin
 end
 $$;
 
+-- ── Admin stats (0027's, listing all 20 languages) ──────────────────────────────────────────
+create or replace function overflight_private.admin_stats_compute(p_range text DEFAULT '7d'::text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SET search_path TO 'public'
+ SET "TimeZone" TO 'UTC'
+ SET work_mem TO '16MB'
+AS $function$
+declare
+  v_tz     text := overflight_private.admin_tz();
+  v_now    timestamptz := now();
+  v_to     timestamptz := date_trunc('hour', now()) + interval '1 hour';
+  v_today  date := (now() at time zone overflight_private.admin_tz())::date;
+  v_from   timestamptz;  -- where the range starts
+  v_day0   date;         -- its first Eastern day
+  v_split  timestamptz;  -- the end of the last rolled day
+  v_recent timestamptz;  -- event_recent_into from here
+  v_hours  timestamptz;  -- the end of the last rolled hour (event_hours)
+  v_hourly boolean;
+  v_out    jsonb;
+  v_bf_search  bigint;
+  v_bf_session bigint;
+begin
+  -- No admin check here: only admin_stats_core (checked), public.admin_stats (checked) and the cron refresh call this.
+  if p_range is null or p_range not in ('24h', '7d', '30d', 'all') then p_range := '7d'; end if;
+  v_hourly := p_range in ('24h', '7d');
+  v_split := coalesce((select (max(day) + 1)::timestamp at time zone v_tz from public.event_rolled), '-infinity'::timestamptz);
+  v_hours := coalesce((select max(hour) + interval '1 hour' from public.event_hours), '-infinity'::timestamptz);
+  v_from := case p_range
+    when '24h' then date_trunc('hour', v_now) - interval '24 hours'
+    when '7d'  then (v_today - 6)::timestamp at time zone v_tz
+    when '30d' then (v_today - 29)::timestamp at time zone v_tz
+    else '-infinity'::timestamptz end;
+  v_day0 := case when isfinite(v_from) then (v_from at time zone v_tz)::date else '-infinity'::date end;
+  v_recent := case when p_range = '24h' then v_from else v_split end;
+
+  create temp table if not exists _agg (day date, type text, dim text, val text, n bigint) on commit drop;
+  create temp table if not exists _rest (type text, dim text, n bigint) on commit drop;
+  create temp table if not exists _dist (metric text, v float8, n bigint) on commit drop;
+  truncate _agg, _rest, _dist;
+
+  if p_range <> '24h' then
+    -- Rolled days: day totals from event_days; breakdowns from event_days (7d, 30d) or the all-time tables (all).
+    insert into _agg select d.day, d.type, d.dim, d.val, d.n from public.event_days d
+      where d.day >= v_day0 and d.day < (v_split at time zone v_tz)::date and (p_range <> 'all' or d.dim = '');
+    if p_range = 'all' then
+      insert into _agg select null, a.type, a.dim, a.val, a.n from public.event_alltime a;
+      insert into _rest select r.type, r.dim, r.n from public.event_alltime_rest r;
+      insert into _dist select x.metric, x.v, x.n from public.event_alltime_dists x;
+    else
+      insert into _rest select r.type, r.dim, r.n from public.event_days_rest r
+        where r.day >= v_day0 and r.day < (v_split at time zone v_tz)::date;
+      insert into _dist select x.metric, x.v, x.n from public.event_dists x
+        where x.day >= v_day0 and x.day < (v_split at time zone v_tz)::date;
+    end if;
+  end if;
+
+  -- The rest of the range, once per transaction for each start.
+  create temp table if not exists _rkey (from_at timestamptz, to_at timestamptz) on commit drop;
+  create temp table if not exists _ragg (day date, type text, dim text, val text, n bigint) on commit drop;
+  create temp table if not exists _rrest (day date, type text, dim text, n bigint) on commit drop;
+  create temp table if not exists _rdist (day date, metric text, v float8, n bigint) on commit drop;
+  if not exists (select 1 from _rkey k where k.from_at = v_recent and k.to_at = v_to) then
+    truncate _rkey, _ragg, _rrest, _rdist;
+    perform overflight_private.event_recent_into(v_recent, v_to);
+    insert into _rkey values (v_recent, v_to);
+  end if;
+  insert into _agg select t.day, t.type, t.dim, t.val, t.n from _ragg t where t.day >= v_day0;
+  insert into _rest select t.type, t.dim, t.n from _rrest t where t.day >= v_day0;
+  insert into _dist select t.metric, t.v, t.n from _rdist t where t.day >= v_day0;
+
+  -- 0015: hours whose events never reached the database add their reconstructed searches and tabs to the day totals
+  -- (and so to the daily series). The same hours are added to the hourly series below; 'recorded' keeps the counts
+  -- without them, for the ratios.
+  select coalesce(sum(b.searches), 0), coalesce(sum(b.sessions), 0) into v_bf_search, v_bf_session
+  from overflight_private.event_backfill b where b.hour >= v_from;
+  insert into _agg
+    select (b.hour at time zone v_tz)::date, t.type, '', '', sum(t.n)::bigint
+    from overflight_private.event_backfill b
+    cross join lateral (values ('search', b.searches), ('session', b.sessions)) t(type, n)
+    where b.hour >= v_from and t.n > 0
+    group by 1, 2;
+
+  with
+  tot as (select type, sum(n)::bigint n from _agg where dim = '' group by type),
+  top as (
+    select type, dim, val, sum(n)::bigint n, row_number() over (partition by type, dim order by sum(n) desc, val) rk
+    from _agg where dim <> '' and type <> 'funnel' group by type, dim, val
+  ),
+  dimtot as (
+    select k, sum(n)::bigint n from (
+      select type || '.' || dim k, n from _agg where dim <> '' and type <> 'funnel'
+      union all select type || '.' || dim, n from _rest where type <> 'funnel'
+    ) x group by k
+  ),
+  dist as (
+    select metric, array_agg(v order by v) vs, array_agg(n order by v) ns
+    from (select metric, v, sum(n)::bigint n from _dist group by metric, v) h group by metric
+  ),
+  buckets as (
+    select b from generate_series(v_from, v_now, interval '1 hour') b where v_hourly
+    union all
+    select d::date::timestamp at time zone v_tz
+    from generate_series(coalesce((select min(day) from _agg), v_today), v_today, interval '1 day') d
+    where not v_hourly
+  ),
+  hourly as (
+    select u.b, sum(u.s) s, sum(u.sh) sh, sum(u.se) se, sum(u.tl) tl from (
+      -- Rolled hours from event_hours, raw events after the last rolled hour.
+      select h.hour b, h.searches s, h.shares sh, h.active se, h.timelapse tl from public.event_hours h
+      where v_hourly and h.hour >= v_from and h.hour < v_hours
+      union all
+      select date_trunc('hour', created_at) b, count(*) filter (where type = 'search') s,
+             count(*) filter (where type = 'share_action') sh, count(distinct sid) se,
+             count(*) filter (where type = 'timelapse_open') tl
+      from public.events
+      where v_hourly and created_at >= greatest(v_from, v_hours)
+      group by 1
+      union all
+      select f.hour, f.searches, 0, f.active, 0
+      from overflight_private.event_backfill f where v_hourly and f.hour >= v_from
+    ) u group by u.b
+  ),
+  daily as (
+    select day::timestamp at time zone v_tz b, sum(n) filter (where type = 'search') s,
+           sum(n) filter (where type = 'share_action') sh, sum(n) filter (where type = 'session') se,
+           sum(n) filter (where type = 'timelapse_open') tl
+    from _agg where not v_hourly and dim = '' group by day
+  ),
+  series as (
+    select k.b, coalesce(x.s, 0) s, coalesce(x.sh, 0) sh, coalesce(x.se, 0) se, coalesce(x.tl, 0) tl
+    from buckets k
+    left join (select * from hourly union all select * from daily) x on x.b = k.b
+  )
+  select jsonb_build_object(
+    'range', p_range,
+    'generatedAt', (extract(epoch from v_now) * 1000)::bigint,
+    'from', (extract(epoch from case when isfinite(v_from) then v_from
+                                     else coalesce((select min(day) from _agg), v_today)::timestamp at time zone v_tz end) * 1000)::bigint,
+    'bucket', case when v_hourly then 'hour' else 'day' end,
+    'totals', coalesce((select jsonb_object_agg(type, n) from tot), '{}'::jsonb),
+    'recorded', jsonb_build_object(
+      'search', coalesce((select n from tot where type = 'search'), 0) - v_bf_search,
+      'session', coalesce((select n from tot where type = 'session'), 0) - v_bf_session),
+    'dimTotals', coalesce((select jsonb_object_agg(k, n) from dimtot), '{}'::jsonb),
+    'funnel', coalesce((select jsonb_object_agg(val, s) from (select val, sum(n)::bigint s from _agg where type = 'funnel' group by val) f), '{}'::jsonb),
+    'series', coalesce((select jsonb_agg(jsonb_build_array((extract(epoch from b) * 1000)::bigint, s, sh, se, tl) order by b) from series), '[]'::jsonb),
+    'top', coalesce((
+      select jsonb_object_agg(k, rows) from (
+        select type || '.' || dim k, jsonb_agg(jsonb_build_array(val, n) order by rk) rows
+        from top where rk <= case when dim = 'cell' then 3000 when type = 'session' and dim = 'lang' then 20 else 15 end group by type, dim
+      ) t), '{}'::jsonb),
+    'results', jsonb_build_object(
+        'n', coalesce((select n from tot where type = 'results'), 0),
+        'p50Ms', (select overflight_private.hist_pct(vs, ns, 0.5) from dist where metric = 'results.ms'),
+        'p90Ms', (select overflight_private.hist_pct(vs, ns, 0.9) from dist where metric = 'results.ms'),
+        'partial', coalesce((select sum(n) from _dist where metric = 'results.partial' and v = 1), 0),
+        'archiveFailed', coalesce((select sum(n) from _dist where metric = 'results.archive_failed' and v = 1), 0)),
+    'vitals', jsonb_build_object(
+        'n', coalesce((select n from tot where type = 'vitals'), 0),
+        'lcp', (select overflight_private.hist_pct(vs, ns, 0.75) from dist where metric = 'vitals.lcp'),
+        'inp', (select overflight_private.hist_pct(vs, ns, 0.75) from dist where metric = 'vitals.inp'),
+        'cls', (select overflight_private.hist_pct(vs, ns, 0.75) from dist where metric = 'vitals.cls')),
+    'recentSearches', coalesce((
+      select jsonb_agg(jsonb_build_object('t', (extract(epoch from r.created_at) * 1000)::bigint, 'label', r.props ->> 'label',
+               'country', r.props ->> 'country', 'source', r.props ->> 'source', 'cell', r.props ->> 'cell', 'device', s.device) order by r.created_at desc, r.id desc)
+      from (select * from public.events where type = 'search' and created_at >= v_from order by created_at desc, id desc limit 40) r
+      left join public.event_sessions s on s.sid = r.sid), '[]'::jsonb),
+    'recentErrors', coalesce((
+      select jsonb_agg(jsonb_build_object('t', (extract(epoch from r.created_at) * 1000)::bigint, 'where', r.props ->> 'where', 'msg', r.props ->> 'msg') order by r.created_at desc, r.id desc)
+      from (select * from public.events where type = 'error' and created_at >= v_from order by created_at desc, id desc limit 30) r), '[]'::jsonb)
+  ) into v_out;
+  return v_out;
+end
+$function$;
+
+
+-- ── Grants (unchanged surface) ──────────────────────────────────────────────────────────────
+
+revoke all on all functions in schema overflight_private from public, anon, authenticated;
 revoke all on function public.log_events(jsonb) from public, anon, authenticated;
 grant execute on function public.log_events(jsonb) to anon, authenticated;
