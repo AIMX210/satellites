@@ -6,8 +6,9 @@
  * *Chia sẻ tuần này* reads "share, this week". The post says a moment the Vietnamese way, the clock first and then
  * the day (*lúc 11:21 giờ địa phương, Chủ Nhật 1/11*), the date in digits, day before month. A satellite *quan sát*,
  * *quét qua* or *bay qua* a place, the verdicts' own verbs (§3.7); "could have pointed here" starts with the place,
- * which Vietnamese allows, because "passed within view of" has no natural verb. The hooks echo the hero (*cũng*,
- * "too"; *thứ gì*, "what thing"). File names stay ASCII: *tuan* for *tuần*.
+ * which Vietnamese allows, because "passed within view of" has no natural verb. A post has no spot on screen, so it
+ * refers back to the place with *đó* (*điểm đó*), never *điểm này*. The hooks echo the hero (*cũng có*, "too"; *thứ gì*,
+ * "what thing"). File names stay ASCII: *tuan* for *tuần*.
  */
 import type en from '../en/share'
 import type { PostWhen } from '../en/share'
@@ -53,23 +54,26 @@ const share: typeof en = {
   creatingLink: 'Đang tạo liên kết…',
   linkLater: 'Tạo khi bạn chia sẻ',
   postLabel: 'Bài đăng',
-  renderFailed: 'Không vẽ được thẻ chia sẻ ở đây; liên kết vẫn dùng được.',
+  /** "here" is this browser (the English comment): say it, since *ở đây* could be the sheet or the screen */
+  renderFailed: 'Trình duyệt này không vẽ được thẻ chia sẻ; liên kết vẫn dùng được.',
 
   // ── The post ──
   post: {
+    /** The pixel is a clause of its own (*Mỗi điểm ảnh rộng 10 m*), never the English fragment "10 m per pixel;" */
     imaged: (sat: string, place: string, altitudeKm: number, w: PostWhen, pixelM?: number) =>
       `${sat} đã quan sát ${place} từ độ cao ${km(altitudeKm)} ${when(w)}. ${
-        pixelM !== undefined ? `${pixel(pixelM)} mỗi điểm ảnh; đây` : 'Đây'
+        pixelM !== undefined ? `Mỗi điểm ảnh rộng ${pixel(pixelM)}; đây` : 'Đây'
       } là ảnh thật.`,
     clouded: (sat: string, place: string, altitudeKm: number, w: PostWhen, cloud: string) =>
       `${sat} đã quan sát ${place} từ độ cao ${km(altitudeKm)} ${when(w)}. ${cloud}`,
     likely: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
-      `${sat} đã quét qua ${place} từ độ cao ${km(altitudeKm)} ${when(w)}. Dải quét của camera đã phủ điểm này.`,
+      `${sat} đã quét qua ${place} từ độ cao ${km(altitudeKm)} ${when(w)}. Dải quét của camera đã phủ điểm đó.`,
     could: (sat: string, place: string, w: PostWhen) =>
       `${place} đã nằm trong tầm nhìn của ${sat} ${when(w)}. Vệ tinh này có thể đã hướng về đây. Nhà vận hành không cho biết điều đó có xảy ra hay không.`,
     overhead: (sat: string, place: string, altitudeKm: number, w: PostWhen) => `${sat} đã bay qua ${place} ở độ cao ${km(altitudeKm)} ${when(w)}.`,
   },
-  hookWatched: 'Tuần này, có thứ gì đó cũng quan sát bạn.',
+  /** *cũng có*: "too" on the event (you as well as the place), never on "something" */
+  hookWatched: 'Tuần này, cũng có thứ gì đó quan sát bạn.',
   hookPassed: 'Tuần này, thứ gì đã bay qua trên đầu bạn?',
   credit: (handle: string) => `via ${handle}`,
 

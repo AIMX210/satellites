@@ -8,8 +8,8 @@
  * Why it reads this way:
  *  - Every card leads with the week's N, "[NUM] vệ tinh đã quan sát", and the place (with its full stop, or "tuần
  *    này.") is the serif block. Vietnamese nouns do not inflect and take no plural, so one form serves every count;
- *    zero is its own sentence, "Không vệ tinh nào mà chúng tôi theo dõi đã quan sát" (vi.md §3.3: *mà* keeps the two
- *    verbs apart, and *theo dõi* is right here, since we do track satellites).
+ *    zero is its own sentence, "Không vệ tinh nào trong danh mục của chúng tôi quan sát" (vi.md §3.3: the limit is our
+ *    catalog, and a negated past takes no *đã*).
  *  - Names are inserted bare: no class noun before the place, nothing attached to it. A nameless satellite is "Một vệ
  *    tinh" as a subject and "một vệ tinh" after a preposition (vi.md §5.2).
  *  - Dates are digits, day before month, as Vietnamese writes them ("CN, 1/11/2026"), built from the place's civil date
@@ -67,11 +67,11 @@ const dayMonth = (ms: number, timeZone: string) => {
  */
 const bind = (s: string) => s.replace(/ /g, '\u00a0')
 
-/** "31 vệ tinh đã quan sát" / "1 vệ tinh đã quan sát" / "Không vệ tinh nào mà chúng tôi theo dõi đã quan sát" */
+/** "31 vệ tinh đã quan sát" / "1 vệ tinh đã quan sát" / "Không vệ tinh nào trong danh mục của chúng tôi quan sát" */
 const watched = (n: number) =>
   n > 0
     ? f.plural(n, { other: `${f.int(n)}\u00a0${bind('vệ tinh')} ${bind('đã quan sát')}` })
-    : `Không ${bind('vệ tinh')} nào mà ${bind('chúng tôi')} ${bind('theo dõi')} ${bind('đã quan sát')}`
+    : `Không ${bind('vệ tinh')} nào trong ${bind('danh mục')} của ${bind('chúng tôi')} ${bind('quan sát')}`
 /** The full stop after the place, unless the place was cut short ("…." reads as a typo). */
 const stop = (cut: boolean, tail = '.') => (cut ? [] : [tail])
 
@@ -125,7 +125,8 @@ const card: CardMessages = {
       post: (pct: number) => `Phần lớn chỉ thấy mây (${f.int(pct)}%).`,
       desc: (pct: number) => `Phần lớn chỉ thấy mây (${f.int(pct)}%).`,
     },
-    spot: { sub: 'Mây che ngay điểm này.', chip: 'Mây trên điểm này', post: 'Mây che điểm này.', desc: 'Mây che điểm này.' },
+    /** On the card the spot is in the picture (*điểm này*); a post or a description refers back to the place (*điểm đó*) */
+    spot: { sub: 'Mây che ngay điểm này.', chip: 'Mây trên điểm này', post: 'Mây che đúng điểm đó.', desc: 'Mây che đúng điểm đó.' },
   },
 
   // ── The top row ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -160,7 +161,8 @@ const card: CardMessages = {
   geometry: 'Hình học lượt bay · bắc ở trên',
   note: {
     imageInApp: 'Xem ảnh trong ứng dụng',
-    imageUnavailable: 'Hiện chưa có ảnh',
+    /** An image exists, the archive did not send it: *không tải được* (never *chưa có*, which says there is none yet) */
+    imageUnavailable: 'Hiện không tải được ảnh',
     commercial: 'Kho thương mại, không công khai',
     inSwath: 'Trong dải quét, chưa có ảnh công khai',
     groundTrack: 'Vệt quỹ đạo lúc gần nhất',
@@ -170,7 +172,8 @@ const card: CardMessages = {
   noPhoto: 'Không có ảnh để hiển thị',
   look: {
     closest: 'Chi tiết nhất',
-    lastClear: 'Không mây gần nhất',
+    /** "Last" is the latest, *mới nhất*: *gần nhất* is the readout's "closest" */
+    lastClear: 'Không mây mới nhất',
     clouded: 'Mây che kín',
     radar: 'Radar',
   },
@@ -185,18 +188,20 @@ const card: CardMessages = {
   hero: [['Tuần này,'], ['có thứ gì đó'], ['quan sát'], [accent('bạn'), '.']] as Rich[],
   enterAnyPlace: 'Chọn một nơi trên Trái Đất',
   defaultPlace: 'Palm Jumeirah',
+  /** *thật* right after *ảnh*, the agent in *do … chụp* (an optical photograph, so *chụp*) */
   defaultAlt:
-    'Ảnh vệ tinh Sentinel-2 thật chụp Palm Jumeirah, Dubai, bên cạnh dòng chữ: Tuần này, có thứ gì đó quan sát bạn. Chọn một nơi trên Trái Đất.',
+    'Ảnh thật của Palm Jumeirah, Dubai, do vệ tinh Sentinel-2 chụp, bên cạnh dòng chữ: Tuần này, có thứ gì đó quan sát bạn. Chọn một nơi trên Trái Đất.',
 
   // ── The share page ────────────────────────────────────────────────────────────────────────────────────────────────
 
   page: {
     title: 'Tuần này, có thứ gì đó quan sát bạn.',
     description:
-      'Chọn một nơi bất kỳ trên Trái Đất. Xem mọi vệ tinh đã bay qua nơi đó trong 7\u00a0ngày qua, cùng những hình ảnh thật chúng ghi lại.',
-    placeTitle: (place: string) => `Thứ gì đã quan sát ${place} tuần này`,
+      'Chọn một nơi bất kỳ trên Trái Đất. Xem mọi vệ tinh đã bay qua nơi đó trong 7\u00a0ngày qua, cùng những hình ảnh thật mà chúng đã ghi lại.',
+    /** A heading without a question mark is a noun phrase, *Những gì …*: *Thứ gì …* would be a question cut short */
+    placeTitle: (place: string) => `Những gì đã quan sát ${place} tuần này`,
     placeDescription: (place: string) =>
-      `Mọi vệ tinh đã bay qua ${place} trong 7\u00a0ngày qua, cùng những hình ảnh thật chúng ghi lại. Tuần này, thứ gì đã quan sát bạn?`,
+      `Mọi vệ tinh đã bay qua ${place} trong 7\u00a0ngày qua, cùng những hình ảnh thật mà chúng đã ghi lại. Tuần này, thứ gì đã quan sát bạn?`,
     opening: ['Đang mở ', accent('Watched')] as Rich,
   },
   /** "Sentinel-2C đã bay qua Waterloo ở độ cao 795 km lúc 11:21 EST, Chủ Nhật 1/11/2026, di chuyển về hướng nam." */
@@ -215,7 +220,7 @@ const card: CardMessages = {
   inSwath: (place: string) => `${place} nằm trong dải quét.`,
   bestFrom: {
     closest: (sat: SatName) => `Ảnh chi tiết nhất do ${namedObject(sat)} ghi lại.`,
-    lastClear: (sat: SatName) => `Ảnh không mây gần nhất do ${namedObject(sat)} ghi lại.`,
+    lastClear: (sat: SatName) => `Ảnh không mây mới nhất do ${namedObject(sat)} ghi lại.`,
     first: (sat: SatName) => `Ảnh đầu tiên do ${namedObject(sat)} ghi lại.`,
   },
   question: 'Tuần này, thứ gì đã quan sát bạn?',
