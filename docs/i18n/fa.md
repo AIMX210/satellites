@@ -195,7 +195,8 @@ Tab title (`app.documentTitle`, boot `title`): `Watched · چیزی این هف�
 - The object comes first with `را`, the subject and verb last. Persian fronts an object freely (`این فیلم را دو
   میلیون نفر دیدند`), and it gives the headline what English bolds: the count and the verb, together, at the end.
 - With a number the noun is singular (`256 ماهواره`), and the verb is plural (`رصد کردند`): the satellites act.
-- The place takes nothing but `را` after it, with a space; it is never inflected and needs nothing else.
+- The place takes nothing but `را` after it, tied by a no-break space (`accent(place), '\u00a0را '`) so a line never
+  starts with `را`; it is never inflected and needs nothing else.
 - A place that ends in a full stop (`D.C.`) takes no second one only when it ends the sentence; here it never does.
 
 **`results.headline.none(place, past)`**: `این هفته هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم *Waterloo* را رصد
@@ -324,7 +325,8 @@ cleanly when unknown. `couldHave`: `می‌توانست به این‌جا نگ�
 
 **Post (`share.post`)**: `ماهوارهٔ Sentinel-2C روز یکشنبه 1 نوامبر ساعت 11:21 به وقت محلی، از ارتفاع 795 کیلومتری
 Waterloo را رصد کرد. 10 متر در هر پیکسل؛ این تصویر واقعی است.` then `چیزی این هفته شما را هم رصد کرد.` The altitude
-phrase stands between the two names. X weighs Persian letters as one, like Latin: the English length budget holds.
+phrase stands between the two names. The credit is `از طریق @armaangupt0` (the sheet's preview isolates the handle,
+so its `@` stays with the name). X weighs Persian letters as one, like Latin: the English length budget holds.
 
 ### 3.6 The four verdicts (`verdicts`)
 
@@ -376,7 +378,7 @@ SENTINEL-2C`; pin card `سنجاق` · `یافتن نام این نقطه` · `�
 `محاسبه` · `اخیر` · `قبلی (←)` · `بعدی (→)`; shared tag `برای شما فرستاده شد · [PLACE] را ماهوارهٔ [SAT] رصد کرد`;
 computing `کاتالوگ مداری` / `کاتالوگ بارگیری شد` · `محاسبهٔ مدارها · 7 روز` / `مدارها محاسبه شد` · `آرشیوهای
 Sentinel-2 + Landsat` / `آرشیوها جستجو شد` · `تطبیق صحنه‌ها با گذرها` / `صحنه‌ها تطبیق داده شد`; `1.84 ثانیه`;
-timeline `خط زمانی`; plan `نقشه · شمال بالا` · `چرخش ⟨LRI⟩±30°⟨PDI⟩` · `نوار 290 کیلومتری` · `مسیر زمینی`;
+timeline `خط زمانی`; plan `نقشهٔ گذر` · `نقشه · شمال بالا` · `چرخش ⟨LRI⟩±30°⟨PDI⟩` · `نوار 290 کیلومتری` · `مسیر زمینی`;
 time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
 
 ## 4. Glossary
@@ -434,7 +436,7 @@ time-lapse row `گذر سال‌ها` / `این مکان، سال به سال`.
 | link | پیوند | |
 | time-lapse | گذر سال‌ها | the feature's name: "the passing of years"; `تایم‌لپس` is a loanword, `گذر زمان` is vaguer |
 | timeline | خط زمانی | |
-| plan view | نمای بالا | |
+| plan view | نقشهٔ گذر | the pass's map; `نمای بالا` reads as "the view above". The trailing note under it: `نقشهٔ بالا مسیر گذر را نشان می‌دهد.` |
 | spot (the searched place) | نقطه | "your spot" `نقطهٔ شما` |
 | place | مکان | `این مکان`, `این‌جا` |
 | pin | سنجاق | `گذاشتن سنجاق` |
@@ -661,8 +663,9 @@ object where a break would strand it at the start of a line.
 The page is `data-script="arabic"`: Noto Sans Arabic (weights 400–700, widths 75–100) for display, body and labels,
 Amiri for the accent, Arabic-script leading (×1.36) and no tracking, exactly as on the Arabic page. The committed
 subsets cover U+0600–06FF, so every Persian letter (`پ چ ژ ک گ ی`), the hamza above (U+0654), the Persian digits and
-`٫ ٬ ٪` are there, and the half-space (U+200C) is in their unicode-range. Measured on the landing (§7): the hero needs
-no size factor.
+`٫ ٬ ٪` are there, and the half-space (U+200C) is in their unicode-range (its glyph has no advance: `می‌کند` measures
+exactly `می` + `کند`). Measured on the landing (§7): the two-line hero fits at the Arabic size; it would also fit at the
+Latin size, which would restore the English block's height.
 
 ## 7. Length discipline
 
@@ -671,7 +674,7 @@ verbs are longer (`نمی‌توانیم بدانیم`) and units are words, so 
 
 | Where | Budget | Persian |
 |---|---|---|
-| Hero lines | the English column | `چیزی این هفته` / `شما را رصد کرد.`: both lines inside the English block (measured, see the report) |
+| Hero lines | the English column | `چیزی این هفته` / `شما را رصد کرد.`: 388 and 385 px at the Arabic page's 69 px hero (English: 459 / 526 / 431 px at 91 px); 244 / 242 px of a 334 px phone column. The block is shorter than English's (173 against 252 px); at the Latin size (×1.32) both lines would still fit the English 528 px block |
 | Locate button on phones | ~8 characters | `موقعیت من` |
 | Chips | ~14 characters | `منطقهٔ 51`، `سنترال پارک`، `جیزه`، `غافلگیرم کن`، `نزدیک من` |
 | Filter segments | ~8 characters | `همه` · `دقیق` · `هواشناسی` · `رادار` |
