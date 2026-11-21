@@ -1,6 +1,6 @@
 # Watched: Vietnamese (vi) localisation style guide
 
-Final, 2026-11-21. Binding for every `vi` string the product shows, speaks or sends: the app, the share cards and
+Final, 2026-11-21, after two independent reviews (see Review at the end). Binding for every `vi` string the product shows, speaks or sends: the app, the share cards and
 pages, post text, alt text, aria labels, the video, About and the loading screen. Written against `docs/DESIGN.md` §7,
 the English namespaces in `src/i18n/en/` (with the curated places in `src/i18n/en/plain/placeNames.ts`), the share
 card's `api/_lib/i18n/card/en.ts` and the verdict table `src/i18n/en/verdicts.ts`. Where this guide and a translator's
@@ -32,11 +32,11 @@ glyph check. Run `node -e` with `s.normalize('NFC') === s` over a file before co
 | image / photo / picture | **ảnh** for every image, radar, mosaics and full-disc frames included; **bức ảnh** after a count in a display sentence; **ảnh chụp** only where the item is certainly an optical photograph; **hình ảnh** for "pictures" uncounted in prose. |
 | pass / swath / scene | **lượt bay qua** (unit after a count: **lượt**) / **dải quét** / **cảnh ảnh** (remote-sensing term) or **ảnh**. |
 | Verdicts | *Đã quan sát* · *Nhiều khả năng đã quan sát* · *Có thể đã hướng về đây* · *Bay qua trên đầu*; lanes `ẢNH` · `QUÉT QUA` · `CÓ THỂ` · `BAY QUA`. |
-| Hero | **Tuần này, / có thứ gì đó / quan sát *bạn*.** (landing: three lines; the default share card: four, §3.1). The fronted *Tuần này* carries the time, so the headline needs no *đã*; every other sentence keeps it. |
+| Hero | **Tuần này, / có thứ gì đó / quan sát *bạn*.** (landing: three lines; the default share card: four, §3.1). The existential *có …* after the fronted *Tuần này* reports a past event without *đã*, as Vietnamese does (*Hôm nay có người tìm bạn*); every other sentence keeps it. |
 | Plural | One CLDR category, `other`. One noun form for 1 and 1,000; never *các* / *những* after a number. |
 | Numbers | `1.715` · `7,46` · `25%` · `5,4°` · `786 km` · `7,46 km/s` |
 | Clocks | `16:14:21` (colon), as they arrive, in prose too: *lúc 16:14:21 UTC*. Never *16h14*. |
-| Coordinates | International, as the app writes them: `16.2°S 063.0°E`, `0.2°W`. Never reformatted to *B/N/Đ/T*. |
+| Coordinates | International, as the app writes them: `16.2°S 063.0°E`, `0.2°W`. A translator never reformats them; their N (north) beside the compass's N (*nam*) is an open owner question (§4.2). |
 | Compass | Prose words *bắc … tây bắc*; readouts the 16 Vietnamese abbreviations `B … BTB` (§4.2). North is **B**, never N (N is *nam*, south). |
 | Dates | Day/month in digits, the Vietnamese way: *CN, 1/11* · *Chủ Nhật, 1/11* · `1 → 8/11/2026`; spoken *Chủ Nhật, ngày 1 tháng 11*. Never CLDR's *thg*. |
 | Zones | Arrive formatted; a translator never writes or changes one. |
@@ -58,7 +58,7 @@ writer speaking to one person: not a bank, not a ministry, not a friend on Zalo.
 | Surface | Address | Form | Example | Why |
 |---|---|---|---|---|
 | Display headlines (hero, results headline, About title, panel heads) | *bạn* when the reader is addressed, last in the line where it is the accent | Short declarative, no particle | *Tuần này, có thứ gì đó quan sát \*bạn\*.* | *bạn* is a free word, so it can carry the serif accent alone; ending on it puts the weight where Vietnamese puts emphasis, at the end. |
-| Sentences (results, pass detail, notes, post text) | *bạn*; the product is *chúng tôi* | Declarative, standard grammar | *Lúc đó ở đây trời tối. … nên thứ vệ tinh thấy là mây của bạn, không phải phố của bạn.* | Second person is the product's voice. |
+| Sentences (results, pass detail, notes, post text) | *bạn*; the product is *chúng tôi* | Declarative, standard grammar | *Lúc đó ở đây trời tối. … nên thứ vệ tinh thấy là mây của bạn, chứ không phải phố của bạn.* | Second person is the product's voice. |
 | Buttons and links | No pronoun; the user's own voice is *tôi* | Bare verb (*Chia sẻ*, *Sao chép liên kết*, *Thử lại*), never *Hãy*, *Vui lòng*, *Xin* | *Dùng vị trí của tôi* · *Gần tôi* · *Chia sẻ* · *Thử lại* | A button is the user's own command. Where the English speaks as the user ("my", "me"), Vietnamese does too, with *tôi*. |
 | Mono caps labels | None | Nouns and short verb phrases | `7 NGÀY QUA` · `ĐỘ CAO` · `ĐỘ NGHIÊNG` | Labels name things. |
 | Faults and notices | No pronoun first; *bạn* when a person must act | What failed, then what to do. No *Rất tiếc*, *Xin lỗi*, *Vui lòng* | *Không tải được danh mục quỹ đạo. Kiểm tra kết nối rồi thử lại.* | The English never apologises. Vietnamese apps habitually open with *Rất tiếc,* and close with *Vui lòng thử lại*: longer and servile. |
@@ -79,9 +79,11 @@ writer speaking to one person: not a bank, not a ministry, not a friend on Zalo.
    *mình*, *em*, *tớ*.
 5. **Satellites get no personal pronoun.** *nó* for a satellite is spoken Vietnamese and reads careless in writing;
    *họ* is for people. In order of preference: drop the subject (Vietnamese allows it: *Camera hướng thẳng xuống.*),
-   *vệ tinh này*, a noun (*camera*, *radar*, *dải quét*, *nhà vận hành*), the name again. A station is *trạm*.
-   One sanctioned *chúng*: the plural "they" for satellites or archives in a long sentence (*những hình ảnh thật chúng
-   ghi lại*), where Vietnamese prose uses it for things.
+   *vệ tinh này*, a noun (*camera*, *radar*, *dải quét*, *nhà vận hành*), the name again. A station is *trạm vũ trụ* on
+   first mention (*trạm* alone is also a bus stop or a post), then *trạm*; never *họ* (*ảnh của họ* would be the crews'
+   own photos).
+   One sanctioned *chúng*: the plural "they" for satellites or archives in a long sentence (*những hình ảnh thật mà
+   chúng đã ghi lại*), where Vietnamese prose uses it for things.
 6. **A company is *họ*** when its people are meant (*các công ty không cho biết họ hướng camera về đâu*).
 
 ### 1.3 Rejected
@@ -125,20 +127,23 @@ fault sentence, where a bare verb would read as a label (*Thay vào đó, hãy t
   about the same pass need no *đã*. A pass's conditions take ***lúc đó*** ("at that time"): *Lúc đó ở đây trời tối*,
   never *Ở đây đang tối* (that says it is dark now, false for a pass three days ago). ***đang*** is only for live
   states: *Đang tải…*, *Đang định vị…*.
-- **The hero is a headline, and a Vietnamese headline lets its time phrase carry the tense.** *Tuần này, có thứ gì đó
-  quan sát bạn*: the fronted *Tuần này* ("this week") says when, as *Tuần này có người nhắc đến bạn* does, so the verb
-  stands bare, and its line fits the landing's column at 1280 px (with *đã* it wrapped to a fourth line and pushed the
-  chips into the HUD, §3.1). Never *đang quan sát* ("is watching"): stronger, and false, since nothing here is live.
-  Every sentence about a pass or a count keeps *đã* (*256 vệ tinh đã quan sát Waterloo*).
+- **The hero reports, with the existential *có*.** *Tuần này, có thứ gì đó quan sát bạn*: *có …* + verb after a
+  fronted time phrase is how Vietnamese reports something that happened (*Hôm nay có người tìm bạn*, "someone came
+  looking for you today"), so the verb stands bare. This is a language choice, not a layout one (Review: kept against
+  *đã*). Never *đang quan sát* ("is watching"): stronger, and false, since nothing here is live. A sentence with a
+  definite subject keeps *đã*, because without it a count reads as a general fact (*256 vệ tinh đã quan sát Waterloo*),
+  and so does a question (*thứ gì đã quan sát bạn?*).
+- **A negated past takes no *đã*.** *Không ai đến*, never *Không ai đã đến*: *Không vệ tinh nào trong danh mục của
+  chúng tôi quan sát Waterloo tuần này.*
 - **One idea per sentence, 10 to 25 words.** Vietnamese words are one syllable each, so word counts run higher than in
   English for the same sentence; count a number with its unit (*786 km*) and a clock with its zone (*16:14:21 UTC*)
   as one word. Where English chains three clauses, split into two sentences.
-- **Let the colon do the work of "is".** *Lượng mây trên toàn ảnh: 25%.* Not *Lượng mây trên toàn ảnh là 25%.*
+- **Let the colon do the work of "is".** *Lượng mây của cả cảnh ảnh: 25%.* Not *Lượng mây của cả cảnh ảnh là 25%.*
 - **Active when the satellite acts, passive only when nobody in particular did it.** Active: *bay qua, quan sát,
   quét qua, ghi lại*. Agentless passive with *được* is natural for publishing (*31 bức ảnh đã được công bố*); never
   *bị* (the adversative passive: *bị quan sát* says you suffered it, which is the escalation §8 forbids), never a
   passive with a *bởi* chain (*được chụp bởi Sentinel-2C* is a calque: write *do Sentinel-2C ghi lại*).
-- **The uncanny comes from precision plus "you".** *nên thứ vệ tinh thấy là mây của bạn, không phải phố của bạn.* No
+- **The uncanny comes from precision plus "you".** *nên thứ vệ tinh thấy là mây của bạn, chứ không phải phố của bạn.* No
   horror vocabulary, no ellipses for suspense, no rhetorical questions (the one question is the share hook, kept as the
   English has it).
 - **Hedges are exact and few:** *nhiều khả năng* (likely, the verdict), *có thể đã* (could have), *khoảng* (about),
@@ -146,10 +151,17 @@ fault sentence, where a bare verb would read as a label (*Thay vào đó, hãy t
   (too close to *có thể* on the verdict ladder, §3.7).
 - **No filler.** No *là* where a colon or nothing works; no *việc* + verb (*việc tìm kiếm* → *tìm*); no *tiến hành* +
   verb (*tiến hành quét* → *quét*); no *một* before every noun (English "a" is not Vietnamese *một*: *Camera thường cần
-  ánh nắng*, not *Một camera thường cần một ánh nắng*); no *các* / *những* where the plural is already clear; no
-  *thực hiện* for "do".
-- **Vietnamese word order.** Head first: *camera của Sentinel-2C*, *ảnh ghép hằng ngày của NASA*, *kho lưu trữ ảnh*.
-  Time and place adverbials go at the start (*Tuần này, …*, *Lúc đó …*) or at the end, not between verb and object.
+  ánh sáng Mặt Trời*, not *Một camera thường cần một ánh sáng Mặt Trời*); no *các* / *những* where the plural is
+  already clear; no *thực hiện* for "do".
+- **Vietnamese word order.** Head first: *camera của Sentinel-2C*, *ảnh ghép hằng ngày của NASA*, *kho lưu trữ ảnh*,
+  *Địa điểm ví dụ* (never *Ví dụ địa điểm*, "for example: place"). Time and place adverbials go at the start (*Tuần
+  này, …*, *Lúc đó …*) or at the end, not between verb and object. Ordinals follow the thing: *Meteosat thứ hai của thế
+  hệ thứ ba*, never *thế hệ ba thứ hai*.
+- **No English afterthoughts.** A count goes next to its verb (*quét qua nơi này 42 lần bằng hồng ngoại*), never after
+  a comma at the end (*…, 42 lần.*); a pixel size is a phrase of its own (*ở độ phân giải 375 m*, *mỗi điểm ảnh rộng
+  10 m*), never tacked on (*với 375 m mỗi điểm ảnh*, *, 20 m,*, *ở khoảng 3 m*); an English fragment becomes a clause
+  (*Coarse, but real* → *Ảnh thô nhưng là ảnh thật*; *Stations and everything else.* → *Gồm các trạm vũ trụ và mọi thứ
+  khác.*). "X, not Y" after *là* is *X, chứ không phải Y*.
 
 ### 2.2 What to avoid
 
@@ -159,9 +171,11 @@ fault sentence, where a bare verb would read as a label (*Thay vào đó, hãy t
   for "by", *một* for "a", *nó* for "it", *là* for every "is", *cho* for every "for", *trong khi* for "while" where it
   means "but", *của bạn* on every noun, *khả dụng* for "available" (*không có*, *hiện chưa có*).
 - **Escalation:** English says "watched". Never *theo dõi bạn*, *giám sát bạn*, *rình*, *do thám bạn*, *nhắm vào bạn*.
-  The only thing "tracked" is satellites (*vệ tinh mà chúng tôi theo dõi*).
+  "Satellites we track" is said as the limit it is, *vệ tinh … trong danh mục của chúng tôi*; *theo dõi* stays only for
+  the tracking data itself (*dữ liệu theo dõi của Lực lượng Không gian Hoa Kỳ*).
 - **Over-politeness:** *Vui lòng*, *Xin*, *Kính mời*, *Rất tiếc*, *Cảm ơn bạn đã…* on UI chrome.
-- **Sino-Vietnamese where a plain word exists** in sentences: *bay qua* not *quá cảnh*, *nhìn thẳng xuống* not *thiên đế*,
+- **Sino-Vietnamese where a plain word exists** in sentences: *bay qua* not *quá cảnh*, *nhìn thẳng xuống* not *thiên để*
+  (天底, nadir),
   *ảnh* not *ảnh viễn thám*. Technical Sino-Vietnamese is right where it is the plain word (*quỹ đạo*, *địa tĩnh*,
   *hồng ngoại*, *xích đạo*).
 
@@ -170,10 +184,10 @@ fault sentence, where a bare verb would read as a label (*Thay vào đó, hãy t
 | # | Before (typical first draft) | After | Why |
 |---|---|---|---|
 | 1 | *Trong 7 ngày qua, 256 vệ tinh đã theo dõi Waterloo.* | *Trong 7 ngày qua, **256 vệ tinh đã quan sát** \*Waterloo\*.* | *theo dõi* is tracking (and Facebook's "Follow"): it overclaims a pass and escalates. |
-| 2 | *Hãy khám phá ngay những vệ tinh hiện đại đang giám sát vị trí của quý khách theo thời gian thực!* | *Tuần này, có thứ gì đó đã quan sát \*bạn\*.* | *Hãy*, marketing, *giám sát*, *quý khách*, a false claim (nothing is real time), an exclamation mark. |
-| 3 | *Nó đã nhìn thẳng xuống. Độ che phủ mây trên cảnh là 25%.* | *Camera hướng thẳng xuống. Lượng mây trên toàn ảnh: 25%.* | *nó* for a satellite, *cảnh* alone is a film scene, *là* is filler; *lượng mây* is the meteorologist's word. |
+| 2 | *Hãy khám phá ngay những vệ tinh hiện đại đang giám sát vị trí của quý khách theo thời gian thực!* | *Tuần này, có thứ gì đó quan sát \*bạn\*.* | *Hãy*, marketing, *giám sát*, *quý khách*, a false claim (nothing is real time), an exclamation mark. |
+| 3 | *Nó đã nhìn thẳng xuống. Độ che phủ mây trên cảnh là 25%.* | *Camera hướng thẳng xuống. Lượng mây của cả cảnh ảnh: 25%.* | *nó* for a satellite, *cảnh* alone is a film scene, *là* is filler; *lượng mây* is the meteorologist's word; *toàn ảnh* would say the crop on screen is 25% cloud. |
 | 4 | *Rất tiếc, chúng tôi không thể xác định một cách chính xác liệu vệ tinh đó có thực hiện việc chụp ảnh địa điểm này hay không.* | *Chúng tôi không thể biết điều đó có xảy ra hay không.* | Apology, *thực hiện việc*, *một cách*, 27 words for 11. |
-| 5 | *Ở đây đang tối. Các máy chụp thời tiết tiếp tục quét vào ban đêm trong hồng ngoại, nên nó đã thấy những đám mây của bạn.* | *Lúc đó ở đây trời tối. Vệ tinh khí tượng vẫn quét suốt đêm bằng hồng ngoại, nên thứ vệ tinh thấy là mây của bạn, không phải phố của bạn.* | Present for a past pass, *trong hồng ngoại* (calque of "in infrared": *bằng*), *nó*; the after keeps the two-beat ending. |
+| 5 | *Ở đây đang tối. Các máy chụp thời tiết tiếp tục quét vào ban đêm trong hồng ngoại, nên nó đã thấy những đám mây của bạn.* | *Lúc đó ở đây trời tối. Vệ tinh khí tượng vẫn quét suốt đêm bằng hồng ngoại, nên thứ vệ tinh thấy là mây của bạn, chứ không phải phố của bạn.* | Present for a past pass, *trong hồng ngoại* (calque of "in infrared": *bằng*), *nó*; the after keeps the two-beat ending. |
 | 6 | *Hình ảnh được chụp bởi Sentinel-2C.* | *Ảnh do Sentinel-2C ghi lại.* | *bởi* passive is a calque; *ghi lại* fits radar too. |
 
 ---
@@ -195,16 +209,22 @@ quan sát *bạn*.
   where the language stresses. The English puts the time last; a Vietnamese line ending on *tuần này.* would end on the
   least important words. *Tuần này,* opens with its comma, as Vietnamese fronts a time phrase.
 - *thứ gì đó* is "some thing": not a person (*ai đó*, "someone", would make it a stalker), and the indefinite *gì đó*
-  keeps it unnamed. No *đã*: the fronted *Tuần này* carries the time (§2.1).
+  keeps it unnamed. No *đã*: the existential *có …* after a fronted time phrase reports a past event (*Hôm nay có
+  người tìm bạn*; §2.1). Review B asked for *đã* back, reading the bare verb as ongoing or as a horoscope; the native
+  review read it as a report, and so does this guide (see Review).
 - Lines are 9 / 12 / 13 characters (English 9 / 11 / 10). The last line, which carries the accent, is as long as the
-  middle one, where the English puts its weight. Seen at 1280 × 800: with *đã* the last line (16) was too wide for the
-  column and wrapped to *đã quan sát / \*bạn\*.*; the fourth line pushed the example chips into the HUD's bottom-left
-  readout. Without it the hero is three lines at 1280 px and at 375 px. Where a display size still leaves the last line
-  too wide it wraps at its one space before the accent, giving the card's four-line form. That is the only break
-  allowed: never `nowrap`, never a manual break elsewhere, never a break inside *quan sát* or *thứ gì đó*.
+  middle one, where the English puts its weight. Measured at 1280 × 800: the column is 580 px and *quan sát bạn.* sets
+  at 578 px, so the hero is three lines there and at 375 px. A 16-character line (*đã quan sát \*bạn\*.*) would wrap
+  to a fourth line and push the example chips into the HUD's bottom-left readout: a layout limit for every language
+  (Italian's 16-character lines wrap to five lines there today), reported to the landing's owner. Where a display size
+  leaves the last line too wide it wraps at its one space before the accent, giving the card's four-line form. That is
+  the only break allowed: never `nowrap`, never a manual break elsewhere, never a break inside *quan sát* or *thứ gì
+  đó*.
 - Screen readers get one sentence: *Tuần này, có thứ gì đó quan sát bạn.*
 - Tab title and boot title: *Watched · Tuần này, có thứ gì đó quan sát bạn* (no full stop). Share page title: *Tuần
-  này, có thứ gì đó quan sát bạn.* The share hook keeps it: *Tuần này, có thứ gì đó cũng quan sát bạn.*
+  này, có thứ gì đó quan sát bạn.* The share hook keeps it, with "too" on the event: *Tuần này, cũng có thứ gì đó quan
+  sát bạn.* (*cũng có*, "there was also": *có thứ gì đó cũng quan sát* would put "too" on "something", as if something
+  else had watched you as well).
 
 Default share card (`card.hero`), four lines, because the card never re-wraps and its column is 466 px: at 88 px the
 condensed face sets about 35 px a character, so *quan sát bạn.* (13) is about 450 px: it would fit, with no margin.
@@ -219,7 +239,7 @@ quan sát
 
 | Alternate | Why it lost |
 |---|---|
-| *Tuần này, / có thứ gì đó / đã quan sát \*bạn\*.* | The first version. Correct, but the last line wraps on a laptop (above), and a headline with a fronted time phrase does not need *đã*. |
+| *Tuần này, / có thứ gì đó / đã quan sát \*bạn\*.* | The first version. Correct, but the existential *có …* already reports the past, so *đã* is redundant in a headline; its 16-character last line also wraps on a laptop (above). |
 | *Có thứ gì đó / đã quan sát \*bạn\* / tuần này.* | The English order. Grammatical, but it ends on *tuần này*, so the line after the accent deflates it. |
 | *Tuần này, / có ai đó / đã quan sát \*bạn\*.* | *ai đó* is a person: a stalker, not a satellite. |
 | *Tuần này, / có thứ gì đó / đã theo dõi \*bạn\*.* | *theo dõi* is "followed, tracked": the escalation §8 forbids, and false (a pass does not follow anyone). |
@@ -229,12 +249,14 @@ quan sát
 ### 3.2 The sub line
 
 **Chosen** (`landing.sub`, `card.page.description`): *Chọn một nơi bất kỳ trên Trái Đất. Xem mọi vệ tinh đã bay qua
-nơi đó trong 7 ngày qua, cùng những hình ảnh thật chúng ghi lại.*
+nơi đó trong 7 ngày qua, cùng những hình ảnh thật mà chúng đã ghi lại.*
 
 - No-break space in *7 ngày* (the `days` slot and its unit). *Trái Đất* is capitalised (§6.4).
 - *Chọn* (choose), not *Nhập* (type in): the chips and the globe pin are choices too, and *Nhập* is a form.
 - *hình ảnh* because the pictures include radar and mosaics; *thật* for "actual" (never *thực tế*, "realistic,
   practical"); *ghi lại* (recorded) because radar does not *chụp* (photograph). *chúng* is the satellites (§1.2 rule 5).
+  The relative clause is whole, *mà chúng đã ghi lại*: the clipped *chúng ghi lại* is headline shorthand inside a full
+  sentence.
 - The default card's footer (`card.enterAnyPlace`) has room for less: *Chọn một nơi trên Trái Đất* (§7).
 
 | Alternate | Why it lost |
@@ -253,16 +275,17 @@ same noun form; zero is its own sentence.
 | N = 1 | … **1 satellite watched** … | *Trong 7 ngày qua, **1 vệ tinh đã quan sát** \*Waterloo\*.* | same |
 | Other window length | In the last 5 days, … | *Trong 5 ngày qua, **[NUM] vệ tinh đã quan sát** \*[PLACE]\*.* | same |
 | Window that ended | Between 29 Oct and 5 Nov, … | *Từ 29/10 đến 5/11, **256 vệ tinh đã quan sát** \*Waterloo\*.* | same |
-| N = 0 | No satellite we track watched *Waterloo* this week. | *Không vệ tinh nào mà chúng tôi theo dõi đã quan sát \*Waterloo\* tuần này.* | no bold; serif the place |
-| N = 0, window that ended | … that week. | *… đã quan sát \*Waterloo\* tuần đó.* | same |
+| N = 0 | No satellite we track watched *Waterloo* this week. | *Không vệ tinh nào trong danh mục của chúng tôi quan sát \*Waterloo\* tuần này.* | no bold; serif the place |
+| N = 0, window that ended | … that week. | *… quan sát \*Waterloo\* tuần đó.* | same |
 | A water body | … watched the *Pacific Ocean*. | *… **256 vệ tinh đã quan sát** \*Pacific Ocean\*.* | no class noun, ever |
 
 Frame: `Trong [DAYS] ngày qua, **[NUM] vệ tinh đã quan sát** *[PLACE]*.`
 
 - *vệ tinh* takes no classifier after a number: *256 vệ tinh*, as the press writes it (*chiếc vệ tinh* only for one
   satellite in a story, never in a count).
-- *mà* in the zero sentence is required: without it *chúng tôi theo dõi đã quan sát* reads as two verbs in a row.
-  *theo dõi* is right here: we do track satellites.
+- The zero sentence says "we track" as the limit it is, *trong danh mục của chúng tôi* ("in our catalog"), and takes
+  no *đã*: Vietnamese negates a past event without it (*Không ai đến*, never *Không ai đã đến*). The first version,
+  *Không vệ tinh nào mà chúng tôi theo dõi đã quan sát*, needed *mà … đã* only to keep *theo dõi* and *quan sát* apart.
 
 | Alternate | Why it lost |
 |---|---|
@@ -298,7 +321,7 @@ Frame: `Trong [DAYS] ngày qua, **[NUM] vệ tinh đã quan sát** *[PLACE]*.`
 down. Cloud cover across the scene: 25%.
 
 **Vietnamese:** *Sentinel-2C đã bay qua ngay trên đầu bạn lúc 16:14:21 UTC ở độ cao 786 km, di chuyển về hướng nam với
-tốc độ 7,46 km/s. Camera hướng thẳng xuống. Lượng mây trên toàn ảnh: 25%.*
+tốc độ 7,46 km/s. Camera hướng thẳng xuống. Lượng mây của cả cảnh ảnh: 25%.*
 
 The order is always: what crossed, where from you, when, how high, how it moved. The clock comes before the altitude
 so the reader meets the moment first, as Vietnamese narrates (*lúc … ở độ cao …*).
@@ -313,25 +336,25 @@ for where it was from you (*cách bạn 61 km về phía tây*). The two then ne
 | imaged, offset | `[SAT] đã bay qua lúc [TIME] ở độ cao [ALT], cách bạn [DIST] về phía [DIR], di chuyển về hướng [DIR] với tốc độ [SPEED].` |
 | nadir | `Camera hướng thẳng xuống.` |
 | off-nadir | `Camera nghiêng [DEG] so với phương thẳng đứng.` |
-| cloud | `Lượng mây trên toàn ảnh: [PCT].` |
-| imaged, daily mosaic (2nd) | `Cảm biến [SENSOR] đã ghi lại [PLACE] cho ảnh ghép màu thực hằng ngày của NASA, với [GSD] mỗi điểm ảnh.` |
-| imaged, radar (2nd) | `Radar của vệ tinh, chếch [DEG] sang một bên, đã ghi lại [PLACE] với [GSD] mỗi điểm ảnh.` + dark: `…mỗi điểm ảnh, trong bóng tối.` |
-| imaged, geostationary | `[SAT] không bay qua. Vệ tinh này đứng yên ở độ cao [ALT] trên xích đạo tại [LON] và quét toàn bộ mặt Trái Đất bên dưới mỗi [N] phút.` (no seat: drop *tại [LON]*; no cadence: end at *bên dưới.*) |
+| cloud | `Lượng mây của cả cảnh ảnh: [PCT].` (the archive's figure for the whole scene, not the crop on screen; the strip's unit is `CẢNH ẢNH`) |
+| imaged, daily mosaic (2nd) | `Cảm biến [SENSOR] đã ghi lại [PLACE] cho ảnh ghép màu thực hằng ngày của NASA, ở độ phân giải [GSD].` |
+| imaged, radar (2nd) | `Radar của vệ tinh, chếch [DEG] sang một bên, đã ghi lại [PLACE] ở độ phân giải [GSD].` + dark: `…ở độ phân giải [GSD], trong bóng tối.` |
+| imaged, geostationary | `[SAT] không bay qua. Vệ tinh này đứng yên ở độ cao [ALT] trên xích đạo tại [LON] và quét cả nửa Trái Đất bên dưới mỗi [N] phút.` (no seat: drop *tại [LON]*; no cadence: end at *bên dưới.*; *toàn bộ mặt Trái Đất* would be the whole surface) |
 | geostationary, line | `Đường quét lần này tới [PLACE] vào khoảng [TIME], di chuyển về hướng [DIR].` |
 | geostationary, infrared | `Lúc đó ở đây trời tối, nên đây là ảnh hồng ngoại: đỉnh mây theo nhiệt độ, càng lạnh càng sáng.` |
 | likely | the imaged clause, then `, và chỗ của bạn nằm trong dải quét rộng [SWATH].` (no swath known: a full stop after the clause) |
 | could, overhead | `[SAT] đã bay qua trong tầm nhìn lúc [TIME], ngay trên đầu bạn.` |
 | could, offset | `[SAT] đã bay qua trong tầm nhìn lúc [TIME], cách bạn [DIST] về phía [DIR].` |
-| overhead | `[SAT] đã bay qua ở độ cao [ALT] lúc [TIME], cao [ELEV] trên đường chân trời của bạn, về phía [DIR].` · ≥ 80°: `…, cao [ELEV] trên đường chân trời của bạn, gần như ngay trên đầu.` |
+| overhead | `[SAT] đã bay qua lúc [TIME] ở độ cao [ALT], cao [ELEV] trên đường chân trời của bạn, về phía [DIR].` · ≥ 80°: `…, cao [ELEV] trên đường chân trời của bạn, gần như ngay trên đầu.` |
 
 Second sentences:
 
 | English | Vietnamese |
 |---|---|
-| It was daylight, so it would have recorded this spot. The archive could not be searched just now. | *Lúc đó trời sáng, nên hẳn vệ tinh đã ghi lại điểm này. Hiện chưa tra cứu được kho lưu trữ.* |
+| It was daylight, so it would have recorded this spot. The archive could not be searched just now. | *Lúc đó trời sáng, nên nhiều khả năng vệ tinh đã ghi lại điểm này. Hiện chưa tra cứu được kho lưu trữ.* (the verdict's own hedge, below the next row's *gần như chắc chắn*; never *hẳn*, "must have") |
 | No scene exists for this pass. Sentinel-2 records only land and coastal water, and may not have scheduled this spot. | *Không có cảnh ảnh nào từ lượt bay này. Sentinel-2 chỉ ghi ảnh đất liền và vùng nước ven biển, và có thể đã không lên lịch chụp điểm này.* |
 | It was daylight, so it almost certainly recorded this spot. No scene from this pass has been published yet; archives can lag by a day or more. | *Lúc đó trời sáng, nên gần như chắc chắn vệ tinh đã ghi lại điểm này. Chưa có cảnh ảnh nào từ lượt bay này được công bố; các kho lưu trữ có thể chậm một ngày hoặc hơn.* |
-| It was dark here. Weather imagers keep scanning at night in infrared, so it saw your clouds, not your streets. | *Lúc đó ở đây trời tối. Vệ tinh khí tượng vẫn quét suốt đêm bằng hồng ngoại, nên thứ vệ tinh thấy là mây của bạn, không phải phố của bạn.* |
+| It was dark here. Weather imagers keep scanning at night in infrared, so it saw your clouds, not your streets. | *Lúc đó ở đây trời tối. Vệ tinh khí tượng vẫn quét suốt đêm bằng hồng ngoại, nên thứ vệ tinh thấy là mây của bạn, chứ không phải phố của bạn.* |
 | NASA’s daily mosaic for this pass could not be confirmed at your spot. | *Chưa xác nhận được ảnh ghép hằng ngày của NASA cho lượt bay này ở chỗ của bạn.* |
 | Its images feed weather forecasts; they are not published as pictures we can show. | *Ảnh của vệ tinh này dùng cho dự báo thời tiết; chúng không được công bố thành hình ảnh mà chúng tôi có thể hiển thị.* |
 | Waterloo was inside its 290 km swath. Its operator does not publish where it imaged, so we can’t know whether it did. | *Waterloo nằm trong dải quét rộng 290 km của vệ tinh này. Nhà vận hành không công bố vệ tinh đã chụp những nơi nào, nên chúng tôi không thể biết nơi này có được chụp hay không.* |
@@ -339,7 +362,7 @@ Second sentences:
 | … We can’t know whether it did. (private radar) | *… Chúng tôi không thể biết điều đó có xảy ra hay không.* |
 | Looking straight down, it could have watched Waterloo. We can’t know whether it did. | *Nếu nhìn thẳng xuống, vệ tinh này có thể đã quan sát Waterloo. Chúng tôi không thể biết điều đó có xảy ra hay không.* |
 | Pointing 12.3° off straight down, it could have watched Waterloo. … | *Nếu nghiêng 12,3° so với phương thẳng đứng, vệ tinh này có thể đã quan sát Waterloo. …* |
-| It was dark where you are. If the station was still in sunlight, it crossed your sky as a bright, steady point. | *Lúc đó chỗ bạn trời tối. Nếu khi ấy còn được Mặt Trời chiếu sáng, trạm đã băng qua bầu trời của bạn như một chấm sáng đều, không nhấp nháy.* |
+| It was dark where you are. If the station was still in sunlight, it crossed your sky as a bright, steady point. | *Lúc đó chỗ bạn trời tối. Nếu khi ấy trạm vũ trụ vẫn còn được Mặt Trời chiếu sáng, thì trạm đã băng qua bầu trời của bạn như một chấm sáng đều, không nhấp nháy.* |
 
 - *ngay trên đầu bạn* is "overhead": the everyday phrase for a plane or a satellite passing straight above, with the
   reader in it. Never *trên thiên đỉnh* in a sentence (a textbook word).
@@ -364,7 +387,7 @@ Second sentences:
 |---|---|---|
 | Pass card, N ≥ 1 | `[NUM] vệ tinh đã quan sát` | `*[PLACE].*` |
 | Week card | `[NUM] vệ tinh đã quan sát` | `*[PLACE] tuần này.*` |
-| Week card, N = 0 | `Không vệ tinh nào mà chúng tôi theo dõi đã quan sát` (three lines at most) | `*[PLACE] tuần này.*` |
+| Week card, N = 0 | `Không vệ tinh nào trong danh mục của chúng tôi quan sát` (three lines at most) | `*[PLACE] tuần này.*` |
 | Place cut short (`cut`) | as above | the place with its "…", no full stop |
 
 **Legacy shares** (stored before N was kept; `card.headlineBy`), one per verdict:
@@ -383,32 +406,32 @@ Card words:
 | `photos` | §3.4 card forms |
 | `cloud.only` | sub *Mây che kín. Chỉ thấy mây.* · chip *Mây che kín · 92%* · post *Chỉ thấy mây.* · desc *Chỉ thấy mây (92%).* |
 | `cloud.mostly` | sub *Phần lớn là mây: 78% cảnh ảnh.* · chip *Phần lớn là mây · 78%* · post / desc *Phần lớn chỉ thấy mây (78%).* |
-| `cloud.spot` | sub *Mây che ngay điểm này.* · chip *Mây trên điểm này* · post / desc *Mây che điểm này.* |
+| `cloud.spot` | sub *Mây che ngay điểm này.* · chip *Mây trên điểm này* · post / desc *Mây che đúng điểm đó.* (no spot is on screen in a post: refer back with *đó*) |
 | `stamp` | `CN, 1/11/2026 · 11:21 EST` |
 | `weekTo` / `lastWeek` | *7 ngày tính đến 1/11/2026* / *7 ngày qua* |
 | `readout` | *Độ cao* · *Góc ngẩng* · *Tốc độ* · *Độ nghiêng* · *Điểm ảnh* · *Điểm ảnh ghép* · *Gần nhất* |
 | `lane` | *Ảnh* · *Quét qua* · *Có thể* · *Bay qua* |
 | `unit` | *km* · *m* · *km/s* |
 | `geometry` | *Hình học lượt bay · bắc ở trên* |
-| `note` | *Xem ảnh trong ứng dụng* · *Hiện chưa có ảnh* · *Kho thương mại, không công khai* · *Trong dải quét, chưa có ảnh công khai* · *Vệt quỹ đạo lúc gần nhất* |
+| `note` | *Xem ảnh trong ứng dụng* · *Hiện không tải được ảnh* (an image exists; *chưa có ảnh* would say there is none) · *Kho thương mại, không công khai* · *Trong dải quét, chưa có ảnh công khai* · *Vệt quỹ đạo lúc gần nhất* |
 | `acquiring` | *Đang thu nhận…* |
 | `noPublicPhoto` / `noPhoto` | *Tuần này không có ảnh công khai* / *Không có ảnh để hiển thị* |
-| `look` | *Chi tiết nhất* · *Không mây gần nhất* · *Mây che kín* · *Radar*; `lookDay` *3/11* |
+| `look` | *Chi tiết nhất* · *Không mây mới nhất* · *Mây che kín* · *Radar*; `lookDay` *3/11* |
 | `aSatellite` | *Một vệ tinh* |
 | `invite` | *Thứ gì đã quan sát bạn?* |
 | `enterAnyPlace` | *Chọn một nơi trên Trái Đất* |
 | `defaultPlace` | *Palm Jumeirah* |
-| `defaultAlt` | *Ảnh vệ tinh Sentinel-2 thật chụp Palm Jumeirah, Dubai, bên cạnh dòng chữ: Tuần này, có thứ gì đó quan sát bạn. Chọn một nơi trên Trái Đất.* |
+| `defaultAlt` | *Ảnh thật của Palm Jumeirah, Dubai, do vệ tinh Sentinel-2 chụp, bên cạnh dòng chữ: Tuần này, có thứ gì đó quan sát bạn. Chọn một nơi trên Trái Đất.* (*thật* right after *ảnh*; an optical photograph, so *chụp*) |
 | `page.title` / `page.description` | *Tuần này, có thứ gì đó quan sát bạn.* / §3.2 sub line |
-| `page.placeTitle` | *Thứ gì đã quan sát [PLACE] tuần này* (no full stop) |
-| `page.placeDescription` | *Mọi vệ tinh đã bay qua [PLACE] trong 7 ngày qua, cùng những hình ảnh thật chúng ghi lại. Tuần này, thứ gì đã quan sát bạn?* |
+| `page.placeTitle` | *Những gì đã quan sát [PLACE] tuần này* (no full stop: a noun phrase; *Thứ gì …* without "?" is a question cut short) |
+| `page.placeDescription` | *Mọi vệ tinh đã bay qua [PLACE] trong 7 ngày qua, cùng những hình ảnh thật mà chúng đã ghi lại. Tuần này, thứ gì đã quan sát bạn?* |
 | `page.opening` | *Đang mở* + accent *Watched* |
 | `crossed` | *[SAT] đã bay qua [PLACE] ở độ cao [ALT] lúc [CLOCK] [ZONE], [DAY], di chuyển về hướng [DIR].* · no altitude: *[SAT] đã bay qua [PLACE] lúc …* ([DAY] = *Chủ Nhật 1/11/2026*; each clause only when known) |
 | `withinView` | *[PLACE] đã nằm trong tầm nhìn của [SAT] lúc [CLOCK] [ZONE], [DAY], khi vệ tinh di chuyển về hướng [DIR].* |
 | `couldHave` | *Vệ tinh này có thể đã hướng về đây. Nhà vận hành không cho biết điều đó có xảy ra hay không.* |
 | `straightDown` / `offNadir` | *Camera hướng thẳng xuống.* / *Camera nghiêng 12,3° so với phương thẳng đứng.* |
 | `cloudCover` / `inSwath` | *Lượng mây: 25%.* / *[PLACE] nằm trong dải quét.* |
-| `bestFrom` | *Ảnh chi tiết nhất do [SAT] ghi lại.* · *Ảnh không mây gần nhất do [SAT] ghi lại.* · *Ảnh đầu tiên do [SAT] ghi lại.* |
+| `bestFrom` | *Ảnh chi tiết nhất do [SAT] ghi lại.* · *Ảnh không mây mới nhất do [SAT] ghi lại.* · *Ảnh đầu tiên do [SAT] ghi lại.* |
 | `question` | *Tuần này, thứ gì đã quan sát bạn?* |
 | `cardAlt` | *Thẻ chia sẻ của Watched, với ảnh chi tiết nhất trong tuần, do [SAT] ghi lại.* / *Thẻ chia sẻ của Watched.* |
 
@@ -424,13 +447,13 @@ Card words:
 
 | Kind | Vietnamese |
 |---|---|
-| imaged | *[SAT] đã quan sát [PLACE] từ độ cao [ALT] [WHEN]. [PIXEL] mỗi điểm ảnh; đây là ảnh thật.* (no pixel: *… [WHEN]. Đây là ảnh thật.*) |
+| imaged | *[SAT] đã quan sát [PLACE] từ độ cao [ALT] [WHEN]. Mỗi điểm ảnh rộng [PIXEL]; đây là ảnh thật.* (no pixel: *… [WHEN]. Đây là ảnh thật.*) |
 | clouded | *[SAT] đã quan sát [PLACE] từ độ cao [ALT] [WHEN]. [CLOUD]* |
-| likely | *[SAT] đã quét qua [PLACE] từ độ cao [ALT] [WHEN]. Dải quét của camera đã phủ điểm này.* |
+| likely | *[SAT] đã quét qua [PLACE] từ độ cao [ALT] [WHEN]. Dải quét của camera đã phủ điểm đó.* |
 | could | *[PLACE] đã nằm trong tầm nhìn của [SAT] [WHEN]. Vệ tinh này có thể đã hướng về đây. Nhà vận hành không cho biết điều đó có xảy ra hay không.* |
 | overhead | *[SAT] đã bay qua [PLACE] ở độ cao [ALT] [WHEN].* |
 | week | *31 vệ tinh đã quan sát Waterloo tuần này. 12 bức ảnh đã được công bố.* |
-| hooks | *Tuần này, có thứ gì đó cũng quan sát bạn.* · *Tuần này, thứ gì đã bay qua trên đầu bạn?* |
+| hooks | *Tuần này, cũng có thứ gì đó quan sát bạn.* · *Tuần này, thứ gì đã bay qua trên đầu bạn?* |
 | credit | *via @armaangupt0* (the X convention; never *qua*) |
 | file names | `watched-sentinel-2c-waterloo-2026-11-01.png` · `watched-waterloo-tuan-2026-11-01.png` · video fallback word `dia-diem` |
 
@@ -438,7 +461,7 @@ Card words:
 which reads "share, this week") · *Đóng* · *Đóng (Esc)* · *Chia sẻ ảnh* · *Đang tạo ảnh…* · *Chia sẻ* · *Sao chép liên
 kết* · *Đã sao chép* · *Đăng lên X* · *Sao chép ảnh* · *Lưu PNG* · *Thử lại* · link label *Liên kết* · post label *Bài
 đăng* · *Liên kết trực tiếp: hiện chưa tạo được liên kết rút gọn* · *Đang tạo liên kết…* · *Tạo khi bạn chia sẻ* ·
-*Không vẽ được thẻ chia sẻ ở đây; liên kết vẫn dùng được.*
+*Trình duyệt này không vẽ được thẻ chia sẻ; liên kết vẫn dùng được.* (the English "here" is this browser)
 
 ### 3.7 The four verdicts (one vocabulary, `verdicts`)
 
@@ -448,8 +471,8 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 |---|---|---|---|---|---|---|
 | imaged | **Đã quan sát** | `ẢNH` | lượt | *Có ảnh thật của nơi này trong một kho lưu trữ công khai.* | **đã quan sát** | *đã quan sát* |
 | likely | **Nhiều khả năng đã quan sát** | `QUÉT QUA` | lượt | *Dải quét của một camera hướng cố định đã phủ nơi này. Chưa có ảnh nào của nơi này được công bố.* | **đã quét qua** | *đã quét qua* |
-| could | **Có thể đã hướng về đây** | `CÓ THỂ` | lượt | *Một camera xoay hướng được hoặc của tư nhân đã ở trong tầm. Nhà vận hành không cho biết camera có nhìn về đây hay không.* | **đã bay qua trong tầm nhìn** | *có thể đã hướng về* |
-| overhead | **Bay qua trên đầu** | `BAY QUA` | lượt | *Băng qua bầu trời của bạn. Các trạm vũ trụ và mọi thứ khác.* | **đã bay qua trên đầu** | *đã bay qua* |
+| could | **Có thể đã hướng về đây** | `CÓ THỂ` | lượt | *Nơi này đã nằm trong tầm với của một camera xoay hướng được hoặc của tư nhân. Nhà vận hành không cho biết camera có nhìn về đây hay không.* | **đã bay qua trong tầm nhìn** | *có thể đã hướng về* |
+| overhead | **Bay qua trên đầu** | `BAY QUA` | lượt | *Đã băng qua bầu trời của bạn. Gồm các trạm vũ trụ và mọi thứ khác.* | **đã bay qua trên đầu** | *đã bay qua* |
 
 - **Count unit:** *1 lượt*, *31 lượt*, tile `31 LƯỢT`. *lượt* is the Vietnamese count word for occurrences (*lượt xem*,
   *lượt truy cập*) and stands for *lượt bay qua*. Never *lần* for a pass (*lần* is "times": `42 lần`).
@@ -490,16 +513,17 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 | English | Vietnamese |
 |---|---|
 | Last 7 days · 1 → 8 NOV 2026 UTC | `7 ngày qua · 1 → 8/11/2026 UTC` |
-| Search a place / Place / Searching / Search unavailable | *Tìm địa điểm* / *Địa điểm* / *Đang tìm* / *Không tìm được* |
+| Search a place / Place / Searching / Search unavailable | *Tìm địa điểm* / *Địa điểm* / *Đang tìm* / *Không tìm kiếm được* (the act of searching failed: *Không tìm được* would say nothing was found, which is *Không có kết quả*) |
 | 6 matches / No match / Name, address or lat, lon | *6 kết quả* / *Không có kết quả* / *Tên, địa chỉ hoặc tọa độ* |
-| The place search isn’t answering. Coordinates such as 43.47, −80.54 still work. | *Tìm kiếm địa điểm không phản hồi. Bạn vẫn có thể nhập tọa độ như 43.47, −80.54.* (keep the example as written: the field parses it) |
+| The place search isn’t answering. Coordinates such as 43.47, −80.54 still work. | *Dịch vụ tìm địa điểm không phản hồi. Bạn vẫn có thể nhập tọa độ, chẳng hạn 43.47, −80.54.* (a service answers, an action does not; *chẳng hạn* introduces an example; keep the example as written: the field parses it) |
 | Nothing matches “x”. Try a city, a landmark, or coordinates. | *Không có kết quả cho “x”. Thử một thành phố, một địa danh hoặc tọa độ.* |
-| Use my location / Locate me / Near me / Locating… | *Dùng vị trí của tôi* / *Định vị* / *Gần tôi* / *Định vị…* |
+| Use my location / Locate me / Near me / Locating… | *Dùng vị trí của tôi* / *Định vị* / *Gần tôi* / *Đang định vị…* (a live state; bare *Định vị…* reads as a command; the chip row scrolls, so the chip may grow) |
 | Cancel / Cancel locating / Requesting position / Naming the place / 04 S | *Hủy* / *Hủy định vị* / *Đang lấy vị trí* / *Đang tìm tên nơi này* / `04 GIÂY` |
 | Your position goes to the Photon geocoder to name the place. We store only a ~10 km cell. | *Vị trí của bạn được gửi tới Photon, một dịch vụ tra tên địa điểm, để biết nơi này tên gì. Chúng tôi chỉ lưu một vùng rộng khoảng 10 km.* |
 | Location access is blocked. Allow it in your browser settings, or search for a place. | *Quyền truy cập vị trí đang bị chặn. Bật lại trong cài đặt trình duyệt, hoặc tìm một địa điểm.* |
 | Your position isn’t available right now. Search for a place instead. | *Hiện không xác định được vị trí của bạn. Thay vào đó, hãy tìm một địa điểm.* |
-| Or try / Or click the globe to drop a pin / Drop a pin | *Hoặc thử* / *Hoặc bấm vào quả địa cầu để thả ghim* / *Thả ghim* |
+| Or try / Or click the globe to drop a pin / Drop a pin / Example places (aria) | *Hoặc thử* / *Hoặc bấm vào quả địa cầu để thả ghim* / *Thả ghim* / *Địa điểm ví dụ* |
+| Hold the globe anywhere to move it / No named place nearby | *Nhấn giữ quả địa cầu để dời ghim* (*Nhấn giữ* is press-and-hold; bare *Giữ* is "keep") / *Không có địa danh ở gần* (146 of 156 px; *gần đây* also reads "recently") |
 | Surprise me / Surprise me: a famous place picked at random | *Ngẫu nhiên* / *Ngẫu nhiên: một địa danh nổi tiếng bất kỳ* (never *Làm tôi bất ngờ*) |
 | Built by @armaangupt0 | *Do @armaangupt0 thực hiện* (never *Được xây dựng bởi*) |
 
@@ -508,13 +532,19 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 | English | Vietnamese |
 |---|---|
 | The sun never rose, so no daylight camera could see it. | *Mặt Trời không hề mọc, nên không camera thường nào có thể thấy nơi này.* (barely rose: *Mặt Trời gần như không mọc*) |
-| Weather satellites still swept it in infrared, 42 times. | *Vệ tinh khí tượng vẫn quét qua nơi này bằng hồng ngoại, 42 lần.* |
-| Radar doesn’t need light. Umbra, Capella and 7 other radar satellites passed within range 1,204 times. | *Radar không cần ánh sáng. Umbra, Capella và 7 vệ tinh radar khác đã bay qua trong tầm 1.204 lần.* |
-| (zero reason) Sentinel-2 or Landsat crossed it 3 times in daylight, but no scene has been published yet. | *Sentinel-2 hoặc Landsat đã bay qua nơi này 3 lần vào ban ngày, nhưng chưa có cảnh ảnh nào được công bố.* (once: *1 lần*) |
+| Weather satellites still swept it in infrared, 42 times. | *Vệ tinh khí tượng vẫn quét qua nơi này 42 lần bằng hồng ngoại.* (the count by its verb) |
+| Radar doesn’t need light. Umbra, Capella and 7 other radar satellites passed within range 1,204 times. | *Radar không cần ánh sáng. Umbra, Capella và 7 vệ tinh radar khác đã bay qua trong tầm nhìn 1.204 lần.* (never a bare *trong tầm*) |
+| (zero reason) Sentinel-2 or Landsat crossed it 3 times in daylight, but no scene has been published yet. | *Sentinel-2 hoặc Landsat đã bay qua nơi này 3 lần vào ban ngày, nhưng chưa có cảnh ảnh nào được công bố.* (once: *một lần*, plain prose, §5.3) |
 | (zero reason) No open imaging satellite crossed it in daylight. | *Không vệ tinh chụp ảnh công khai nào bay qua nơi này vào ban ngày.* |
-| No satellite we track crossed this place in the window. That is rare; the notes above say if a data source was down. | *Không vệ tinh nào mà chúng tôi theo dõi đã bay qua nơi này trong khoảng thời gian này. Điều đó hiếm khi xảy ra; ghi chú phía trên sẽ cho biết nếu có nguồn dữ liệu bị gián đoạn.* |
+| No satellite we track crossed this place in the window. That is rare; the notes above say if a data source was down. | *Trong khoảng thời gian này, không vệ tinh nào trong danh mục của chúng tôi bay qua nơi này. Điều đó hiếm khi xảy ra; ghi chú phía trên sẽ cho biết nếu có nguồn dữ liệu bị gián đoạn.* |
 | The Sentinel-2 and Landsat archives were too slow to answer; passes are shown from orbital geometry only. | *Kho lưu trữ Sentinel-2 và Landsat phản hồi quá chậm; các lượt bay chỉ được tính theo hình học quỹ đạo.* |
-| Orbital elements are 3 days old, so pass times may be off by a few minutes. | *Tham số quỹ đạo đã cũ 3 ngày, nên giờ bay qua có thể lệch vài phút.* |
+| Orbital elements are 3 days old, so pass times may be off by a few minutes. | *Tham số quỹ đạo có từ 3 ngày trước, nên giờ bay qua có thể lệch vài phút.* (*đã cũ 3 ngày* copies "3 days old") |
+| Sentinel-2 listed via Earth Search (Planetary Computer search unavailable). | *Sentinel-2 được liệt kê qua Earth Search (không tìm kiếm được trên Planetary Computer).* |
+| No operational geostationary weather imager sees this place above 5° elevation. | *Từ nơi này, không vệ tinh khí tượng địa tĩnh nào đang hoạt động nằm cao hơn 5° trên đường chân trời.* |
+| The image archives are slow to answer. If they don’t, the passes will still be shown from orbital geometry, and we’ll say so. | *Các kho lưu trữ ảnh đang phản hồi chậm. Nếu không có phản hồi, các lượt bay vẫn sẽ được tính theo hình học quỹ đạo, và chúng tôi sẽ ghi rõ điều đó.* |
+| Check your place / New search / Share this week at Waterloo | *Xem nơi bạn ở* (never *nơi của bạn*) / *Tìm kiếm mới* / *Chia sẻ tóm tắt tuần này về Waterloo* (a summary is *về* a place) |
+| No public image (geostationary cell, 64 px, ~9 capitals a line) | *Không ảnh công khai*, with a no-break space in *công khai* (sets KHÔNG ẢNH / CÔNG KHAI on laptops and phones; *Không có ảnh công khai* split *công / khai*) |
+| Play replay / Pause replay / In view 37 s | *Phát* / *Tạm dừng* (never the footer's *Phát lại lượt bay*: two buttons, two names) / `TẦM NHÌN 37 GIÂY` (the legend's noun label: *Trong tầm nhìn 37 giây* pushed the end clock off a 390 px phone; never a bare *Trong tầm*) |
 | Could not load the orbit catalog. Check your connection and try again. | *Không tải được danh mục quỹ đạo. Kiểm tra kết nối rồi thử lại.* |
 | Something went wrong computing passes for this place. Try again in a moment. | *Đã xảy ra lỗi khi tính các lượt bay qua nơi này. Thử lại sau giây lát.* |
 | Something went wrong. (the fallback) | *Đã xảy ra lỗi.* |
@@ -533,9 +563,11 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 | English | Vietnamese |
 |---|---|
 | WorldView Legion 4 passed within view at 10:52 EST. It could have watched Waterloo. We can’t know whether it did. | *WorldView Legion 4 đã bay qua trong tầm nhìn lúc 10:52 EST, ngay trên đầu bạn. Nếu nhìn thẳng xuống, vệ tinh này có thể đã quan sát Waterloo. Chúng tôi không thể biết điều đó có xảy ra hay không.* |
-| Meteosat-12 doesn’t pass. It sits 35,778 km above the equator at 0.2°W and scans the whole face of the Earth below it every 10 minutes. This scan’s line reached Paris at about 07:49 CET, moving north. | *Meteosat-12 không bay qua. Vệ tinh này đứng yên ở độ cao 35.778 km trên xích đạo tại 0.2°W và quét toàn bộ mặt Trái Đất bên dưới mỗi 10 phút. Đường quét lần này tới Paris vào khoảng 07:49 CET, di chuyển về hướng bắc.* |
-| ISS passed 420 km up at 19:02 WIB, 64° above your horizon to the west. | *ISS đã bay qua ở độ cao 420 km lúc 19:02 WIB, cao 64° trên đường chân trời của bạn, về phía tây.* |
-| Its VIIRS imager swept Waterloo into NASA’s daily true-colour mosaic at 375 m per pixel. | *Cảm biến VIIRS đã ghi lại Waterloo cho ảnh ghép màu thực hằng ngày của NASA, với 375 m mỗi điểm ảnh.* |
+| Meteosat-12 doesn’t pass. It sits 35,778 km above the equator at 0.2°W and scans the whole face of the Earth below it every 10 minutes. This scan’s line reached Paris at about 07:49 CET, moving north. | *Meteosat-12 không bay qua. Vệ tinh này đứng yên ở độ cao 35.778 km trên xích đạo tại 0.2°W và quét cả nửa Trái Đất bên dưới mỗi 10 phút. Đường quét lần này tới Paris vào khoảng 07:49 CET, di chuyển về hướng bắc.* |
+| ISS passed 420 km up at 19:02 WIB, 64° above your horizon to the west. | *ISS đã bay qua lúc 19:02 WIB ở độ cao 420 km, cao 64° trên đường chân trời của bạn, về phía tây.* (the clock first, as every pass sentence) |
+| Its VIIRS imager swept Waterloo into NASA’s daily true-colour mosaic at 375 m per pixel. | *Cảm biến VIIRS đã ghi lại Waterloo cho ảnh ghép màu thực hằng ngày của NASA, ở độ phân giải 375 m.* |
+| A full-disc image: one picture of everything the satellite can see, at 2 km a pixel here. Coarse, but real, … it has taken one like it every 10 minutes all week. | *Ảnh toàn đĩa: một bức ảnh ghi lại mọi thứ vệ tinh nhìn thấy, mỗi điểm ảnh ở đây rộng 2 km. Ảnh thô nhưng là ảnh thật, và là ảnh mới nhất được công bố; suốt tuần, vệ tinh này cứ 10 phút lại ghi một ảnh như vậy.* (the frame can be infrared: *ghi*, never *chụp*) |
+| Crewed stations carry cameras, but their photos are not published by place and time. | *Các trạm vũ trụ có người ở đều mang camera, nhưng ảnh từ các trạm này không được công bố theo địa điểm và thời gian.* |
 | No public image: commercial archives are private. Plan view of the pass. | *Không có ảnh công khai: kho lưu trữ thương mại không công khai. Hình trên là sơ đồ lượt bay.* |
 | No published scene matches this pass yet. Sentinel-2 and Landsat scenes usually appear within a day. | *Chưa có cảnh ảnh nào được công bố khớp với lượt bay này. Ảnh Sentinel-2 và Landsat thường xuất hiện trong vòng một ngày.* |
 | A radar image, not a photograph: Sentinel-1 sends out microwaves and records their echo, … | *Ảnh radar, không phải ảnh chụp: Sentinel-1 phát sóng vi ba và ghi lại sóng phản xạ, …* |
@@ -553,8 +585,9 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 | Every photo, newest first after the closest look | *Mọi ảnh: chi tiết nhất trước, rồi đến mới nhất* |
 | 12 this week / 12 that week | *Tuần này: 12* / *Tuần đó: 12* |
 | Previous photo · Previous (←) / Photo 3 of 11 / All photos | *Ảnh trước* · *Trước (←)* / *Ảnh 3 trong số 11* / *Tất cả ảnh* |
-| Closest look / Last clear look / Clouded over | *Chi tiết nhất* / *Không mây gần nhất* / *Mây che kín* |
-| This week’s passes saw mostly cloud / Here’s the last clear look | *Các lượt bay tuần này chủ yếu chỉ thấy mây* / *Đây là ảnh không mây gần nhất* |
+| Closest look / Last clear look / Clouded over | *Chi tiết nhất* / *Không mây mới nhất* / *Mây che kín* |
+| This week’s passes saw mostly cloud / Here’s the last clear look | *Các lượt bay tuần này chủ yếu chỉ thấy mây* / *Đây là ảnh không mây mới nhất* |
+| Clear (photo status) / Clear at spot (viewer) / Clear (spot value under *Mây tại điểm*) | *Không mây* / *Điểm không mây* / `QUANG` (≤ 7, and the label says what it is) |
 | Clouded · 25% / Clouded over · 25% / Cloud at your spot | *Có mây · 25%* / *Mây che kín · 25%* / *Có mây ở chỗ của bạn* |
 | Replay / Replay this pass / View / Share this pass | *Phát lại* / *Phát lại lượt bay này* / *Xem* / *Chia sẻ lượt bay này* |
 | Acquiring / No image returned / Retry | *Đang thu nhận* / *Không nhận được ảnh* / *Thử lại* |
@@ -567,14 +600,15 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 | Time-lapse / Time-lapse of this place, year by year | *Time-lapse* / *Time-lapse của nơi này, qua từng năm* |
 | 11 clear looks · one a year / · one each autumn | *11 ảnh không mây · mỗi năm một ảnh* / *· mỗi mùa thu một ảnh* (winter *mùa đông*, spring *mùa xuân*, summer *mùa hè*) |
 | One clear look a year · since 2015 | *Mỗi năm một ảnh không mây · từ năm 2015* |
-| Listing the archive / Choosing clear looks / Developing frames | *Đang đọc kho lưu trữ* / *Đang chọn ảnh không mây* / *Đang tráng khung hình* |
+| Listing the archive / Choosing clear looks / Developing frames | *Đang đọc kho lưu trữ* / *Đang chọn ảnh không mây* / *Đang rửa ảnh* |
 | Too cloudy here for a time-lapse. / No clear look since 2015 · 3 needed | *Ở đây quá nhiều mây để làm time-lapse.* / *Không có ảnh không mây nào từ năm 2015 · cần 3* |
-| Each frame is the same 10 km square, … | *Mỗi khung hình là cùng một ô vuông 10 km, do Sentinel-2 chụp và được chỉnh màu như mọi ảnh ở đây. …* |
+| Each frame is the same 10 km square, … Each year aims for a different season; … / Every year is from the same season; … | *Mỗi khung hình là cùng một ô vuông 10 km, do Sentinel-2 chụp và được chỉnh màu như mọi ảnh ở đây. Ảnh mỗi năm được chọn vào một mùa khác nhau; …* / *Ảnh mọi năm đều được chọn vào cùng một mùa; …* (never *nhắm tới*: a year cannot aim, and *nhắm* is a weapon's verb, §8) |
 | Frame 3 of 11: 6 Nov 2018 | *Khung hình 3 trong số 11: ngày 6 tháng 11 năm 2018* (spoken, so spelled out) |
 | Video / Rendering 42% / Video failed / Save video / Link copied | *Video* / *Đang tạo 42%* / *Lỗi video* / *Lưu video* / *Đã sao chép liên kết* |
+| This browser has no H.264 encoder: the file plays in Chrome and Firefox | *Trình duyệt này không có bộ mã hóa H.264: tệp phát được trên Chrome và Firefox* (no *chỉ*: the English names two browsers, not the only ones) |
 
-- *tráng* is how a photograph is developed (*tráng phim*): the English "developing" is that metaphor, and Vietnamese
-  has the word.
+- "Developing" is the photo lab's metaphor, and Vietnamese says it with *rửa ảnh* (*tiệm rửa ảnh*), which every reader
+  knows. *tráng* goes with film (*tráng phim*): *tráng khung hình* is no collocation, and younger readers miss it.
 - "N of M" is *N trong số M*, never *N/M*: a slash between two small numbers reads as a date here (*3/11* is 3
   November). The gallery's visual counter keeps the spaced `3 / 27`, which no date has.
 
@@ -583,35 +617,45 @@ The ladder reads image > swept over > maybe > passed, in titles and lanes alike.
 | English | Vietnamese |
 |---|---|
 | How this works | *Cách hoạt động* (14, the English length: the corner pair on a 375 px phone is tight) |
-| SUN 16.2°S 063.0°E / Sub-solar point · GMST 18:41:50 | `MẶT TRỜI 16.2°S 063.0°E` / *Mặt Trời ở thiên đỉnh · GMST 18:41:50* |
+| SUN 16.2°S 063.0°E / Sub-solar point · GMST 18:41:50 | `MẶT TRỜI 16.2°S 063.0°E` / *Điểm Mặt Trời lên thiên đỉnh · GMST 18:41:50* |
 | Scene (the replay's clock) | *Lúc đó* → `LÚC ĐÓ CN, 1/11 11:21:13 EST` |
 | 16,893 OBJECTS · CELESTRAK GP / — Objects / CATALOG | `16.893 VẬT THỂ · CELESTRAK GP` / *— vật thể* / `DANH MỤC` |
 | Fetched 2026-11-08 03:34Z · 4 H ago / Stale, 3 D ago | *Lấy lúc 2026-11-08 03:34Z · 4 giờ trước* / *Cũ, 3 ngày trước* |
 | <1 MIN · 42 MIN · 5 H · 3 D | `<1 PHÚT` · `42 PHÚT` · `5 GIỜ` · `3 NGÀY` |
-| Loading catalog / Catalog unavailable | *Đang tải danh mục* / *Không có danh mục* |
+| Loading catalog / Catalog unavailable | *Đang tải danh mục* / *Không tải được danh mục* (*Không có danh mục* would say there is none) |
 | Language / Language: English. Change | *Ngôn ngữ* / *Ngôn ngữ: Tiếng Việt. Đổi* |
 
-- The sub-solar point is said as what it is, the place where the sun stands at the zenith (*Mặt Trời ở thiên đỉnh*),
-  a phrase every Vietnamese geography class teaches; a calque (*điểm cận Mặt Trời*) names nothing a reader knows.
+- The sub-solar point is named as a point, in the textbook's words for the Sun at the zenith (*Mặt Trời lên thiên
+  đỉnh*, Địa lí 10): *Điểm Mặt Trời lên thiên đỉnh*. Without *Điểm* the line is a statement ("the Sun is at the
+  zenith") under a line that already starts *MẶT TRỜI*. A calque (*điểm cận Mặt Trời*) names nothing a reader knows.
+  Wide screens only, so the length is free.
 
 ### 3.9 About page
 
 - **Title** (two lines): *Cách* / *\*hoạt động\*.* Bar: *Giới thiệu*. Close: *Đóng*.
 - **Lede:** *Chọn một điểm trên Trái Đất. Chúng tôi tính xem những vệ tinh nào đã bay qua đó trong tuần qua, rồi đi tìm
-  những bức ảnh chúng đã chụp. Mọi thứ chạy ngay trong trình duyệt của bạn, trên dữ liệu công khai.*
+  những hình ảnh mà chúng đã ghi lại. Mọi thứ chạy ngay trong trình duyệt của bạn, trên dữ liệu công khai.* (the
+  pictures include radar: *hình ảnh … ghi lại*, as the landing's sub line)
 - **Sections:** *Nói ngắn gọn* · *Cách chúng tôi tìm lượt bay* · *Ý nghĩa các nhãn* · *Những gì chúng tôi không thấy* ·
   *Quyền riêng tư* · *Ghi công* · *Bàn phím*.
 - **Q&A:**
-  - *Có phải trực tiếp không?* → *Không hẳn. Ảnh về tới kho lưu trữ sau khi chụp từ vài giờ đến một hai ngày, nên
-    những lượt bay mới nhất có thể chưa có ảnh.*
+  - *Có phải trực tiếp không?* → *Không hẳn. Ảnh về tới kho lưu trữ từ vài giờ đến một hai ngày sau khi được chụp,
+    nên những lượt bay mới nhất có thể chưa có ảnh.* (the delay before *sau khi*, or it reads as how long the shot took)
   - *Vệ tinh có thấy tôi không?* → *Không. Rõ nhất thì mỗi điểm ảnh ở đây cũng rộng 10 m. Một chiếc ô tô chỉ là một
     điểm ảnh. Bạn không hiện lên trong ảnh.*
-  - *Đây có phải là mọi vệ tinh?* → *Không. Vệ tinh quân sự và vệ tinh do thám phần lớn không có trong danh mục công
-    khai, và các công ty không cho biết họ hướng camera về đâu.*
+  - *Đây có phải là tất cả các vệ tinh không?* → *Không. Vệ tinh quân sự và vệ tinh do thám phần lớn không có trong
+    danh mục công khai, và các công ty không cho biết họ hướng camera về đâu.* (a *có phải* question closes with
+    *không*, as its two neighbours do; *mọi* cannot stand as the predicate)
+- **Method:** *Chúng tôi dùng SGP4, mô hình quỹ đạo tiêu chuẩn, để tính đường bay của từng vệ tinh trong bảy ngày qua,
+  …* (one runs a model, not a satellite: never *chạy từng vệ tinh qua SGP4*) · *… và đối chiếu từng bức ảnh với lượt
+  bay đã ghi lại ảnh đó.* (*đối chiếu*, the computing readout's word; *ghép* is to stitch, the mosaic's verb)
 - **Method facts:** *Nhìn thẳng xuống* · *Camera nghiêng được* (*… Nếu bạn ở trong tầm với, chúng tôi gọi đó là “có thể
-  đã hướng về đây”.*) · *Ban ngày* (*Camera thường cần ánh nắng. Một lượt bay trong bóng tối không bao giờ được tính
-  là có ảnh chụp.*) · *Radar* · *Vệ tinh khí tượng* · *Chỉnh sửa ảnh* · *Đâu là phía bắc* (*… mũi tên B cho thấy chính
-  xác hướng bắc ở đâu.*).
+  đã hướng về đây”.*) · *Ban ngày* (*Camera thường cần ánh sáng Mặt Trời. Một lượt bay trong bóng tối không bao giờ
+  được tính là có ảnh chụp.*: *ánh nắng* is sunshine, which an overcast day lacks) · *Radar* (*… nhìn chếch sang một
+  bên đường bay, nên thấy được xuyên mây và cả vào ban đêm. … chúng tôi hiển thị chúng dưới dạng ảnh xám: chỗ sáng là
+  …, chỗ tối là …*) · *Vệ tinh khí tượng* · *Chỉnh sửa ảnh* · *Đâu là phía bắc* (*… mũi tên B cho thấy chính xác hướng
+  bắc ở đâu.*) · *Mây* (*Khi kho lưu trữ có dữ liệu về mây, chúng tôi kiểm tra đúng điểm ảnh ở chỗ của bạn và cho bạn
+  biết.*).
 - **Privacy** (exactly the English, no more, no less):
   - *Chạy ở đâu* → *Phần tính toán quỹ đạo diễn ra trong trình duyệt của bạn.*
   - *Chúng tôi lưu gì* → *Chúng tôi đếm lượt tìm kiếm theo thành phố, thị trấn và theo một vùng rộng khoảng 10 km, không
@@ -656,15 +700,15 @@ Vietnamese has no inflection, no grammatical gender and no plural form. "Notes" 
 | picture (the share card's PNG) | ảnh | *Chia sẻ ảnh*, *Sao chép ảnh*: in the sheet nothing else is an image. The card itself is *thẻ chia sẻ*. |
 | public image / public archive | ảnh công khai / kho lưu trữ công khai | |
 | made public / published | được công bố; công bố | Never *được công khai hóa*. |
-| scene | cảnh ảnh (remote-sensing term); ảnh | *Không có cảnh ảnh nào*; *Lượng mây trên toàn ảnh*. Never bare *cảnh* (a film scene, a view). |
+| scene | cảnh ảnh (remote-sensing term); ảnh | *Không có cảnh ảnh nào*; *Lượng mây của cả cảnh ảnh* (the scene's figure: *toàn ảnh* would be the crop on screen); unit `CẢNH ẢNH`. Never bare *cảnh* (a film scene, a view). |
 | crop | phần ảnh cắt | |
 | swath | dải quét | *dải quét rộng 290 km*; label `DẢI QUÉT`. |
-| off-nadir | độ nghiêng; nghiêng | Label `ĐỘ NGHIÊNG`; prose *nghiêng 5,4° so với phương thẳng đứng*; row *nghiêng 5,4°*. Never *thiên đế*, *off-nadir*. |
+| off-nadir | độ nghiêng; nghiêng | Label `ĐỘ NGHIÊNG`; prose *nghiêng 5,4° so với phương thẳng đứng*; row *nghiêng 5,4°*. Never *off-nadir*, nor a term built on *thiên để* (天底, nadir; not *thiên đế*, "the Heavenly Emperor"). |
 | straight down | thẳng xuống | |
 | ground track | vệt quỹ đạo | The orbit's trace on the ground. Never *lượt bay*. |
 | plan view | sơ đồ lượt bay | *Hình trên là sơ đồ lượt bay.* |
 | orbit / orbital elements | quỹ đạo / tham số quỹ đạo | The textbook *yếu tố quỹ đạo* is accurate but opaque; *tham số* ("parameters") says what they are. Never *lan truyền* (propagate) in UI: *tính quỹ đạo*. |
-| catalog | danh mục | *danh mục quỹ đạo*. |
+| catalog | danh mục | *danh mục quỹ đạo*. "Satellites we track" is *vệ tinh … trong danh mục của chúng tôi*. |
 | objects (HUD) | vật thể | |
 | altitude | độ cao | Label `ĐỘ CAO`; prose *ở độ cao 786 km*. Reserved for kilometres. |
 | elevation (an angle above the horizon) | góc ngẩng | Label `GÓC NGẨNG`; *Góc ngẩng từ chỗ bạn*, *Góc ngẩng Mặt Trời*. Never *độ cao* (the astronomers' word, but it is the altitude's in this product). In a sentence: *cao 64° trên đường chân trời*. |
@@ -678,19 +722,19 @@ Vietnamese has no inflection, no grammatical gender and no plural form. "Notes" 
 | latest | mới nhất | Never *gần nhất*, which here means "nearest". |
 | closest approach | tiếp cận gần nhất | The globe's countdown label. |
 | field of regard | tầm nhìn | `TẦM NHÌN ±45°`. |
-| in swath / in view / in range / window | trong dải quét / trong tầm nhìn / trong tầm / khung thời gian | |
+| in swath / in view / in range / window | trong dải quét / trong tầm nhìn / trong tầm nhìn (a pass), trong tầm với (a steerable camera's reach: About, the could verdict) / khung thời gian | Never a bare *trong tầm*: it needs its noun (*nhìn*, *với*). |
 | above the equator at / in your sky | trên xích đạo tại / trên bầu trời bạn | |
 | scan line here · UTC / local | quét qua đây · UTC / địa phương | The moment the scan line was here, in three words. |
 | scan direction / line speed here | hướng quét / tốc độ đường quét | *Bắc → nam*. |
 | coverage / full disc / this scan | vùng phủ / toàn đĩa / lần quét này | |
 | cloud cover / cloud at spot | lượng mây / mây tại điểm | *lượng mây* is the meteorologist's word. |
-| clear / thin cirrus / cirrus / cloud / cloud shadow | quang (*trời quang*) / mây ti mỏng / mây ti / mây / bóng mây | *mây ti* is the Vietnamese meteorological name for cirrus. Value `QUANG`. |
+| clear / thin cirrus / cirrus / cloud / cloud shadow | không mây; quang (*trời quang*) / mây ti mỏng / mây ti / mây / bóng mây | *mây ti* is the Vietnamese meteorological name for cirrus. *quang* does not stand alone (and alone suggests *quang học*): the photo status is *Không mây*, the viewer's *Điểm không mây*; only the spot value under *Mây tại điểm* is `QUANG` (≤ 7). |
 | clouded / clouded over / mostly cloud | có mây / mây che kín / phần lớn là mây | |
 | spot (the exact point) | chỗ (prose: *chỗ của bạn*), điểm (labels) | *nơi* is the searched place. |
 | place | nơi, địa điểm | *nơi này*; *Tìm địa điểm*. |
 | landmark | địa danh | |
-| pixel / resolution | điểm ảnh / độ phân giải | Label `ĐIỂM ẢNH`; *10 m mỗi điểm ảnh*. The loan *pixel* is common in speech; the Vietnamese term is clearer in a sentence about ground size. |
-| radar / C-band | radar / băng C | *ảnh radar*, *vệ tinh radar*. |
+| pixel / resolution | điểm ảnh / độ phân giải | Label `ĐIỂM ẢNH`; tooltips and blurbs *điểm ảnh 10 m*; sentences *ở độ phân giải 375 m* or *mỗi điểm ảnh rộng 10 m*; readouts `10 m / điểm ảnh`. Never tacked on (*với 375 m mỗi điểm ảnh*, *, 20 m,*). The loan *pixel* is common in speech; the Vietnamese term is clearer in a sentence about ground size. |
+| radar / C-band | radar / băng C | *ảnh radar*, *vệ tinh radar*; a radar *ghi ảnh* / *ghi lại*, never *chụp* (blurbs too: *ghi ảnh từ năm 2007*). |
 | weather mosaic / daily mosaic | ảnh ghép thời tiết / ảnh ghép hằng ngày | *hằng ngày* (dictionary form), never *hàng ngày*. |
 | true colour | màu thực | |
 | geostationary | địa tĩnh | Lane `ĐỊA TĨNH`. |
@@ -698,21 +742,24 @@ Vietnamese has no inflection, no grammatical gender and no plural form. "Notes" 
 | panchromatic | toàn sắc | |
 | time-lapse | time-lapse | Upright, hyphenated, lowercase in prose; `TIME-LAPSE` in caps. Never *tua nhanh thời gian* (a video effect, not a year-by-year loop). |
 | frame | khung hình | *Khung hình 3 trong số 11*. |
-| clear look / last clear look | ảnh không mây / ảnh không mây gần nhất | Tag *Không mây gần nhất*. Never *ảnh quang* (*quang* alone is *quang học*, optics). |
+| clear look / last clear look | ảnh không mây / ảnh không mây mới nhất | Tag *Không mây mới nhất* (latest: *gần nhất* is "closest" on the same screens). Never *ảnh quang* (*quang* alone is *quang học*, optics). |
 | closest look | chi tiết nhất | Tag *Chi tiết nhất*; prose *ảnh chi tiết nhất*. Never *ảnh gần nhất* (nearest, latest). |
 | clearest look | ảnh ít mây nhất | The pass footer's button. |
 | Detailed (filter) | Chi tiết | Shares its word with *Chi tiết nhất*. |
 | replay (button / noun) | phát lại | *Phát lại lượt bay*; section `02 / PHÁT LẠI`. |
-| sub-solar point | Mặt Trời ở thiên đỉnh | §3.8. |
+| sub-solar point | Điểm Mặt Trời lên thiên đỉnh | §3.8. |
 | fetched / stale | lấy lúc / cũ | |
-| sunlight / daylight / dark | ánh nắng, Mặt Trời chiếu sáng / ban ngày, trời sáng / trời tối, bóng tối | |
-| day / twilight / night (readout) | ngày / chạng vạng / đêm | |
+| sunlight / daylight / dark | ánh sáng Mặt Trời, Mặt Trời chiếu sáng / ban ngày, trời sáng / trời tối, bóng tối | *ánh nắng* is sunshine (an overcast day has none): "cameras need the sun" is *ánh sáng Mặt Trời*. |
+| day / twilight / night (readout) | ban ngày / chạng vạng / ban đêm | After an angle a bare *ngày* reads as a count of days (*31,1° ngày*). |
 | the sun never / barely rose | Mặt Trời không hề mọc / gần như không mọc | |
 | daylight camera / regular camera | camera thường | |
 | steerable camera / tilting camera | camera xoay hướng được / camera nghiêng được | |
 | fixed camera | camera hướng cố định | Never *camera cố định* (a fixed-mount camera, CCTV). |
 | private / commercial / operator | tư nhân / thương mại / nhà vận hành | |
-| crewed / station | có người ở / trạm vũ trụ, trạm | |
+| rapid revisit | tần suất chụp lặp lại cao | Never *quay lại nhanh* ("turns back fast"). |
+| developing (the time-lapse's frames) | rửa ảnh | *Đang rửa ảnh*; never *tráng khung hình*. |
+| press and hold | nhấn giữ | Never a bare *giữ* ("keep"). |
+| crewed / station | có người ở / trạm vũ trụ, trạm | *trạm vũ trụ* on first mention, then *trạm*; never *họ*. |
 | weather / imaging satellite | vệ tinh khí tượng / vệ tinh chụp ảnh | "open imaging satellite": *vệ tinh chụp ảnh công khai*. |
 | military and spy satellites | vệ tinh quân sự và vệ tinh do thám | Factual, allowed. Only the reader is never *bị do thám*. |
 | equator / Earth / sun | xích đạo / Trái Đất / Mặt Trời | §6.4. |
@@ -724,7 +771,7 @@ Vietnamese has no inflection, no grammatical gender and no plural form. "Notes" 
 | post to X / post (label) | Đăng lên X / Bài đăng | |
 | link | liên kết | Never *link*, *đường link* in copy. |
 | made when you share | Tạo khi bạn chia sẻ | |
-| use my location / locate me / near me | Dùng vị trí của tôi / Định vị / Gần tôi | |
+| use my location / locate me / near me / locating | Dùng vị trí của tôi / Định vị / Gần tôi / Đang định vị… | |
 | surprise me / drop a pin / or try | Ngẫu nhiên / Thả ghim / Hoặc thử | |
 | how this works | Cách hoạt động | |
 | last 7 days / this week / that week | 7 ngày qua / tuần này / tuần đó | |
@@ -735,7 +782,7 @@ Vietnamese has no inflection, no grammatical gender and no plural form. "Notes" 
 | km, m, km/s | km, m, km/s | SI symbols, never *km/giây*. |
 | close / cancel / try again / back | Đóng / Hủy / Thử lại / Quay lại | |
 | previous / next | trước / tiếp theo (*Tiếp* in a tooltip) | |
-| play / pause | Phát / Tạm dừng | |
+| play / pause | Phát / Tạm dừng | The replay's buttons too: *Phát lại lượt bay* is the footer's Replay, and two buttons never share a name. |
 | zoom in / zoom out | Phóng to / Thu nhỏ | Readout `2,5×`. |
 | acquiring / acquired | đang thu nhận / thu nhận | *thu nhận ảnh* is the remote-sensing term. `THU NHẬN 11:21:21 EST · 10 m`. |
 | imaged (the callout) | ảnh lúc | `ẢNH LÚC 11:21:13 EST`. |
@@ -760,8 +807,18 @@ running northwest–southeast), extended to 16 points the way English builds NNE
 | vi | B | BĐB | ĐB | ĐĐB | Đ | ĐĐN | ĐN | NĐN | N | NTN | TN | TTN | T | TTB | TB | BTB |
 
 A compass readout never shows English letters, because **N means *nam* (south) in Vietnamese**: `HƯỚNG BAY 194,6° NTN
-· ĐI XUỐNG`. The photo's north arrow is `B`. Coordinates are different: they are notation (`43.47°N`, as Google Maps
-shows them to Vietnamese users) and keep N/S/E/W (§6.2).
+· ĐI XUỐNG`. The photo's north arrow is `B`.
+
+**Coordinates and the compass collide (owner question).** Coordinates come from one international formatter
+(`fmtLat` / `fmtLon`, every language) and keep N/S/E/W: `43.47°N`, `MẶT TRỜI 23.4°N 063.0°E`, *Trên xích đạo tại
+0.2°W*. On the same screens the compass's N is *nam*: the geostationary grid shows *0.2°W* beside `34,5° CAO · N`,
+where that N is south. The guide's own reason for B applies to a lone northern latitude too, and Vietnamese textbooks
+and vi.wikipedia write coordinates with Vietnamese letters (*21°01′B 105°51′Đ*). A translator can fix neither in the
+catalog. Options for the owner: (a) keep both and accept the collision (the coordinates' E/W and the paired value
+usually show they are notation); (b) **recommended:** give `vi` display coordinates Vietnamese hemisphere letters
+(*43.47°B*, *80.54°T*, *16.2°N* for south), display only, the search field still parsing *43.47, −80.54*; (c) English
+letters in the compass too, which makes every compass N read as south to a Vietnamese reader. Until then the
+coordinates show as the app writes them (§6.2).
 
 ### 4.3 Curated places (`places` namespace)
 
@@ -858,10 +915,12 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
 | n | Frame | Example |
 |---|---|---|
 | 0 | separate sentence | *Không vệ tinh nào…*, *Không có bức ảnh nào được công bố…*, *Không có ảnh không mây nào từ năm 2015* |
-| 1 | `[NUM] vệ tinh` | *1 vệ tinh đã quan sát*, *1 bức ảnh*, *1 lượt*, *1 lần* |
+| 1 | `[NUM] vệ tinh` | *1 vệ tinh đã quan sát*, *1 bức ảnh*, *1 lượt*; in plain prose where English writes "once", *một lần* |
 | 2 … ∞ | same | *256 vệ tinh*, *1.715 bức ảnh*, *31 lượt*, *42 lần* |
 
-1. **Digits always**, even for 1: *1 vệ tinh*, not *một vệ tinh*; *1 lần*, not *một lần* (English "once").
+1. **Digits always**, even for 1, wherever the count is a number part or a label: *1 vệ tinh*, not *một vệ tinh*;
+   `1 LƯỢT`. The one exception is a plain-prose sentence where English writes the word "once": *đã bay qua nơi này một
+   lần vào ban ngày* (*1 lần* in a sentence reads as a log counter).
 2. **Never *các* or *những* after a number** (*31 các vệ tinh* is wrong); after a number the noun is already plural.
    *các* / *những* only where no number stands.
 3. **The count words** (classifiers) are fixed:
@@ -889,9 +948,9 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
 
 | Case | Vietnamese |
 |---|---|
-| one | *Umbra đã bay qua trong tầm 12 lần.* |
-| two | *Umbra và Capella đã bay qua trong tầm 31 lần.* |
-| two + others | *Umbra, Capella và 7 vệ tinh radar khác đã bay qua trong tầm 1.204 lần.* |
+| one | *Umbra đã bay qua trong tầm nhìn 12 lần.* |
+| two | *Umbra và Capella đã bay qua trong tầm nhìn 31 lần.* |
+| two + others | *Umbra, Capella và 7 vệ tinh radar khác đã bay qua trong tầm nhìn 1.204 lần.* |
 | two + 1 other | *Umbra, Capella và 1 vệ tinh radar khác…* |
 
 "other" is *khác* after the noun phrase, never *còn lại* in a count.
@@ -910,7 +969,11 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
     are the calendar's two-letter forms *T2 T3 T4 T5 T6 T7 CN*, which every Vietnamese calendar prints.
   - post text and the share page's prose: the full weekday, CLDR's *Chủ Nhật*, *Thứ Hai* … *Thứ Bảy*, then the date:
     *lúc 11:21 giờ địa phương, Chủ Nhật 1/11*; *lúc 11:21 EST, Chủ Nhật 1/11/2026*.
-  - spoken (aria): *Thứ Sáu, ngày 6 tháng 11*: a screen reader reads *6/11* as a fraction.
+  - spoken (aria): *Thứ Sáu, ngày 6 tháng 11*: a screen reader reads *6/11* as a fraction and *CN* as two letters.
+    Today only the pass rows (`rowLabel`, `satLabel`) receive the spoken day. Four accessible names receive the visual
+    short day and say *CN, 1/11*: the gallery's `slideLabel`, `replayLabel` and `viewLabel.*`, and the pass list's
+    `expandLabel`. The catalog cannot fix that; the code must pass the spoken day (a new parameter, English unchanged:
+    reported, §Appendix).
   - a stamp that stands alone (the card's stamp): `CN, 1/11/2026 · 11:21 EST`; the week's *7 ngày tính đến 1/11/2026*.
   - timeline: weekday *CN*; compact day *CN 1*.
   - day and month: *29/10*; time-lapse date: *22/10/2015*.
@@ -956,7 +1019,7 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
 | Percent / degree | No space | *25%*, *5,4°* |
 | Units | SI symbols, never translated, a space after the number | *786 km*, *10 m*, *7,46 km/s* (never Intl's *km/giây*) |
 | Clocks | 24 h with a colon, as the app formats them | `16:14:21`, *lúc 11:21 EST*, `T−00:42`, `2026-11-08 03:31:07 UTC` |
-| Coordinates | International notation, exactly as the app writes them: period decimal, N/S/E/W letters (the form Google Maps shows Vietnamese users). Never reformatted to *B/N/Đ/T* or a decimal comma. The search hint keeps *43.47, −80.54* (the field parses it). | `16.2°S 063.0°E`, *tại 0.2°W* |
+| Coordinates | International notation, exactly as the app writes them: period decimal, N/S/E/W letters (the form Google Maps shows Vietnamese users). A translator never reformats them; Vietnamese hemisphere letters are an owner question (§4.2). The search hint keeps *43.47, −80.54* (the field parses it). | `16.2°S 063.0°E`, *tại 0.2°W* |
 | Dates | Digits, day/month(/year), no padding (§5.5) | *1/11*, *29/10/2026* |
 
 ### 6.3 Mono caps and Vietnamese capitals
@@ -973,8 +1036,8 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
 
 - **Sentence case everywhere**, buttons and About headings included. Never title case (*Cách Chúng Tôi Tìm Lượt Bay*).
 - **Celestial bodies** are capitalised as names, as Vietnamese astronomy and geography textbooks write them: *Trái Đất*,
-  *Mặt Trời*, *Mặt Trăng*, in every sentence (*Mặt Trời không hề mọc*). *ánh nắng* for sunlight. *xích đạo* and compass
-  words lowercase.
+  *Mặt Trời*, *Mặt Trăng*, in every sentence (*Mặt Trời không hề mọc*). *ánh sáng Mặt Trời* for sunlight (*ánh nắng*
+  is sunshine). *xích đạo* and compass words lowercase.
 - **Vietnamese place names** capitalise every syllable (*Hà Nội*, *Thượng Hải*, *Hồ Bắc*); a class noun before a
   curated name is capitalised as part of the name (*Kênh đào Panama*, *Núi lửa Etna*, *Đập Tam Hiệp*), a following
   generic stays lowercase (*hồ Mead* after *và*).
@@ -988,8 +1051,9 @@ CLDR `vi` cardinal plural: **`other` only** (ordinal has `one` for *thứ nhất
   every break is chosen in the catalog; never let a word's two syllables split there. Lines set by hand (the hero, the
   About title, the default card) choose their own breaks; lines that wrap (the results headline and its second line,
   the card's lead) hold each compound together with U+00A0 (`bind()` in `results.ts` and `card/vi.ts`: *vệ tinh*,
-  *đã quan sát* (so no line ends on the aspect marker *đã*), *bức ảnh*, *công bố*, *chúng tôi*, *theo dõi*, *tuần
-  này*), a count to its noun (*256 vệ tinh*) and each end of a date span to its preposition (*Từ 26/10*, *đến 2/11*).
+  *đã quan sát* (so no line ends on the aspect marker *đã*), *quan sát*, *bức ảnh*, *công bố*, *chúng tôi*, *danh
+  mục*, *tuần này*), a count to its noun (*256 vệ tinh*) and each end of a date span to its preposition (*Từ 26/10*,
+  *đến 2/11*).
   Seen before the fix: *256 vệ / tinh đã quan sát Waterloo.* (1280 and 390 px), *Từ 26/10 đến / 2/11, …* (390 px),
   *…, 256 / vệ tinh …* (1280 px); after it, both widths read *Từ 26/10 đến 2/11, / 256 vệ tinh / đã quan sát
   \*Waterloo\*.* In body text, accept the browser's breaks but hold a number to its unit and a count to its
@@ -1022,15 +1086,21 @@ Strategies, in order:
 
 | English | Vietnamese | Chars (en → vi) | Notes |
 |---|---|---|---|
-| Something / watched *you* / this week. (landing) | Tuần này, / có thứ gì đó / quan sát *bạn*. | 9/11/10 → 9/12/13 | Three lines at 1280 × 800 and 375 px (§3.1). |
+| Something / watched *you* / this week. (landing) | Tuần này, / có thứ gì đó / quan sát *bạn*. | 9/11/10 → 9/12/13 | Three lines at 1280 × 800 (578 of the column's 580 px) and 375 px (§3.1). |
 | (card, 88 px) | 4 lines | 384 → ≈ 420 px for the widest | The card's column is 466 px. |
 | Enter any place on Earth (card footer) | CHỌN MỘT NƠI TRÊN TRÁI ĐẤT | 24 → 26 | *bất kỳ* dropped to fit beside the host. |
-| No satellite we track watched (zero card lead) | Không vệ tinh nào mà chúng tôi theo dõi đã quan sát | 29 → 51 | Three lines at most. Accepted. |
+| No satellite we track watched (zero card lead) | Không vệ tinh nào trong danh mục của chúng tôi quan sát | 29 → 54 | Three lines at most. Accepted. |
 | HOW THIS WORKS + SUN 16.2°S 063.0°E (HUD pair) | CÁCH HOẠT ĐỘNG + MẶT TRỜI 16.2°S 063.0°E | 14 + 18 → 14 + 23 | Checked at 375 px: clear (the sun line steps aside when crowded). The landing during a replay is tight in every language; there the switcher's *TIẾNG VIỆT* (the language's own name, not copy) meets *LÚC ĐÓ 11:21:13 EST* (reported to the HUD's owner). |
 | USE MY LOCATION / LOCATE ME / NEAR ME | DÙNG VỊ TRÍ CỦA TÔI / ĐỊNH VỊ / GẦN TÔI | 15 → 19 / 9 → 7 / 7 → 7 | |
 | SURPRISE ME / HOW THIS WORKS (link) | NGẪU NHIÊN / CÁCH HOẠT ĐỘNG | 11 → 10 / 14 → 14 | |
 | LAST 7 DAYS | 7 NGÀY QUA | 11 → 10 | |
-| CLOSEST LOOK / LAST CLEAR LOOK | CHI TIẾT NHẤT / KHÔNG MÂY GẦN NHẤT | 12 → 13 / 15 → 18 | The chip holds ~20. |
+| CLOSEST LOOK / LAST CLEAR LOOK | CHI TIẾT NHẤT / KHÔNG MÂY MỚI NHẤT | 12 → 13 / 15 → 18 | The chip holds ~20. |
+| LOCATING… (the near-me chip) | ĐANG ĐỊNH VỊ… | 10 → 13 | The phone's chip row scrolls: the chip grows rather than drop *đang*. |
+| No named place nearby (pin card, 156 px at 13 px) | Không có địa danh ở gần | 21 → 23 | 146 px in the bundled sans (*… gần đây* was 160 px and cut). |
+| HOLD THE GLOBE ANYWHERE TO MOVE IT (320 px) | NHẤN GIỮ QUẢ ĐỊA CẦU ĐỂ DỜI GHIM | 34 → 32 | |
+| NO PUBLIC IMAGE (geo cell, 64 px) | KHÔNG ẢNH / CÔNG KHAI | 15 → 19 | About 9 capitals a line (10.5 px on phones): a no-break space keeps the compound on one. |
+| NEW SEARCH (shares a box with CANCEL, CLOSE) | TÌM KIẾM MỚI | 10 → 12 | |
+| IN VIEW 37 S (replay legend, nowrap) | TẦM NHÌN 37 GIÂY | 12 → 16 | About 21 characters fit on a 390 px phone. A span of minutes (*TẦM NHÌN 7 PHÚT 15 GIÂY*) still pushes the end clock off the screen, as in French, German, Polish and Ukrainian: a layout fix, reported (§Appendix). |
 | 12 THIS WEEK | TUẦN NÀY: 12 | 12 → 12 | §5.3 rule 5. |
 | LINK / POST (48 px column) | LIÊN KẾT / BÀI ĐĂNG | 4 → 8 / 4 → 8 | Each wraps to two lines in the column where it must; the column is not nowrap. |
 | SHARE THIS WEEK | CHIA SẺ TÓM TẮT TUẦN NÀY | 15 → 24 | One line beside the close button. |
@@ -1047,8 +1117,9 @@ Strategies, in order:
 ## 8. Sensitive content
 
 **Surveillance and privacy.** The product's subject is being watched; the copy keeps the unease in the hero and lets the
-rest be facts. Never escalate: no *theo dõi bạn*, *giám sát bạn*, *rình*, *do thám bạn*, *bị quan sát*. The only thing
-tracked is satellites (*vệ tinh mà chúng tôi theo dõi*). *vệ tinh do thám* is the factual term and stays (About).
+rest be facts. Never escalate: no *theo dõi bạn*, *giám sát bạn*, *rình*, *do thám bạn*, *bị quan sát*. "Satellites we
+track" is said as our catalog (*vệ tinh … trong danh mục của chúng tôi*). *vệ tinh do thám* is the factual term and
+stays (About).
 Privacy lines say exactly what the English says, in the plainest words: *một vùng rộng khoảng 10 km*, never *ô ~10 km*.
 Never *ẩn danh hoàn toàn*, *an toàn 100%*, *cam kết*.
 
@@ -1081,8 +1152,13 @@ Vietnamese readers, and the owner decides before `vi` is listed:
 - Our copy takes no side: it says what the pictures show (the year, the date, the satellite). Never add *chiếm đóng*,
   *xâm lược*, *diệt chủng*, *khủng bố*, *giải phóng*, or either side's designation. If a line must say why a season is
   fixed, say *vùng chiến sự*.
-- Never *nhắm*, *chĩa*, *mục tiêu*, *càn quét* or any weapon verb near these places, or anywhere. *xuyên mây* (radar
-  sees through cloud) is physics and allowed.
+- Never *nhắm*, *chĩa*, *mục tiêu*, *càn quét* or any weapon verb near these places, or anywhere (the time-lapse note
+  says a year's look is *được chọn* for a season). *xuyên mây* (radar sees through cloud) is physics and allowed.
+
+**Crimea.** Write *Crimea*, with no qualifier. Places on the peninsula show *…, Ukraina*, by the owner's override
+(`src/imagery/geocode.ts`, `CRIMEA` / `inCrimea`), in every language: the place's data, as GeoNames has it. Never
+change it to *Nga*, and never add *sáp nhập*, *Cộng hòa Crimea* or *thuộc Nga*. Vietnam abstains on Crimea, so a
+Vietnamese reviewer or translation memory may "correct" *Simferopol, Ukraina*: do not.
 
 **Glaciers.** *sông băng*; *cuối mùa băng tan*; *bán cầu bắc / nam*. State the date rule if asked; never editorialise
 (*khủng hoảng khí hậu*, *tan chảy kinh hoàng*).
@@ -1137,6 +1213,21 @@ coast). The copy stays the same factual copy: no condolence formulas (*xin chia 
 | Translating names | *Thiên Cung* in a blurb, *Đã quan sát.* (wordmark), *Cơ quan Vũ trụ châu Âu* for ESA in UI | *Tiangong*, *Watched.*, *ESA* |
 | `~` shorthand | *~10 km* | *khoảng 10 km* |
 | Title case | *Cách Hoạt Động* | *Cách hoạt động* |
+| The scene's cloud as the image's | *Lượng mây trên toàn ảnh* (the crop on screen) | *Lượng mây của cả cảnh ảnh*, unit `CẢNH ẢNH` |
+| "Search unavailable" as "not found" | *Không tìm được* | *Không tìm kiếm được* |
+| A bare *trong tầm* | *đã ở trong tầm*, *Trong tầm 37 giây* | *trong tầm nhìn*, *trong tầm với*; the replay legend's label *Tầm nhìn 37 giây* |
+| *đã* after a negation | *Không vệ tinh nào … đã quan sát* | *Không vệ tinh nào … quan sát* |
+| *cũng* on the wrong word | *có thứ gì đó cũng quan sát bạn* | *cũng có thứ gì đó quan sát bạn* |
+| An English afterthought | *…, 42 lần.*, *với 375 m mỗi điểm ảnh*, *Thô, nhưng là ảnh thật* | *… 42 lần bằng hồng ngoại.*, *ở độ phân giải 375 m*, *Ảnh thô nhưng là ảnh thật* |
+| A word that reads twice | *gần đây* ("nearby" and "recently"), *ngày* after an angle, *Giữ* ("keep") | *ở gần*, *ban ngày*, *Nhấn giữ* |
+| *quang* alone | `QUANG` beside a product line (*quang học*) | *Không mây* |
+| "last" as "closest" | *Không mây gần nhất* | *Không mây mới nhất* |
+| "would have" as "must have" | *hẳn vệ tinh đã ghi lại* | *nhiều khả năng vệ tinh đã ghi lại* |
+| *họ* or bare *trạm* for a station | *ảnh của họ*, *Nếu …, trạm đã* | *ảnh từ các trạm này*, *trạm vũ trụ* first |
+| *ghép* for "match" | *ghép từng bức ảnh với lượt bay* (stitch) | *đối chiếu* |
+| "unavailable" as "none" | *Không có danh mục*, *Hiện chưa có ảnh* (an image exists) | *Không tải được danh mục*, *Hiện không tải được ảnh* |
+| *nơi của bạn* | *Xem nơi của bạn* | *Xem nơi bạn ở* |
+| *tráng* without film | *Đang tráng khung hình* | *Đang rửa ảnh* |
 
 ### 9.2 Reviewer checklist (run over every string)
 
@@ -1166,7 +1257,9 @@ coast). The copy stays the same factual copy: no condolence formulas (*xin chia 
     zones, coordinates, the English licence notices?
 15. Near war zones and disputed places: neutral nouns, CLDR country names, *Kyiv*, no weapon or sweep verbs; and no
     name for the East Sea or its islands in our own copy (§8)?
-16. Read it aloud: a precise person speaking to one reader, not a bank, not an ad, not a translation?
+16. No English afterthought: is each count by its verb, each pixel size a phrase of its own, each fragment a clause?
+17. Does a word read two ways in its slot (*gần đây*, *ngày* after an angle, *trong tầm*, *Không tìm được*)?
+18. Read it aloud: a precise person speaking to one reader, not a bank, not an ad, not a translation?
 
 ---
 
@@ -1198,6 +1291,20 @@ what they did before.
   2. `vi` in `SHORT_NAMES.PS` (*Palestine*, §8).
   3. `'Asia/Ho_Chi_Minh': 'ICT'` in the zone abbreviation tables? Vietnamese readers write *GMT+7* or *giờ Việt Nam*
      and rarely *ICT*; *UTC+7*, which the app shows today, is correct and familiar. Recommended: leave it.
+  4. Coordinates with Vietnamese hemisphere letters for `vi` (§4.2): display only, in `fmtLat` / `fmtLon` or a `vi`
+     wrapper; the search field keeps parsing *43.47, −80.54*. Recommended, so that N means one thing on a screen.
+- **Code changes the catalog cannot make (reported by the review):**
+  1. The spoken day for four accessible names (§5.5): `Gallery.tsx` (`slideLabel`, `replayLabel`, `viewLabel.*`) and
+     `PassList.tsx` (`expandLabel`) pass the visual short day; give them the spoken one (`fmtSpokenDay`, as `rowLabel`
+     gets) in a new parameter, so English stays byte-identical. Every language with a numeric short day has the same
+     gap.
+  2. The replay legend (`ReplayControls.tsx`, one nowrap row) overflows a 390 px phone when the place was in view for
+     minutes: *TẦM NHÌN 7 PHÚT 15 GIÂY* pushes the end clock 43 px off the screen, and French, German, Polish and
+     Ukrainian do the same. The middle span needs to shrink or wrap.
+  3. The landing hero has no fit for long lines: at 1280 × 800 the column is 580 px, and a line over about 13
+     characters wraps (Italian's *questa settimana* and *ha osservato te.* set as five lines, pushing the search into
+     the bottom-left readout). A fit to the widest line would also free Vietnamese to choose *đã* if it ever wanted
+     it.
 
 ---
 
@@ -1208,15 +1315,80 @@ what they did before.
 | 1 | Address | *bạn*; *tôi* in the user's own voice; *chúng tôi* for the product (§1). *anh/chị* and *quý khách* rejected on voice and on the hero. |
 | 2 | Product verb | *quan sát*: the remote-sensing verb (*vệ tinh quan sát Trái Đất*) and an everyday one, uncanny with *bạn* as its object. *theo dõi* rejected (tracking, Facebook's Follow, an overclaim for a single pass); *dõi theo* rejected (tender). |
 | 3 | Hero order | Time first, reader last: Vietnamese puts emphasis at the end, and the accent lands there (§3.1). |
-| 4 | Aspect | *đã* in each pass's first clause and every count sentence; the hero is a headline whose fronted *Tuần này* carries the time, so no *đã* (it also made the line wrap on a laptop); *lúc đó* for a pass's conditions; *đang* only for live states (§2.1, §3.1). |
+| 4 | Aspect | *đã* in each pass's first clause, every count sentence and every question; the hero's existential *có …* after a fronted *Tuần này* reports the past without it (*Hôm nay có người tìm bạn*), confirmed in review; a negation takes none (*Không vệ tinh nào … quan sát*); *lúc đó* for a pass's conditions; *đang* only for live states (§2.1, §3.1). |
 | 5 | Image words | *ảnh* for everything (Vietnamese *ảnh vệ tinh*, *ảnh radar* are standard and honest); *bức ảnh* after a count in prose, bare *ảnh* in labels; *ghi lại* where radar can be the sensor (§0, §5.3). |
 | 6 | Pass | *lượt bay qua*, counted *lượt* (*lượt xem*, *lượt truy cập* are the model); *lần* kept for "times" (§4.1). |
 | 7 | Verdict ladder | *Đã quan sát* · *Nhiều khả năng đã quan sát* · *Có thể đã hướng về đây* · *Bay qua trên đầu*; the likely lane is its verb *Quét qua*, because *Khả năng* and *Có lẽ* blur the ladder (§3.7). |
 | 8 | Dates | Day/month digits (*1/11*), the form every Vietnamese newspaper, form and receipt uses; CLDR's *thg* rejected; *N trong số M* for counts so no slash pair reads as a date (§5.5). |
-| 9 | Compass | Vietnamese textbook letters, B for north, because N is *nam*; coordinates stay international (§4.2). |
+| 9 | Compass | Vietnamese textbook letters, B for north, because N is *nam*; coordinates stay international until the owner decides on Vietnamese hemisphere letters (§4.2). |
 | 10 | Elevation | *góc ngẩng*, so *độ cao* stays the altitude's (§4.1). |
 | 11 | Units of time | Written out (*phút*, *giờ*, *giây*), except the computing readout's fixed 48 px time column (*1,84 s*) (§7). |
 | 12 | Tone marks | New placement, one style; NFC enforced (§6.1). |
 | 13 | Time-lapse | The loan *time-lapse*; *tua nhanh thời gian* is a video speed effect, not a year-by-year loop (§4.1). |
-| 14 | Sub-solar point | *Mặt Trời ở thiên đỉnh*: what the point is, in the words geography class uses (§3.8). |
+| 14 | Sub-solar point | *Điểm Mặt Trời lên thiên đỉnh*: the point, named in the textbook's words (§3.8; changed in review from *Mặt Trời ở thiên đỉnh*, a statement). |
 | 15 | East Sea, Palestine | Owner questions, with exact proposals (§8, appendix). |
+| 16 | Scene cloud cover | *Lượng mây của cả cảnh ảnh*, unit `CẢNH ẢNH`: the archive's figure for the scene, never the crop's (§3.5, review). |
+| 17 | Last clear look | *Không mây mới nhất*: *gần nhất* stays "closest" (§4.1, review). |
+| 18 | "We track" | *trong danh mục của chúng tôi*; *theo dõi* only for tracking data (§3.3, review). |
+| 19 | Crimea | *Crimea*, places in it *…, Ukraina* by the owner's override; no qualifier (§8, review). |
+
+---
+
+## Review (2026-11-21)
+
+Two independent reviews read every message against its English: A as a native reader, B for accuracy. Each finding
+was judged on its merits; where they disagreed, the choice and its reason are below.
+
+**Changed**
+
+- **The guide:** *thiên đế* corrected to *thiên để* (nadir); the claim that every accessible date is spoken narrowed to
+  the pass rows (§5.5); the coordinates' N beside the compass's N made an owner question (§4.2); a Crimea rule (§8);
+  new rules for English afterthoughts, negated past, bare *trong tầm* and words that read twice (§2.1, §9).
+- **Meaning (honest labelling):** *Không tìm kiếm được* for "search unavailable" (landing status, engine note: *Không
+  tìm được* said nothing was found); *Lượng mây của cả cảnh ảnh* and unit *cảnh ảnh* (*toàn ảnh* claimed the crop's
+  cloud); the card's *Hiện không tải được ảnh* (*chưa có ảnh* contradicted its verdict); *Không mây mới nhất* for the
+  last clear look (*gần nhất* is "closest" on the same screens), in the gallery, viewer and card; *cả nửa Trái Đất bên
+  dưới* (one disc, not the whole surface); *nhiều khả năng* for "would have" (*hẳn* overclaimed); *Không tải được danh
+  mục*; no *chỉ* in the H.264 tooltip; Jilin-1's and Gaofen-7's sub-metre pixels; BlackSky's revisit rate.
+- **The guide's own rules, broken by the copy:** *nhắm tới* in the time-lapse note; *chụp* for four radar blurbs and the
+  full-disc note; *họ* and a bare *trạm* for stations; a bare *cảnh*; *ghép* for "match" (About); *Ví dụ địa điểm*
+  (head-first: *Địa điểm ví dụ*).
+- **Grammar and naturalness:** *cũng có* in the share hook (both reviews); the zero sentences without *đã* and with
+  *trong danh mục của chúng tôi* (headline, pass list, card); counts by their verb and pixel sizes as phrases (*42 lần
+  bằng hồng ngoại*, *ở độ phân giải 375 m*, *mỗi điểm ảnh rộng 10 m*, in pass sentences, notes, the post, blurbs and
+  filter tooltips); English fragments as clauses (*Ảnh thô nhưng là ảnh thật*, *Gồm các trạm vũ trụ …*); *trong tầm
+  nhìn* / *trong tầm với*; *chứ không phải*; *Xem nơi bạn ở*; *một lần* for "once"; the overhead sentence with its
+  clock first; About's question, delay, SGP4, radar, daylight, clouds and lede; the share page's title (*Những gì …*),
+  description (*mà chúng đã ghi lại*, also the landing) and alt text; *điểm đó* in posts; *Đang rửa ảnh*; *Nhấn giữ*;
+  *Không có địa danh ở gần* (it also fits: 146 of 156 px); *Không mây* / *Điểm không mây*; *ban ngày* / *ban đêm* after
+  an angle; *Điểm Mặt Trời lên thiên đỉnh*; *Đang định vị…*; *Phát* / *Tạm dừng* for the replay (it shared the
+  footer's name); *Không ảnh công khai* (no *công / khai* split); and the smaller lines (*Tìm kiếm mới*, *dẫn tới*,
+  *về Waterloo*, *theo múi giờ*, *ghi rõ điều đó*, *có từ 3 ngày trước*, the geostationary zero line, the browser in
+  *renderFailed*, the Meteosat ordinals, OLCI, RCM, SuperDove, Sentinel-1).
+
+**Rejected, or decided between the two**
+
+- **The hero keeps no *đã*** (B asked for it back, reading the bare verb as ongoing or a horoscope; A confirmed it).
+  The existential *có …* after a fronted time phrase is how Vietnamese reports what happened (*Hôm nay có người tìm
+  bạn*), so *đã* adds nothing a headline needs; the reason is now the language, not the layout. The hook follows the
+  hero (A's *Tuần này, cũng có thứ gì đó quan sát bạn.*, not B's with *đã*). The landing's lack of a fit for long lines
+  is reported (Appendix).
+- **Developing frames:** *Đang rửa ảnh* (A), not *Đang tráng ảnh* (B): *rửa ảnh* is the everyday phrase, and *tráng*
+  goes with film.
+- **No named place nearby:** *Không có địa danh ở gần* (A), not *Vùng này không có tên* (B), which says the area has no
+  name; open sea and ice often do.
+- **Clear:** *Không mây* (A), the glossary's word for a clear look, over *Trời quang* (B); the spot value under *Mây tại
+  điểm* keeps `QUANG` (both).
+- **The time-lapse note:** A's *Ảnh mỗi năm được chọn vào …* over B's *Mỗi năm lấy ảnh ở …* (a year does not take).
+  **BlackSky:** A's shorter *tần suất chụp lặp lại cao*. **Crewed stations:** A's *ảnh từ các trạm này*.
+- **The scene's cloud:** *của cả cảnh ảnh*, not B's *trên toàn cảnh ảnh*: *toàn cảnh* is "panorama".
+- **The replay legend:** not A's *Trong tầm nhìn 37 giây*, which pushed the end clock off a 390 px phone; the noun label
+  *Tầm nhìn 37 giây* is complete and fits (a span of minutes overflows in several languages: reported).
+- **No public image:** B's *Không ảnh công khai*, plus a no-break space in *công khai*: on phones (10.5 px) B's form alone
+  still set as KHÔNG / ẢNH CÔNG / KHAI.
+- **About's question:** *tất cả các vệ tinh không?*, not *tất cả vệ tinh*: *tất cả các* is the collocation.
+- **Not applied here:** the spoken day in four accessible names (both reviews; right, but a change to shared components)
+  and Vietnamese hemisphere letters in coordinates (both reviews; an owner decision). Both are in the Appendix.
+- **Kept as they are:** the geostationary blurbs' *chụp toàn đĩa* (they describe imagers, as the Vietnamese weather press
+  does; only radar and the note under a shown frame, which can be infrared, take *ghi*); every point A or B confirmed
+  (*Quét qua*, *Nhiều khả năng đã quan sát* on two lines, CLDR's capitalised weekdays, *Kyiv*, *Khu vực 51*).
