@@ -139,7 +139,8 @@ const about: typeof en = {
     orbits: { who: 'Quỹ đạo', text: 'Bộ tham số quỹ đạo từ CelesTrak. SGP4 do satellite.js cung cấp.' },
     placeNames: { who: 'Tên địa điểm', text: 'Photon của komoot. Dữ liệu bản đồ © Những người đóng góp OpenStreetMap (ODbL).' },
     textures: { who: 'Bề mặt Trái Đất', text: 'Solar System Scope (CC BY 4.0), từ NASA Blue Marble và Black Marble.' },
-    type: { who: 'Phông chữ', text: 'Instrument Sans và Serif của Instrument, Martian Mono của Evil Martians (SIL OFL).' },
+    // Honest labelling: a Vietnamese page sets every letter in these faces, none in the brand's (src/styles/scripts.css).
+    type: { who: 'Phông chữ', text: 'Noto Sans và Noto Serif Display của Google, JetBrains Mono của JetBrains (SIL OFL).' },
   },
 
   keys: {

@@ -144,10 +144,10 @@ const about: typeof en = {
     orbits: { who: 'कक्षाएँ', text: 'कक्षा के आँकड़े CelesTrak से। SGP4 के लिए satellite.js।' },
     placeNames: { who: 'जगहों के नाम', text: 'komoot का Photon। मानचित्र डेटा © OpenStreetMap योगदानकर्ता (ODbL)।' },
     textures: { who: 'ग्लोब की तस्वीरें', text: 'Solar System Scope (CC BY 4.0), NASA Blue Marble और Black Marble से।' },
-    // Honest labelling: until a Devanagari face ships, the Hindi letters are the device's own font.
+    // Honest labelling: the Devanagari letters are set in the Noto faces the page ships (src/styles/scripts.css).
     type: {
       who: 'फ़ॉन्ट',
-      text: 'Instrument के Instrument Sans और Serif, Evil Martians का Martian Mono (SIL OFL)। देवनागरी अक्षर आपके डिवाइस के फ़ॉन्ट में।',
+      text: 'Instrument के Instrument Sans और Serif, Evil Martians का Martian Mono, और देवनागरी के लिए Google के Noto Sans Devanagari और Noto Serif Devanagari (SIL OFL)।',
     },
   },
 
