@@ -7,8 +7,12 @@
  *    interfaces use, which has no gender; states are short clauses agreeing with our own nouns («लिंक बन रहा है…»,
  *    «तस्वीर बन रही है…»).
  *  - The post is prose a Hindi reader would post: the day takes «को», the time is «स्थानीय समयानुसार 11:21 पर» (the
- *    news idiom), units are spelled («मीटर») or the papers' «किमी». "Watched" is «ने … को देखा», so neither the
- *    satellite nor the place is ever agreed with; the place is always followed by a postposition.
+ *    news idiom), «मीटर» is spelled and «किमी» kept as the papers print it. "Watched" is «ने … को देखा», so neither
+ *    the satellite nor the place is ever agreed with; the place is always followed by a postposition («Waterloo के 795
+ *    किमी ऊपर से», one phrase, not three postpositions in a row). The swath is «यह जगह उसके कैमरे की पट्टी के भीतर
+ *    थी» (our noun as the subject), and "within view" says the place was in its reach, the could verdict's word. It is
+ *    the camera that could have turned («उसका कैमरा इधर मुड़ सकता था»): «वह मुड़ सकता था» reads as the satellite
+ *    changing course, and a second «वह» after «संचालक» as the operator.
  *  - The hooks echo the hero («किसी चीज़ ने इस हफ़्ते आपको भी देखा।») and ask with «क्या». The credit keeps X's "via".
  *  - File names stay English ASCII words: they travel through every app and file system.
  */
@@ -52,7 +56,7 @@ const share: typeof en = {
   creatingLink: 'लिंक बन रहा है…',
   linkLater: 'शेयर करने पर बनेगा',
   postLabel: 'पोस्ट',
-  renderFailed: 'इस ब्राउज़र में कार्ड नहीं बन सका, पर लिंक काम करता है।',
+  renderFailed: 'इस ब्राउज़र में कार्ड नहीं बन सका, पर लिंक अब भी काम करता है।',
 
   // ── The post ──
   post: {
@@ -61,11 +65,11 @@ const share: typeof en = {
     clouded: (sat: string, place: string, altitudeKm: number, w: PostWhen, cloud: string) =>
       `${sat} ने ${when(w)} ${km(altitudeKm)} की ऊँचाई से ${place} को देखा। ${cloud}`,
     likely: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
-      `${sat} ${when(w)} ${km(altitudeKm)} की ऊँचाई पर ${place} के ऊपर से गुज़रा। उसके कैमरे की पट्टी ने इस जगह को ढका।`,
+      `${sat} ${when(w)} ${place} के ${km(altitudeKm)} ऊपर से गुज़रा। यह जगह उसके कैमरे की पट्टी के भीतर थी।`,
     could: (sat: string, place: string, w: PostWhen) =>
-      `${sat} ${when(w)} ${place} के पास से, उसे देख सकने की दूरी पर गुज़रा। वह इधर मुड़ सकता था। उसका संचालक नहीं बताता कि वह मुड़ा या नहीं।`,
+      `${sat} ${when(w)} ${place} के पास से गुज़रा। यह जगह उसकी पहुँच में थी। उसका कैमरा इधर मुड़ सकता था। उसका संचालक नहीं बताता कि कैमरा मुड़ा या नहीं।`,
     overhead: (sat: string, place: string, altitudeKm: number, w: PostWhen) =>
-      `${sat} ${when(w)} ${km(altitudeKm)} की ऊँचाई पर ${place} के ऊपर से गुज़रा।`,
+      `${sat} ${when(w)} ${place} के ${km(altitudeKm)} ऊपर से गुज़रा।`,
   },
   hookWatched: 'किसी चीज़ ने इस हफ़्ते आपको भी देखा।',
   hookPassed: 'इस हफ़्ते आपके ऊपर से क्या गुज़रा?',

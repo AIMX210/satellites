@@ -10,11 +10,14 @@
  *    care: the danda belongs to the last block, never to the place.
  *  - No word agrees with the place or the satellite's unknown gender: "watched" is «ने … को देखा» (one form for every
  *    count), "swept over" and "within view" put our own feminine nouns in the subject («Sentinel-2C की पट्टी गुज़री»,
- *    «… की नज़र पहुँच सकती थी»), and every satellite is masculine (§5.2). A nameless one is «एक उपग्रह» / «किसी
- *    उपग्रह».
+ *    «Waterloo तक · Sentinel-2C की पहुँच थी»: the could verdict's words all rest on «पहुँच»), and every satellite is
+ *    masculine (§5.2). A nameless one is «एक उपग्रह» / «किसी उपग्रह».
+ *  - "What watched you" is «किस चीज़ ने», as the hero's «किसी चीज़ ने»: «किसने» would ask "who", a person.
+ *  - A heading folds into the sentence as «दक्षिण की ओर जाते हुए», never «गुज़रा और … जा रहा था».
  *  - Counts take Hindi's plural, zero the plural too; a number is tied to its noun or unit by a no-break space.
  *  - Days come from Intl's parts at the place's zone with the full month: «रवि, 1 नवंबर 2026» in stamps, «रविवार, 1
- *    नवंबर 2026 को» in prose. Units are Hindi's symbols «किमी», «मी», «किमी/से». Compass words in prose are Hindi.
+ *    नवंबर 2026 को» in prose. Units are Hindi's symbols «किमी», «मी», and «किमी/से» in the readout cells. Compass words
+ *    in prose are Hindi.
  */
 import { fmt } from '../format.js'
 import { dateFormat } from '../dates.js'
@@ -53,9 +56,9 @@ const dateProse = (ms: number, timeZone: string) => {
 
 // ── Pieces the sentences share ──────────────────────────────────────────────────────────────────────────────────────
 
-/** «31 उपग्रहों ने देखा।» / «1 उपग्रह ने देखा।» / zero: «हमारी सूची के किसी उपग्रह ने नहीं देखा।» */
+/** «31 उपग्रहों ने देखा।» / «1 उपग्रह ने देखा।» / zero: «हमारी सूची के किसी भी उपग्रह ने नहीं देखा।» (as the results say) */
 const watched = (n: number) =>
-  n > 0 ? `${f.int(n)}\u00a0${pl(n, 'उपग्रह', 'उपग्रहों')} ने देखा।` : 'हमारी सूची के किसी उपग्रह ने नहीं देखा।'
+  n > 0 ? `${f.int(n)}\u00a0${pl(n, 'उपग्रह', 'उपग्रहों')} ने देखा।` : 'हमारी सूची के किसी भी उपग्रह ने नहीं देखा।'
 /** The headline's serif block: the place and the postposition on its line */
 const head = (place: string, post: string) => accent(`${place}\u00a0${post}`)
 /** «Sentinel-2C» / «एक उपग्रह» (a subject) */
@@ -67,8 +70,8 @@ const satObl = (s: SatName) => s ?? 'किसी उपग्रह'
 const COMPASS = ['उत्तर', 'उत्तर-पूर्व', 'पूर्व', 'दक्षिण-पूर्व', 'दक्षिण', 'दक्षिण-पश्चिम', 'पश्चिम', 'उत्तर-पश्चिम']
 /** «रविवार, 1 नवंबर 2026 को 11:21 EST पर » */
 const at = (w?: CardWhen) => (w ? `${dateProse(w.ms, w.timeZone)} को ${w.clock}\u00a0${w.zone} पर ` : '')
-/** « और दक्षिण की ओर जा रहा था» (its subject is the sentence's satellite) */
-const moving = (heading?: number) => (heading !== undefined && COMPASS[heading] ? ` और ${COMPASS[heading]} की ओर जा रहा था` : '')
+/** «दक्षिण की ओर जाते हुए »: before the place, agreeing with the sentence's satellite (masculine) */
+const moving = (heading?: number) => (heading !== undefined && COMPASS[heading] ? `${COMPASS[heading]} की ओर जाते हुए ` : '')
 
 const hi: CardMessages = {
   // ── The headline: the place first, in the serif; the lead after it ────────────────────────────────────────────────
@@ -77,7 +80,7 @@ const hi: CardMessages = {
   headlineBy: {
     imaged: (s: SatName, place: string, _cut: boolean): Rich => [head(place, 'को'), `${satObl(s)} ने देखा।`],
     likely: (s: SatName, place: string, _cut: boolean): Rich => [head(place, 'के ऊपर से'), `${satObl(s)} की पट्टी गुज़री।`],
-    could: (s: SatName, place: string, _cut: boolean): Rich => [head(place, 'तक'), `${satObl(s)} की नज़र पहुँच सकती थी।`],
+    could: (s: SatName, place: string, _cut: boolean): Rich => [head(place, 'तक'), `${satObl(s)} की पहुँच थी।`],
     overhead: (s: SatName, place: string, _cut: boolean): Rich => [head(place, 'के ऊपर से'), `${sat(s)} गुज़रा।`],
   },
   headlineWeek: (satellites: number, place: string, _cut: boolean): Rich => [head(place, 'को'), `इस हफ़्ते ${watched(satellites)}`],
@@ -93,7 +96,7 @@ const hi: CardMessages = {
   archiveDownShort: 'तस्वीरों के संग्रहों ने जवाब नहीं दिया।',
   cloud: {
     only: {
-      sub: (_pct: number) => 'बादल छाए। उसे सिर्फ़ बादल दिखे।',
+      sub: (_pct: number) => 'बादल छाए थे। उसे सिर्फ़ बादल दिखे।',
       chip: (pct: number) => `बादल छाए · ${f.pct(pct)}`,
       post: (_pct: number) => 'उसे सिर्फ़ बादल दिखे।',
       desc: (pct: number) => `उसे सिर्फ़ बादल दिखे (${f.pct(pct)})।`,
@@ -129,7 +132,7 @@ const hi: CardMessages = {
     mosaicPixel: 'मोज़ेक पिक्सेल',
     closest: 'सबसे नज़दीक',
   },
-  lane: { imaged: 'तस्वीर', likely: 'संभवतः', could: 'मुमकिन', overhead: 'ऊपर से' },
+  lane: { imaged: 'तस्वीर', likely: 'संभवतः', could: 'पहुँच में', overhead: 'ऊपर से' },
   unit: { km: 'किमी', m: 'मी', kmPerSecond: 'किमी/से' },
   decimal: (n: number, digits: number) => f.dec(n, digits),
 
@@ -158,45 +161,48 @@ const hi: CardMessages = {
   },
   lookDay: (ms: number, timeZone: string) => dayMonth(ms, timeZone),
   aSatellite: 'एक उपग्रह',
-  invite: 'देखें, आपको किसने देखा',
+  invite: 'देखें, आपको किस चीज़ ने देखा',
 
   // ── The default card ──────────────────────────────────────────────────────────────────────────────────────────────
 
   hero: [['किसी चीज़ ने'], ['इस हफ़्ते'], [accent('आपको'), ' देखा।']] as Rich[],
-  enterAnyPlace: 'धरती की कोई भी जगह डालें',
+  enterAnyPlace: 'धरती की कोई भी जगह खोजें',
   defaultPlace: 'पाम जुमेराह',
   defaultAlt:
-    'दुबई के पाम जुमेराह की Sentinel-2 उपग्रह से ली गई असली फ़ोटो, इस पंक्ति के साथ: किसी चीज़ ने इस हफ़्ते आपको देखा। धरती की कोई भी जगह डालें।',
+    'दुबई के पाम जुमेराह की Sentinel-2 उपग्रह से ली गई असली फ़ोटो, इस पंक्ति के साथ: किसी चीज़ ने इस हफ़्ते आपको देखा। धरती की कोई भी जगह खोजें।',
 
   // ── The share page ────────────────────────────────────────────────────────────────────────────────────────────────
 
   page: {
     title: 'किसी चीज़ ने इस हफ़्ते आपको देखा।',
-    description: 'धरती की कोई भी जगह डालें। पिछले 7\u00a0दिनों में उसके ऊपर से गुज़रा हर उपग्रह देखें, और उनकी ली हुई असली तस्वीरें भी।',
-    placeTitle: (place: string) => `${place} को इस हफ़्ते किसने देखा`,
+    description: 'धरती की कोई भी जगह खोजें। पिछले 7\u00a0दिनों में उसके ऊपर से गुज़रे सभी उपग्रह देखें, और उनकी ली हुई असली तस्वीरें भी।',
+    placeTitle: (place: string) => `${place} को इस हफ़्ते किस चीज़ ने देखा`,
     placeDescription: (place: string) =>
-      `पिछले 7\u00a0दिनों में ${place} के ऊपर से गुज़रा हर उपग्रह, और उनकी ली हुई असली तस्वीरें। इस हफ़्ते आपको किसने देखा?`,
+      `पिछले 7\u00a0दिनों में ${place} के ऊपर से गुज़रे सभी उपग्रह, और उनकी ली हुई असली तस्वीरें। इस हफ़्ते आपको किस चीज़ ने देखा?`,
     opening: [accent('Watched'), ' खुल रहा है'] as Rich,
   },
   // With a time, the satellite leads and the date stands between it and the place; without one, the place leads, so
-  // two Latin names never touch («Sentinel-2C Waterloo» would read as one name).
+  // two Latin names never touch («Sentinel-2C Waterloo» would read as one name). The heading, when known, stands just
+  // before the verb's path: «दक्षिण की ओर जाते हुए Waterloo के … ऊपर से», or after the satellite when the place leads.
   crossed: (o: PassFacts & { verdict: 'imaged' | 'likely' | 'overhead'; altitudeKm?: number }) => {
     const over = `${o.place} के ${o.altitudeKm !== undefined ? `${f.int(o.altitudeKm)}\u00a0किमी ऊपर से` : 'ऊपर से'}`
-    return `${o.when ? `${sat(o.sat)} ${at(o.when)}${over}` : `${over} ${sat(o.sat)}`} गुज़रा${moving(o.heading)}।`
+    return `${o.when ? `${sat(o.sat)} ${at(o.when)}${moving(o.heading)}${over}` : `${over} ${sat(o.sat)} ${moving(o.heading)}`.trimEnd()} गुज़रा।`
   },
+  // "Within view" is the place in its reach, the could verdict's word («पहुँच»), in a sentence of our own noun.
   withinView: (o: PassFacts) =>
-    `${o.when ? `${sat(o.sat)} ${at(o.when)}${o.place} के पास से, उसे देख सकने की दूरी पर` : `${o.place} के पास से, उसे देख सकने की दूरी पर ${sat(o.sat)}`} गुज़रा${moving(o.heading)}।`,
-  couldHave: 'वह इधर मुड़ सकता था। उसका संचालक नहीं बताता कि वह मुड़ा या नहीं।',
+    `${o.when ? `${sat(o.sat)} ${at(o.when)}${moving(o.heading)}${o.place} के पास से` : `${o.place} के पास से ${sat(o.sat)} ${moving(o.heading)}`.trimEnd()} गुज़रा। यह जगह उसकी पहुँच में थी।`,
+  // The camera turns, not the satellite («वह मुड़ सकता था» reads as changing course), and is named again after «संचालक».
+  couldHave: 'उसका कैमरा इधर मुड़ सकता था। उसका संचालक नहीं बताता कि कैमरा मुड़ा या नहीं।',
   straightDown: 'उसका कैमरा सीधे नीचे देख रहा था।',
   offNadir: (deg: number) => `उसका कैमरा सीधे नीचे से ${f.dec(deg, 1)}° हटकर देख रहा था।`,
   cloudCover: (pct: number) => `दृश्य के ${f.pct(pct)} हिस्से पर बादल थे।`,
-  inSwath: (place: string) => `उसकी पट्टी ने ${place} को ढका।`,
+  inSwath: (place: string) => `उसकी पट्टी ${place} के ऊपर से गुज़री।`,
   bestFrom: {
     closest: (s: SatName) => `सबसे नज़दीकी झलक ${satObl(s)} की है।`,
     lastClear: (s: SatName) => `आखिरी साफ़ झलक ${satObl(s)} की है।`,
     first: (s: SatName) => `पहली तस्वीर ${satObl(s)} की है।`,
   },
-  question: 'इस हफ़्ते आपको किसने देखा?',
+  question: 'इस हफ़्ते आपको किस चीज़ ने देखा?',
   cardAlt: {
     withPhoto: (s: SatName) => `शेयर कार्ड, ${sat(s)} से ली गई हफ़्ते की सबसे नज़दीकी फ़ोटो के साथ।`,
     plain: 'शेयर कार्ड।',
