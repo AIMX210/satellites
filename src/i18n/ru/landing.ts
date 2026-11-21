@@ -47,7 +47,7 @@ const landing: typeof en = {
   sub: (n: number): Rich => [
     `Введи любое место на Земле. Увидишь все спутники, пролетавшие над ним за ${lastWord(n)} ${days(n)}, и\u00a0настоящие снимки, которые они сделали.`,
   ],
-  builtBy: (handle: string) => `Автор\u00a0— ${handle}`,
+  builtBy: (handle: string) => `Автор: ${handle}`,
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Поиск места',
@@ -60,7 +60,7 @@ const landing: typeof en = {
   clearSearch: 'Очистить поиск',
   go: 'Показать, что пролетало над этим местом',
   searchDown: 'Поиск мест не отвечает. Координаты вроде 43.47, −80.54 по-прежнему работают.',
-  nothingMatches: (query: string) => `Ничего не найдено по запросу «${query}». Попробуй город, достопримечательность или координаты.`,
+  nothingMatches: (query: string) => `Ничего не найдено по запросу «${query}». Попробуй ввести город, достопримечательность или координаты.`,
   suggestions: 'Места',
 
   // ── Use my location ──────────────────────────────────────────────────────────────────────
@@ -75,7 +75,8 @@ const landing: typeof en = {
   namingPlace: 'Определение названия',
   elapsed: (seconds: number) => `${seconds.toFixed(0).padStart(2, '0')}\u00a0с`,
   locatingNote:
-    'Твоё местоположение уходит геокодеру Photon, чтобы определить название места. Мы храним только ячейку сетки ~10\u00a0км.',
+    // «мы» is the subject of both verbs, so the «чтобы» clause has the right one; «размером» makes 10 km a size.
+    'Мы передаём твоё местоположение геокодеру Photon, чтобы узнать название места. Храним только ячейку сетки размером ~10\u00a0км.',
   locationLabel: 'Геолокация',
   dismiss: 'Закрыть',
   locateErrors: {
@@ -94,6 +95,6 @@ const landing: typeof en = {
   dropPin: 'Поставить метку',
   chipName: (label: string, sublabel: string) => (sublabel ? `${label}, ${sublabel}` : label),
   surprise: 'Наугад',
-  surpriseName: 'Наугад: известное место, выбранное случайно',
+  surpriseName: 'Наугад: случайное известное место',
 }
 export default landing

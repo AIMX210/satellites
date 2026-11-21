@@ -53,9 +53,9 @@ const EACH: Record<SeasonName, string> = {
   summer: 'по одному каждое лето',
   autumn: 'по одному каждую осень',
 }
-/** «Каждый кадр — один и тот же квадрат 10 × 10 км…» */
+/** «Каждый кадр — один и тот же квадрат 10 × 10 км…»: «обработанный», never «тонированный» (tinted glass, sepia) */
 const square = (km: number) =>
-  `Каждый кадр\u00a0— один и тот же квадрат ${f.int(km)}\u00a0×\u00a0${f.int(km)}\u00a0км, снятый спутником Sentinel-2 и тонированный, как и все фото здесь.`
+  `Каждый кадр\u00a0— один и тот же квадрат ${f.int(km)}\u00a0×\u00a0${f.int(km)}\u00a0км, снятый спутником Sentinel-2 и обработанный так же, как все фото здесь.`
 
 const timelapse: typeof en = {
   // ── The dialog and its bar ────────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ const timelapse: typeof en = {
   // "aims for": the picker tries the next quarter and may fall back to any clear date, so the season is sought, not sure.
   note: (km: number) => `${square(km)} Для каждого года мы ищем кадр другого сезона. Год без ясного кадра пропущен.`,
   noteOneSeason: (km: number) =>
-    `${square(km)} Каждый год\u00a0— из одного и того же сезона. Год без ясного кадра в этом сезоне пропущен.`,
+    `${square(km)} Все кадры сняты в одном и том же сезоне. Год без ясного кадра в этом сезоне пропущен.`,
   source: 'Copernicus Sentinel-2, через Planetary Computer',
 
   // ── The waiting screen ────────────────────────────────────────────────────────────────────

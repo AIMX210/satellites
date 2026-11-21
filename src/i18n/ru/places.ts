@@ -29,7 +29,7 @@ const places: typeof en = {
   goldenGate: { label: 'Мост Золотые Ворота', sublabel: 'Сан-Франциско, США' },
   kennedySpaceCenter: { label: 'Космический центр Кеннеди', sublabel: 'Флорида, США' },
   washingtonDc: { label: 'Вашингтон', sublabel: 'Национальная аллея, США' },
-  mountStHelens: { label: 'Гора Сент-Хеленс', sublabel: 'штат Вашингтон, США' },
+  mountStHelens: { label: 'Гора Сент-Хеленс', sublabel: 'Штат Вашингтон, США' },
   niagaraFalls: { label: 'Ниагарский водопад', sublabel: 'Онтарио, Канада' },
   panamaCanal: { label: 'Панамский канал', sublabel: 'Шлюзы Гатун, Панама' },
   rioDeJaneiro: { label: 'Рио-де-Жанейро', sublabel: 'Сахарная Голова и Копакабана, Бразилия' },

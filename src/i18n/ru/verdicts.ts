@@ -37,7 +37,9 @@ const verdicts: typeof en = {
     title: 'Могли смотреть сюда',
     short: 'Возможно',
     unit: passes,
-    definition: 'Это место было в досягаемости поворотной или частной камеры. Оператор не сообщает, смотрела ли она сюда.',
+    // «камера с закрытым архивом» for English's "private": «частная камера» is a person's camera, and some of these are
+    // governments'. «в зоне досягаемости», as results.why.radar says it.
+    definition: 'Это место было в зоне досягаемости поворотной камеры или камеры с закрытым архивом. Оператор не сообщает, смотрела ли она сюда.',
     verb: 'могли смотреть сюда',
   },
   overhead: {

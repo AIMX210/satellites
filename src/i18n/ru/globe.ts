@@ -38,7 +38,7 @@ const globe: typeof en = {
   pin: {
     card: 'Поставленная метка',
     naming: 'Определяем название',
-    noName: 'Рядом нет названий',
+    noName: 'Место без названия',
     placeTitle: (name: string, area: string) => `${name}, ${area}`,
     searchAria: (place: string) => `Показать, что пролетало над этим местом: ${place}`,
     searchTitle: 'Искать здесь (Enter)',

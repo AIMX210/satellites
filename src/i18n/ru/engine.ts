@@ -3,8 +3,8 @@
  * rows and the footnotes about degraded data.
  *
  * Why these forms: the rows are mono status labels, so they are verbal nouns in sentence case («Расчёт орбит», CSS
- * uppercases them), and a count a verbal noun governs takes the genitive in every category («Сопоставление 121 кадра и
- * 1 201 пролёта», «Расчёт 21 орбиты»); a count standing alone is nominative («Каталог · 16 912 объектов»). The
+ * uppercases them), and a count a verbal noun governs takes the genitive in every category («Сверка 121 кадра и 1 201
+ * пролёта», «Расчёт 21 орбиты»; «Сверка», not «Сопоставление», keeps the row inside the ~40 characters a phone shows); a count standing alone is nominative («Каталог · 16 912 объектов»). The
  * footnotes say what failed as an impersonal fact, one fact a sentence (the English semicolons become full stops), and
  * name the verdicts in the results' own words in quotation marks («Увидено», «Вероятно, увидено»). NASA GIBS gets the
  * head noun «сервис», so its past tense has a gender. "One image … that pass" is said only for exactly 1: ru's `one`
@@ -26,7 +26,7 @@ const OBJECTS: Forms = { one: 'объект', few: 'объекта', many: 'об
 const DAYS: Forms = { one: 'день', few: 'дня', many: 'дней', other: 'дня' }
 const PASSES: Forms = { one: 'пролёт', few: 'пролёта', many: 'пролётов', other: 'пролёта' }
 const IMAGES: Forms = { one: 'снимок', few: 'снимка', many: 'снимков', other: 'снимка' }
-// After a verbal noun («Расчёт», «Сопоставление»): the genitive, which merges few and many.
+// After a verbal noun («Расчёт», «Сверка»): the genitive, which merges few and many.
 const ORBITS_GEN: Forms = { one: 'орбиты', few: 'орбит', many: 'орбит', other: 'орбиты' }
 const SCENES_GEN: Forms = { one: 'кадра', few: 'кадров', many: 'кадров', other: 'кадра' }
 const PASSES_GEN: Forms = { one: 'пролёта', few: 'пролётов', many: 'пролётов', other: 'пролёта' }
@@ -46,7 +46,7 @@ const engine: typeof en = {
     propagating: ({ done, total }: { done: number; total: number }) => `Расчёт орбит · ${int(done)} / ${int(total)}`,
     searchingArchives: 'Поиск снимков Sentinel-2 + Landsat',
     matching: ({ scenes, passes }: { scenes: number; passes: number }) =>
-      `Сопоставление ${count(scenes, SCENES_GEN)} и ${count(passes, PASSES_GEN)}`,
+      `Сверка ${count(scenes, SCENES_GEN)} и ${count(passes, PASSES_GEN)}`,
     verifyingWeatherStart: 'Проверка суточных мозаик NASA',
     verifyingWeather: ({ settled, total }: { settled: number; total: number }) =>
       `Проверка суточных мозаик NASA · ${int(settled)} / ${int(total)}`,
