@@ -178,6 +178,19 @@ describe('browser languages (0028)', () => {
     expect(r.untranslated).toEqual({ tabs: 25, searched: 15 })
     expect(browserLangReach(undefined, undefined)).toEqual({ rows: [], all: { tabs: 0, searched: 0 }, translated: { tabs: 0, searched: 0 }, untranslated: { tabs: 0, searched: 0 } })
   })
+  it('is in the fixture: more languages than the section lists, some with no translation, nothing cut', () => {
+    const m = mockStats('30d', Date.UTC(2026, 10, 21, 12))
+    const tabs = m.top['session.browser_lang']
+    const did = new Map(m.top['session.browser_lang_searched'])
+    expect(tabs.length).toBeGreaterThan(24)
+    expect(tabs.every(([v], i) => /^[a-z]{2,3}$/.test(v) && (i === 0 || tabs[i - 1][1] >= tabs[i][1]))).toBe(true)
+    expect(tabs.every(([v, n]) => (did.get(v) ?? 0) <= n)).toBe(true)
+    for (const k of ['session.browser_lang', 'session.browser_lang_searched'] as const) expect(m.dimTotals[k]).toBe(m.top[k].reduce((a, r) => a + r[1], 0))
+    expect(m.dimTotals['session.browser_lang']).toBeLessThanOrEqual(m.recorded.session)
+    const r = browserLangReach(tabs, m.top['session.browser_lang_searched'])
+    expect(r.untranslated.tabs).toBeGreaterThan(0)
+    expect(r.untranslated.searched / r.untranslated.tabs).toBeLessThan(r.translated.searched / r.translated.tabs)
+  })
 })
 
 describe('cached stats', () => {

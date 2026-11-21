@@ -34,6 +34,20 @@ const LANGS: [string, number][] = [
   ['pl', 0.017], ['tr', 0.015], ['ko', 0.013], ['zh-Hans', 0.012], ['id', 0.01], ['uk', 0.008], ['ar', 0.007], ['ru', 0.006], ['zh-Hant', 0.005], ['vi', 0.004], ['fa', 0.003], ['hi', 0.003],
 ]
 
+/**
+ * Browser languages (0028): each one's weight among the tabs that recorded one, and the share of its tabs that searched.
+ * The app's languages search about as often as English; most of those it has no translation for, and the four not
+ * listed yet, less. More than the section lists, so its "And N more" line shows too.
+ */
+const BROWSER_LANGS: [string, number, number][] = [
+  ['en', 50, 0.8], ['es', 8, 0.79], ['de', 6, 0.81], ['fr', 5, 0.78], ['pt', 4.5, 0.77], ['ja', 3.5, 0.74], ['it', 2.4, 0.8],
+  ['nl', 2, 0.82], ['ru', 1.8, 0.52], ['zh', 1.6, 0.72], ['pl', 1.6, 0.79], ['tr', 1.4, 0.75], ['sv', 1.2, 0.58], ['ko', 1.2, 0.73],
+  ['id', 1, 0.76], ['cs', 0.9, 0.55], ['uk', 0.8, 0.8], ['ar', 0.7, 0.71], ['he', 0.7, 0.49], ['ro', 0.6, 0.6], ['da', 0.6, 0.62],
+  ['el', 0.5, 0.51], ['hu', 0.5, 0.57], ['th', 0.5, 0.31], ['vi', 0.5, 0.5], ['fi', 0.4, 0.6], ['hi', 0.4, 0.46], ['nb', 0.4, 0.64],
+  ['fa', 0.3, 0.4], ['bn', 0.3, 0.35], ['ms', 0.2, 0.5], ['ca', 0.2, 0.7], ['bg', 0.2, 0.5], ['hr', 0.15, 0.55], ['sk', 0.15, 0.5],
+  ['fil', 0.1, 0.4],
+]
+
 /** What admin_live would say a few minutes after `stats` were computed. */
 export function mockLive(stats: AdminStats, now = Date.now()): LiveCounts | null {
   if (stats.cachedAt == null) return null
@@ -79,6 +93,8 @@ export function mockStats(range: Range, now = Date.now()): AdminStats {
   }
   const funnel = { search: Math.round(sessions * 0.78), results: Math.round(sessions * 0.74), pass_open: Math.round(sessions * 0.41), lightbox_open: Math.round(sessions * 0.22), share_open: Math.round(shares * 1.2), share_action: Math.round(shares * 0.85) }
   const minsAgo = (m: number) => now - m * 60e3
+  const weights = BROWSER_LANGS.reduce((a, l) => a + l[1], 0)
+  const browserTabs = BROWSER_LANGS.map(([l, w, f]) => [l, Math.max(1, Math.round((sessions * 0.92 * w) / weights)), f] as const)
   const out: AdminStats = {
     range,
     generatedAt: now,
@@ -120,6 +136,9 @@ export function mockStats(range: Range, now = Date.now()): AdminStats {
       'session.utm': [['newsletter / email / launch', k(21)], ['x / social', k(8)]],
       // Most tabs, not all: those from before the app sent its language have none.
       'session.lang': LANGS.map(([l, f]) => [l, Math.max(1, Math.round(sessions * 0.92 * f))] as [string, number]),
+      // The same tabs' browsers, and how many of each searched.
+      'session.browser_lang': browserTabs.map(([l, n]) => [l, n] as [string, number]).sort((a, b) => b[1] - a[1]),
+      'session.browser_lang_searched': browserTabs.map(([l, n, f]) => [l, Math.round(n * f)] as [string, number]).sort((a, b) => b[1] - a[1]),
       'pass_open.sat': [['Sentinel-2C', k(120)], ['Landsat 9', k(77)], ['Sentinel-2B', k(70)], ['NOAA-20', k(52)], ['ISS (ZARYA)', k(44)], ['WorldView Legion 4', k(31)], ['Terra', k(22)], ['Sentinel-1C', k(18)]],
       'pass_open.verdict': [['imaged', k(288)], ['likely', k(96)], ['could', k(71)], ['overhead', k(48)]],
       'share_action.sat': [['Sentinel-2C', k(14)], ['Landsat 9', k(9)], ['ISS (ZARYA)', k(5)], ['NOAA-20', k(3)]],
@@ -142,7 +161,7 @@ export function mockStats(range: Range, now = Date.now()): AdminStats {
     ],
   }
   for (const [k, rows] of Object.entries(out.top)) out.dimTotals[k] = Math.round(rows.reduce((a, r) => a + r[1], 0) * 1.08)
-  // All 16 languages are listed, so nothing of theirs is cut.
-  out.dimTotals['session.lang'] = out.top['session.lang'].reduce((a, r) => a + r[1], 0)
+  // All 20 languages and every browser language are listed, so nothing of theirs is cut.
+  for (const k of ['session.lang', 'session.browser_lang', 'session.browser_lang_searched']) out.dimTotals[k] = out.top[k].reduce((a, r) => a + r[1], 0)
   return out
 }
