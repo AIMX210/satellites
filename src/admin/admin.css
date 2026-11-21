@@ -88,6 +88,8 @@ a {
 .a-rank-i,
 .a-rank-n,
 .a-rank-pct,
+.a-reach-pct,
+.a-tag,
 .a-funnel-n,
 .a-funnel-pct,
 .a-split-n,
@@ -267,7 +269,7 @@ a {
 .a-panel > .a-label {
   margin-bottom: var(--s-3);
 }
-/* Two columns of a grid (the languages: 16 rows read as two short lists), the whole row once the grid has two. */
+/* Two columns of a grid (the languages' long lists read as two short ones), the whole row once the grid has two. */
 .a-panel-wide {
   grid-column: span 2;
 }
@@ -458,6 +460,71 @@ a {
 .a-rank-cols li {
   break-inside: avoid;
 }
+/* Browser languages (0028): a ranked list with each language's searched share, in two columns with a header each (the
+   header names the two percentages). */
+.a-reach {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--s-6);
+}
+.a-reach-head,
+.a-reach-list li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 52px 40px 64px;
+  column-gap: var(--s-2);
+}
+.a-reach-head {
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--line);
+}
+.a-reach-head > span:nth-child(n + 3) {
+  text-align: right;
+}
+/* The tag goes under the name when both don't fit (a phone): a name is never cut for it. */
+.a-reach-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--s-2);
+}
+.a-reach-label > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.a-reach-pct {
+  font-size: var(--fs-readout);
+  text-align: right;
+}
+/* The searched share of the whole width, on a hairline track, and the tick at the average. */
+.a-reach-bar {
+  grid-column: 2 / 6;
+  position: relative;
+  height: 1px;
+  margin-top: 5px;
+  background: var(--line);
+}
+.a-reach-bar > span {
+  display: block;
+  height: 1px;
+  background: var(--bone-2);
+}
+.a-reach-bar > i {
+  position: absolute;
+  top: -2px;
+  width: 1px;
+  height: 5px;
+  background: var(--bone-3-mark);
+}
+.a-tag {
+  flex: none;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--bone-2);
+}
 
 /* ── funnel ── */
 .a-funnel {
@@ -626,6 +693,11 @@ a {
   font-size: var(--fs-meta);
   color: var(--bone-3);
 }
+.a-facts-name {
+  font-family: var(--font-sans);
+  font-stretch: normal;
+  font-size: var(--fs-small);
+}
 
 /* ── feeds ── */
 .a-feed {
@@ -776,6 +848,12 @@ a {
   }
   .a-rank-cols {
     columns: 1;
+  }
+  .a-reach {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .a-reach-col + .a-reach-col .a-reach-head {
+    display: none;
   }
   .a-funnel li {
     grid-template-columns: 112px minmax(0, 1fr) 52px 40px;

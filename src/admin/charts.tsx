@@ -4,7 +4,7 @@
  */
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { Ranked } from './api'
-import { etParts, fmtBucket, fmtInt, fmtPct, funnelShares, niceMax, type FunnelStage } from './format'
+import { browserLanguageName, etParts, fmtBucket, fmtInt, fmtPct, funnelShares, niceMax, type BrowserLangRow, type FunnelStage } from './format'
 import { dotLevel, dotRadius, GRID_STEP, legendCounts, placeGrid } from './placeGrid'
 
 function useWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
@@ -172,6 +172,69 @@ export function RankList({ rows, total, max = 8, label, empty = 'Nothing yet', a
         </li>
       ))}
     </ol>
+  )
+}
+
+// ── Browser languages: tabs, and the share of them that searched ────────────────────────────
+
+const TRANSLATION_TAGS = { none: 'No translation', unlisted: 'Unlisted' } as const
+
+/**
+ * Each browser language's tabs, their share of `total`, and the share of them that searched (0028). The line under a
+ * row is that searched share of the whole width, and its tick `avg`, the share of all the listed tabs: a language whose
+ * visitors leave without searching ends short of it. A language the app has no translation for (or has one not yet
+ * listed) says so. Two columns, each with its header, when the list is long.
+ */
+export function ReachList({ rows, total, avg, max = 24, empty }: { rows: BrowserLangRow[]; total: number; avg: number | null; max?: number; empty: string }) {
+  if (!rows.length) return <p className="a-empty">{empty}</p>
+  const shown = rows.slice(0, max)
+  const rest = rows.slice(max)
+  const half = shown.length > 8 ? Math.ceil(shown.length / 2) : shown.length
+  const cols = half < shown.length ? [shown.slice(0, half), shown.slice(half)] : [shown]
+  const whole = Math.max(total, rows.reduce((a, r) => a + r.tabs, 0))
+  const pct = (f: number) => `${Math.max(0, Math.min(1, f)) * 100}%`
+  return (
+    <>
+      <div className="a-reach">
+        {cols.map((col, c) => (
+          <div key={c} className="a-reach-col">
+            <div className="a-reach-head a-label" aria-hidden>
+              <span />
+              <span>Language</span>
+              <span>Tabs</span>
+              <span>Share</span>
+              <span>Searched</span>
+            </div>
+            <ol className="a-rank a-reach-list">
+              {col.map((r, i) => (
+                <li key={r.code}>
+                  <span className="a-rank-i">{String(c * half + i + 1).padStart(2, '0')}</span>
+                  <span className="a-rank-label a-reach-label">
+                    <span>{browserLanguageName(r.code)}</span>
+                    {r.translation !== 'listed' && <span className="a-tag">{TRANSLATION_TAGS[r.translation]}</span>}
+                  </span>
+                  <span className="a-rank-n">{fmtInt(r.tabs)}</span>
+                  <span className="a-rank-pct">{fmtPct(r.tabs / whole)}</span>
+                  <span className="a-reach-pct" aria-label={`${fmtPct(r.searched / r.tabs)} searched`}>
+                    {fmtPct(r.searched / r.tabs)}
+                  </span>
+                  <span className="a-reach-bar" aria-hidden>
+                    <span style={{ width: pct(r.searched / r.tabs) }} />
+                    {avg != null && <i style={{ left: pct(avg) }} />}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </div>
+      {rest.length > 0 && (
+        <p className="a-note">
+          And {fmtInt(rest.length)} more {rest.length === 1 ? 'language' : 'languages'}: {fmtInt(rest.reduce((a, r) => a + r.tabs, 0))} tabs (
+          {fmtPct(rest.reduce((a, r) => a + r.tabs, 0) / whole)}), {fmtInt(rest.filter((r) => r.translation === 'none').length)} with no translation.
+        </p>
+      )}
+    </>
   )
 }
 

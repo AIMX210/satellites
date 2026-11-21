@@ -3,7 +3,7 @@ import { searchSource } from '@/app/telemetry'
 import type { Place } from '@/types'
 import { isTimeout, liveFor, parseLive, parseStats, RANGES } from './api'
 import { mockLive, mockStats } from './fixture'
-import { fmtBucket, fmtPct, funnelShares, languageName, niceMax, SOURCE_NAMES, type FunnelStage } from './format'
+import { browserLangReach, browserLanguageName, fmtBucket, fmtPct, funnelShares, languageName, niceMax, SOURCE_NAMES, translationFor, type FunnelStage } from './format'
 import { LOCALE_INFO, LOCALES } from '../../api/_lib/i18n/locales'
 import { liveSeries } from './live'
 import { dotRadius, GRID_STEP, legendCounts, placeGrid } from './placeGrid'
@@ -145,6 +145,38 @@ describe('languages (0027)', () => {
     expect(rows.map((r) => r[0]).sort()).toEqual([...LOCALES].sort())
     expect(m.dimTotals['session.lang']).toBe(rows.reduce((a, r) => a + r[1], 0))
     expect(m.dimTotals['session.lang']).toBeLessThanOrEqual(m.recorded.session)
+  })
+})
+
+describe('browser languages (0028)', () => {
+  it('has a translation for every language the app speaks, by its primary subtag, and by the matcher\'s exceptions', () => {
+    for (const l of LOCALES) expect(translationFor(l.split('-')[0].toLowerCase())).toBe(LOCALE_INFO[l].listed ? 'listed' : 'unlisted')
+    expect(translationFor('zh')).toBe('listed')
+    expect(translationFor('pt')).toBe('listed')
+    expect(translationFor('in')).toBe('listed') // the old code for Indonesian
+    expect(translationFor('yue')).toBe('listed') // Cantonese reads Traditional Chinese
+    for (const l of ['sv', 'cs', 'bn', 'th', 'be', 'fil', 'xx']) expect(translationFor(l)).toBe('none')
+  })
+  it('names a browser language in English, and shows an unknown code as it is', () => {
+    expect(browserLanguageName('bn')).toBe('Bangla')
+    expect(browserLanguageName('zh')).toBe('Chinese')
+    expect(browserLanguageName('xx')).toBe('xx')
+  })
+  it('sums tabs and searching tabs for the languages with a translation and without, never more searching than tabs', () => {
+    const r = browserLangReach(
+      [['en', 100], ['sv', 20], ['ru', 10], ['th', 5], ['', 9]],
+      [['en', 80], ['sv', 10], ['th', 7], ['de', 3]],
+    )
+    expect(r.rows.map((x) => [x.code, x.tabs, x.searched, x.translation])).toEqual([
+      ['en', 100, 80, 'listed'],
+      ['sv', 20, 10, 'none'],
+      ['ru', 10, 0, LOCALE_INFO.ru.listed ? 'listed' : 'unlisted'],
+      ['th', 5, 5, 'none'], // 24H: a tab can search in the range after it came, before it
+    ])
+    expect(r.all).toEqual({ tabs: 135, searched: 95 })
+    expect(r.translated).toEqual({ tabs: 110, searched: 80 })
+    expect(r.untranslated).toEqual({ tabs: 25, searched: 15 })
+    expect(browserLangReach(undefined, undefined)).toEqual({ rows: [], all: { tabs: 0, searched: 0 }, translated: { tabs: 0, searched: 0 }, untranslated: { tabs: 0, searched: 0 } })
   })
 })
 
