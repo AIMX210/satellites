@@ -1,13 +1,46 @@
--- 0028: the app's four new languages (Russian, Vietnamese, Persian, Hindi; owner, 2026-11-21) in log_events' list,
--- so a tab shown in one of them records its language (0027 stored null for a code it did not know), and in the admin
--- page's Languages list (0027's admin_stats_compute keeps 16 values of it).
+-- 0028: each tab's browser language, and the share of its tabs that searched, so the owner can see how many visitors'
+-- browsers ask for a language the site does not speak and whether they leave without searching (what English costs,
+-- language by language); and the app's four new languages (Russian, Vietnamese, Persian, Hindi; owner, 2026-11-21).
 --
--- log_events is 0027's with the longer list and nothing else changed; admin_stats_compute is 0027's listing 20. No
--- table changes, no lock beyond the functions' own replacement: safe to apply at any time clear of :00 and :17.
--- Idempotent (create or replace).
+-- The four languages: log_events' list of the app's locales takes them, so a tab shown in one of them records its
+-- language (0027 stored null for a code it did not know), and admin_stats_compute lists all 20 of session.lang (0027
+-- kept 16).
+--
+-- The browser's language is a fact about the tab, like its device, so it is kept and counted as 0027 keeps the tab's
+-- language, with no new request and no new event (every batch already carries `ctx`):
+--   * event_sessions gets a `browser_lang` column. log_events takes it from the batch's ctx.browser_lang: the primary
+--     language subtag of the browser's first language (navigator.languages[0]: 'hi' for hi-IN, 'zh' for zh-TW), two or
+--     three lowercase letters. Any language, not only the app's 20: the point is the ones it lacks. Anything else is
+--     none. The first batch that names one writes it, and it stays (the app reads it once a tab, src/lib/telemetry.ts);
+--     a row from before this migration takes it from its next batch. Not indexed, so the batch's update stays HOT (0017).
+--   * event_aggregates and event_hour_aggregates add two breakdowns next to session.lang: `session.browser_lang`, tabs
+--     by browser language, and `session.browser_lang_searched`, those of them that searched (the funnel's Searched stage,
+--     by browser language). Both count a tab once an Eastern day (0019): in the hourly rollups, in the first when the
+--     tab's first hour that day is rolled and in the second when the first hour it searched in that day is (the stage
+--     bits of event_tab_days), so a day's hours add up to its distinct tabs. Per language, searched / tabs is the share
+--     of its tabs that searched. Tabs with no browser language (an app from before this, a row from before this
+--     migration) are in neither, as tabs with no language are not in session.lang. Every rollup after them carries the
+--     two like the others: top 200 values an hour and a day (event_keep), more than browsers send in practice.
+--   * admin_stats_compute lists 200 values of each (in practice all: the page marks the languages the site does not
+--     speak and adds their rows up) and all 20 of session.lang. Nothing else in it changes.
+-- Nothing is backfilled: no browser language was recorded before. The client may deploy before or after this:
+-- log_events ignores a ctx key it does not know, and the page says "No browser languages recorded yet" until the list
+-- has rows.
+--
+-- The one table change is `add column` with no default on event_sessions, as in 0027: no rewrite, but it needs the
+-- table to itself for a moment, and every log_events call reads and writes it. Apply clear of :00 and :17 (the stats
+-- refresh and the hourly rollup read it); lock_timeout makes the migration give up rather than keep log_events calls
+-- waiting past their own 3 s statement timeout (run it again a few minutes later). Its test keeps the table for the
+-- whole run, so it computes no stats: see its header.
+-- Needs 0027 (its lang column). Idempotent: add column if not exists, create or replace of this project's functions.
+
+set local lock_timeout = '2s';
+
+-- Nullable, no default: null is "not recorded" (a tab from before this, or one whose app sent no browser language).
+alter table public.event_sessions add column if not exists browser_lang text;
 
 -- ── log_events ──────────────────────────────────────────────────────────────────────────────
--- 0027's, with ru, vi, fa and hi.
+-- 0027's, with ru, vi, fa and hi, keeping the tab's browser language.
 
 create or replace function public.log_events(batch jsonb)
 returns void
@@ -42,6 +75,7 @@ declare
   v_langs  constant text[] := array['en', 'es', 'fr', 'de', 'pt-BR', 'it', 'nl', 'pl', 'tr', 'id', 'uk', 'ja', 'ko',
                                     'zh-Hans', 'zh-Hant', 'ar', 'ru', 'vi', 'fa', 'hi'];
   v_lang   text;
+  v_blang  text;
 begin
   if batch is null or jsonb_typeof(batch) is distinct from 'object' or octet_length(batch::text) > 16384 then
     raise exception 'invalid batch' using errcode = '22023';
@@ -77,6 +111,8 @@ begin
   v_ctx := case when jsonb_typeof(batch -> 'ctx') = 'object' then batch -> 'ctx' else '{}'::jsonb end;
   -- The language the app was showing when the batch was sent (0027): one of its locales, else none.
   v_lang := overflight_private.jenum(v_ctx, 'lang', v_langs);
+  -- The browser's first language (0028): its primary subtag, any language, else none.
+  v_blang := overflight_private.jmatch(v_ctx, 'browser_lang', '^[a-z]{2,3}$', 3);
   for ev in select value from jsonb_array_elements(v_events) loop
     exit when cardinality(v_type) >= v_room;
     continue when jsonb_typeof(ev) is distinct from 'object' or jsonb_typeof(ev -> 'type') is distinct from 'string';
@@ -97,7 +133,7 @@ begin
     if jsonb_typeof(v_ctx -> 'ref') is distinct from 'string' or char_length(v_ref) > 100 or v_ref !~ '^([a-z0-9-]+\.)+[a-z]{2,}$' then
       v_ref := null;
     end if;
-    insert into public.event_sessions (sid, device, country, ref_host, utm, app_version, lang)
+    insert into public.event_sessions (sid, device, country, ref_host, utm, app_version, lang, browser_lang)
     values (
       v_sid,
       overflight_private.jenum(v_ctx, 'device', array['phone', 'tablet', 'desktop']),
@@ -108,7 +144,8 @@ begin
         overflight_private.clean_masked(v_ctx ->> 'utm_medium', 40),
         overflight_private.clean_masked(v_ctx ->> 'utm_campaign', 60)), ''),
       overflight_private.jmatch(v_ctx, 'v', '^([0-9a-f]{7}|\d{1,4}\.\d{1,4}\.\d{1,4}|dev)$', 24),
-      v_lang)
+      v_lang,
+      v_blang)
     on conflict (sid) do nothing;
     get diagnostics v_tabs = row_count;  -- 0 when another batch of this tab made the row first
     v_active := v_tabs;
@@ -127,7 +164,9 @@ begin
   end loop;
 
   -- A batch that names a language replaces the tab's (a switch in the language menu); one that names none keeps it.
-  update public.event_sessions set last_at = now(), n = n + v_take, lang = coalesce(v_lang, lang) where sid = v_sid;
+  -- The browser's language stays as the tab's first batch to name one gave it (a row from before 0028 takes its next).
+  update public.event_sessions set last_at = now(), n = n + v_take, lang = coalesce(v_lang, lang),
+    browser_lang = coalesce(browser_lang, v_blang) where sid = v_sid;
 
   -- Count them (and a new tab) for the overall limit. 16 rows a minute, by tab, so concurrent batches rarely wait on
   -- the same row. The same row counts the batch's searches, shares and tabs for admin_live (0023), the tabs active
@@ -142,7 +181,120 @@ begin
 end
 $$;
 
--- ── Admin stats (0027's, listing all 20 languages) ──────────────────────────────────────────
+-- ── Breakdowns (0027's, with session.browser_lang and session.browser_lang_searched) ────────
+create or replace function overflight_private.event_aggregates(p_from timestamp with time zone, p_to timestamp with time zone)
+ returns table(day date, type text, dim text, val text, n bigint)
+ language sql
+ stable
+ set search_path to 'public'
+as $function$
+  with e as materialized (
+    select (ev.created_at at time zone overflight_private.admin_tz())::date as day, ev.type, ev.sid,
+           ev.type = 'search' and ev.props ? 'label'   as has_label,   case when ev.type = 'search' then ev.props ->> 'label' end   as label,
+           ev.type = 'search' and ev.props ? 'country' as has_country, case when ev.type = 'search' then ev.props ->> 'country' end as s_country,
+           ev.type = 'search' and ev.props ? 'source'  as has_source,  case when ev.type = 'search' then ev.props ->> 'source' end  as source,
+           ev.type = 'search' and ev.props ? 'cell'    as has_cell,    case when ev.type = 'search' then ev.props ->> 'cell' end    as cell,
+           ev.type in ('pass_open', 'share_action') and (ev.props ? 'sat' or ev.props ? 'norad') as has_sat,
+           case when ev.type in ('pass_open', 'share_action') then coalesce(ev.props ->> 'sat', 'NORAD ' || (ev.props ->> 'norad')) end as sat,
+           ev.type = 'pass_open' and ev.props ? 'verdict' as has_verdict, case when ev.type = 'pass_open' then ev.props ->> 'verdict' end as verdict,
+           case when ev.type = 'share_action' then ev.props ->> 'action' end as action,
+           case when ev.type = 'timelapse_open' then ev.props ->> 'from' end as tl_from,
+           case when ev.type = 'timelapse_share' then ev.props ->> 'action' end as tl_action
+    from public.events ev
+    where ev.created_at >= p_from and ev.created_at < p_to
+  ),
+  ses as materialized (
+    select d.day, d.sid, d.searched, coalesce(s.device, '') as device, coalesce(s.country, '') as country,
+           coalesce(s.ref_host, '') as ref_host, coalesce(s.utm, '') as utm, coalesce(s.lang, '') as lang,
+           coalesce(s.browser_lang, '') as browser_lang
+    from (select e.day, e.sid, bool_or(e.type = 'search') as searched from e group by 1, 2) d
+    left join public.event_sessions s on s.sid = d.sid
+  )
+  select e.day, e.type, '', '', count(*) from e group by 1, 2
+  union all select ses.day, 'session', '', '', count(*) from ses group by 1
+  union all select ses.day, 'session', 'device', ses.device, count(*) from ses group by 1, 4
+  union all select ses.day, 'session', 'country', ses.country, count(*) from ses group by 1, 4
+  union all select ses.day, 'session', 'ref', ses.ref_host, count(*) from ses where ses.ref_host <> '' group by 1, 4
+  union all select ses.day, 'session', 'utm', ses.utm, count(*) from ses where ses.utm <> '' group by 1, 4
+  union all select ses.day, 'session', 'lang', ses.lang, count(*) from ses where ses.lang <> '' group by 1, 4
+  union all select ses.day, 'session', 'browser_lang', ses.browser_lang, count(*) from ses where ses.browser_lang <> '' group by 1, 4
+  union all select ses.day, 'session', 'browser_lang_searched', ses.browser_lang, count(*) from ses
+    where ses.searched and ses.browser_lang <> '' group by 1, 4
+  union all select e.day, 'search', 'label', e.label, count(*) from e where e.has_label group by 1, 4
+  union all select e.day, 'search', 'country', e.s_country, count(*) from e where e.has_country group by 1, 4
+  union all select e.day, 'search', 'source', e.source, count(*) from e where e.has_source group by 1, 4
+  union all select e.day, 'search', 'cell', e.cell, count(*) from e where e.has_cell group by 1, 4
+  union all select e.day, e.type, 'sat', e.sat, count(*) from e where e.has_sat group by 1, 2, 4
+  union all select e.day, 'pass_open', 'verdict', e.verdict, count(*) from e where e.has_verdict group by 1, 4
+  union all select e.day, 'share_action', 'action', e.action, count(*) from e where e.type = 'share_action' group by 1, 4
+  union all select e.day, 'timelapse_open', 'from', e.tl_from, count(*) from e where e.tl_from is not null group by 1, 4
+  union all select e.day, 'timelapse_share', 'action', e.tl_action, count(*) from e where e.tl_action is not null group by 1, 4
+  union all select e.day, 'funnel', 'stage', e.type, count(distinct e.sid)
+    from e where e.type in ('search', 'results', 'pass_open', 'lightbox_open', 'share_open', 'share_action') group by 1, 4
+$function$;
+
+create or replace function overflight_private.event_hour_aggregates(p_from timestamptz, p_to timestamptz)
+returns table (day date, type text, dim text, val text, n bigint)
+language sql
+stable
+set search_path = public
+as $$
+  with e as materialized (
+    select (ev.created_at at time zone overflight_private.admin_tz())::date as day, ev.type, ev.sid,
+           ev.type = 'search' and ev.props ? 'label'   as has_label,   case when ev.type = 'search' then ev.props ->> 'label' end   as label,
+           ev.type = 'search' and ev.props ? 'country' as has_country, case when ev.type = 'search' then ev.props ->> 'country' end as s_country,
+           ev.type = 'search' and ev.props ? 'source'  as has_source,  case when ev.type = 'search' then ev.props ->> 'source' end  as source,
+           ev.type = 'search' and ev.props ? 'cell'    as has_cell,    case when ev.type = 'search' then ev.props ->> 'cell' end    as cell,
+           ev.type in ('pass_open', 'share_action') and (ev.props ? 'sat' or ev.props ? 'norad') as has_sat,
+           case when ev.type in ('pass_open', 'share_action') then coalesce(ev.props ->> 'sat', 'NORAD ' || (ev.props ->> 'norad')) end as sat,
+           ev.type = 'pass_open' and ev.props ? 'verdict' as has_verdict, case when ev.type = 'pass_open' then ev.props ->> 'verdict' end as verdict,
+           case when ev.type = 'share_action' then ev.props ->> 'action' end as action,
+           case when ev.type = 'timelapse_open' then ev.props ->> 'from' end as tl_from,
+           case when ev.type = 'timelapse_share' then ev.props ->> 'action' end as tl_action
+    from public.events ev
+    where ev.created_at >= p_from and ev.created_at < p_to
+  ),
+  t as (select e.day, e.sid, bit_or(overflight_private.event_stage_bit(e.type)) as bits from e group by 1, 2),
+  nw as materialized (
+    select t.day, t.sid, t.bits & ~coalesce(case when d.day = t.day then d.stages end, 0) as fresh
+    from t left join public.event_tab_days d on d.sid = t.sid
+  ),
+  -- The tabs this window counts on their day: new that day (bit 1, every session breakdown) or searching for the first
+  -- time that day (bit 2, browser_lang_searched), with their row's facts. ses: the first kind, 0027's ses.
+  tabs as materialized (
+    select nw.day, nw.fresh, coalesce(s.device, '') as device, coalesce(s.country, '') as country,
+           coalesce(s.ref_host, '') as ref_host, coalesce(s.utm, '') as utm, coalesce(s.lang, '') as lang,
+           coalesce(s.browser_lang, '') as browser_lang
+    from nw left join public.event_sessions s on s.sid = nw.sid
+    where nw.fresh & 3 <> 0
+  ),
+  ses as (select * from tabs where tabs.fresh & 1 = 1)
+  select e.day, e.type, '', '', count(*) from e group by 1, 2
+  union all select ses.day, 'session', '', '', count(*) from ses group by 1
+  union all select ses.day, 'session', 'device', ses.device, count(*) from ses group by 1, 4
+  union all select ses.day, 'session', 'country', ses.country, count(*) from ses group by 1, 4
+  union all select ses.day, 'session', 'ref', ses.ref_host, count(*) from ses where ses.ref_host <> '' group by 1, 4
+  union all select ses.day, 'session', 'utm', ses.utm, count(*) from ses where ses.utm <> '' group by 1, 4
+  union all select ses.day, 'session', 'lang', ses.lang, count(*) from ses where ses.lang <> '' group by 1, 4
+  union all select ses.day, 'session', 'browser_lang', ses.browser_lang, count(*) from ses where ses.browser_lang <> '' group by 1, 4
+  union all select tabs.day, 'session', 'browser_lang_searched', tabs.browser_lang, count(*) from tabs
+    where tabs.fresh & 2 <> 0 and tabs.browser_lang <> '' group by 1, 4
+  union all select e.day, 'search', 'label', e.label, count(*) from e where e.has_label group by 1, 4
+  union all select e.day, 'search', 'country', e.s_country, count(*) from e where e.has_country group by 1, 4
+  union all select e.day, 'search', 'source', e.source, count(*) from e where e.has_source group by 1, 4
+  union all select e.day, 'search', 'cell', e.cell, count(*) from e where e.has_cell group by 1, 4
+  union all select e.day, e.type, 'sat', e.sat, count(*) from e where e.has_sat group by 1, 2, 4
+  union all select e.day, 'pass_open', 'verdict', e.verdict, count(*) from e where e.has_verdict group by 1, 4
+  union all select e.day, 'share_action', 'action', e.action, count(*) from e where e.type = 'share_action' group by 1, 4
+  union all select e.day, 'timelapse_open', 'from', e.tl_from, count(*) from e where e.tl_from is not null group by 1, 4
+  union all select e.day, 'timelapse_share', 'action', e.tl_action, count(*) from e where e.tl_action is not null group by 1, 4
+  union all select nw.day, 'funnel', 'stage', st.stage, count(*)
+    from nw join (values (2, 'search'), (4, 'results'), (8, 'pass_open'), (16, 'lightbox_open'), (32, 'share_open'),
+                         (64, 'share_action')) as st(bit, stage) on nw.fresh & st.bit <> 0
+    group by 1, 4
+$$;
+
+-- ── Admin stats (0027's, listing all 20 languages and every browser language) ──────────────
 create or replace function overflight_private.admin_stats_compute(p_range text DEFAULT '7d'::text)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -292,7 +444,9 @@ begin
     'top', coalesce((
       select jsonb_object_agg(k, rows) from (
         select type || '.' || dim k, jsonb_agg(jsonb_build_array(val, n) order by rk) rows
-        from top where rk <= case when dim = 'cell' then 3000 when type = 'session' and dim = 'lang' then 20 else 15 end group by type, dim
+        from top where rk <= case when dim = 'cell' then 3000 when type = 'session' and dim = 'lang' then 20
+                                  when type = 'session' and dim in ('browser_lang', 'browser_lang_searched') then 200
+                                  else 15 end group by type, dim
       ) t), '{}'::jsonb),
     'results', jsonb_build_object(
         'n', coalesce((select n from tot where type = 'results'), 0),
