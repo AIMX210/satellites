@@ -22,7 +22,7 @@ const about: typeof en = {
   close: 'Đóng',
   sectionsLabel: 'Các mục',
   title: [['Cách'], [accent('hoạt động'), '.']] as Rich[],
-  lede: 'Chọn một điểm trên Trái Đất. Chúng tôi tính xem những vệ tinh nào đã bay qua đó trong tuần qua, rồi đi tìm những bức ảnh chúng đã chụp. Mọi thứ chạy ngay trong trình duyệt của bạn, trên dữ liệu công khai.',
+  lede: 'Chọn một điểm trên Trái Đất. Chúng tôi tính xem những vệ tinh nào đã bay qua đó trong tuần qua, rồi đi tìm những hình ảnh mà chúng đã ghi lại. Mọi thứ chạy ngay trong trình duyệt của bạn, trên dữ liệu công khai.',
 
   sections: {
     short: 'Nói ngắn gọn',
@@ -37,14 +37,14 @@ const about: typeof en = {
   short: {
     live: {
       term: 'Có phải trực tiếp không?',
-      text: 'Không hẳn. Ảnh về tới kho lưu trữ sau khi chụp từ vài giờ đến một hai ngày, nên những lượt bay mới nhất có thể chưa có ảnh.',
+      text: 'Không hẳn. Ảnh về tới kho lưu trữ từ vài giờ đến một hai ngày sau khi được chụp, nên những lượt bay mới nhất có thể chưa có ảnh.',
     },
     seeMe: {
       term: 'Vệ tinh có thấy tôi không?',
       text: 'Không. Rõ nhất thì mỗi điểm ảnh ở đây cũng rộng 10 m. Một chiếc ô tô chỉ là một điểm ảnh. Bạn không hiện lên trong ảnh.',
     },
     every: {
-      term: 'Đây có phải là mọi vệ tinh?',
+      term: 'Đây có phải là tất cả các vệ tinh không?',
       text: 'Không. Vệ tinh quân sự và vệ tinh do thám phần lớn không có trong danh mục công khai, và các công ty không cho biết họ hướng camera về đâu.',
     },
   },
@@ -56,7 +56,7 @@ const about: typeof en = {
       ' công bố các bộ số này từ dữ liệu theo dõi của Lực lượng Không gian Hoa Kỳ, và cứ sáu giờ chúng tôi lại lấy một bản mới.',
     ] as AboutPart[],
     loaded: (count: number, stamp: string): AboutPart[] => ['Trang này đã tải ', num(f.int(count)), ' vật thể, lấy lúc ', num(stamp), '.'],
-    sgp4: 'Chúng tôi chạy từng vệ tinh qua SGP4, mô hình quỹ đạo tiêu chuẩn, cho bảy ngày qua, và ghi lại mọi lần chỗ của bạn nằm trong tầm nhìn của vệ tinh.',
+    sgp4: 'Chúng tôi dùng SGP4, mô hình quỹ đạo tiêu chuẩn, để tính đường bay của từng vệ tinh trong bảy ngày qua, và ghi lại mọi lần chỗ của bạn nằm trong tầm nhìn của vệ tinh.',
     facts: {
       straightDown: {
         term: 'Nhìn thẳng xuống',
@@ -68,11 +68,11 @@ const about: typeof en = {
       },
       daylight: {
         term: 'Ban ngày',
-        text: 'Camera thường cần ánh nắng. Một lượt bay trong bóng tối không bao giờ được tính là có ảnh chụp.',
+        text: 'Camera thường cần ánh sáng Mặt Trời. Một lượt bay trong bóng tối không bao giờ được tính là có ảnh chụp.',
       },
       radar: {
         term: 'Radar',
-        text: 'Sentinel-1 không cần Mặt Trời. Vệ tinh phát sóng vi ba và ghi lại sóng phản xạ, nên nhìn được xuyên mây và cả vào ban đêm, chếch sang một bên đường bay. Ảnh của Sentinel-1 cũng công khai, nên chúng tôi hiển thị chúng, màu xám: sáng là đất gồ ghề và nhà cửa, tối là mặt nước lặng.',
+        text: 'Sentinel-1 không cần Mặt Trời. Vệ tinh phát sóng vi ba và ghi lại sóng phản xạ, nhìn chếch sang một bên đường bay, nên thấy được xuyên mây và cả vào ban đêm. Ảnh của Sentinel-1 cũng công khai, nên chúng tôi hiển thị chúng dưới dạng ảnh xám: chỗ sáng là đất gồ ghề và nhà cửa, chỗ tối là mặt nước lặng.',
       },
       weather: {
         term: 'Vệ tinh khí tượng',
@@ -80,7 +80,7 @@ const about: typeof en = {
       },
     },
     archives:
-      'Sau đó chúng tôi tìm trong các kho lưu trữ ảnh (Microsoft Planetary Computer, Element 84 và NASA) và ghép từng bức ảnh với lượt bay đã ghi lại nó. Mọi bức ảnh bạn thấy đều là ảnh thật, được cắt quanh chỗ của bạn.',
+      'Sau đó chúng tôi tìm trong các kho lưu trữ ảnh (Microsoft Planetary Computer, Element 84 và NASA) và đối chiếu từng bức ảnh với lượt bay đã ghi lại ảnh đó. Mọi bức ảnh bạn thấy đều là ảnh thật, được cắt quanh chỗ của bạn.',
     photoFacts: {
       touchUps: {
         term: 'Chỉnh sửa ảnh',
@@ -108,7 +108,7 @@ const about: typeof en = {
     secret: { term: 'Vệ tinh bí mật', text: 'Một số camera tốt nhất trên quỹ đạo thuộc về quân đội. Chúng không xuất hiện ở đây.' },
     clouds: {
       term: 'Mây',
-      text: 'Nhiều bức ảnh chỉ toàn mây. Khi kho lưu trữ cho biết, chúng tôi kiểm tra đúng điểm ảnh ở chỗ của bạn và nói rõ.',
+      text: 'Nhiều bức ảnh chỉ toàn mây. Khi kho lưu trữ có dữ liệu về mây, chúng tôi kiểm tra đúng điểm ảnh ở chỗ của bạn và cho bạn biết.',
     },
     delays: { term: 'Độ trễ', text: 'Ảnh có thể mất một hai ngày mới xuất hiện.' },
   },
