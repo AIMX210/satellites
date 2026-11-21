@@ -5,7 +5,8 @@
  * Why these words: the gallery holds photos, daily mosaics and radar images alike, so every picture is a «तस्वीर»
  * (never «फ़ोटो», which a radar image is not), and a cover's reason is a «झलक», a look: «सबसे नज़दीकी झलक», «आखिरी
  * साफ़ झलक». "Clouded over" is «बादल छाए» everywhere, so it stands apart from the plain cover «बादल 25%». "Detailed"
- * is «बारीक», fine detail («विस्तृत» would read "extensive"). Chips and statuses are mono labels in measured boxes, so
+ * is «बारीक», fine detail («विस्तृत» would read "extensive"), as a chip only: in a sentence it is «बारीक ब्योरे वाली
+ * तस्वीरें» («बारीक तस्वीरें» reads "thin pictures"). Chips and statuses are mono labels in measured boxes, so
  * they are nouns and short phrases, never sentences. Names, days and clocks arrive as they are; the day already holds
  * a comma («रवि, 1 नवंबर»), so the clock gets one too.
  */
@@ -34,7 +35,7 @@ const gallery: typeof en = {
   filterTitle: {
     all: 'हर तस्वीर: पहले सबसे नज़दीकी झलक, फिर नई से पुरानी',
     detailed: 'Sentinel-2 और Landsat, 10–30\u00a0मी प्रति पिक्सेल',
-    weather: 'मौसम के दैनिक मोज़ेक, 250\u00a0मी प्रति पिक्सेल या उससे कम बारीक',
+    weather: 'दैनिक मौसम मोज़ेक, 250\u00a0मी प्रति पिक्सेल या उससे कम बारीक',
     radar: 'Sentinel-1 की रडार तस्वीरें, 20\u00a0मी प्रति पिक्सेल: बादलों के पार, दिन हो या रात',
   },
   position: (k: number, n: number) => `${f.int(k)} / ${f.int(n)}`,
@@ -51,7 +52,7 @@ const gallery: typeof en = {
   slide: 'स्लाइड',
   lead: LEAD,
   slideLabel: (lead: CoverLead | undefined, sat: string, day: string, time: string, photo?: { k: number; n: number }) =>
-    `${lead ? `${LEAD[lead]}: ` : ''}${who(sat, day, time)}${photo ? `, तस्वीर ${f.int(photo.k)}, कुल ${f.int(photo.n)}` : ''}`,
+    `${lead ? `${LEAD[lead]}: ` : ''}${who(sat, day, time)}${photo ? `, ${f.int(photo.n)} में से तस्वीर ${f.int(photo.k)}` : ''}`,
   replayLabel: (sat: string, day: string, time: string) => `इस उड़ान का रीप्ले ग्लोब पर देखें: ${who(sat, day, time)}`,
   replay: [strong('इस उड़ान का '), 'रीप्ले'] as Rich,
   viewLabel: {
@@ -90,8 +91,8 @@ const gallery: typeof en = {
   expandTitle: 'बड़ी करें (F)',
 
   // ── a photo developing ──
-  stillRendering: 'तस्वीर अब भी बन रही है। बड़े दृश्यों में 10 सेकंड या ज़्यादा लग सकते हैं।',
-  cropMissing: 'संग्रह ने तस्वीर का यह हिस्सा नहीं भेजा। शायद वह व्यस्त है, तस्वीर खुद मौजूद है।',
+  stillRendering: 'तस्वीर अब भी बन रही है। बड़े दृश्यों में 10 सेकंड या उससे ज़्यादा लग सकते हैं।',
+  cropMissing: 'संग्रह ने तस्वीर का यह हिस्सा नहीं भेजा। शायद वह व्यस्त है, पर तस्वीर अब भी मौजूद है।',
   scanLine: (line: string, lines: string): Rich => ['पंक्ति ', strong(line), ` → ${lines}`],
   awaiting: { pass: 'उड़ान का इंतज़ार', scan: 'स्कैन का इंतज़ार' },
 }

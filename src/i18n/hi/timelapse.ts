@@ -2,12 +2,15 @@
  * Hindi copy for the time-lapse (see docs/i18n/hi.md §4.1, §6.5, §7): the player, its waiting screen, its share and
  * video buttons, and the words the MP4 draws.
  *
- * Why these words: a cloud-free photo of the place is a «साफ़ झलक» (f), as the gallery calls a clear look, counted
- * with Hindi's plural («11 साफ़ झलकें»); a year's photo is a «फ़्रेम» (m). Dates come from Intl at 'UTC' with the full
- * month («22 अक्टूबर 2015»); a year after «से» is a bare number, never grouped. A single-season loop names its season
- * as one phrase («हर पतझड़ में एक»). The waiting screen's steps are the product's «हम» at work («संग्रह खँगाल रहे
- * हैं»: "rummaging the archive"), with no gendered reader. Planetary Computer, Sentinel-2, Copernicus, H.264 and the
- * browsers' names stay; the licence credit is English, in the code. The video file's fallback word is lowercase ASCII.
+ * Why these words: a cloud-free photo of the place is a «साफ़ झलक» (f), as the gallery calls a clear look, counted with
+ * Hindi's plural («11 साफ़ झलकें»); a year's photo is a «फ़्रेम» (m). Dates come from Intl at 'UTC' with the full month
+ * («22 अक्टूबर 2015»); a year after «से» is a bare number, never grouped. A single-season loop names its season as one
+ * phrase, with the year in it («हर साल पतझड़ में एक»; «हर सर्दी में» could read "in every cold"). The note under the
+ * frames is short sentences, not the English participle chain. The waiting screen's steps are the product's «हम» at
+ * work («संग्रह खँगाल रहे हैं»: "rummaging the archive"), with no gendered reader. Planetary Computer, Sentinel-2,
+ * Copernicus, H.264 and the browsers' names stay; the licence credit is English, in the code. The video file's fallback
+ * word stays English, «place», as every file-name word does (docs/i18n/hi.md §0) and as the other non-Latin languages
+ * write it.
  */
 import type en from '../en/timelapse'
 import { fmt } from '../../../api/_lib/i18n/format'
@@ -28,10 +31,10 @@ const dayMonth = (ms: number) => tie(formatDate('hi', ms, 'UTC', { day: 'numeric
 /** «1 साफ़ झलक», «11 साफ़ झलकें» */
 const looks = (n: number) => `${f.int(n)}\u00a0${pl(n, 'साफ़ झलक', 'साफ़ झलकें')}`
 const EACH: Record<SeasonName, string> = {
-  winter: 'हर सर्दी में एक',
-  spring: 'हर वसंत में एक',
-  summer: 'हर गर्मी में एक',
-  autumn: 'हर पतझड़ में एक',
+  winter: 'हर साल सर्दियों में एक',
+  spring: 'हर साल वसंत में एक',
+  summer: 'हर साल गर्मियों में एक',
+  autumn: 'हर साल पतझड़ में एक',
 }
 
 const timelapse: typeof en = {
@@ -51,7 +54,7 @@ const timelapse: typeof en = {
   date: day,
   dayMonth,
   readout: (ms: number, satellite: string) => `${day(ms)} · ${satellite}`,
-  frameSpoken: (index: number, total: number, ms: number) => `फ़्रेम ${f.int(index)}, कुल ${f.int(total)}: ${day(ms)}`,
+  frameSpoken: (index: number, total: number, ms: number) => `${f.int(total)} में से फ़्रेम ${f.int(index)}: ${day(ms)}`,
 
   // ── The caption ──
   captionYearly: (count: number) => `${looks(count)} · साल में एक`,
@@ -62,9 +65,9 @@ const timelapse: typeof en = {
 
   // ── The note under the frames ──
   note: (km: number) =>
-    `हर फ़्रेम उसी ${f.int(km)}\u00a0किमी के वर्ग का है, Sentinel-2 से लिया गया और यहाँ की हर फ़ोटो की तरह रंग-संतुलित। हर साल अलग मौसम चुनने की कोशिश होती है। जिस साल कोई साफ़ झलक नहीं मिलती, उसे छोड़ दिया जाता है।`,
+    `हर फ़्रेम उसी ${f.int(km)}\u00a0किमी के वर्ग का है। सभी फ़्रेम Sentinel-2 ने लिए हैं, और यहाँ की हर फ़ोटो की तरह उनके रंग संतुलित किए गए हैं। हर साल अलग मौसम चुनने की कोशिश होती है। जिस साल कोई साफ़ झलक नहीं मिलती, उसे छोड़ दिया जाता है।`,
   noteOneSeason: (km: number) =>
-    `हर फ़्रेम उसी ${f.int(km)}\u00a0किमी के वर्ग का है, Sentinel-2 से लिया गया और यहाँ की हर फ़ोटो की तरह रंग-संतुलित। हर साल एक ही मौसम से है। जिस साल उस मौसम में कोई साफ़ झलक नहीं मिलती, उसे छोड़ दिया जाता है।`,
+    `हर फ़्रेम उसी ${f.int(km)}\u00a0किमी के वर्ग का है। सभी फ़्रेम Sentinel-2 ने लिए हैं, और यहाँ की हर फ़ोटो की तरह उनके रंग संतुलित किए गए हैं। हर साल एक ही मौसम से है। जिस साल उस मौसम में कोई साफ़ झलक नहीं मिलती, उसे छोड़ दिया जाता है।`,
   source: 'Copernicus Sentinel-2, Planetary Computer के ज़रिए',
 
   // ── The waiting screen ──
@@ -89,6 +92,6 @@ const timelapse: typeof en = {
   videoFailed: 'वीडियो नहीं बना',
   saveVideo: 'वीडियो सेव करें',
   noH264: 'इस ब्राउज़र में H.264 एनकोडर नहीं है: फ़ाइल Chrome और Firefox में चलेगी',
-  fileNamePlace: 'jagah',
+  fileNamePlace: 'place',
 }
 export default timelapse

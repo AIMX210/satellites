@@ -7,7 +7,8 @@
  *    form and reads with every verdict («देखा गया · 31 बार»). Satellites and rows are counted with Hindi's plural, zero
  *    with the plural too.
  *  - Readout labels are nouns in narrow mono cells: «ऊँचाई» (altitude), «झुकाव» (off-nadir), «क्षितिज से» over «34°
- *    ऊपर» (an elevation reads as one phrase across label and unit). Units are Hindi's symbols «किमी», «मी», «किमी/से»;
+ *    ऊपर» (an elevation reads as one phrase across label and unit). Units are Hindi's symbols «किमी», «मी», «किमी/से»
+ *    (in a readout cell only; prose says «किमी प्रति सेकंड»);
  *    a word in the unit slot («दृश्य», «मोज़ेक», «रात») is a plain word.
  *  - The notes are whole sentences ending in the danda; what failed is said impersonally, and a Latin name is always
  *    followed by a postposition («Sentinel-2 और Landsat के दृश्य»).
@@ -38,7 +39,7 @@ const passView: typeof en = {
     mosaic: 'मोज़ेक',
     radar: 'रडार',
     cloudedPct: (pct: number) => `बादल छाए · ${f.pct(pct)}`,
-    cloudedAtSpot: 'बादल छाए · जगह पर',
+    cloudedAtSpot: 'बादल छाए · आपकी जगह पर',
   },
   rowLabel: (o: { sat: string; verb: string; day: string; time: string; zone: string; ago: string; cloudPct?: number; clouded: boolean }) =>
     [o.sat, o.verb, `${o.day}, ${o.time} ${o.zone}`, o.ago, o.cloudPct !== undefined ? `बादल ${f.int(o.cloudPct)} प्रतिशत` : undefined, o.clouded ? 'बादल छाए' : undefined]
@@ -62,15 +63,15 @@ const passView: typeof en = {
   geometry: 'ज्यामिति',
   replay: 'रीप्ले',
   fullDiscNote: (pixel: string, cadenceMin?: number) =>
-    `पूरी डिस्क की तस्वीर: उपग्रह जो कुछ देख सकता है, उस सबकी एक तस्वीर, यहाँ एक पिक्सेल ${pixel} का। कम बारीक, पर असली, और प्रकाशित हुई सबसे नई। वह पूरे हफ़्ते ${
+    `पूरी डिस्क की तस्वीर: उपग्रह जो कुछ देख सकता है, उस सबकी एक तस्वीर, यहाँ एक पिक्सेल ${pixel} का। बारीक नहीं, पर असली, और अब तक प्रकाशित सबसे नई। वह पूरे हफ़्ते ${
       cadenceMin ? pl(cadenceMin, 'हर मिनट', `हर ${f.int(cadenceMin)} मिनट`) : 'हर कुछ मिनट'
     } में ऐसी एक तस्वीर लेता रहा है।`,
   mosaicNote: (gsdM: number) =>
-    `दैनिक मोज़ेक: NASA हर दिन की पट्टियों को जोड़कर ${f.int(gsdM)}\u00a0मी प्रति पिक्सेल की एक तस्वीर बनाता है। कम बारीक, पर असली, और इसी उड़ान के दिन की।`,
+    `दैनिक मोज़ेक: NASA हर दिन की पट्टियों को जोड़कर ${f.int(gsdM)}\u00a0मी प्रति पिक्सेल की एक तस्वीर बनाता है। बारीक नहीं, पर असली, और इसी उड़ान के दिन की।`,
   radarNote:
     'रडार तस्वीर, फ़ोटो नहीं: Sentinel-1 माइक्रोवेव भेजता है और उनकी गूँज दर्ज करता है, इसलिए बादल और अंधेरा उसे नहीं रोकते। चमक बताती है कि ज़मीन उन्हें कितनी ज़ोर से लौटाती है: इमारतें और ऊबड़-खाबड़ ज़मीन चमकीली दिखती हैं, शांत पानी काला।',
   noImage: {
-    openArchive: (sat: string) => `इस उड़ान से इस जगह की ${sat} की कोई तस्वीर नहीं है। ऊपर उड़ान का नक्शा है।`,
+    openArchive: (sat: string) => `इस उड़ान में ली गई इस जगह की कोई ${sat} तस्वीर नहीं है। ऊपर उड़ान का नक्शा है।`,
     radarPrivate: 'कोई सार्वजनिक तस्वीर नहीं: इस रडार संचालक का संग्रह निजी है। ऊपर उड़ान का नक्शा है।',
     commercialPrivate: 'कोई सार्वजनिक तस्वीर नहीं: व्यावसायिक संग्रह निजी होते हैं। ऊपर उड़ान का नक्शा है।',
     noneToShow: 'इस उड़ान की दिखाने लायक कोई तस्वीर नहीं है। ऊपर उड़ान का नक्शा है।',
