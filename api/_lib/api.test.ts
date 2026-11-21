@@ -449,7 +449,9 @@ describe('og card', () => {
   it('draws a right-to-left link in English: satori has no bidirectional layout', async () => {
     const { cardLocale } = (await import('../og.tsx' as string)) as { cardLocale: (l: string) => string }
     expect(cardLocale('ar')).toBe('en')
-    expect(['ja', 'de', 'uk', 'en'].map(cardLocale)).toEqual(['ja', 'de', 'uk', 'en'])
+    // Persian too, as Arabic (its share page is Persian; the app's PNG lays it out in the browser)
+    expect(cardLocale('fa')).toBe('en')
+    expect(['ja', 'de', 'uk', 'ru', 'vi', 'en'].map(cardLocale)).toEqual(['ja', 'de', 'uk', 'ru', 'vi', 'en'])
   })
   it('renders the default card as a 1200×630 JPEG under 250 KB with no network (R2SH4)', async () => {
     // Pass-through spy: the renderer reads its WebAssembly from node_modules, and the card itself must not
