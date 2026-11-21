@@ -33,15 +33,18 @@ const everyMinutes = (n: number) => (n === 1 ? 'هر دقیقه' : `هر ${count
 
 const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
-  empty: 'در این بازه هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم از فراز این مکان نگذشت. این کم پیش می‌آید؛ اگر یکی از منابع داده از کار افتاده بود، یادداشت‌های بالا آن را می‌گویند.',
+  // An open condition about the past takes «افتاده باشد»; «افتاده بود» would be the counterfactual "had it been down".
+  empty: 'در این بازه هیچ‌یک از ماهواره‌هایی که ردیابی می‌کنیم از فراز این مکان نگذشت. این کم پیش می‌آید؛ اگر یکی از منابع داده از کار افتاده باشد، یادداشت‌های بالا این را می‌گویند.',
   imagedOrder: 'نزدیک‌ترین نما، بعد تازه‌ترین‌ها',
   count: (n: number, _verdict: Verdict) => `${count(n)}${nb}گذر`,
   countStack: (n: number, _verdict: Verdict): NumPart => num(count(n), 'گذر'),
   sats: (n: number) => `${count(n)}${nb}ماهواره`,
-  showAllSats: (n: number) => `نمایش هر ${count(n)}${nb}ماهواره`,
-  showAllRows: (n: number) => `نمایش هر ${count(n)}${nb}ردیف`,
+  // «همهٔ», not «هر»: before a large number «هر» reads "every" («هر 1,565 ردیف»)
+  showAllSats: (n: number) => `نمایش همهٔ ${count(n)}${nb}ماهواره`,
+  showAllRows: (n: number) => `نمایش همهٔ ${count(n)}${nb}ردیف`,
   showMore: (n: number) => `نمایش ${count(n)}${nb}ردیف دیگر`,
-  left: (n: number) => `${count(n)} تا باقی مانده`,
+  // The counted noun, never the spoken counter «تا» («40 تا»)
+  left: (n: number) => `${count(n)}${nb}ردیف باقی مانده`,
   showFewer: 'نمایش کمتر',
   tag: {
     mosaic: 'موزاییک',
@@ -68,8 +71,10 @@ const passView: typeof en = {
   expandTitle: 'بزرگ کردن تصویر',
   satLabel: (o: { sat: string; operator?: string; passes: number; verdict: Verdict; day: string; time: string }) =>
     `${o.sat}${o.operator ? `، ${o.operator}` : ''}، ${passes(o.passes)}، آخرین: ${o.day} ${ltr(o.time)}`,
-  latest: 'آخرین ',
-  closest: 'نزدیک‌ترین ',
+  // Labels with a colon: before the row's day «آخرین یکشنبه» would read "the last Sunday", and «نزدیک‌ترین انحراف» "the
+  // nearest deviation". The line still reads when they are shed.
+  latest: 'آخرین: ',
+  closest: 'نزدیک‌ترین: ',
   cloudChip: 'ابر',
 
   // ── one pass ─────────────────────────────────────────────────────────────────────────────
@@ -78,19 +83,21 @@ const passView: typeof en = {
   geometry: 'هندسه',
   replay: 'بازپخش',
   fullDiscNote: (pixel: string, cadenceMin?: number) =>
-    `تصویر قرص کامل: یک تصویر از همهٔ آنچه ماهواره می‌بیند، در این‌جا با ${pixel} در هر پیکسل. درشت، اما واقعی، و تازه‌ترینی که منتشر شده است؛ تمام هفته ${
+    `تصویر قرص کامل: یک تصویر از همهٔ آنچه ماهواره می‌بیند، در این‌جا با ${pixel} در هر پیکسل. کم‌جزئیات، اما واقعی و تازه‌ترینی که منتشر شده است؛ تمام هفته ${
       cadenceMin ? everyMinutes(cadenceMin) : 'هر چند دقیقه'
     } یکی مثل آن گرفته است.`,
   mosaicNote: (gsdM: number) =>
-    `موزاییک روزانه: ناسا نوارهای هر روز را به یک تصویر با ${f.int(gsdM)}${nb}متر در هر پیکسل می‌دوزد. درشت، اما واقعی، و از روز همین گذر.`,
+    `موزاییک روزانه: ناسا نوارهای هر روز را به یک تصویر با ${f.int(gsdM)}${nb}متر در هر پیکسل می‌دوزد. کم‌جزئیات، اما واقعی و از روز همین گذر.`,
   radarNote:
-    'تصویر راداری است، نه عکس: Sentinel-1 ریزموج می‌فرستد و پژواکش را ثبت می‌کند، پس ابر و تاریکی جلویش را نمی‌گیرند. روشنایی یعنی زمین موج‌ها را چقدر قوی برمی‌گرداند: ساختمان‌ها و زمین ناهموار روشن‌اند، آب آرام تیره است.',
+    'این تصویر راداری است، نه عکس: ماهوارهٔ Sentinel-1 ریزموج می‌فرستد و پژواکش را ثبت می‌کند، پس ابر و تاریکی جلویش را نمی‌گیرند. روشنایی هر نقطه نشان می‌دهد زمین موج‌ها را با چه شدتی برمی‌گرداند: ساختمان‌ها و زمین ناهموار روشن‌اند، آب آرام تیره است.',
   noImage: {
-    openArchive: (sat: string) => `هیچ تصویر ${sat} از این نقطه در این گذر نیست. نقشهٔ بالا مسیر گذر را نشان می‌دهد.`,
-    radarPrivate: 'تصویر عمومی نیست: آرشیو اپراتور این رادار خصوصی است. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
-    commercialPrivate: 'تصویر عمومی نیست: آرشیوهای تجاری خصوصی‌اند. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
+    // The satellite is the subject, after its head noun: «هیچ تصویر Sentinel-2C» would also read "no picture of Sentinel-2C"
+    openArchive: (sat: string) => `ماهوارهٔ${nb}${ltr(sat)} در این گذر هیچ تصویری از این نقطه ندارد. نقشهٔ بالا مسیر گذر را نشان می‌دهد.`,
+    // «هیچ تصویر عمومی‌ای»: a bare «تصویر عمومی نیست» reads "the image is not public"
+    radarPrivate: 'هیچ تصویر عمومی‌ای نیست: آرشیو اپراتور این رادار خصوصی است. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
+    commercialPrivate: 'هیچ تصویر عمومی‌ای نیست: آرشیوهای تجاری خصوصی‌اند. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
     noneToShow: 'برای این گذر تصویری برای نشان دادن نیست. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
-    archiveDown: 'فعلاً جستجو در آرشیو ممکن نشد. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
+    archiveDown: 'فعلاً جستجو در آرشیو ممکن نیست. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
     noScene: 'برای این گذر هیچ صحنه‌ای وجود ندارد. نقشهٔ بالا مسیر گذر را نشان می‌دهد.',
     notYet: 'هنوز هیچ صحنهٔ منتشرشده‌ای با این گذر مطابقت ندارد. صحنه‌های Sentinel-2 و Landsat معمولاً ظرف یک روز می‌رسند.',
     crewed: 'ایستگاه‌های سرنشین‌دار دوربین دارند، اما عکس‌هایشان بر اساس مکان و زمان منتشر نمی‌شود.',
@@ -103,10 +110,11 @@ const passView: typeof en = {
     viewSource: (archive: string) => `دیدن منبع · ${archive}`,
   },
   spot: {
-    checking: 'در حال خواندن پیکسلِ نقطهٔ شما…',
-    clear: 'آسمان نقطهٔ شما صاف است.',
+    // The picture's pixel at the pass, so the past tense («بود»): a present «است» reads as today's sky
+    checking: 'در حال خواندن پیکسل نقطهٔ شما…',
+    clear: 'نقطهٔ شما بی‌ابر بود.',
     cirrus: 'روی نقطهٔ شما سیروس نازک دیده شد؛ ممکن است تصویر را کمی مات کند.',
-    cloud: 'روی نقطهٔ شما ابر است.',
+    cloud: 'روی نقطهٔ شما ابر بود.',
     shadow: 'نقطهٔ شما در سایهٔ ابر بود.',
   },
 
@@ -122,7 +130,8 @@ const passView: typeof en = {
     cloudAtSpot: 'ابر روی نقطه',
   },
   band: { infrared: 'فروسرخ', visible: 'مرئی', colour: 'رنگی' },
-  spotValue: { clear: 'صاف', cirrus: 'سیروس', cloud: 'ابری', shadow: 'سایه' },
+  // «بی‌ابر», never «صاف» (also "flat", "smooth")
+  spotValue: { clear: 'بی‌ابر', cirrus: 'سیروس', cloud: 'ابری', shadow: 'سایه' },
   unit: {
     km: 'کیلومتر',
     m: 'متر',

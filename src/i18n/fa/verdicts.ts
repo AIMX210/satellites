@@ -12,7 +12,11 @@
  *    the lane), «محتمل», «ممکن», «بالای سر». «احتمالاً» and «ممکن» keep the gradient between likely and possible.
  *  - Every verdict counts passes, and a Persian noun after a number is singular: the unit is «گذر» for every count.
  *  - The spoken verbs stand alone after a satellite's name in a comma list: «رصد کرد», «پوشش داد» (covered: the likely
- *    verb), «از دیدرس گذشت», «از بالای سر گذشت».
+ *    verb), «در دیدرس گذشت» ("passed within view": «در دیدرس» is the set phrase; «از دیدرس» pulls towards «از دیدرس
+ *    خارج شد», "went out of sight"), «از بالای سر گذشت».
+ *  - A sensor's coverage is «پوشش دادن»; «پوشاندن» is to cover over or hide, as cloud does. A camera that can be
+ *    pointed is «قابل‌چرخش»: «چرخان» also means "spinning", and in Iran it names the CCTV camera.
+ *  - The range is the camera's, so the place is the subject: «این‌جا در بُرد یک دوربین … بود».
  */
 import type en from '../en/verdicts'
 
@@ -30,15 +34,15 @@ const verdicts: typeof en = {
     title: 'احتمالاً رصد کرد',
     short: 'محتمل',
     unit: pass,
-    definition: 'نوار تصویربرداری یک دوربین ثابت این مکان را پوشاند. هیچ تصویری از آن منتشر نشده است.',
+    definition: 'نوار تصویربرداری یک دوربین ثابت این مکان را پوشش داد. هیچ تصویری از این‌جا منتشر نشده است.',
     verb: 'پوشش داد',
   },
   could: {
     title: 'می‌توانست به این‌جا نگاه کند',
     short: 'ممکن',
     unit: pass,
-    definition: 'یک دوربین چرخان یا خصوصی در بُرد این‌جا بود. اپراتورش نمی‌گوید که نگاه کرد یا نه.',
-    verb: 'از دیدرس گذشت',
+    definition: 'این‌جا در بُرد یک دوربین قابل‌چرخش یا خصوصی بود. اپراتورش نمی‌گوید که نگاه کرد یا نه.',
+    verb: 'در دیدرس گذشت',
   },
   overhead: {
     title: 'از بالای سر گذشت',
