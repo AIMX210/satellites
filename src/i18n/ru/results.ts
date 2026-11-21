@@ -291,7 +291,9 @@ const results: typeof en = {
       noPublic: 'Нет открытых снимков',
       poorQuality: 'Плохое качество',
       noneNow: 'Сейчас снимка нет',
-      unavailable: 'Кадр не загрузился',
+      // «загрузился» (10) overflows the square by 3 px; «не пришёл», as the gallery's «Снимок не пришёл», never says
+      // the visitor tried to open it («не открылся»).
+      unavailable: 'Кадр не пришёл',
     },
     frameAlt: (sat: string, infrared: boolean) => `${sat}: самый свежий ${infrared ? 'инфракрасный ' : ''}кадр этого места и окрестностей`,
     infraredChip: 'ИК',

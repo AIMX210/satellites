@@ -48,8 +48,10 @@ const passView: typeof en = {
   // ── the list ─────────────────────────────────────────────────────────────────────────────
   empty:
     'За это время над этим местом не пролетел ни один известный нам спутник. Такое бывает редко. Если какой-то источник данных не работал, об этом сказано в примечаниях выше.',
-  // After «Увидено ·»: the glossary's «самый близкий кадр», so the order names what comes first.
-  imagedOrder: 'самый близкий кадр, затем новые',
+  // After «Увидено ·», cut with an ellipsis in a cell that is 208 px at most (English's 27 characters just fit there):
+  // the sort phrase Russian apps use («Сначала новые»), 21 characters. «самый близкий, затем новые» (26) never fits
+  // whole; the rows' dates show that the rest run newest first, as French and Dutch leave them to.
+  imagedOrder: 'сначала самый близкий',
   count: (n: number, _verdict: Verdict) => passCount(n),
   countStack: (n: number, _verdict: Verdict): NumPart => num(count(n), passes(n)),
   sats: (n: number) => `${count(n)}\u00a0${f.plural(n, { one: 'спутник', few: 'спутника', many: 'спутников', other: 'спутника' })}`,
