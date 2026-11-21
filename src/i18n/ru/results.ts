@@ -87,7 +87,7 @@ const satNom = (sat: string | undefined) => (sat !== undefined ? `спутник
 
 /** What a pass's mark stands for in the timeline's tooltip: the kind of satellite (masculine, for «спутник») and the mark */
 const MARK_KIND: Partial<Record<SatCategory, string>> = {
-  'open-optical': 'открытый съёмочный · ◇',
+  'open-optical': 'съёмочный с открытым архивом · ◇',
   'commercial-optical': 'коммерческий · □',
   radar: 'радарный · ▣',
   'weather-leo': 'метеорологический · ○',
@@ -132,7 +132,8 @@ const results: typeof en = {
     sunNeverRose: 'Солнце здесь так и не взошло, поэтому ни одна дневная камера не могла увидеть это место.',
     sunBarelyRose: 'Солнце едва поднялось над горизонтом, поэтому ни одна дневная камера не могла увидеть это место.',
     infrared: (n: number): Rich => [
-      'Метеоспутники всё равно снимали это место в инфракрасном диапазоне: ',
+      // Always after the sentence about the sun, so «Зато» is the contrast («всё равно» is a spoken "anyway").
+      'Зато метеоспутники снимали это место в инфракрасном диапазоне: ',
       num(int(n)),
       `\u00a0${f.plural(n, TIMES)}.`,
     ],
@@ -156,7 +157,7 @@ const results: typeof en = {
   },
 
   // ── the summary's readouts ───────────────────────────────────────────────────────────────
-  verdictGroup: 'Пролёты по отметкам. Каждое число ведёт к своему списку.',
+  verdictGroup: 'Пролёты по статусам. Каждое число ведёт к своему списку.',
   verdictReadout: (n: number, verdict: Verdict, title: string) => `${int(n)}\u00a0${verdicts[verdict].unit(n)}: ${title}`,
 
   // ── the footnotes ────────────────────────────────────────────────────────────────────────
@@ -196,7 +197,7 @@ const results: typeof en = {
   checkingArchives: 'Проверка архивов',
   invite: {
     text: 'На этой неделе что-то смотрело и на тебя.',
-    checkPlace: 'Проверить своё место',
+    checkPlace: 'Проверить моё место',
     dismiss: 'Закрыть',
   },
   searchAnother: 'Поиск другого места',
@@ -208,7 +209,9 @@ const results: typeof en = {
     replayTitle: 'Воспроизвести пролёт на глобусе',
     shareLabel: { pass: 'Поделиться пролётом', image: 'Поделиться снимком' },
     shareButton: { pass: ['Поделиться', strong(' пролётом')] as Rich, image: ['Поделиться', strong(' снимком')] as Rich },
-    checkPlace: [strong('Проверить '), 'своё место'] as Rich,
+    // Narrow phones drop the strong part: «Моё место» stands alone in the reader's voice, as «Моё местоположение»
+    // does on the landing (a bare reflexive «Своё место» has no one to refer to).
+    checkPlace: [strong('Проверить '), 'моё место'] as Rich,
     clearest: [strong('Показать '), 'самый ясный кадр'] as Rich,
     clearestLabel: 'Показать самый ясный кадр',
   },
@@ -243,7 +246,7 @@ const results: typeof en = {
       catalog: { idle: 'Каталог орбит', done: 'Каталог загружен' },
       propagate: { idle: (days: number) => `Расчёт орбит · ${count(days, DAYS)}`, done: 'Орбиты рассчитаны' },
       archive: { idle: 'Архивы Sentinel-2 + Landsat', done: 'Архивы проверены' },
-      match: { idle: 'Сопоставление кадров с пролётами', done: 'Кадры сопоставлены' },
+      match: { idle: 'Сверка кадров с пролётами', done: 'Кадры сверены' },
     },
     ready: 'Отчёт готов',
     ok: 'OK',
@@ -267,7 +270,8 @@ const results: typeof en = {
 
   // ── 03 / СМОТРЯТ ПОСТОЯННО: geostationary weather satellites ──────────────────────────────
   geo: {
-    none: 'Ни один действующий геостационарный метеоспутник не видит это место выше 5° над горизонтом.',
+    // «Отсюда … не виден»: «выше 5°» is the satellite's height in this place's sky, not the place's.
+    none: 'Отсюда ни один действующий геостационарный метеоспутник не виден выше 5° над горизонтом.',
     // The angle is «над горизонтом», as in the pass strip, the geometry grid and the card: a bare «высота» is altitude,
     // and the pass view prints this very satellite's 35 786 км. The no-break spaces keep each fact whole, so a narrow
     // row wraps at a « · ». «каждые 10 мин», «каждую 21 мин» (ru's `one`), «каждую минуту»; «мин» never inflects.
@@ -287,9 +291,9 @@ const results: typeof en = {
       noPublic: 'Нет открытых снимков',
       poorQuality: 'Плохое качество',
       noneNow: 'Сейчас снимка нет',
-      unavailable: 'Кадр не открылся',
+      unavailable: 'Кадр не загрузился',
     },
-    frameAlt: (sat: string, infrared: boolean) => `${sat}: самый свежий ${infrared ? 'инфракрасный ' : ''}кадр вокруг этого места`,
+    frameAlt: (sat: string, infrared: boolean) => `${sat}: самый свежий ${infrared ? 'инфракрасный ' : ''}кадр этого места и окрестностей`,
     infraredChip: 'ИК',
     infraredTitle: 'Инфракрасный снимок. Яркость показывает температуру верхушек облаков: чем холоднее, тем светлее',
   },

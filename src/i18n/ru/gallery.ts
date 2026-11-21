@@ -69,7 +69,7 @@ const gallery: typeof en = {
   noteLastClear: 'Вот последний ясный кадр',
   clouded: {
     pct: (p: number) => `Под облаками · ${pct(p)}`,
-    coverAtSpot: 'Под облаками · и твоя точка',
+    coverAtSpot: 'Под облаками, включая твою точку',
     atSpot: 'Облака над твоей точкой',
   },
   status: {
@@ -96,7 +96,7 @@ const gallery: typeof en = {
   expandTitle: 'Развернуть (F)',
 
   // ── a photo developing (the pushbroom reveal) ────────────────────────────────────────────
-  stillRendering: 'Ещё готовится. Большой кадр может занять 10\u00a0с и дольше.',
+  stillRendering: 'Ещё готовится. На большой кадр может уйти 10\u00a0с и больше.',
   cropMissing: 'Архив не прислал этот фрагмент, возможно, из-за нагрузки. Сам снимок существует.',
   scanLine: (line: string, lines: string): Rich => ['Строка ', strong(line), ` → ${lines}`],
   awaiting: { pass: 'Ожидание пролёта', scan: 'Ожидание сканирования' },
