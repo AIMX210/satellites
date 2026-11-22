@@ -268,6 +268,20 @@ describe('the generated tables', () => {
     expect([name(vi, '', 'xisha islands paracel islands'), name(vi, 'VN', 'thua thien hue province', true), name(vi, 'UA', 'kyiv')]).toEqual(['Quần đảo Hoàng Sa', 'Huế', undefined])
     expect([name(fa, 'UA', 'lviv'), name(fa, 'IR', 'gilan province', true), name(fa, 'IR', 'qods')]).toEqual(['لویو', 'گیلان', 'شهر قدس'])
     expect([name(hi, 'CH', 'bern'), name(hi, '', 'atlantic ocean')]).toEqual(['बर्न', 'अटलांटिक महासागर'])
+    // And what a second pass over it found (a class noun cut with its article, a bare oblast in a where line, the
+    // city's own region, Iran's provinces as OpenStreetMap writes them, a district, a key two cities share).
+    expect([name(it_, 'PL', 'lesser poland', true), name(de, 'UA', 'luhansk', true), name(ru, 'RU', 'moscow', true), name(fa, 'IR', 'gilan', true)]).toEqual([
+      'Piccola Polonia',
+      'Oblast Luhansk',
+      'Москва',
+      'گیلان',
+    ])
+    expect([name(uk, 'UA', 'obolon'), name(vi, 'CN', 'taishan'), name(hi, 'GB', 'wales', true), name(de, '', 'bay of biscay')]).toEqual([
+      'Оболонь',
+      undefined,
+      'वेल्स',
+      'Golf von Biskaya',
+    ])
     // A landmark a town shares is a landmark's name only.
     expect(vi).toMatch(/\|US:[^|]*;\^White House=Nhà Trắng[;|]/)
   })
