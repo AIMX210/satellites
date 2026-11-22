@@ -10,8 +10,8 @@ import koExonyms from '@/i18n/ko/exonyms'
 import ruNames from '@/i18n/ru/exonyms.gen'
 import type { Place } from '@/types'
 import { displayLabel } from './geocode'
-import { ensureExonyms } from './exonyms'
-import { linkedForName, needsLinkCountry, resolveLinkCountry } from './linkCountry'
+import { ensureExonyms, EXONYM_WAIT_MS } from './exonyms'
+import { linkedForName, needsLinkCountry, resolveLinkCountry, waitForLinkCountry } from './linkCountry'
 
 const FILES = import.meta.glob<string>('/public/places/**/*.txt', { query: '?raw', import: 'default' })
 
@@ -110,5 +110,25 @@ describe('a linked place’s name', () => {
     expect(displayLabel(linkedForName(p))).toBe('Kharkiv') // shown before its lookup answered (it never does)
     setBundleForTests('en', null)
     expect([needsLinkCountry(p, 'ru'), needsLinkCountry(p, 'uk')]).toEqual([false, true])
+  })
+
+  it('is waited for once: after a wait for a stalled lookup ran out, a switch does not wait for it again', async () => {
+    vi.stubGlobal('fetch', () => new Promise<Response>(() => {}))
+    const p = link('Odesa', 46.482, 30.723)
+    setBundleForTests('ru', { exonyms: { names: ruNames, countries: true } })
+    vi.useFakeTimers()
+    try {
+      let report = false
+      void waitForLinkCountry(p).then(() => (report = true))
+      await vi.advanceTimersByTimeAsync(EXONYM_WAIT_MS + 100)
+      expect(report).toBe(true)
+      expect(needsLinkCountry(p, 'de')).toBe(false) // a switch to German shows the page at once
+      let again = false
+      void waitForLinkCountry(p).then(() => (again = true))
+      await vi.advanceTimersByTimeAsync(0)
+      expect(again).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

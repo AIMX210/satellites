@@ -11,12 +11,12 @@
  * report shows the name (src/app/controller.ts runReport), once per link, and never in a language without a table
  * (English fetches nothing for it), so a name is never shown first one way and then another; and before a switch to a
  * language with a table shows the link's place on screen in it (the page's language until then may never have looked
- * it up: English, or Korean, whose four names are countryless too). A report waits for it EXONYM_WAIT_MS at most
- * (waitForLinkCountry), as for the table: a tile that stalls must not hold the report, and the boot curtain over it,
- * for ever. A language that showed the name before the answer (past that wait, or a switch's, 3 s at most too) keeps
- * it countryless for the rest of the page: an answer that comes later is not applied there. Per language, as a late
- * table is kept out of its own language only (./exonyms.ts): a language that has not shown the name yet takes the
- * answer, so a switch names the place as opening the link there would.
+ * it up: English, or Korean, whose four names are countryless too). A report or a switch waits for it EXONYM_WAIT_MS
+ * at most (waitForLinkCountry), as for the table, and once only: a tile that stalls must not hold the report, and the
+ * boot curtain over it, for ever, nor every switch after it. A language that showed the name before the answer (past
+ * that wait) keeps it countryless for the rest of the page: an answer that comes later is not applied there. Per
+ * language, as a late table is kept out of its own language only (./exonyms.ts): a language that has not shown the
+ * name yet takes the answer, so a switch names the place as opening the link there would.
  */
 import { currentLocale } from '@/i18n/runtime'
 import type { Place } from '@/types'
@@ -31,19 +31,25 @@ const resolved = new Map<string, Linked>()
 const pending = new Map<string, Promise<void>>()
 /** `<locale>|<key>`: links a language showed by name before their lookup answered; they stay countryless in it. */
 const shownWithout = new Set<string>()
+/**
+ * Links whose lookup a wait has run out on (a report's, a switch's): nothing waits for it again, as for a stalled
+ * table (./exonyms.ts overdue), or a switch after a stalled report would hold the page 3 s more for the same tile;
+ * its answer, if it comes, still names the place in a language that has not shown it yet.
+ */
+const overdue = new Set<string>()
 const keyOf = (p: Pick<Place, 'label' | 'lat' | 'lon'>) => `${p.lat.toFixed(3)},${p.lon.toFixed(3)}|${p.label}`
 
 /**
  * Does `place` need resolving before its name is shown: a link's, with no country, in a language with names (or in
- * `locale`, the language a switch is going to: src/i18n/runtime.ts waitBeforeSwitch), not looked up yet, and not
- * shown in that language without it already? A link to a curated place is named from the 'places' namespace instead
- * (src/app/links.ts linkPlaceIn).
+ * `locale`, the language a switch is going to: src/i18n/runtime.ts waitBeforeSwitch), not looked up yet, not given up
+ * on by an earlier wait, and not shown in that language without it already? A link to a curated place is named from
+ * the 'places' namespace instead (src/app/links.ts linkPlaceIn).
  */
 export function needsLinkCountry(place: Place, locale?: Locale): boolean {
   if (place.source !== 'url' || place.countryCode || place.canonicalLabel !== undefined) return false
   if (locale === undefined && !exonymsActive()) return false
   const key = keyOf(place)
-  return !resolved.has(key) && !shownWithout.has(`${locale ?? currentLocale()}|${key}`)
+  return !resolved.has(key) && !overdue.has(key) && !shownWithout.has(`${locale ?? currentLocale()}|${key}`)
 }
 
 /**
@@ -67,16 +73,19 @@ export function resolveLinkCountry(place: Pick<Place, 'label' | 'lat' | 'lon'>):
 }
 
 /**
- * resolveLinkCountry, waited for EXONYM_WAIT_MS at most: what anything about to show a link's name waits for. Past
- * the wait, the name is shown without its country, and the language it is shown in keeps it so (linkedForName),
- * whatever the lookup answers later. Never rejects.
+ * resolveLinkCountry, waited for EXONYM_WAIT_MS at most: what anything about to show a link's name waits for (a
+ * report, a switch). Past the wait, the name is shown without its country, and the language it is shown in keeps it so
+ * (linkedForName), whatever the lookup answers later; and nothing waits for that lookup again (`overdue`). Never
+ * rejects.
  */
 export async function waitForLinkCountry(place: Pick<Place, 'label' | 'lat' | 'lon'>): Promise<void> {
-  if (resolved.has(keyOf(place))) return
+  const key = keyOf(place)
+  if (resolved.has(key) || overdue.has(key)) return
   let timer: ReturnType<typeof setTimeout> | undefined
   const limit = new Promise<void>((done) => (timer = setTimeout(done, EXONYM_WAIT_MS)))
   await Promise.race([resolveLinkCountry(place), limit])
   clearTimeout(timer)
+  if (!resolved.has(key)) overdue.add(key)
 }
 
 /**
