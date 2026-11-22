@@ -141,6 +141,17 @@ export function exonym(name: string, cc: string | undefined, as: NameAs): string
 /** The active language's own countries (its namespace's `home`): a name they share with a place abroad is theirs first. */
 export const exonymHome = (): readonly string[] => (activeSource(false) ? (msgs(enExonyms).home ?? []) : [])
 
+/**
+ * The query as the active language also types it, for the offline search: German's ae, oe, ue read as ä, ö, ü
+ * (Muenster finds Münster, Luebeck Lübeck: towns the table has no entry for, since their name is the data's). [] in a
+ * language that types no such spelling, and for a query without one.
+ */
+export function exonymVariants(query: string): string[] {
+  if (!msgs(enExonyms).umlauts) return []
+  const plain = query.replace(/([aou])e/gi, '$1')
+  return plain === query ? [] : [plain]
+}
+
 /** Does the active language name countries by the browser's names on their own label too (its namespace says so)? */
 export const namesCountries = (): boolean => !!msgs(enExonyms).countries && !!activeTable(true)
 

@@ -7,11 +7,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setBundleForTests } from '@/i18n/runtime'
 import viExonyms from '@/i18n/vi/exonyms'
 import deExonyms from '@/i18n/de/exonyms'
+import itExonyms from '@/i18n/it/exonyms'
 import ukExonyms from '@/i18n/uk/exonyms'
 import ruExonyms from '@/i18n/ru/exonyms'
 import faExonyms from '@/i18n/fa/exonyms'
 import hiExonyms from '@/i18n/hi/exonyms'
 import deNames from '@/i18n/de/exonyms.gen'
+import itNames from '@/i18n/it/exonyms.gen'
 import ukNames from '@/i18n/uk/exonyms.gen'
 import ruNames from '@/i18n/ru/exonyms.gen'
 import faNames from '@/i18n/fa/exonyms.gen'
@@ -38,10 +40,11 @@ function serveFiles() {
 }
 
 /** Each language's own countries, as its namespace gives them (a name at home leads the same name abroad). */
-const HOME = { de: deExonyms.home, uk: ukExonyms.home, ru: ruExonyms.home, vi: viExonyms.home, fa: faExonyms.home, hi: hiExonyms.home }
+const HOME = { de: deExonyms, it: itExonyms, uk: ukExonyms, ru: ruExonyms, vi: viExonyms, fa: faExonyms, hi: hiExonyms }
 
 const as = async (locale: keyof typeof HOME, names?: string) => {
-  setBundleForTests(locale, { exonyms: names === undefined ? viExonyms : { names, countries: true, home: HOME[locale] } })
+  const { home, umlauts } = HOME[locale]
+  setBundleForTests(locale, { exonyms: names === undefined ? viExonyms : { names, countries: true, home, umlauts } })
   await ensureExonyms()
 }
 
@@ -166,6 +169,12 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(await first('Bodensee')).toMatchObject({ label: 'Lake Constance', countryCode: 'de' })
     const kherson = await first('Cherson')
     expect([kherson.label, displayLabel(kherson)]).toEqual(['Kherson', 'Cherson']) // the city, not its oblast
+    // Umlauts typed out, for towns the table has no entry for; an old name's landmark row gives way to the city.
+    expect(await first('Muenster')).toMatchObject({ label: 'Münster', countryCode: 'de' })
+    expect(await first('Luebeck')).toMatchObject({ label: 'Lübeck', countryCode: 'de' })
+    expect(await first('Peking')).toMatchObject({ label: 'Beijing', countryCode: 'cn' })
+    await as('it', itNames)
+    expect(await first('Kiev')).toMatchObject({ label: 'Kyiv', countryCode: 'ua' })
     await as('uk', ukNames)
     expect(await first('харкив')).toMatchObject({ label: 'Kharkiv' }) // и for і, from a Russian layout
     expect(await first('Киев')).toMatchObject({ label: 'Kyiv' }) // a search name, never shown

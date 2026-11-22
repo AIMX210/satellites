@@ -29,7 +29,7 @@ import type { LatLon, Place } from '@/types'
 import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
-import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, exonymHome, namesCountries } from './exonyms'
+import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, exonymHome, exonymVariants, namesCountries } from './exonyms'
 import { countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
@@ -565,7 +565,8 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   }
 
   let exact = false
-  const local = await searchLocal(query, signal, undefined, exonymAlternates(query, countryName), exonymHome()).then(
+  const alternates = exonymAlternates(query, countryName)
+  const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query)).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
       return dedupePlaces(rows.map((r) => localToPlace(r, 'search')))

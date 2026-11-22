@@ -159,8 +159,11 @@ export function shownCountryName(cc: string, locale: Locale): string {
  * hamlet of that name. Three rules settle the names a language shares between places: a place named exactly so in
  * the language's `home` countries leads one abroad (HOME_BONUS: Thái Nguyên is the Vietnamese city, not Taiyuan); a town leads the region
  * of the same name (Qom the city, then the province); and a place whose name is the query as typed, accents and all,
- * leads one whose name only folds to it (Nha Trang the city, not Nhà Trắng, the White House). A query with no Latin
- * key (Cyrillic, Persian, Devanagari) is answered by the alternates alone; with none, [].
+ * leads one whose name only folds to it (Nha Trang the city, not Nhà Trắng, the White House). An old name's landmark
+ * row (Kiev, Peking: how the list finds the city by it in English) gives way to the city an alternate names at its spot
+ * (Kyiv for an Italian's Kiev, Peking for a German's). A query with no Latin key (Cyrillic, Persian, Devanagari) is
+ * answered by the alternates alone; with none, []. `variants` are the query as the language also types it, matched as
+ * the query is (Muenster for Münster: ./exonyms.ts exonymVariants).
  */
 export async function searchLocal(
   query: string,
@@ -168,6 +171,7 @@ export async function searchLocal(
   limit = 6,
   alternates: readonly Alternate[] = [],
   home: readonly string[] = [],
+  variants: readonly string[] = [],
 ): Promise<LocalPlace[]> {
   throwIfAborted(signal)
   const q = placeKey(query)
@@ -175,26 +179,30 @@ export async function searchLocal(
   if (!latin && !alternates.length) return []
   const shardRows = (shard: ReturnType<typeof shardFor>) =>
     shard ? load(`s/${shard.file}.txt`, signal).then((rows) => (rows || !shard.head ? rows : load(`s/${shard.head}.txt`, signal))) : Promise.resolve(null)
+  const spelled = latin ? [...new Set(variants.map(placeKey))].filter((k) => k !== q && !!shardOf(k)) : []
   // Each alternate under its English name's key, and at home under its own name's too: the list files a town named in
   // its language at home by that name (Köln, not Cologne).
   const lookups = alternates.flatMap((a, i) => {
     const own = placeKey(a.shown)
     return [{ i, key: a.key }, ...(home.includes(a.cc) && own !== a.key && shardOf(own) ? [{ i, key: own }] : [])]
   })
-  const [towns, marks, ...named] = await Promise.allSettled([
+  const [towns, marks, ...rest] = await Promise.allSettled([
     latin ? shardRows(shardFor(q, GROUPS, SPLIT)) : Promise.resolve(null),
     load(LANDMARKS, signal),
+    ...spelled.map((k) => shardRows(shardFor(k, GROUPS, SPLIT))),
     ...lookups.map((l) => shardRows(shardFor(l.key, GROUPS, SPLIT))),
   ])
   throwIfAborted(signal)
-  const all = [towns, marks, ...named]
+  const named = rest.slice(spelled.length)
+  const all = [towns, marks, ...rest]
   if (all.every((x) => x.status === 'rejected')) throw (towns as PromiseRejectedResult).reason
   const rowsOf = (x: PromiseSettledResult<LocalPlace[] | null>) => (x.status === 'fulfilled' && x.value) || []
-  const hits: { r: LocalPlace; score: number; exact?: boolean }[] = []
-  for (const r of rowsOf(towns)) {
-    const exact = r.key === q || (q.startsWith(`${r.key} `) && inContext(q.slice(r.key.length + 1), r))
-    if (exact || r.key.startsWith(q)) hits.push({ r, score: r.p + (exact ? EXACT_BONUS + (home.includes(r.cc) ? HOME_BONUS : 0) : 0), exact })
-  }
+  const hits: { r: LocalPlace; score: number; exact?: boolean; named?: boolean }[] = []
+  for (const [k, rows] of [[q, towns], ...spelled.map((s, i) => [s, rest[i]] as const)] as const)
+    for (const r of rowsOf(rows)) {
+      const exact = r.key === k || (k.startsWith(`${r.key} `) && inContext(k.slice(r.key.length + 1), r))
+      if (exact || r.key.startsWith(k)) hits.push({ r, score: r.p + (exact ? EXACT_BONUS + (home.includes(r.cc) ? HOME_BONUS : 0) : 0), exact })
+    }
   for (const r of latin ? rowsOf(marks) : []) {
     const aliases = r.aliases ?? []
     const keys = [r.key, ...aliases]
@@ -220,7 +228,7 @@ export async function searchLocal(
         // A region named like a town of its country follows the town (both show the same name).
         if (a.kind === 'town') townScore.set(same, Math.max(townScore.get(same) ?? -Infinity, score))
         else if (a.kind === 'region' && townScore.has(same)) score = Math.min(score, townScore.get(same)! - 1)
-        hits.push({ r, score, exact })
+        hits.push({ r, score, exact, named: a.kind === 'town' })
       }
     if (a.kind === 'town' && key === a.key)
       // A landmark by the visitor's name for it ranks as by another of its names: in full as a large city, else as a
@@ -228,9 +236,15 @@ export async function searchLocal(
       for (const r of rowsOf(marks))
         if (r.key === a.key && r.cc === a.cc) hits.push({ r, score: exact ? LANDMARK_SCORE + EXACT_BONUS : LANDMARK_WORD_SCORE, exact })
   })
+  // An old name's landmark row yields to the town the visitor's own name finds at its spot under another name (Kiev to
+  // Kyiv, in Italian); a landmark under its own name stays (Torre di Pisa).
+  const found = hits.filter((h) => h.named && h.exact)
+  const yields = (h: (typeof hits)[number]) =>
+    h.r.kind === 'l' && found.some((t) => t.r.key !== h.r.key && haversineKm(t.r, h.r) < OLD_NAME_KM)
   // Files are largest first and the sort is stable, so equal scores stay largest first.
   const seen = new Set<string>()
   return hits
+    .filter((h) => !yields(h))
     .sort((a, b) => b.score - a.score)
     .filter(({ r }) => {
       const k = `${r.key}|${r.lat.toFixed(1)}|${r.lon.toFixed(1)}`
@@ -252,6 +266,8 @@ const HOME_BONUS = 40
 
 /** A name as typed, accents and all (case and spacing aside): what an alternate's shown name is compared with. */
 const verbatim = (s: string) => s.normalize('NFC').toLowerCase().replace(/[\s\p{P}]+/gu, ' ').trim()
+/** How near a town an old name's landmark row is (Kiev, Peking, Bombay: the city's own point, a few hundred metres off). */
+const OLD_NAME_KM = 3
 /** A landmark named from its start ranks as a city of ~30 million; from a later word, as a town of ~300,000. */
 const LANDMARK_SCORE = 150
 const LANDMARK_WORD_SCORE = 110

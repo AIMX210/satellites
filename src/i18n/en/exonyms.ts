@@ -43,6 +43,12 @@ export interface ExonymsNamespace {
    * The generator's RULES name them (scripts/exonyms.ts), and src/imagery/exonymTables.test.ts holds the two equal.
    */
   home?: readonly string[]
+  /**
+   * The language types its umlauts as ae, oe, ue where a keyboard has none (Muenster, Luebeck: German), so a search
+   * also reads a query so written as the letters, for the many towns the table has no entry for (their name is the
+   * data's own).
+   */
+  umlauts?: boolean
 }
 
 const exonyms: ExonymsNamespace = { names: '' }
