@@ -149,16 +149,24 @@ export function countryCodeOf(english: string): string | undefined {
  * included (the long names are officialese in a where line: "Hong Kong SAR China", "R.A.S. chinoise de Hong Kong"), and
  * Palestine in Arabic and Indonesian (فلسطين, Palestina, for الأراضي الفلسطينية and Wilayah Palestina; the other
  * languages keep the long name), and the United States in Hindi (अमेरिका, as Hindi says it and its curated places
- * write it, for संयुक्त राज्य). Never the short style wholesale: it turns the US and the UK into "US" and "UK".
+ * write it, for संयुक्त राज्य) and German (USA, docs/i18n/de.md §6.7: Vereinigte Staaten is stiff in a where line).
+ * Never the short style wholesale: it turns the US and the UK into "US" and "UK".
  */
-const SHORT_NAMES: Record<string, true | readonly Locale[]> = { HK: true, MO: true, PS: ['ar', 'id'], US: ['hi'] }
+const SHORT_NAMES: Record<string, true | readonly Locale[]> = { HK: true, MO: true, PS: ['ar', 'id'], US: ['hi', 'de'] }
+/**
+ * Names a language's guide fixes whatever the browser says: CLDR's German long name for the Palestinian territories
+ * became Palästina in Chromium (157), which de.md §6.7 rejects as politically loaded.
+ */
+const PINNED: Record<string, Partial<Record<Locale, string>>> = { PS: { de: 'Palästinensische Autonomiegebiete' } }
 
 /**
  * A country's name as the visitor reads it (geocode.ts displaySublabel): countryName in `locale`, or its CLDR short name
- * for the few countries SHORT_NAMES lists. Display only: matching, the stored labels and the usage stats keep
+ * for the few countries SHORT_NAMES lists, or the name PINNED fixes. Display only: matching, the stored labels and the usage stats keep
  * countryName's English.
  */
 export function shownCountryName(cc: string, locale: Locale): string {
+  const pinned = PINNED[cc.toUpperCase()]?.[locale]
+  if (pinned) return pinned
   const short = SHORT_NAMES[cc.toUpperCase()]
   return short === true || short?.includes(locale) ? regionName(cc, locale, 'short') : regionName(cc, locale, 'long')
 }
