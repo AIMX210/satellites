@@ -350,8 +350,8 @@ function useCrowdedLine(topLeft: RefObject<HTMLDivElement | null>, topRight: Ref
 
 /**
  * Landscape phones: the results panel docks beside the top-left readout and reaches up to the bezel, and "How this
- * works | language" ran under its edge in the longer languages (at 844 × 390 Dutch by 10 px, Russian by 15; at
- * 812 × 375 and 800 × 360 English too, by 6 and 10). Where the row would come closer than PANEL_GAP to a panel's edge,
+ * works | language" ran under its edge in the longer languages (at 844 × 390 Dutch and Russian by 10 px, Vietnamese
+ * by 16; at 812 × 375 and 800 × 360 English too, by 6 and 10). Where the row would come closer than PANEL_GAP to a panel's edge,
  * the language steps down to a line of its own under "How this works", which stays whole on its line: every word on
  * the left is needed (the language's full name, never a code, owner 2026-11-19), and a third line costs only some globe
  * there (the top inset grows, so the camera frames below it). A portrait phone has no room for a third line (the
