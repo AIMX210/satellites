@@ -643,7 +643,9 @@ async function openMeteoSearch(query: string, signal: AbortSignal): Promise<Plac
 
 /**
  * A typed search goes to the network only if the offline list (towns, states, countries, landmarks) has fewer
- * matches than this, and none of them is named exactly what was typed.
+ * matches than this, and none of them is named exactly what was typed. The matches are places, counted before rows
+ * that read alike are shown as one (distinctAsShown): the city of Запоріжжя and its two namesake villages are three,
+ * as in English, so the commonest searches stay offline in every language.
  */
 export const ENOUGH_LOCAL = 3
 
@@ -673,11 +675,18 @@ function echoes(admin1: string, name: string): boolean {
  * Санкт-Петербург · Россия). The first `fixed` rows, already on screen, stay as they are. In English, each label as it
  * came.
  */
-function distinctAsShown(places: Place[], fixed = 0): Place[] {
-  if (!exonymsActive()) return dedupePlaces(places)
+const distinctAsShown = (places: Place[], fixed = 0): Place[] => oneOfAlike(distinctPlaces(places), fixed)
+
+/** dedupePlaces, the names compared as the visitor reads them: the distinct places, as ENOUGH_LOCAL counts them. */
+const distinctPlaces = (places: Place[]) =>
+  dedupePlaces(places, undefined, undefined, exonymsActive() ? displayLabel : undefined)
+
+/** Distinct places as rows: in a language with names, one of those in one country that read alike (distinctAsShown). */
+function oneOfAlike(places: Place[], fixed = 0): Place[] {
+  if (!exonymsActive()) return places
   const kept: Place[] = []
   const reads: (string | undefined)[] = []
-  for (const p of dedupePlaces(places, undefined, undefined, displayLabel)) {
+  for (const p of places) {
     const read = p.countryCode && `${p.countryCode.toLowerCase()}|${displayLabel(p)}|${displaySublabel(p) ?? ''}`
     const at = read ? reads.indexOf(read) : -1
     if (at < 0) {
@@ -729,6 +738,7 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   }
 
   let exact = false
+  let matches = 0
   const alternates = exonymAlternates(query, countryName)
   // The names the visitor reads each place by: its label, and a region's name in a where line (قم for استان قم).
   const namesOf = exonymsActive()
@@ -740,14 +750,16 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   const local = await searchLocal(query, signal, undefined, alternates, home, variants, namesOf, ownArea).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
-      return distinctAsShown(rows.map((r) => localToPlace(r, 'search')))
+      const places = distinctPlaces(rows.map((r) => localToPlace(r, 'search')))
+      matches = places.length
+      return oneOfAlike(places)
     },
     (err: unknown) => {
       if (isAbortError(err) || signal?.aborted) throw err
       return [] as Place[]
     },
   )
-  if (local.length >= ENOUGH_LOCAL || exact) {
+  if (matches >= ENOUGH_LOCAL || exact) {
     searchCache.set(key, local)
     return local
   }

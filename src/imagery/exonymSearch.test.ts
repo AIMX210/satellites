@@ -351,6 +351,22 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(read(await searchPlaces('Zaporizhzhya'))).toEqual(Array(3).fill('Zaporizhzhya · Zaporizhzhia, Ukraine'))
   })
 
+  it('counts the places found, not the rows shown, before it asks the network', async () => {
+    // The city and its two namesake villages are three places offline, enough as in English, shown as one row.
+    const files = serveFiles()
+    const typing = (word: string) => Array.from({ length: word.length - 1 }, (_, i) => word.slice(0, i + 2))
+    await as('uk', ukNames)
+    for (const q of typing('Запоріжжя')) await searchPlaces(q)
+    expect((await searchPlaces('Запоріж')).map((p) => displayLabel(p))).toEqual(['Запоріжжя'])
+    await as('ru', ruNames)
+    for (const q of typing('Запорожье')) await searchPlaces(q)
+    const zaporozhye = (await searchPlaces('Запорож')).map((p) => displayLabel(p))
+    expect(zaporozhye.sort()).toEqual(['Запорожская область', 'Запорожье'])
+    await as('vi')
+    for (const q of ['Đài L', 'Đài Lo']) await searchPlaces(q)
+    expect(files.network()).toEqual([])
+  })
+
   it('keeps rows that read otherwise: a city whose where line repeats its name, a namesake abroad', async () => {
     const geocoder = (name: string, admin1: string, cc: string, country: string, lat: number, ADM1 = false) => ({
       name,
