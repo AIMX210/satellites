@@ -846,13 +846,20 @@ Strategies, in order:
   में एक`. Never add `युद्ध`, `तबाही`, `हमला`, `बमबारी`, `कब्ज़ा` or any characterisation the English does not make.
 - **Names, in strings we write** (runtime gazetteer names take the generated Hindi table's names, GeoNames' own with
   modern official forms: मुंबई, बेंगलुरु, प्रयागराज; Kashmir and disputed areas exactly as GeoNames names them, with no
-  qualifier added; docs/I18N.md, Place names): `ग़ाज़ा पट्टी`,
-  `वेस्ट बैंक`, `यूक्रेन`, `लेबनान`, as Hindi news writes them. The country Intl gives for PS is `फ़िलिस्तीनी क्षेत्र`; add
-  no qualifier. Crimea is named as the data has it (in Ukraine), with no qualifier (`क्रीमिया (रूस)` never).
-- **`पट्टी` is also the Gaza Strip.** Our swath is `पट्टी`, and Hindi calls the Gaza Strip `ग़ाज़ा पट्टी`. Never put both
-  in one authored sentence (none does today: the places are inserted as the geocoder names them, in Latin, so a Gaza
-  search's likely card reads `Gaza Strip के ऊपर से · Sentinel-2C की पट्टी गुज़री।`). A new string that names Gaza and
-  a swath together says `कैमरे की पट्टी`, or rewrites the swath away.
+  qualifier added; docs/I18N.md, Place names): `गाज़ा पट्टी`,
+  `वेस्ट बैंक`, `यूक्रेन`, `लेबनान`, as Hindi news writes them, in §0's spelling (no nukta on ग). The country Intl gives
+  for PS is `फ़िलिस्तीनी क्षेत्र`; add no qualifier. Crimea is named as the data has it (in Ukraine), with no qualifier
+  (`क्रीमिया (रूस)` never).
+- **The table names the war zones' places so too** (pre-ship review, 2026-11-22): Gaza `गाज़ा`, the Gaza Strip `गाज़ा
+  पट्टी`, the West Bank `वेस्ट बैंक`, and Crimea `क्रीमिया` under each of the geocoders' names for it (Photon's
+  "Republic of Crimea" most often, "Autonomous Republic of Crimea"). BBC Hindi's `ग़ज़ा` and GeoNames' `पश्चिमी तट`
+  find them in a search, and are never shown. Ukraine and Lebanon are countries: the browser names them.
+- **`पट्टी` is also the Gaza Strip.** Our swath is `पट्टी`, and Hindi calls the Gaza Strip `गाज़ा पट्टी`. Never put both
+  in one authored sentence. The share card prints the place's English label (the owner's call), so a Gaza search's
+  likely card reads `Gaza Strip के ऊपर से · Sentinel-2C की पट्टी गुज़री।`; the app names the place in Hindi, so a
+  string with [PLACE] beside the swath reads both for a Gaza Strip search: `pass.could.insideSwath` (`उसकी … चौड़ी
+  पट्टी गाज़ा पट्टी के ऊपर से गुज़री।`) is to say `कैमरे की पट्टी` (open). A new string that names Gaza and a swath
+  together says `कैमरे की पट्टी`, or rewrites the swath away.
 
 ## 9. Pitfalls and the reviewer's checklist
 

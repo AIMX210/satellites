@@ -34,6 +34,7 @@ import viNs from '@/i18n/vi/exonyms'
 import faNs from '@/i18n/fa/exonyms'
 import hiNs from '@/i18n/hi/exonyms'
 import { parseExonyms } from './exonyms'
+import { placeKey } from './placeKey'
 
 const alt = (name: string, flags = ''): AltName => ({
   name,
@@ -299,6 +300,25 @@ describe('the generated tables', () => {
     ])
     // A landmark a town shares is a landmark's name only.
     expect(vi).toMatch(/\|US:[^|]*;\^White House=Nhà Trắng[;|]/)
+  })
+
+  it('name the time-lapse’s war zones as each guide does, Crimea under each geocoder’s name (pre-ship review)', () => {
+    // As a where line or a label shows it: the table's name, else the data's.
+    const shown = (src: string, cc: string, english: string, region = false) =>
+      parseExonyms(src)[region ? 'regions' : 'towns'].get(`${cc}|${placeKey(english)}`) ?? english
+    const zones = (src: string) => [
+      shown(src, 'PS', 'Gaza'),
+      shown(src, 'PS', 'Gaza Strip', true),
+      shown(src, 'PS', 'West Bank', true),
+    ]
+    const crimea = (src: string) =>
+      ['Crimea', 'Autonomous Republic of Crimea', 'Republic of Crimea'].map((e) => shown(src, 'UA', e, true))
+    expect([zones(hi), crimea(hi)]).toEqual([
+      ['गाज़ा', 'गाज़ा पट्टी', 'वेस्ट बैंक'],
+      ['क्रीमिया', 'क्रीमिया', 'क्रीमिया'],
+    ])
+    // BBC Hindi's Gaza and GeoNames' West Bank find them, and are never shown.
+    expect([hi.includes('~Gaza=गज़ा'), hi.includes('~*West Bank=पश्चिमी तट')]).toEqual([true, true])
   })
 
   it('write Persian as fa.md §6.1 does: the ezafe’s hamza only on a final ه, no doubled ئ, no Arabic or Latin letters', () => {

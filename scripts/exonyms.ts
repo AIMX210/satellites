@@ -252,7 +252,7 @@ export const RULES: Record<Lang, Rules> = {
     abroad: SCRIPT_ABROAD,
     homeMinPop: 100_000,
     near: { countries: ['PK', 'NP', 'BD', 'LK'], minPop: 500_000 },
-    regionsAbroad: ['US', 'GB', 'CA', 'AU', 'NP', 'LK'],
+    regionsAbroad: ['US', 'GB', 'CA', 'AU', 'NP', 'LK', 'PS'],
     waters: 45,
     include: ['1166993', '1169825', '1167528', '1282898', '6173331', '2643123'],
   },
@@ -2421,6 +2421,18 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'RU:Kremlin': 'क्रेमलिन',
     'SA:Mecca': 'मक्का',
     'AU:Great Barrier Reef': 'ग्रेट बैरियर रीफ़',
+    /**
+     * Pre-ship review (2026-11-22). The time-lapse's war zones as hi.md §8 names them, in §0's spelling (no nukta on
+     * ग): the Gaza Strip and Gaza (GeoNames' ग़ज़ा is BBC Hindi's, a search name below), the West Bank (GeoNames'
+     * पश्चिमी तट too), and Crimea by the geocoders' three names for it (Photon's "Republic of Crimea" most often),
+     * with no qualifier; Ukraine and Lebanon are countries, which the browser names.
+     */
+    'PS.GZ': 'गाज़ा पट्टी',
+    'PS.WE': 'वेस्ट बैंक',
+    281133: 'गाज़ा',
+    'UA.11': 'क्रीमिया',
+    'UA:*Autonomous Republic of Crimea': 'क्रीमिया',
+    'UA:*Republic of Crimea': 'क्रीमिया',
   },
 }
 
@@ -2513,5 +2525,9 @@ export const ALIASES: Record<Lang, Record<string, readonly string[]>> = {
     1276533: ['बेलगाम'],
     1270752: ['गुलबर्गा'],
     2988507: ['पैरिस'],
+    // Gaza as BBC Hindi writes it, and the West Bank as GeoNames does (hi.md §8 shows गाज़ा, वेस्ट बैंक).
+    281133: ['ग़ज़ा'],
+    'PS:*Gaza Strip': ['ग़ज़ा पट्टी'],
+    'PS:*West Bank': ['पश्चिमी तट'],
   },
 }
