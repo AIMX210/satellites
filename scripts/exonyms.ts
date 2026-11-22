@@ -77,6 +77,16 @@ export interface Rules {
    * write in a where line.
    */
   spelledRegions?: readonly string[]
+  /**
+   * How many of the named features at home the offline list carries get their names (its lakes, castles, islands,
+   * airports: scripts/features.ts), the best known first; none if unset. A Latin table writes only the ones that differ.
+   */
+  homeFeatures?: number
+  /**
+   * The label of a region named like a town of its country, apart from its where-line name (a search lists both: قم
+   * and استان قم, Thanh Hóa and Tỉnh Thanh Hóa); undefined to leave the two alike.
+   */
+  regionLabel?: (region: { shown: string; cc: string; english: readonly string[]; alts: readonly AltName[] | undefined }) => string | undefined
 }
 
 /** What the rules know of a town. */
@@ -127,6 +137,21 @@ const SCRIPT_ABROAD = (t: TownFacts) =>
  * landmarks GeoNames knows and the well-known seas. The native review (2026-11-22) set the regions abroad and the
  * towns added by id.
  */
+/**
+ * Vietnamese: a province's label (Tỉnh Thanh Hóa), a centrally governed city's (Thành phố Hải Phòng, and China's
+ * municipalities: Thành phố Thượng Hải), Vientiane's prefecture (Thủ đô Viêng Chăn), as a Vietnamese map labels them.
+ */
+const VIETNAMESE_CITIES = new Set(['Hà Nội', 'Hải Phòng', 'Đà Nẵng', 'Cần Thơ', 'Huế'])
+const VIETNAMESE_REGION: Rules['regionLabel'] = ({ shown, cc, english, alts }) => {
+  if (!['VN', 'CN', 'LA'].includes(cc) || /^(Tỉnh|Thành phố|Thủ đô) /iu.test(shown)) return undefined
+  if (cc === 'VN' && VIETNAMESE_CITIES.has(shown)) return `Thành phố ${shown}`
+  const own = (alts ?? []).map((a) => cleanName(a.name, 'vi')).find((n) => /^(Tỉnh|Thành phố) /iu.test(n) && stripAdmin(n, 'vi') === shown)
+  if (own) return own.charAt(0).toLocaleUpperCase('vi') + own.slice(1)
+  if (english.some((e) => /\b(city|municipality)\b/i.test(e))) return `Thành phố ${shown}`
+  if (english.some((e) => /\bprefecture\b/i.test(e))) return `Thủ đô ${shown}`
+  return `Tỉnh ${shown}`
+}
+
 export const RULES: Record<Lang, Rules> = {
   de: {
     script: LATIN_NAME,
@@ -137,6 +162,7 @@ export const RULES: Record<Lang, Rules> = {
     near: { countries: ['IT', 'FR', 'BE', 'NL', 'LU', 'DK', 'PL', 'CZ', 'SK', 'HU', 'SI', 'HR', 'UA'], minPop: 50_000 },
     regionsAbroad: ['IT', 'FR', 'BE', 'NL', 'PL', 'CZ', 'ES', 'GB', 'US', 'RU', 'UA', 'GR', 'PS', 'CN', 'HU', 'DK'],
     waters: 50,
+    homeFeatures: 2_000,
   },
   it: {
     script: LATIN_NAME,
@@ -147,6 +173,7 @@ export const RULES: Record<Lang, Rules> = {
     near: { countries: ['CH', 'FR', 'DE', 'AT', 'SI', 'HR', 'ES', 'MT', 'BE', 'GR'], minPop: 50_000 },
     regionsAbroad: ['CH', 'FR', 'DE', 'AT', 'ES', 'BE', 'GB', 'US', 'RU', 'GR', 'MT', 'PL', 'NL', 'ZA', 'DK', 'RS', 'UA', 'CZ'],
     waters: 50,
+    homeFeatures: 2_000,
   },
   uk: {
     script: CYRILLIC_NAME,
@@ -180,6 +207,8 @@ export const RULES: Record<Lang, Rules> = {
     regionsAbroad: ['CN', 'LA', 'KH', 'US', 'GB', 'TW'],
     waters: 50,
     ownNamesakes: ['CN', 'TW'],
+    homeFeatures: 2_000,
+    regionLabel: VIETNAMESE_REGION,
   },
   fa: {
     script: PERSIAN_NAME,
@@ -190,6 +219,9 @@ export const RULES: Record<Lang, Rules> = {
     regionsAbroad: ['US', 'GB', 'CA', 'DE', 'IQ'],
     waters: 45,
     include: ['94824', '98860', '99532', '95446', '1216265', '1217662'],
+    homeFeatures: 40,
+    // A province named like its capital: استان قم (Iran), ولایت هرات (Afghanistan); bare in a where line.
+    regionLabel: ({ shown, cc }) => (cc === 'IR' ? `استان ${shown}` : cc === 'AF' ? `ولایت ${shown}` : undefined),
   },
   hi: {
     script: DEVANAGARI_NAME,
@@ -295,15 +327,22 @@ const within = (inner: string, outer: string) => ` ${outer} `.includes(` ${inner
  * those are spellings, not the language's own name. Dropping an English class word is (Nghệ An for Nghệ An Province),
  * and so, at home, is adding the language's accents (Đà Nẵng for Da Nang, Zürich for Zurich).
  */
-export function latinWorthWriting(english: string, shown: string, home: boolean): boolean {
+export function latinWorthWriting(english: string, shown: string, home: boolean, feature = false): boolean {
   const a = placeKey(english)
   const b = placeKey(shown)
   if (!a || !b || (shown.includes('.') && !english.includes('.'))) return false
   if (a === b) return home && marks(shown) > marks(english)
-  // Dropping an English class word is the language's own name (Nghệ An for Nghệ An Province, Gent for Ghent City).
-  if (within(b, a)) return ENGLISH_CLASS.test(` ${a} `.replace(` ${b} `, ' ').trim())
+  // Dropping an English class word is the language's own name (Nghệ An for Nghệ An Province, Gent for Ghent City; for a
+  // feature, Rügen for Rügen Island, Wartburg for Wartburg Castle).
+  if (within(b, a)) {
+    const rest = ` ${a} `.replace(` ${b} `, ' ').trim()
+    return ENGLISH_CLASS.test(rest) || (feature && FEATURE_CLASS.test(rest))
+  }
   return !within(a, b)
 }
+
+/** The English class words around a feature's name in the offline list (Rügen Island, Mount Pilatus, Wartburg Castle). */
+const FEATURE_CLASS = /^((lake|castle|palace|island|isle|mount|mountains|glacier|forest|national park|park|the|of) ?)+$/
 
 /** The English class words around a place's name in the data (Nghệ An Province, Kyiv City, Moscow Oblast). */
 const ENGLISH_CLASS = /^((province|city|region|district|oblast|governorate|prefecture|state|municipality|county|division|krai|kray|republic|voivodeship|autonomous|okrug|territory|of|the) ?)+$/
@@ -457,6 +496,8 @@ export interface Named {
   pop: number
   /** In one of the language's own countries */
   home?: boolean
+  /** A natural feature or a building (a lake, a castle: latinWorthWriting's class words) */
+  feature?: boolean
 }
 
 /** One key of a table being built: the data's spellings, the name shown (null: ambiguous), and its people. */
@@ -470,6 +511,8 @@ export interface Entry {
   forced?: boolean
   /** A landmark's or feature's name that a town shares the key of: written for landmarks only (`^`) */
   landmark?: boolean
+  /** A natural feature's or a building's (Named.feature) */
+  feature?: boolean
 }
 /** A table being built: by country, then by key (`*` before a region's). */
 export type DisplayTable = Map<string, Map<string, Entry>>
@@ -478,16 +521,26 @@ const keyOf = (english: string, region: boolean) => `${region ? '*' : ''}${place
 
 /**
  * Add a place's name to a table, under each of its English spellings' keys. Where another place in the same country
- * has the same key and another name, the key names neither (`shown` null): the label could be either.
+ * has the same key and another name, the key names neither (`shown` null): the label could be either. `label`: a
+ * region's own label (`#`), apart from its name in a where line.
  */
-export function addDisplay(table: DisplayTable, place: Named, shown: string, { forced = false, landmark = false } = {}) {
+export function addDisplay(table: DisplayTable, place: Named, shown: string, { forced = false, landmark = false, label = false } = {}) {
   let country = table.get(place.cc)
   if (!country) table.set(place.cc, (country = new Map()))
   for (const english of place.english) {
     if (!placeKey(english) || RESERVED.test(english)) continue
-    const key = `${landmark ? '^' : ''}${keyOf(english, place.region)}`
+    const key = label ? `#${placeKey(english)}` : `${landmark ? '^' : ''}${keyOf(english, place.region)}`
     const had = country.get(key)
-    if (!had) country.set(key, { spellings: new Set([english]), shown, pop: place.pop, home: !!place.home, ...(forced ? { forced } : {}), ...(landmark ? { landmark } : {}) })
+    if (!had)
+      country.set(key, {
+        spellings: new Set([english]),
+        shown,
+        pop: place.pop,
+        home: !!place.home,
+        ...(forced ? { forced } : {}),
+        ...(landmark ? { landmark } : {}),
+        ...(place.feature ? { feature: true } : {}),
+      })
     else {
       had.spellings.add(english)
       had.pop = Math.max(had.pop, place.pop)
@@ -537,9 +590,9 @@ export function serializeDisplay(table: DisplayTable, latin: boolean, aliases: r
       if (e.shown === null) continue
       const shown = e.shown
       const differs = (s: string) => placeKey(s) !== placeKey(shown) || s !== shown
-      const english = [...e.spellings].find((s) => (e.forced ? differs(s) : latin ? latinWorthWriting(s, shown, e.home) : placeKey(s) !== placeKey(shown)))
+      const english = [...e.spellings].find((s) => (e.forced ? differs(s) : latin ? latinWorthWriting(s, shown, e.home, e.feature) : placeKey(s) !== placeKey(shown)))
       if (english === undefined) continue
-      rows.push({ pop: e.pop, text: `${key.startsWith('*') ? '*' : key.startsWith('^') ? '^' : ''}${english}=${e.shown}` })
+      rows.push({ pop: e.pop, text: `${/^[*^#]/.test(key) ? key[0] : ''}${english}=${e.shown}` })
     }
     rows.sort((a, b) => b.pop - a.pop)
     const entries = rows.map((r) => r.text)

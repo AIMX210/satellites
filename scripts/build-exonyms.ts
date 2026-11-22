@@ -8,7 +8,8 @@
  * What a table covers (RULES in scripts/exonyms.ts): the towns of cities500 above the language's threshold, more at
  * home, the first-level regions (admin1CodesASCII), the curated landmarks (scripts/landmarks.ts) GeoNames knows (found
  * in allCountries by name, near the landmark's point), the large seas and oceans (countryless features with an English
- * Wikipedia article), and the hand-made OVERRIDES and search ALIASES. Countries are not in it: the browser names them
+ * Wikipedia article), the named features at home that the offline list carries (scripts/features.ts: its lakes,
+ * castles, islands and airports, Rules.homeFeatures), and the hand-made OVERRIDES and search ALIASES. Countries are not in it: the browser names them
  * (Intl.DisplayNames).
  *
  * Usage: NODE_OPTIONS=--max-old-space-size=6000 npm run data:exonyms <dir with the GeoNames downloads>
@@ -24,6 +25,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createInterface } from 'node:readline'
 import { gzipSync } from 'node:zlib'
+import { FEATURES, featurePop } from './features'
 import { LANDMARKS } from './landmarks'
 import { placeKey } from '../src/imagery/placeKey'
 import {
@@ -83,6 +85,17 @@ const WATER_SPELLINGS: Record<string, readonly string[]> = { 'Sea of Japan': ['J
 const SEAT_MIN_POP = 20_000
 /** How far from its point a landmark's GeoNames feature may be, in degrees (a lake's or a reef's point is far off). */
 const LANDMARK_REACH = 1
+/** The countries some language names its features in (Rules.home): their features are read from allCountries. */
+const FEATURE_HOMES = new Set(LANGS.flatMap((l) => RULES[l].home.filter((h) => !h.includes('.'))))
+/**
+ * A feature the offline list shows under an English name (Lake Starnberg, Heidelberg Castle, Frankfurt Airport): what
+ * a Latin table names at home. One under its own name (Planai, Mutta, Piz Giuv) keeps it: GeoNames' German or Italian
+ * name for a Romansh or Italian peak is often another language's, or a neighbouring summit's.
+ */
+const ENGLISH_FEATURE =
+  /\b(Lakes?|Castle|Palace|Islands?|Isle|Airport|Airfield|University|Glacier|Mount|Mountains?|Alps|Forest|Zoo|Cathedral|Church|Abbey|Monastery|Park|Museum|Bridge|Dam|Reservoir|Falls|Waterfall|Gorge|Peninsula|Bay|Valley|Tower|Square|Gardens?|Opera|Cemetery|Camp|Fortress|Canal|Strait|Sea|Gulf|Lagoon|Volcano|Hills?|Peak|Range|Plateau|Cape|Viaduct|Observatory|Monument|Memorial|Ruins|Temple|Basin|Delta|Lighthouse|Caves?|Crater|Reef)\b/i
+/** Stadiums keep their names: GeoNames' other names for them are often the club's, or a sponsor's (Joggeli, Servette FC). */
+const KEEPS_NAME = new Set(['STDM'])
 
 interface Town {
   id: string
@@ -149,12 +162,14 @@ async function main() {
   const landmarkKeys = LANDMARKS.map(([name, , , , , aliases]) => new Set([name, ...(aliases ?? [])].map(placeKey)))
   const landmarkHit: ({ id: string; d: number; own: boolean } | undefined)[] = LANDMARKS.map(() => undefined)
   const waterCandidates = new Map<string, { name: string; names: number; cc: string }>()
+  const featureCandidates = new Map<string, { name: string; names: number; cc: string; code: string }>()
   for await (const l of unzipLines(join(SRC, 'allCountries.zip'))) {
     const p = l.split('\t', 9)
     const lat = Number(p[4])
     const lon = Number(p[5])
     if (WATER_CODES.has(p[7]) && p[3])
       waterCandidates.set(p[0], { name: p[1], cc: p[8], names: p[3].split(',').length + (WELL_KNOWN_WATERS.get(placeKey(p[1])) ?? 0) * 1e6 })
+    if (FEATURES.has(p[7]) && FEATURE_HOMES.has(p[8])) featureCandidates.set(p[0], { name: p[1], cc: p[8], code: p[7], names: p[3] ? p[3].split(',').length : 0 })
     const here = near.get(cell(lat, lon))
     if (!here) continue
     for (const i of here) {
@@ -172,7 +187,7 @@ async function main() {
 
   // The alternate names of every town, region, landmark and water in the table languages and English, and which
   // waters have an English Wikipedia article.
-  const wanted = new Set<string>([...towns.map((t) => t.id), ...regions.keys(), ...waterCandidates.keys()])
+  const wanted = new Set<string>([...towns.map((t) => t.id), ...regions.keys(), ...waterCandidates.keys(), ...featureCandidates.keys()])
   for (const h of landmarkHit) if (h) wanted.add(h.id)
   const langs = new Set<string>([...LANGS, 'en'])
   const alts = new Map<string, Map<string, AltName[]>>()
@@ -196,6 +211,17 @@ async function main() {
     byLang.set(p[2], list)
   }
   for (const t of towns) t.names = nameCount.get(t.id) ?? 0
+  // The features at home the offline list carries (those with an English Wikipedia article), under the name it shows:
+  // the English one GeoNames gives (preferred first), else GeoNames' own (scripts/build-places.ts does the same), the
+  // best known first.
+  const homeFeatures = [...featureCandidates]
+    .filter(([id]) => wiki.has(id))
+    .map(([id, f]) => {
+      const en = (alts.get(id)?.get('en') ?? []).filter((a) => !a.colloquial && !a.historic && !/[|;]/.test(a.name))
+      return { id, cc: f.cc, code: f.code, names: f.names, english: (en.find((a) => a.preferred) ?? en[0])?.name ?? f.name }
+    })
+    .sort((a, b) => b.names - a.names)
+  featureCandidates.clear()
   // The best known first, one per name (GeoNames has two Seas of Azov).
   const waterKeys = new Set<string>()
   const waters = [...waterCandidates]
@@ -213,8 +239,18 @@ async function main() {
     const en = both ? pickName(alts.get(id)?.get('en'), (n) => !!placeKey(n)) : undefined
     return en && en !== name ? [name, en] : [name]
   }
-  /** Each region's own name in the data, by country and key: another region's English spelling never takes it. */
+  /**
+   * Each region's own name in the data, by country and key: another region's English spelling never takes it. A city
+   * that is a region of its own goes by its bare name too (Kyiv City is Photon's "Kyiv"), unless that is another
+   * region's own name (Minsk, the region, beside Minsk City).
+   */
   const regionNamed = new Map([...regions].map(([id, r]) => [`${r.cc}|${placeKey(r.name)}`, id]))
+  const cityRegions = new Map<string, string>()
+  for (const [id, r] of regions) {
+    const bare = r.name.replace(/ City$/, '')
+    if (bare !== r.name && !regionNamed.has(`${r.cc}|${placeKey(bare)}`)) cityRegions.set(id, bare)
+  }
+  for (const [id, bare] of cityRegions) regionNamed.set(`${regions.get(id)!.cc}|${placeKey(bare)}`, id)
   /**
    * A region's English spellings in a script table, at home (Rules.spelledRegions): the data's and every current one,
    * each also without "Province", as OpenStreetMap names Iran's in a where line (Gilan, Kurdistan, Lorestan); never
@@ -225,6 +261,7 @@ async function main() {
     const others = (e: string) => (regionNamed.get(`${cc}|${placeKey(e)}`) ?? id) !== id
     const all = [
       name,
+      ...(cityRegions.has(id) ? [cityRegions.get(id)!] : []),
       ...(alts.get(id)?.get('en') ?? [])
         // Not a transliteration or a description (Kharkivs’ka Oblast’, Rostovskaya Oblast, The 10th Province).
         .filter(
@@ -331,7 +368,16 @@ async function main() {
       const forced = over[r.code] !== undefined
       const shown = forced ? over[r.code] || undefined : nameOf(id, r.cc, home, true, avoid)
       const english = !rules.latin && (home || rules.spelledRegions?.includes(r.cc)) ? regionEnglish(id, r.name) : spellings(id, r.name)
-      if (shown) addDisplay(table, { english, cc: r.cc, region: true, pop: regionPop.get(r.code) ?? 0, home }, shown, { forced })
+      if (!shown) continue
+      const pop = regionPop.get(r.code) ?? 0
+      addDisplay(table, { english, cc: r.cc, region: true, pop, home }, shown, { forced })
+      // A region named like a town of its country gets a label of its own (Rules.regionLabel: استان قم, Tỉnh Thanh Hóa),
+      // so the two rows of a search differ; its where-line name stays the plain one.
+      const likeTown =
+        !!townKeys.get(r.cc)?.has(placeKey(shown)) ||
+        [...(table.get(r.cc) ?? [])].some(([key, e]) => !/^[*^#]/.test(key) && e.shown === shown)
+      const label = likeTown ? rules.regionLabel?.({ shown, cc: r.cc, english: [...english, ...englishOf(id, r.name, true)], alts: alts.get(id)?.get(lang) }) : undefined
+      if (label) addDisplay(table, { english: [r.name], cc: r.cc, region: false, pop, home }, label, { forced: true, label: true })
     }
     // Landmarks GeoNames knows, under their own (curated) English name, ranked as a city of a million. In a Latin
     // table only a feature named by the landmark's own name (not an airport's code or a nickname), and only a name
@@ -345,6 +391,18 @@ async function main() {
       const shown = hit && (!rules.latin || hit.own) ? nameOf(hit.id, CC, home) : undefined
       if (shown) addDisplay(table, { english: [name], cc: CC, region: false, pop: 1e6, home }, shown, { landmark: sharedWithTown(CC, name) })
     })
+    // The features at home the offline list carries (its lakes, castles, islands and airports), the best known first,
+    // as many as the rules name (all in a Latin table, which writes only the names that differ), under the English
+    // name the list shows them by: Starnberger See for Lake Starnberg, Heidelberger Schloss, Rügen.
+    const named = (f: (typeof homeFeatures)[number]) => atHome(rules, f.cc, '') && !KEEPS_NAME.has(f.code) && (!rules.latin || ENGLISH_FEATURE.test(f.english))
+    for (const f of homeFeatures.filter(named).slice(0, rules.homeFeatures ?? 0)) {
+      const shown = nameOf(f.id, f.cc, true)
+      // Not an abbreviation GeoNames lists as a name (DHM for the German Historical Museum).
+      if (shown && !/^[\p{Lu}\d]{2,6}$/u.test(shown))
+        addDisplay(table, { english: [f.english], cc: f.cc, region: false, pop: featurePop(f.names), home: true, feature: true }, shown, {
+          landmark: sharedWithTown(f.cc, f.english),
+        })
+    }
     // Seas, oceans, gulfs and straits: countryless, and under the country the data files one under, if any (the
     // English Channel under GB), as a landmark's name there.
     for (const [id, w] of waters.slice(0, rules.waters)) {
@@ -355,19 +413,26 @@ async function main() {
       addDisplay(table, { english, cc: '', region: false, pop: w.names }, shown)
       if (w.cc) addDisplay(table, { english: [w.name], cc: w.cc, region: false, pop: w.names }, shown, { landmark: sharedWithTown(w.cc, w.name) })
     }
-    // Hand-made names given by English name (`CC:English`), countryless or in a country: written as given.
+    // Hand-made names given by English name (`CC:English`, `CC:*English` for a region, `CC:#English` for a region's own
+    // label), countryless or in a country: written as given. A spelling of a place the table already names so (Photon's
+    // Zaporizhzhia beside the list's Zaporizhzhya) comes right after it, where a search keeps the place under both.
     for (const [k, shown] of Object.entries(over)) {
       const at = k.indexOf(':')
       if (at < 0) continue
       const cc = k.slice(0, at)
       const region = k[at + 1] === '*'
-      const english = k.slice(at + (region ? 2 : 1))
-      const landmark = !region && landmarkNames.has(`${cc}:${placeKey(english)}`) && sharedWithTown(cc, english)
-      const had = table.get(cc)?.get(`${landmark ? '^' : region ? '*' : ''}${placeKey(english)}`)
+      const label = k[at + 1] === '#'
+      const english = k.slice(at + (region || label ? 2 : 1))
+      const landmark = !region && !label && landmarkNames.has(`${cc}:${placeKey(english)}`) && sharedWithTown(cc, english)
+      const had = table.get(cc)?.get(`${landmark ? '^' : region ? '*' : label ? '#' : ''}${placeKey(english)}`)
       if (had) {
         had.shown = shown ? cleanName(shown, lang) : null
         had.forced = true
-      } else if (shown) addDisplay(table, { english: [english], cc, region, pop: 1e7, home: true }, cleanName(shown, lang), { forced: true, landmark })
+      } else if (shown) {
+        const name = cleanName(shown, lang)
+        const twin = [...(table.get(cc) ?? [])].find(([key, e]) => e.shown === name && key.startsWith('*') === region && !/^[\^#]/.test(key))
+        addDisplay(table, { english: [english], cc, region, pop: twin ? twin[1].pop - 1e-3 : 1e7, home: true }, name, { forced: true, landmark, label })
+      }
     }
     // Namesakes too small for the table make its keys ambiguous only if they have names of their own (or, in a
     // Sino-Vietnamese reading, any name: Rules.ownNamesakes).
@@ -408,6 +473,11 @@ export default ${literal(names)}
     if (REVIEW) writeFileSync(join(REVIEW, `${lang}.txt`), names.split('|').flatMap((g) => g.split(';').map((e, i) => (i ? `${g.slice(0, g.indexOf(':'))}:${e}` : e))).join('\n') + '\n')
   }
   if (REVIEW) writeFileSync(join(REVIEW, 'waters.txt'), waters.map(([id, w]) => `${id}\t${w.name}\t${w.names}`).join('\n') + '\n')
+  if (REVIEW)
+    writeFileSync(
+      join(REVIEW, 'features.tsv'),
+      homeFeatures.map((f) => [f.id, f.cc, f.code, f.names, f.english, ...LANGS.map((l) => (alts.get(f.id)?.get(l) ?? []).map((a) => a.name).join(' / '))].join('\t')).join('\n') + '\n',
+    )
   const found = landmarkHit.filter(Boolean).length
   console.log(`${towns.length} towns, ${regions.size} regions, ${found}/${LANDMARKS.length} landmarks, ${waters.length} waters (${((Date.now() - started) / 1000).toFixed(0)} s)`)
   for (const r of report) console.log(r)
