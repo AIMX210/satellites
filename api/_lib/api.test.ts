@@ -672,6 +672,20 @@ describe('a shared geostationary image (migration 0014 for the Meteosats)', () =
       }
     })
 
+    it('keeps every parameter a card reads in its cache key (a new one left out would share another card’s entry)', async () => {
+      const { cardCacheQuery, CARD_VERSION } = await import('./share.js')
+      const { readFileSync } = await import('node:fs')
+      const read = [...(readFileSync('api/_lib/share.ts', 'utf8') + readFileSync('api/og.tsx', 'utf8')).matchAll(/(?:\bq|searchParams)\.get\('([a-z]+)'\)/g)].map((m) => m[1])
+      expect(new Set(read).size).toBeGreaterThan(30)
+      for (const name of new Set(read)) {
+        // The version and the language are kept in their own form (the current version; a language we speak).
+        const value = name === 'v' ? CARD_VERSION : name === 'l' ? 'ja' : 'x'
+        expect(cardCacheQuery(new URLSearchParams({ [name]: value })), name).toBe(`${name}=${value}`)
+      }
+      // A stored share's card is its id, whatever else its address says.
+      expect(cardCacheQuery(new URLSearchParams('place=Elsewhere&id=ab3d5f7h&x=1&v=4&l=ar'))).toBe('id=ab3d5f7h')
+    })
+
     it('is read, not posted to', async () => {
       const asked = world(stored(FRAME), () => new Response('', { status: 502 }))
       const res = await (await og())(new Request('https://www.watched.earth/api/og?id=ab3d5f7h', { method: 'POST' }))
