@@ -210,6 +210,11 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'Meiji Reef', sublabel: 'Hainan, China', countryCode: 'cn', lat: 9.927, lon: 115.534 })).toBeUndefined()
     expect(displaySublabel({ label: 'Pattle Island', sublabel: 'Da Nang City, Vietnam', countryCode: 'vn', lat: 16.534, lon: 111.608 })).toBe('Da Nang City, Việt Nam')
     expect(displaySublabel({ label: 'Haikou', sublabel: 'Hainan, China', countryCode: 'cn', lat: 20.046, lon: 110.342 })).toBe('Hainan, Trung Quốc')
+    // The Philippines' Spratly claim east of 116° is in; Sabah's islands and Palawan's Balabac Strait are not.
+    expect(displaySublabel({ label: 'Investigator Northeast Shoal', sublabel: 'Mimaropa, Philippines', countryCode: 'ph', lat: 9.175, lon: 116.463 })).toBeUndefined()
+    expect(displaySublabel({ label: 'Pulau Balambangan', sublabel: 'Sabah, Malaysia', countryCode: 'my', lat: 7.273, lon: 116.932 })).toBe('Sabah, Malaysia')
+    expect(displaySublabel({ label: 'Kalampunian Island', sublabel: 'Sabah, Malaysia', countryCode: 'my', lat: 7.052, lon: 116.746 })).toBe('Sabah, Malaysia')
+    expect(displaySublabel({ label: 'Balabac Strait', sublabel: 'Philippines', countryCode: 'ph', lat: 7.667, lon: 117.0 })).toBe('Philippines')
     setBundleForTests('en', null)
     expect(displaySublabel({ label: 'Johnson Reef', sublabel: 'China', countryCode: 'cn', lat: 9.715, lon: 114.287 })).toBe('China')
   })

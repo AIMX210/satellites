@@ -17,10 +17,12 @@ const exonyms: typeof en = {
   names: '',
   countries: true,
   home: ['VN'],
-  // The Paracels (Hoàng Sa) and the Spratlys (Trường Sa), clear of the Philippines' and Malaysia's coasts.
+  // The Paracels (Hoàng Sa) and the Spratlys (Trường Sa): east of 116° only north of 8.5° (Half Moon Shoal, Investigator
+  // Northeast Shoal), clear of Sabah's islands (Balambangan, Banggi) and Palawan's (Balabac and its strait).
   contested: [
     [15.5, 110.8, 17.3, 113.0],
-    [7.0, 111.0, 12.0, 117.0],
+    [7.0, 111.0, 12.0, 116.0],
+    [8.5, 116.0, 12.0, 117.0],
   ],
   load: () =>
     (loading ??= import('./exonyms.gen').then(
