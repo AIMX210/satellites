@@ -192,6 +192,10 @@ describe('searching in the visitor’s own names (real data)', () => {
     for (const [q, label] of [['Huế', 'Huế'], ['hue', 'Huế'], ['Thanh Hoá', 'Thanh Hóa'], ['Hải Phòng', 'Haiphong'], ['hai phong', 'Haiphong']])
       expect([q, (await first(q)).label, (await first(q)).kind]).toEqual([q, label, undefined])
     expect(await first('Quận 1')).toMatchObject({ label: 'Quận Một' })
+    // Two rows that read alike within 25 km are one (the city and the province around it, a city-state and its state).
+    expect((await searchPlaces('Huế')).filter((p) => displayLabel(p) === 'Huế')).toHaveLength(1)
+    await as('it', itNames)
+    expect((await searchPlaces('Berlino')).map(displayLabel)).toEqual(['Berlino'])
     await as('uk', ukNames)
     expect(await first('харкив')).toMatchObject({ label: 'Kharkiv' }) // и for і, from a Russian layout
     expect(await first('Киев')).toMatchObject({ label: 'Kyiv' }) // a search name, never shown

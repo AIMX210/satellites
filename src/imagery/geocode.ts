@@ -349,19 +349,21 @@ export function photonReverseToPlace(f: PhotonFeature, lat: number, lon: number,
  *    has a city node, its boundary relation and its station);
  *  - anything within 1 km of a better result is the same spot for this product (a pass covers
  *    kilometres; "CN Tower", "CN Tower Edge Walk", "CN Tower tickets").
+ * `nameOf` gives the name compared: the label, or the name the visitor reads (distinctAsShown).
  */
-export function dedupePlaces(places: Place[], withinKm = 25, sameSpotKm = 1): Place[] {
-  return distinctIndexes(places, withinKm, sameSpotKm).map((i) => places[i])
+export function dedupePlaces(places: Place[], withinKm = 25, sameSpotKm = 1, nameOf: (p: Place) => string = (p) => p.label): Place[] {
+  return distinctIndexes(places, withinKm, sameSpotKm, nameOf).map((i) => places[i])
 }
 
 /** Indexes of the places `dedupePlaces` keeps, in order. */
-function distinctIndexes(places: Place[], withinKm = 25, sameSpotKm = 1): number[] {
+function distinctIndexes(places: Place[], withinKm = 25, sameSpotKm = 1, nameOf: (p: Place) => string = (p) => p.label): number[] {
   const kept: number[] = []
+  const keys = places.map((p) => textKey(nameOf(p)))
   places.forEach((p, i) => {
-    const k = textKey(p.label)
+    const k = keys[i]
     const dup = kept.some((j) => {
       const d = haversineKm(p, places[j])
-      return d < sameSpotKm || (d < withinKm && textKey(places[j].label) === k)
+      return d < sameSpotKm || (d < withinKm && keys[j] === k)
     })
     if (!dup) kept.push(i)
   })
@@ -595,8 +597,15 @@ function echoes(admin1: string, name: string): boolean {
   return ` ${placeKey(admin1)} `.includes(` ${placeKey(name)} `)
 }
 
-/** `first`, then whatever in `more` is not already there (dedupePlaces' rules), at most MAX_RESULTS. */
-const appendNew = (first: Place[], more: Place[]) => dedupePlaces([...first, ...more]).slice(0, MAX_RESULTS)
+/**
+ * The places of a search as one list: the same rules as dedupePlaces, the names compared as the visitor reads them
+ * (a city-state and its state, both Berlino; Huế and the province the table calls Huế, 14 km apart, are one row).
+ * In English, each label as it came.
+ */
+const distinctAsShown = (places: Place[]) => dedupePlaces(places, undefined, undefined, exonymsActive() ? displayLabel : undefined)
+
+/** `first`, then whatever in `more` is not already there (distinctAsShown's rules), at most MAX_RESULTS. */
+const appendNew = (first: Place[], more: Place[]) => distinctAsShown([...first, ...more]).slice(0, MAX_RESULTS)
 
 /**
  * Up to 6 places matching `q`, best first. Coordinates are accepted and reverse-geocoded. Resolves [] for queries
@@ -634,7 +643,7 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query), shownOf).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
-      return dedupePlaces(rows.map((r) => localToPlace(r, 'search')))
+      return distinctAsShown(rows.map((r) => localToPlace(r, 'search')))
     },
     (err: unknown) => {
       if (isAbortError(err) || signal?.aborted) throw err
