@@ -214,6 +214,14 @@ describe('exonyms', () => {
     expect(displaySublabel({ sublabel: 'France and Italy', countryCode: 'fr' })).toBe('France and Italy')
   })
 
+  it('leaves out a landmark’s line with no country under a label in another script when it stays Latin', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
+    setBundleForTests('ru', { exonyms: { names: 'IO:Diego Garcia=Диего-Гарсия|IL:Jerusalem=Иерусалим', ownScript: true }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ label: 'Diego Garcia', sublabel: 'Chagos Archipelago', countryCode: 'io', kind: 'feature' })).toBeUndefined()
+    expect(displaySublabel({ label: 'Western Wall', sublabel: 'Jerusalem', countryCode: 'il', kind: 'feature' })).toBe('Иерусалим')
+    expect(displaySublabel({ label: 'Pine Gap', sublabel: 'Chagos Archipelago', countryCode: 'io', kind: 'feature' })).toBe('Chagos Archipelago')
+  })
+
   it('leaves out a part in Latin letters under a label in another script, and keeps it under a Latin one', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
     setBundleForTests('ru', { exonyms: { names: 'GB:London=Лондон|US:*Illinois=Иллинойс', ownScript: true }, geo: { ...enGeo, where } })

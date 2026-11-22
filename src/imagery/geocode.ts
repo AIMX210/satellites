@@ -190,7 +190,11 @@ export function displaySublabel(
     if (locale === 'en' || place.kind !== 'feature') return sub
     const all = sub.split(', ')
     const named = all.map((part) => exonym(part, cc, 'where'))
-    return named.every((n, i) => n !== all[i]) ? exonymApostrophes(named.join(msgs(enGeo).parts ?? ', ')) : sub
+    if (named.every((n, i) => n !== all[i])) return exonymApostrophes(named.join(msgs(enGeo).parts ?? ', '))
+    // Under a label in the language's own script, a line left in Latin letters is left out (Диего-Гарсия, not
+    // Диего-Гарсия · Chagos Archipelago), as a where line's Latin parts are.
+    const label = place.label && displayLabel({ label: place.label, countryCode: cc, kind: place.kind })
+    return exonymsOwnScript() && !!label && !LATIN.test(label) && LATIN.test(sub) ? undefined : sub
   }
   const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
   if (locale !== 'en' && cc.toUpperCase() === 'IL') {
