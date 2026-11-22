@@ -198,5 +198,6 @@ export const englishCountryKey = (english: string) => placeKey(english.replace(/
 export function exonymAlternates(query: string, countryName: (cc: string) => string): Alternate[] {
   const src = activeSource(false)
   if (!src || !search) return []
-  return search.exonymSearch(src, query, (cc) => englishCountryKey(countryName(cc)), msgs(enExonyms).countries ? search.countriesTyped() : [])
+  const m = msgs(enExonyms)
+  return search.exonymSearch(src, query, (cc) => englishCountryKey(countryName(cc)), m.countries ? search.countriesTyped() : [], m.home ?? [])
 }

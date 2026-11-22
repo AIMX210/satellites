@@ -89,6 +89,13 @@ describe('exonymSearch', () => {
     expect(find('xyz')).toEqual([])
   })
 
+  it('puts the home country’s names first among those a query only starts, before the cap', () => {
+    const T2 = 'CN:Hainan=Hải Nam;Henan=Hà Nam;Wuhan=Vũ Hán;Hangzhou=Hàng Châu;Hengyang=Hành Dương;Hanzhong=Hán Trung;Hanchuan=Hán Xuyên|VN:Hanoi=Hà Nội'
+    const find = (home: string[]) => exonymSearch(T2, 'Hà N', key, [], home).map((a) => a.key)
+    expect(find([])).not.toContain('hanoi')
+    expect(find(['VN'])[0]).toBe('hanoi')
+  })
+
   it('looks a name two English names share up under both, as one place', () => {
     const r = exonymSearch('UA:Zaporizhzhia=Saporischschja;Zaporizhzhya=Saporischschja;*Zaporizhzhia=Oblast Saporischschja', 'Saporischschja', key)
     expect(r.map((a) => [a.key, a.kind, a.also])).toEqual([

@@ -165,8 +165,10 @@ export function countriesTyped(): { compact: string; cc: string; shown: string }
  * The places `query` stands for in the table `src`, best first, at most MAX_ALTERNATES: the names that are the query
  * (exact), whose later words are all of it (Hồ Chí Minh for Thành phố Hồ Chí Minh, but not exact: London's airports
  * end with London in Persian, and Shahr-e Qods is not Jerusalem), that start with it, or whose later words start with
- * it (3+ letters), each group in the table's order (largest first), and the `countries` named so (each country's
- * offline key from `countryKey`). A name two English names share in one country (the city Kyiv and the list's
+ * it (3+ letters), and the `countries` named so (each country's offline key from `countryKey`). The exact ones come
+ * first, in the table's order (largest first); then the rest, the language's `home` countries' first (Hà N is Hà Nội
+ * before Hà Nam in China, Ки is Київ before Китай), each group in the table's order: the cap must not leave out the
+ * capital at home for the first names the table writes abroad. A name two English names share in one country (the city Kyiv and the list's
  * landmark row for "Kiev" are both Киев) is one place, the larger, looked up under each of them (`also`, at most
  * MAX_ALSO more): the table may write first a spelling the list has no row for (a geocoder's).
  */
@@ -175,6 +177,7 @@ export function exonymSearch(
   query: string,
   countryKey: (cc: string) => string,
   countries: readonly { compact: string; cc: string; shown?: string }[] = [],
+  home: readonly string[] = [],
 ): Alternate[] {
   if (indexed?.src !== src) indexed = { src, typed: typedNames(src) }
   const q = typedKey(query).replace(/ /g, '')
@@ -202,7 +205,8 @@ export function exonymSearch(
     const tier = c.compact === q ? 0 : c.compact.startsWith(q) ? 2 : -1
     if (tier >= 0) hits.push({ a: { key: countryKey(c.cc), cc: c.cc, kind: 'country', exact: tier === 0, shown: c.shown ?? c.compact }, tier, rank: -1, name: c.compact })
   }
-  hits.sort((x, y) => x.tier - y.tier || x.rank - y.rank)
+  const away = (x: (typeof hits)[number]) => Number(!home.includes(x.a.cc))
+  hits.sort((x, y) => (x.tier === 0 || y.tier === 0 ? x.tier - y.tier : away(x) - away(y) || x.tier - y.tier) || x.rank - y.rank)
   const seen = new Set<string>()
   const byName = new Map<string, Alternate>()
   const out: Alternate[] = []
