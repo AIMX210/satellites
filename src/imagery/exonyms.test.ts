@@ -3,7 +3,7 @@ import { tableChunk } from '@/i18n/optionalChunks'
 import { setBundleForTests } from '@/i18n/runtime'
 import enGeo from '@/i18n/en/geo'
 import koExonyms from '@/i18n/ko/exonyms'
-import { ensureExonyms, EXONYM_WAIT_MS, exonym, exonymsReady, parseExonyms } from './exonyms'
+import { ensureExonyms, EXONYM_WAIT_MS, exonym, exonymsReady, parseExonyms, prefetchExonyms } from './exonyms'
 import { displayLabel, displaySublabel } from './geocode'
 
 /** A small German table, in the generated tables' format. */
@@ -96,6 +96,29 @@ describe('exonyms', () => {
       call()
       await vi.advanceTimersByTimeAsync(0)
       expect([waits, exonymsReady(), exonym('Moscow', 'ru', 'label')]).toEqual([3, true, 'Москва'])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('lets the first search wait for a table a prefetch ran out on: only a held wait marks it overdue', async () => {
+    vi.useFakeTimers()
+    try {
+      let arrive: (() => void) | undefined
+      const ns: { names: string; load: () => Promise<void> } = { names: '', load: () => table }
+      const table = new Promise<void>((done) => (arrive = () => ((ns.names = 'RU:Moscow=Москва'), done())))
+      setBundleForTests('ru', { exonyms: ns })
+      let prefetched = false
+      void prefetchExonyms().then(() => (prefetched = true)) // the landing, at idle
+      await vi.advanceTimersByTimeAsync(EXONYM_WAIT_MS + 600)
+      expect(prefetched).toBe(true) // resolves within EXONYM_WAIT_MS all the same
+      let searched = false
+      void ensureExonyms().then(() => (searched = true)) // the first search, the table a moment away
+      await vi.advanceTimersByTimeAsync(900)
+      expect(searched).toBe(false)
+      arrive?.()
+      await vi.advanceTimersByTimeAsync(0)
+      expect([searched, exonym('Moscow', 'ru', 'label')]).toEqual([true, 'Москва'])
     } finally {
       vi.useRealTimers()
     }

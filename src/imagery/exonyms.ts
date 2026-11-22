@@ -10,11 +10,11 @@
  * The names come from the active language's 'exonyms' namespace (src/i18n/en/exonyms.ts gives its format), so each
  * language's table ships with that language only; English has none, and an English page shows every name as it came and
  * downloads nothing for it. A small table is in the language's chunk; a large one (Cyrillic, Persian and Hindi write
- * every name) is a chunk of its own, fetched at idle once the landing is up (ensureExonyms) and awaited by everything
- * that shows a place name first: a search, a pin, a report, a language switch. The search through a table is a chunk of
- * its own too (./exonymSearch.ts), loaded with it, so English carries none of it. A name must never change after it is
- * shown (owner rule), so a table that arrives after a name was shown without it is not applied in that page: the page
- * keeps the names it showed.
+ * every name) is a chunk of its own, fetched at idle once the landing is up (prefetchExonyms) and awaited by everything
+ * that shows a place name first (ensureExonyms): a search, a pin, a report, a language switch. The search through a
+ * table is a chunk of its own too (./exonymSearch.ts), loaded with it, so English carries none of it. A name must never
+ * change after it is shown (owner rule), so a table that arrives after a name was shown without it is not applied in
+ * that page: the page keeps the names it showed.
  *
  * Why by country and by kind: the same English name is many places (London, Ontario is never Londra; Kyiv the city is
  * Київ, Kyiv the oblast's sublabel is Київська область), so a name is looked up in the place's own country, and as what
@@ -135,19 +135,32 @@ let searchLoad: Promise<void> | undefined
 export const EXONYM_WAIT_MS = 3_000
 
 /**
- * Downloads a wait has run out on (a table or a search still pending after EXONYM_WAIT_MS): no later call waits for
- * them again, or a stalled search chunk would hold every search and every pin 3 s; one that arrives is used all the
- * same. A download asked again after a failure is a new one, and is waited for.
+ * Downloads a held wait has run out on (a table or a search still pending EXONYM_WAIT_MS after a search, a pin or a
+ * report began waiting for it): no later call waits for them again, or a stalled search chunk would hold every search
+ * and every pin 3 s; one that arrives is used all the same. A prefetch's time never counts (prefetchExonyms): a table
+ * asked for at idle and still on its way when the first search comes is a moment away, and worth that search's wait
+ * (without it, a Cyrillic query misses the offline list and the page keeps the names as they came). A download asked
+ * again after a failure is a new one, and is waited for.
  */
 const overdue = new WeakSet<Promise<void>>()
 
 /**
- * Load the active language's table if it is a chunk of its own, and the search through it (idempotent, shared by every
- * caller; nothing in English). Never rejects, and resolves within EXONYM_WAIT_MS: a failed load leaves the names as
- * they came, and the next call tries again, until a name has been shown. Neither download's failure reloads the page,
- * Safari's included (src/i18n/optionalChunks.ts: the table's `load` is quiet itself, so a language switch's is too).
+ * Load the active language's table if it is a chunk of its own, and the search through it, for something about to
+ * show a place name: a search, a pin, a report (idempotent, shared by every caller; nothing in English). Never rejects,
+ * and resolves within EXONYM_WAIT_MS: a failed load leaves the names as they came, and the next call tries again,
+ * until a name has been shown. Neither download's failure reloads the page, Safari's included
+ * (src/i18n/optionalChunks.ts: the table's `load` is quiet itself, so a language switch's is too).
  */
-export async function ensureExonyms(): Promise<void> {
+export const ensureExonyms = (): Promise<void> => loadNames(true)
+
+/**
+ * ensureExonyms for what nobody is held up by: the landing at idle, the boot beside a link's engine, the tab's title
+ * (which follows onExonymsReady). The same downloads and the same bound on resolving, but a prefetch that runs out
+ * marks nothing overdue: the first search, pin or report still waits for them, once.
+ */
+export const prefetchExonyms = (): Promise<void> => loadNames(false)
+
+async function loadNames(held: boolean): Promise<void> {
   const m = msgs(enExonyms)
   if (!m.names && !m.load) return
   searchLoad ??= quietImport(SEARCH_CHUNK, () => import('./exonymSearch')).then(
@@ -167,7 +180,7 @@ export async function ensureExonyms(): Promise<void> {
   })
   let timer: ReturnType<typeof setTimeout> | undefined
   const ranOut = new Promise<boolean>((done) => (timer = setTimeout(() => done(true), EXONYM_WAIT_MS)))
-  if (await Promise.race([both.then(() => false), ranOut])) for (const p of downloads) overdue.add(p)
+  if ((await Promise.race([both.then(() => false), ranOut])) && held) for (const p of downloads) overdue.add(p)
   clearTimeout(timer)
 }
 

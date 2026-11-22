@@ -33,7 +33,7 @@ import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/cata
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { msgs, waitBeforeSwitch } from '@/i18n/runtime'
-import { ensureExonyms, ensureTz, needsLinkCountry, resolveLinkCountry } from '@/imagery'
+import { ensureTz, needsLinkCountry, prefetchExonyms, resolveLinkCountry } from '@/imagery'
 import { placeNamesReady } from './namesReady'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
 import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
@@ -195,7 +195,7 @@ export async function boot() {
     // Its report waits for the visitor's place names (runReport, src/imagery/exonyms.ts) and, for a link, the country
     // its name has at its point: fetched now, beside the engine, they are in long before it starts.
     const linked = target.kind === 'q' ? target.place : undefined
-    void ensureExonyms().then(() => (linked && needsLinkCountry(linked) ? resolveLinkCountry(linked) : undefined))
+    void prefetchExonyms().then(() => (linked && needsLinkCountry(linked) ? resolveLinkCountry(linked) : undefined))
   }
   startCatalog()
   const fonts = loadFirstFonts()
@@ -248,7 +248,7 @@ function warmAfterLanding() {
   afterLandingEntrance(() => {
     void loadEngine().then(warmPassWorkers, () => undefined)
     void ensureTz()
-    void ensureExonyms()
+    void prefetchExonyms()
     loadNamesWhenIdle()
   })
 }

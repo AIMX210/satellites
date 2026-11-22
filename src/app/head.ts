@@ -27,7 +27,7 @@
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { currentLocale, msgs, useLocaleStore } from '@/i18n/runtime'
-import { displayLabel, ensureExonyms, exonymsReady, linkedForName, onExonymsReady } from '@/imagery'
+import { displayLabel, exonymsReady, linkedForName, onExonymsReady, prefetchExonyms } from '@/imagery'
 import { bootPlace, isPagePlace, pagePlace, pageTitle, type NamedSpot, type PagePlace } from '@/lib/placePage'
 import { curatedId } from '@/ui/landing/places'
 import { useApp, type Phase } from '@/state/store'
@@ -115,7 +115,7 @@ export function installHeadSync(): void {
     const head = headFor(st.phase, st.place, page, words, boot)
     apply(head)
     // Not named yet: told when the names are in or kept out (the table this asks for, if nothing has yet).
-    if (head.title === undefined) void ensureExonyms()
+    if (head.title === undefined) void prefetchExonyms()
   }
   sync()
   useApp.subscribe((st, prev) => {
