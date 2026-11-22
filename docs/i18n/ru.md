@@ -1023,6 +1023,9 @@ Strategies, in order:
 5. Never truncate a word or invent an abbreviation. Units, month and weekday abbreviations, «восх.» / «нисх.», «дн.»
    and «ИК» are the only abbreviations. A count that does not fit keeps its full noun and the layout is checked; it is
    never «спутн.».
+   The browser's country names are held to it too: CLDR's «о-ва», «о-в» and «Св.» are written out wherever a country
+   is named (where lines, country rows, headlines): «Сейшельские Острова», «Остров Мэн», «Остров Святой Елены»,
+   «Фарерские острова» (`spelledOut` in src/imagery/localPlaces.ts).
 
 | English | ru | Characters | Note |
 |---|---|---|---|

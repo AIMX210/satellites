@@ -204,7 +204,28 @@ export function shownCountryName(cc: string, locale: Locale): string {
   const pinned = PINNED[cc.toUpperCase()]?.[locale]
   if (pinned) return pinned
   const short = SHORT_NAMES[cc.toUpperCase()]
-  return short === true || short?.includes(locale) ? regionName(cc, locale, 'short') : regionName(cc, locale, 'long')
+  const style = short === true || short?.includes(locale) ? 'short' : 'long'
+  return spelledOut(regionName(cc, locale, style), cc, locale)
+}
+
+/** The states whose Russian name ends in Острова, capitalised as their official names are (МИД России). */
+const ISLAND_STATES = new Set(['MH', 'SB', 'SC'])
+
+/**
+ * Russian CLDR abbreviates islands (Сейшельские о-ва, о-в Мэн, о-в Св. Елены; Chromium's Фолклендские (Мальвинские)
+ * о-ва), and ru.md (§ never invent an abbreviation) allows none in running text: a where line, a country row and a
+ * headline name them in full. The name's first word takes a capital (Острова Кука, Остров Мэн), and so do the island
+ * states' (Сейшельские Острова, Маршалловы Острова, Соломоновы Острова); other islands keep the lower case
+ * (Фарерские острова). Display only, as the rest of shownCountryName: the search finds the browser's names too.
+ */
+function spelledOut(name: string, cc: string, locale: Locale): string {
+  if (locale !== 'ru' || !/о-в|Св\./.test(name)) return name
+  const islands = ISLAND_STATES.has(cc.toUpperCase()) ? 'Острова' : 'острова'
+  const full = name
+    .replace(/(^|[\s(])о-ва(?=$|[\s)])/g, `$1${islands}`)
+    .replace(/(^|[\s(])о-в(?=$|[\s)])/g, '$1остров')
+    .replace(/(^|[\s(])Св\.\s/g, '$1Святой ')
+  return full.charAt(0).toUpperCase() + full.slice(1)
 }
 
 /**

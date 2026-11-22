@@ -39,3 +39,24 @@ it('names a country row as its country when the browser’s English name for it 
   setBundleForTests('en', null)
   expect(displayLabel(falklands)).toBe('Falkland Islands')
 })
+
+it('writes out the islands Russian CLDR abbreviates, in every country name the page shows', async () => {
+  const { shownCountryName } = await import('./localPlaces')
+  const codes = ['FK', 'SC', 'MH', 'SB', 'CK', 'IM', 'SH', 'FO', 'VG', 'UM']
+  const names = Object.fromEntries(codes.map((cc) => [cc, shownCountryName(cc, 'ru')]))
+  expect(names).toMatchObject({
+    SC: 'Сейшельские Острова',
+    MH: 'Маршалловы Острова',
+    SB: 'Соломоновы Острова',
+    CK: 'Острова Кука',
+    IM: 'Остров Мэн',
+    SH: 'Остров Святой Елены',
+    FO: 'Фарерские острова',
+    VG: 'Виргинские острова (Великобритания)',
+    UM: 'Внешние малые острова (США)',
+  })
+  expect(names.FK).toMatch(/^Фолклендские (\(Мальвинские\) )?острова$/)
+  for (let a = 65; a <= 90; a++)
+    for (let b = 65; b <= 90; b++) expect(shownCountryName(String.fromCharCode(a, b), 'ru')).not.toMatch(/о-в|Св\./)
+  expect(shownCountryName('SC', 'uk')).not.toMatch(/Острова/) // Russian only
+})
