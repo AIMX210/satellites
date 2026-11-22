@@ -1335,7 +1335,7 @@ Found while writing this guide, for the coordinator (none is a copy change):
    sankt-peterburg, Новосибирск → novosibirsk, ё → e, й → y, х → kh, ц → ts, ч → ch, ш → sh, щ → shch, ы → y, ь ъ
    dropped, э → e, ю → yu, я → ya). About 0.3 kB.
 3. **Russian names for places** (Москва for "Moscow", Киев for "Kyiv"): done (2026-11-22). The generated table
-   (`scripts/build-exonyms.ts`, ~860 names, 12 kB compressed, a chunk of its own) names them, and answers Cyrillic
+   (`scripts/build-exonyms.ts`, ~1,200 names, 16.4 kB compressed, a chunk of its own) names them, and answers Cyrillic
    searches offline in place of item 2's transliteration: «Москва» finds Moscow, «Киев» Kyiv (docs/I18N.md, Place
    names).
 4. **Street words** for the analytics backstop (`src/lib/telemetry.ts`): §8.
