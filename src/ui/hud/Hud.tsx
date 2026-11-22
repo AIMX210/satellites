@@ -303,20 +303,23 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
  * Both keep their boxes: the sun is hidden, not removed, and the scene time is as wide on either line (the lines are
  * right-aligned in one fixed box), so each is still measured as the screen or the words change, nothing else in the
  * corner moves and nothing flips back and forth (the top left's two lines set the top inset either way). Written to
- * the DOM, not React state: the lines remount after a replay and on boot, which the observers below see.
+ * the DOM, not React state: the lines remount after a replay and on boot, which the observers below see. The scene
+ * time's move changes the corner's height, so from the observer it waits for the next frame (layoutFlag).
  */
 function useCrowdedLine(topLeft: RefObject<HTMLDivElement | null>, topRight: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const tl = topLeft.current
     const tr = topRight.current
     if (!tl || !tr || typeof ResizeObserver === 'undefined') return
+    const flag = layoutFlag()
     const watched = new WeakSet<Element>()
     const watch = (el: Element) => {
       if (watched.has(el)) return
       watched.add(el)
       ro.observe(el)
     }
-    const check = () => {
+    const check = (inObserver: boolean) => {
+      flag.drop()
       const about = tl.querySelector<HTMLElement>(`.${s.aboutLine}`)
       // One or the other: the scene time takes the sun line's place during a replay.
       const line = tr.querySelector<HTMLElement>(`.${s.sunLine}, .${s.sceneLine}`)
@@ -329,21 +332,23 @@ function useCrowdedLine(topLeft: RefObject<HTMLDivElement | null>, topRight: Ref
       // Right to left the corners swap: the language line is at the right, the sun or scene at the left.
       const rtl = getComputedStyle(tr).direction === 'rtl'
       const gap = rtl ? a.left - b.right : b.left - a.right
-      line.toggleAttribute('data-crowded', gap < MIN_ROW_GAP)
+      flag.set(line, 'data-crowded', gap < MIN_ROW_GAP, inObserver)
     }
-    const ro = new ResizeObserver(check)
+    const now = () => check(false)
+    const ro = new ResizeObserver(() => check(true))
     ro.observe(tl)
     ro.observe(tr)
     // A remounted line (the boot entrance, the sun's return after a replay) is a new element.
-    const mo = new MutationObserver(check)
+    const mo = new MutationObserver(now)
     mo.observe(tr, { childList: true })
     mo.observe(tl, { childList: true })
-    window.addEventListener('resize', check)
-    check()
+    window.addEventListener('resize', now)
+    now()
     return () => {
       ro.disconnect()
       mo.disconnect()
-      window.removeEventListener('resize', check)
+      flag.drop()
+      window.removeEventListener('resize', now)
     }
   }, [topLeft, topRight])
 }
@@ -361,12 +366,14 @@ function useCrowdedLine(topLeft: RefObject<HTMLDivElement | null>, topRight: Ref
  * markup. The row's width is the About link's plus the language's as it sits in the row (its hairline included, read
  * while it is in the row), so it is the same on either layout and nothing flips back and forth. Right to left the
  * corners and the dock swap: the row is at the right, a panel's edge is its left inset. Written to the DOM like
- * useCrowdedLine: the line remounts on boot, which the observers see.
+ * useCrowdedLine: the line remounts on boot, which the observers see. The step changes the corner's height, so from an
+ * observer, or from the insets the panels publish from theirs, it waits for the next frame (layoutFlag).
  */
 function useLanguageRoom(topLeft: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const tl = topLeft.current
     if (!tl || typeof ResizeObserver === 'undefined') return
+    const flag = layoutFlag()
     // The switcher's hairline and its margins: in the row, it is what the trigger has beyond the name.
     let rule = 0
     const watched = new WeakSet<Element>()
@@ -375,7 +382,8 @@ function useLanguageRoom(topLeft: RefObject<HTMLDivElement | null>) {
       watched.add(el)
       ro.observe(el)
     }
-    const check = () => {
+    const check = (inObserver: boolean) => {
+      flag.drop()
       const row = tl.querySelector<HTMLElement>(`.${s.aboutLine}`)
       const trigger = row?.querySelector<HTMLElement>('[aria-haspopup="menu"]')
       const name = trigger?.querySelector<HTMLElement>('[lang]')
@@ -394,26 +402,59 @@ function useLanguageRoom(topLeft: RefObject<HTMLDivElement | null>) {
       const fits = rtl
         ? left <= 0 || r.right - need - PANEL_GAP >= left - PANEL_CLEAR
         : right <= 0 || r.left + need + PANEL_GAP <= window.innerWidth - right + PANEL_CLEAR
-      row.toggleAttribute('data-lang-below', !fits)
+      flag.set(row, 'data-lang-below', !fits, inObserver)
     }
-    const ro = new ResizeObserver(check)
+    const now = () => check(false)
+    const ro = new ResizeObserver(() => check(true))
     ro.observe(tl)
-    // A panel that arrives, leaves or moves publishes new insets.
+    // A panel that arrives, leaves or moves publishes new insets, mostly from its own ResizeObserver (results/shell.ts
+    // useInsets): taken as from inside one.
     const unsub = useApp.subscribe((st, prev) => {
-      if (st.uiInsets.left !== prev.uiInsets.left || st.uiInsets.right !== prev.uiInsets.right) check()
+      if (st.uiInsets.left !== prev.uiInsets.left || st.uiInsets.right !== prev.uiInsets.right) check(true)
     })
     // A remounted line (the boot entrance) is a new element.
-    const mo = new MutationObserver(check)
+    const mo = new MutationObserver(now)
     mo.observe(tl, { childList: true })
-    window.addEventListener('resize', check)
-    check()
+    window.addEventListener('resize', now)
+    now()
     return () => {
       ro.disconnect()
       mo.disconnect()
       unsub()
-      window.removeEventListener('resize', check)
+      flag.drop()
+      window.removeEventListener('resize', now)
     }
   }, [topLeft])
+}
+
+/**
+ * Sets an attribute the two hooks above decide by measuring, only when the decision changes. Either change resizes a
+ * top corner, which ResizeObservers watch (useTopInset's, those hooks' own). Made inside an observer's delivery (or a
+ * store callback one runs), that resize cannot be delivered in the same frame: the browser ends it on "ResizeObserver
+ * loop completed with undelivered notifications", a window error that telemetry sends (src/app/telemetry.ts; it
+ * came on the landscape panel's arrival in English at 812 × 375, and on a language switch beside the panel or during
+ * a replay). So there the write waits for the next frame, before its layout, which the observers then see like any
+ * other change; the frame already laid out is painted as it was, one frame of the old layout (the same rule as
+ * Sheet.tsx's footer padding, R3-12). Elsewhere it is written at once: at mount (before the first paint), from the
+ * MutationObserver (a line just remounted) and on a window resize (before the frame's layout). A newer check drops a
+ * write still waiting: the latest measurement decides.
+ */
+function layoutFlag() {
+  let frame = 0
+  const drop = () => {
+    cancelAnimationFrame(frame)
+    frame = 0
+  }
+  const set = (el: Element, name: string, on: boolean, inObserver: boolean) => {
+    if (el.hasAttribute(name) === on) return
+    const write = () => {
+      frame = 0
+      el.toggleAttribute(name, on)
+    }
+    if (inObserver) frame = requestAnimationFrame(write)
+    else write()
+  }
+  return { set, drop }
 }
 
 /** Publish store.uiInsets.top = the lower of the two top readouts' bottoms + TOP_GAP. */
