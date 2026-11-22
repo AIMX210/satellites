@@ -207,7 +207,17 @@
   color: var(--bone-3);
   white-space: nowrap;
 }
+/* The middle may wrap (a translated "In view 7 min 15 s" beside "Closest" is wider than a 390 px phone leaves it),
+   between its two groups only, centred, the clocks staying on the first line. */
 .legendMid {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 3px 6px;
+  min-width: 0;
+}
+.legendItem {
   display: inline-flex;
   align-items: center;
   gap: 6px;

@@ -177,13 +177,16 @@ export function ReplayControls({ pass }: { pass: Pass }) {
       <Scrubber pass={pass} refs={refs} dragging={dragging} />
       <div className={s.legend}>
         <span>{fmtUtcTime(w[0])}</span>
+        {/* Each key with its words, as one group: on a narrow phone the middle wraps between the groups */}
         <span className={s.legendMid}>
           {inField ? (
-            <>
+            <span className={s.legendItem}>
               <i className={s.fieldKey} /> {m.inView(fmtDuration(pass.tEnd - pass.tStart))}
-            </>
+            </span>
           ) : null}
-          <i className={s.closestKey} /> {m.closest}
+          <span className={s.legendItem}>
+            <i className={s.closestKey} /> {m.closest}
+          </span>
         </span>
         <span>{fmtUtcTime(w[1])}</span>
       </div>
