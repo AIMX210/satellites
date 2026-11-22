@@ -176,9 +176,9 @@ export async function boot() {
   mark('boot')
   installHeadSync()
   // A switch to a language with place names names a link's place on screen in it too, as opening the link there would.
-  waitBeforeSwitch(() => {
+  waitBeforeSwitch((locale) => {
     const place = useApp.getState().place
-    return place && needsLinkCountry(place, true) ? resolveLinkCountry(place) : Promise.resolve()
+    return place && needsLinkCountry(place, locale) ? resolveLinkCountry(place) : Promise.resolve()
   })
   const target = readUrlTarget(location.search, Date.now(), bootPlace())
   // A place link that carries `tl` opens the time-lapse over its results (ui/results/TimelapseEntry.tsx).

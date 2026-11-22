@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setBundleForTests } from '@/i18n/runtime'
 import deNames from '@/i18n/de/exonyms.gen'
 import itNames from '@/i18n/it/exonyms.gen'
+import koExonyms from '@/i18n/ko/exonyms'
+import ruNames from '@/i18n/ru/exonyms.gen'
 import type { Place } from '@/types'
 import { displayLabel } from './geocode'
 import { ensureExonyms } from './exonyms'
@@ -58,7 +60,7 @@ describe('a linked place’s name', () => {
   it('is found, on an English page, for a switch to a language with names (the place on screen is named in it)', async () => {
     serveFiles()
     const p = link('Kyiv', 50.454, 30.524)
-    expect([needsLinkCountry(p), needsLinkCountry(p, true)]).toEqual([false, true])
+    expect([needsLinkCountry(p), needsLinkCountry(p, 'de')]).toEqual([false, true])
     await resolveLinkCountry(p)
     setBundleForTests('de', { exonyms: { names: deNames, countries: true } })
     await ensureExonyms()
@@ -74,7 +76,7 @@ describe('a linked place’s name', () => {
     })
     const p = link('Moscow', 55.756, 37.617)
     expect(displayLabel(linkedForName(p))).toBe('Moscow') // on screen in English
-    expect(needsLinkCountry(p, true)).toBe(true) // a switch still looks its country up
+    expect(needsLinkCountry(p, 'de')).toBe(true) // a switch still looks its country up
     const lookup = resolveLinkCountry(p) // the switch's, stalled
     // The switch stopped waiting and shows the page in German: the name, without its country.
     setBundleForTests('de', { exonyms: { names: deNames, countries: true } })
@@ -83,5 +85,30 @@ describe('a linked place’s name', () => {
     for (const done of held) done()
     await lookup
     expect(displayLabel(linkedForName(p))).toBe('Moscow') // not Moskau
+    // A language that has not shown it yet names it as opening the link there would; German keeps its own.
+    setBundleForTests('it', { exonyms: { names: itNames, countries: true } })
+    expect([needsLinkCountry(p, 'it'), displayLabel(linkedForName(p))]).toEqual([false, 'Mosca'])
+    setBundleForTests('de', { exonyms: { names: deNames, countries: true } })
+    expect(displayLabel(linkedForName(p))).toBe('Moscow')
+  })
+
+  it('is still found for a switch after Korean showed it (its names need no country: none looked up)', async () => {
+    serveFiles()
+    const p = link('Moscow', 55.751, 37.618)
+    setBundleForTests('ko', { exonyms: koExonyms })
+    expect(displayLabel(linkedForName(p))).toBe('Moscow') // a switch from English to Korean waits for nothing
+    expect(needsLinkCountry(p, 'ru')).toBe(true) // then one to Russian looks its country up
+    await resolveLinkCountry(p)
+    setBundleForTests('ru', { exonyms: { names: ruNames, countries: true } })
+    expect(displayLabel(linkedForName(p))).toBe('Москва')
+  })
+
+  it('is not waited for by a switch back to a language that showed it without its country', async () => {
+    vi.stubGlobal('fetch', () => new Promise<Response>(() => {}))
+    const p = link('Kharkiv', 49.993, 36.231)
+    setBundleForTests('ru', { exonyms: { names: ruNames, countries: true } })
+    expect(displayLabel(linkedForName(p))).toBe('Kharkiv') // shown before its lookup answered (it never does)
+    setBundleForTests('en', null)
+    expect([needsLinkCountry(p, 'ru'), needsLinkCountry(p, 'uk')]).toEqual([false, true])
   })
 })
