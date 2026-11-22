@@ -847,6 +847,20 @@ function waitForCamera(started: number, flightBefore: number, signal: AbortSigna
   })
 }
 
+/**
+ * The results panel's code could not be loaded (Main's chunk request, after its retries): the search has nowhere to
+ * show itself, so it ends in the fault notice instead of a globe with nothing beside it. The place stays in the
+ * store, so "Try again" runs it again, and the panel's chunk is asked for anew as the phase turns to computing.
+ */
+export function failPanel(cause: unknown) {
+  const st = useApp.getState()
+  if (st.phase !== 'computing' && st.phase !== 'results') return
+  inflight?.abort()
+  inflight = null
+  console.error(cause)
+  st.setPhase('error', COMPUTE_FAULT, `results chunk: ${causeOf(cause)}`)
+}
+
 export function resetToLanding() {
   inflight?.abort()
   inflight = null
