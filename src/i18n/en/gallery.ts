@@ -80,7 +80,8 @@ export default ns('gallery', {
    */
   lead: LEAD,
   /**
-   * A slide's accessible name. `lead`: why it leads (cover only); `day` "Sun 1 Nov" and `time` "16:14" at the place;
+   * A slide's accessible name. `lead`: why it leads (cover only); `day` "Sunday 1 November" (the day in words, as
+   * screen readers say it) and `time` "16:14" at the place;
    * `photo`: its place among the window's photos (absent for the last clear look, which is not one of them).
    */
   slideLabel: (lead: CoverLead | undefined, sat: string, day: string, time: string, photo?: { k: number; n: number }) =>

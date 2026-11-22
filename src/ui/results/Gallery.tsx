@@ -32,7 +32,7 @@ import { warmPhoto } from './images'
 import { GALLERY_NEAR } from './warm'
 import { filterCounts, filterPhotos, cardUrl, cropWidthKm, type Photo, type PhotoFilter } from './lib/photos'
 import { isGeoFrame, pixelLabel, productLabel } from './lib/captures'
-import { fmtLocalDay, fmtLocalTime, zoneAbbr } from './lib/time'
+import { fmtLocalDay, fmtLocalTime, fmtSpokenDay, zoneAbbr } from './lib/time'
 import type { ResultsModel } from './model'
 import s from './Gallery.module.css'
 
@@ -531,7 +531,10 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
   const t = pass ? model.times(pass) : { day: fmtLocalDay(capture.datetime, tz), time: fmtLocalTime(capture.datetime, tz), zone: zoneAbbr(capture.datetime, tz) }
   const when = pass?.tClosest ?? capture.datetime
   const lead = cover ? m.lead[cover] : undefined
-  const label = m.slideLabel(cover, meta.name, t.day, t.time, pass && photoNo ? { k: photoNo, n: photoCount } : undefined)
+  // Accessible names say the day in words ("Sunday 1 November"), as the pass rows' do: a short day can be all digits
+  // ("CN, 1/11"), which a screen reader reads as numbers.
+  const spokenDay = fmtSpokenDay(pass?.tClosest ?? capture.datetime, tz)
+  const label = m.slideLabel(cover, meta.name, spokenDay, t.time, pass && photoNo ? { k: photoNo, n: photoCount } : undefined)
   void total
   const replay = !detail && pass && onReplay ? () => onReplay(pass) : undefined
   const frameRef = useRef<HTMLDivElement>(null)
@@ -600,7 +603,7 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
           </span>
         </span>
         {replay ? (
-          <button type="button" className={s.mReplay} onClick={replay} tabIndex={current ? 0 : -1} aria-label={m.replayLabel(meta.name, t.day, t.time)}>
+          <button type="button" className={s.mReplay} onClick={replay} tabIndex={current ? 0 : -1} aria-label={m.replayLabel(meta.name, spokenDay, t.time)}>
             <Glyph name="play" size={10} />
             <span className={s.mReplayText}>
               {/* The message's strong part is the tablet-only rest of the phrase: "Replay" + <span> this pass</span>. */}
@@ -615,7 +618,7 @@ const Slide = memo(function Slide({ photo, model, context, mobile, index, total,
             className={s.mReplay}
             onClick={onView}
             tabIndex={current ? 0 : -1}
-            aria-label={(cover === 'lastClear' ? m.viewLabel.lastClear : m.viewLabel.photo)(meta.name, t.day, t.time)}
+            aria-label={(cover === 'lastClear' ? m.viewLabel.lastClear : m.viewLabel.photo)(meta.name, spokenDay, t.time)}
           >
             <Mark name="expand" size={11} />
             <span className={s.mReplayText}>{m.view}</span>
