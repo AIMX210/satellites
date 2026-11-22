@@ -76,6 +76,23 @@ describe('exonyms', () => {
     }
   })
 
+  it('keeps a failed table download from reloading the page while it runs, Safari included', async () => {
+    const shared = globalThis as { [k: symbol]: Set<string> | undefined }
+    const quiet = () => [...(shared[Symbol.for('watched.quietChunks')] ?? [])]
+    let fail: ((err: Error) => void) | undefined
+    const ns: { names: string; load: () => Promise<void> } = {
+      names: '',
+      load: () => new Promise<void>((_, no) => (fail = no)),
+    }
+    setBundleForTests('ru', { exonyms: ns })
+    const done = ensureExonyms()
+    expect(quiet()).toEqual(expect.arrayContaining(['exonyms.gen-', 'exonymSearch-']))
+    fail?.(new TypeError('Importing a module script failed.'))
+    await done
+    expect(quiet()).not.toContain('exonyms.gen-')
+    expect(quiet()).not.toContain('exonymSearch-')
+  })
+
   it('names nothing in English, or in a language without a table', () => {
     expect(exonym('Munich', 'de', 'label')).toBe('Munich')
     setBundleForTests('fr', {})

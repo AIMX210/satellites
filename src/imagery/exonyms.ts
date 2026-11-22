@@ -117,6 +117,23 @@ let searchLoad: Promise<void> | undefined
 export const EXONYM_WAIT_MS = 3_000
 
 /**
+ * While a table or its search downloads, src/lib/staleBuild.ts lets a failed import through without reloading the page
+ * (the names show as they came): it reads these chunk names in a set shared by Symbol.for, as the share card's measure
+ * does. The chunk's name alone is not enough: Safari's error names no module.
+ */
+const QUIET = Symbol.for('watched.quietChunks')
+const CHUNKS = ['exonyms.gen-', 'exonymSearch-']
+let downloads = 0
+function quiet(step: 1 | -1) {
+  const set = ((globalThis as { [QUIET]?: Set<string> })[QUIET] ??= new Set())
+  downloads += step
+  for (const name of CHUNKS) {
+    if (downloads > 0) set.add(name)
+    else set.delete(name)
+  }
+}
+
+/**
  * Load the active language's table if it is a chunk of its own, and the search through it (idempotent, shared by every
  * caller; nothing in English). Never rejects, and resolves within EXONYM_WAIT_MS: a failed load leaves the names as
  * they came, and the next call tries again, until a name has been shown.
@@ -131,6 +148,8 @@ export async function ensureExonyms(): Promise<void> {
   const both = Promise.all([exonymsReady() ? undefined : m.load?.(), searchLoad]).catch(() => {
     /* offline or a stale build: names as they came */
   })
+  quiet(1)
+  void both.finally(() => quiet(-1))
   let timer: ReturnType<typeof setTimeout> | undefined
   await Promise.race([both, new Promise<void>((done) => (timer = setTimeout(done, EXONYM_WAIT_MS)))])
   clearTimeout(timer)
