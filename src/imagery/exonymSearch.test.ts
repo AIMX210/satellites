@@ -19,7 +19,7 @@ import ruNames from '@/i18n/ru/exonyms.gen'
 import faNames from '@/i18n/fa/exonyms.gen'
 import hiNames from '@/i18n/hi/exonyms.gen'
 import { exonymSearch, typedKey } from './exonymSearch'
-import { displayLabel, searchPlaces } from './geocode'
+import { displayLabel, reversePlace, searchPlaces } from './geocode'
 import { ensureExonyms, exonymAlternates, exonymHome } from './exonyms'
 import { countryName, searchLocal } from './localPlaces'
 
@@ -178,6 +178,28 @@ describe('searching in the visitor’s own names (real data)', () => {
     const delhi = (await searchPlaces('नई दिल्ली'))[0]
     expect(delhi).toMatchObject({ label: 'New Delhi', countryCode: 'in' })
     expect(displayLabel(delhi)).toBe('नई दिल्ली')
+  })
+
+  it('shows nothing of a search or a pin before the table is in, so its names never change once shown', async () => {
+    serveFiles()
+    let arrive: (() => void) | undefined
+    const ns: { names: string; countries: boolean; load: () => Promise<void> } = {
+      names: '',
+      countries: true,
+      load: () => new Promise<void>((done) => (arrive = () => ((ns.names = ruNames), done()))),
+    }
+    setBundleForTests('ru', { exonyms: ns })
+    let found: Awaited<ReturnType<typeof searchPlaces>> | undefined
+    let pinned: Awaited<ReturnType<typeof reversePlace>> | undefined
+    const search = searchPlaces('Москва').then((r) => (found = r))
+    const pin = reversePlace(55.756, 37.617).then((p) => (pinned = p))
+    await vi.waitFor(() => expect(arrive).toBeDefined())
+    await new Promise((r) => setTimeout(r, 50))
+    expect([found, pinned]).toEqual([undefined, undefined])
+    arrive?.()
+    await Promise.all([search, pin])
+    expect(displayLabel(found![0])).toBe('Москва')
+    expect(displayLabel(pinned!)).toBe('Москва')
   })
 
   it('finds what the native review typed (2026-11-22), offline and first', async () => {

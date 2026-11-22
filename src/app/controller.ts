@@ -33,7 +33,8 @@ import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/cata
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { msgs, waitBeforeSwitch } from '@/i18n/runtime'
-import { ensureExonyms, ensureTz, exonymsReady, needsLinkCountry, resolveLinkCountry } from '@/imagery'
+import { ensureExonyms, ensureTz, needsLinkCountry, resolveLinkCountry } from '@/imagery'
+import { placeNamesReady } from './namesReady'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
 import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
 import { installHeadSync } from './head'
@@ -400,8 +401,7 @@ export async function runReport(place: Place, opts: RunOpts = {}) {
   // (src/imagery/exonyms.ts). Its table is in by now (the search, the pin and the link wait for it), unless a language's
   // table is still on its way: then the search waits for it, rather than show a name that changes. A link's place is
   // named in the country the offline list gives its name at its point (imagery resolveLinkCountry, begun at boot).
-  if (!exonymsReady()) await ensureExonyms()
-  if (needsLinkCountry(place)) await resolveLinkCountry(place)
+  await placeNamesReady(place)
   mark('run-report')
   // The visitor's own search (or the late share itself, already answered): a pending share no longer opens.
   lateShare.cancel()
