@@ -1208,7 +1208,8 @@ Assembly's resolution 68/262, and says nothing about it in copy.
 - Places: «Москва», «Россия», «Нидерланды», «Подмосковье», «Сочи», «Альпы», «Waterloo», «Palm Jumeirah», «Тихий
   океан», «55.75, 37.62», a 48-character label with «…», «Washington, D.C.» (ends on a full stop).
 - Searches: «Палестина» and «Нидерланды» find the country first (the offline list calls them Palestinian Territory and
-  The Netherlands), «Запорожье» lists the city once (two villages of that name in its oblast read the same).
+  The Netherlands), «Запорожье» lists the city once (two villages of that name in its oblast read the same), offline
+  at every letter typed.
 - Satellites: «ISS (ZARYA)» (crewed), «NORAD 60989», a nameless satellite, «SuperView Neo-1 01» (length), a two-name
   radar list and «A, B и ещё 7».
 - Counts: 0, 1, 2, 4, 5, 11, 12, 14, 21, 22, 25, 101, 111, 401, 421, 1 715.

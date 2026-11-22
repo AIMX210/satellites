@@ -1116,8 +1116,8 @@ browser to English, not Ukrainian).
 - Counts: 0, 1, 2, 4, 5, 11, 12, 14, 21, 22, 25, 101, 111, 401, 421, 1 715.
 - Searches typed in Cyrillic: «Київ», «Ки» (prefix), «Харків», «Запоріжжя», «Хмельницький», «Ужгород», «Сімферополь»,
   «Севастополь» (must answer from the offline list, with Ukrainian names and «Україна»). «Запоріжжя» lists the city
-  once (the villages of that name in its oblast read the same, so they are not listed), and «Палестина» finds the
-  country first, named as its where line names it.
+  once (the villages of that name in its oblast read the same, so they are not listed), offline at every letter
+  typed, and «Палестина» finds the country first, named as its where line names it.
 
 ---
 
