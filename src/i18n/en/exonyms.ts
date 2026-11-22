@@ -56,6 +56,11 @@ export interface ExonymsNamespace {
    */
   ownScript?: boolean
   /**
+   * The language writes the typographic apostrophe in every name (Italian: L’Aquila, Reggio nell’Emilia, it.md §0), so
+   * a place name shown as the data writes it has its ' shown as ’ (display only, like the table's names).
+   */
+  apostrophes?: boolean
+  /**
    * Areas the language's readers hold to be their own country's where the place data files places under another (the
    * Paracel and Spratly Islands, for Vietnamese readers: docs/i18n/vi.md §8), as [south, west, north, east] in degrees:
    * a place there that the data puts in a country other than the language's `home` shows no where line, as the

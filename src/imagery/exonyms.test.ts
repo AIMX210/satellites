@@ -153,6 +153,15 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'Kyiv', sublabel: 'Kyiv City, Kyiv, Ukraine', countryCode: 'ua' })).toBe('місто Київ, Україна')
   })
 
+  it('shows the data’s apostrophe as Italian writes it, in the label and the where line', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
+    setBundleForTests('it', { exonyms: { names: 'IT:Rome=Roma', apostrophes: true }, geo: { ...enGeo, where } })
+    expect(displayLabel({ label: "L'Aquila", countryCode: 'it' })).toBe('L’Aquila')
+    expect(displaySublabel({ label: "Reggio nell'Emilia", sublabel: "Reggio nell'Emilia, Emilia-Romagna, Italy", countryCode: 'it' })).toBe('Reggio nell’Emilia, Emilia-Romagna, Italia')
+    setBundleForTests('en', null)
+    expect(displayLabel({ label: "L'Aquila", countryCode: 'it' })).toBe("L'Aquila")
+  })
+
   it('names Israel’s region for the West Bank as the West Bank, with no country after it', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
     setBundleForTests('de', { exonyms: { names: 'PS:*West Bank=Westjordanland;*Gaza Strip=Gazastreifen' }, geo: { ...enGeo, where } })

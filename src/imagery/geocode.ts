@@ -33,6 +33,7 @@ import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
 import {
   englishCountryKey,
   ensureExonyms,
+  exonymApostrophes,
   exonym,
   exonymAlternates,
   exonymContested,
@@ -102,21 +103,21 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
 
 /**
  * A place's name as shown to the visitor: the name the visitor's language gives that town, region or feature in that
- * country (./exonyms.ts: München, Київ; a region as a region, `kind`), else, for a country in a language whose table says so, the browser's name for it
- * (Германия for Germany, as the where line names it), else its label as it came. In English, the label itself. Read
- * at call time, as displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups
- * send.
+ * country (./exonyms.ts: München, Київ; a region as a region, `kind`), else, for a country in a language whose table
+ * says so, the browser's name for it (Германия for Germany, as the where line names it), else its label as it came, in
+ * the language's apostrophe (Italian: L’Aquila, exonymApostrophes). In English, the label itself. Read at call time, as
+ * displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups send.
  */
 export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'>): string {
   const bank = place.kind === 'region' ? westBank(place.label, place.countryCode) : undefined
   if (bank) return bank
   const shown = exonym(place.label, place.countryCode, place.kind ?? 'label')
   const cc = place.countryCode
-  if (shown !== place.label || !cc || !namesCountries()) return shown
+  if (shown !== place.label || !cc || !namesCountries()) return exonymApostrophes(shown)
   const key = placeKey(place.label)
-  if (key !== englishCountryKey(countryName(cc)) && key !== placeKey(shownCountryName(cc, 'en'))) return shown
+  if (key !== englishCountryKey(countryName(cc)) && key !== placeKey(shownCountryName(cc, 'en'))) return exonymApostrophes(shown)
   const local = shownCountryName(cc, currentLocale())
-  return local.toUpperCase() === cc.toUpperCase() ? shown : local
+  return local.toUpperCase() === cc.toUpperCase() ? exonymApostrophes(shown) : local
 }
 
 /**
@@ -217,7 +218,7 @@ export function displaySublabel(
   const asCame = parts?.join(', ') === rest
   const named = parts?.length ? parts.join(asCame ? ', ' : (msgs(enGeo).parts ?? ', ')) : undefined
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
-  return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
+  return msgs(enGeo).where(named && exonymApostrophes(named), shown.toUpperCase() === cc.toUpperCase() ? short : shown)
 }
 
 /** Names as a list in the visitor's language ("Francia e Italia"), or joined by "/" where the browser has no lists. */

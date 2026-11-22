@@ -176,6 +176,12 @@ export function exonymContested(lat: number, lon: number, cc: string): boolean {
   return m.contested.some(([s, w, n, e]) => lat >= s && lat <= n && lon >= w && lon <= e)
 }
 
+/**
+ * `name` with the data's typewriter apostrophe as the active language writes it (`apostrophes`: Italian's ’, it.md §0:
+ * L’Aquila, Reggio nell’Emilia, for the thousands of names the table does not rewrite), or as it is.
+ */
+export const exonymApostrophes = (name: string): string => (msgs(enExonyms).apostrophes ? name.replace(/'/g, '’') : name)
+
 /** Does the active language leave a where line's Latin parts out under a label in its own script (`ownScript`)? */
 export const exonymsOwnScript = (): boolean => !!msgs(enExonyms).ownScript
 

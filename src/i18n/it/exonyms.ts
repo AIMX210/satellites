@@ -17,6 +17,7 @@ const exonyms: typeof en = {
   names: '',
   countries: true,
   home: ['IT', 'SM', 'VA'],
+  apostrophes: true,
   load: () =>
     (loading ??= import('./exonyms.gen').then(
       (m) => void (exonyms.names = m.default),
