@@ -129,6 +129,17 @@ function withinWait(p: Promise<unknown>): Promise<void> {
   return Promise.race([p.then(() => undefined, () => undefined), limit]).finally(() => clearTimeout(timer))
 }
 
+/** What a switch to a language with place names also waits for (waitBeforeSwitch), at most READY_WAIT_MS. */
+let beforeSwitch: (() => Promise<unknown>) | undefined
+
+/**
+ * The app's part of a switch (src/app/controller.ts): the country of a link's place on screen, which a page in English
+ * never looked up, so the place is named in the new language as a search for it would be.
+ */
+export function waitBeforeSwitch(fn: () => Promise<unknown>): void {
+  beforeSwitch = fn
+}
+
 /** The latest language asked for: a chunk that arrives after a newer choice is never applied over it. */
 let wanted: Locale | undefined
 
@@ -149,7 +160,7 @@ export async function setLocale(locale: Locale): Promise<void> {
   if (!mod && locale !== DEFAULT_LOCALE) return
   // The place names too: a name on screen (the results' place, a suggestion) changes once, with the rest of the page.
   // At most READY_WAIT_MS for them: past it the page switches with the names as they came (and keeps them so).
-  await Promise.all([installAccentFont(mod?.accentFont), mod?.ready && withinWait(mod.ready())])
+  await Promise.all([installAccentFont(mod?.accentFont), mod?.ready && withinWait(Promise.all([mod.ready(), beforeSwitch?.()]))])
   if (wanted !== locale) return
   bundle = mod?.default ?? null
   active = locale

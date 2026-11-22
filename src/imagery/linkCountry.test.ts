@@ -54,4 +54,14 @@ describe('a linked place’s name', () => {
     await resolveLinkCountry(p)
     expect(p).toEqual(link('Munich', 48.137, 11.575))
   })
+
+  it('is found, on an English page, for a switch to a language with names (the place on screen is named in it)', async () => {
+    serveFiles()
+    const p = link('Kyiv', 50.454, 30.524)
+    expect([needsLinkCountry(p), needsLinkCountry(p, true)]).toEqual([false, true])
+    await resolveLinkCountry(p)
+    setBundleForTests('de', { exonyms: { names: deNames, countries: true } })
+    await ensureExonyms()
+    expect(displayLabel(linkedForName(p))).toBe('Kyjiw')
+  })
 })

@@ -9,7 +9,8 @@
  * Display only: the Place keeps no country (the usage stats and the address bar see the link as it came), and a link
  * whose name the list does not know near its point (a street, a typed label) stays countryless. Resolved before the
  * report shows the name (src/app/controller.ts runReport), once per link, and never in a language without a table
- * (English fetches nothing for it), so a name is never shown first one way and then another.
+ * (English fetches nothing for it), so a name is never shown first one way and then another; and before a switch to a
+ * language with a table shows the link's place on screen in it (the page was in English until then).
  */
 import type { Place } from '@/types'
 import { exonymsActive } from './exonyms'
@@ -22,11 +23,12 @@ const pending = new Map<string, Promise<void>>()
 const keyOf = (p: Pick<Place, 'label' | 'lat' | 'lon'>) => `${p.lat.toFixed(3)},${p.lon.toFixed(3)}|${p.label}`
 
 /**
- * Does `place` need resolving before its name is shown: a link's, with no country, in a language with names (a link
- * to a curated place is named from the 'places' namespace instead, src/app/links.ts linkPlaceIn)?
+ * Does `place` need resolving before its name is shown: a link's, with no country, in a language with names (or, with
+ * `forSwitch`, in the language a switch is going to: src/i18n/runtime.ts waitBeforeSwitch)? A link to a curated place
+ * is named from the 'places' namespace instead (src/app/links.ts linkPlaceIn).
  */
-export const needsLinkCountry = (place: Place): boolean =>
-  place.source === 'url' && !place.countryCode && place.canonicalLabel === undefined && exonymsActive() && !resolved.has(keyOf(place))
+export const needsLinkCountry = (place: Place, forSwitch = false): boolean =>
+  place.source === 'url' && !place.countryCode && place.canonicalLabel === undefined && (forSwitch || exonymsActive()) && !resolved.has(keyOf(place))
 
 /**
  * Find the country the offline list gives a linked place's name at its point. Never rejects: a tile that cannot be

@@ -32,7 +32,7 @@ import type { EngineReport } from '@/engine/report'
 import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/catalog'
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
-import { msgs } from '@/i18n/runtime'
+import { msgs, waitBeforeSwitch } from '@/i18n/runtime'
 import { ensureExonyms, ensureTz, exonymsReady, needsLinkCountry, resolveLinkCountry } from '@/imagery'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
 import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
@@ -174,6 +174,11 @@ export async function boot() {
   const bootStart = performance.now()
   mark('boot')
   installHeadSync()
+  // A switch to a language with place names names a link's place on screen in it too, as opening the link there would.
+  waitBeforeSwitch(() => {
+    const place = useApp.getState().place
+    return place && needsLinkCountry(place, true) ? resolveLinkCountry(place) : Promise.resolve()
+  })
   const target = readUrlTarget(location.search, Date.now(), bootPlace())
   // A place link that carries `tl` opens the time-lapse over its results (ui/results/TimelapseEntry.tsx).
   if (target?.kind === 'q') useTimelapseUi.getState().request(timelapseParam(location.search))
