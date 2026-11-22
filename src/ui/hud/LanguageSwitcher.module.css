@@ -47,11 +47,20 @@
   display: none;
 }
 /* Stepped down, the tall touch box reaches down into the free view instead of up over "How this works" just above,
-   whose own box then ends where this one starts (Hud.module.css): each keeps 44 px of its own (U-6). */
+   whose own box then ends where this one starts (Hud.module.css): each keeps 44 px of its own (U-6). The button keeps
+   its usual 8 px under the words and the rest of the reach is its ::after, outside its box: the menu is placed from
+   the box's bottom (LanguageSwitcher.tsx), so it opens the same 18 px under the name as on its usual line, not 40. */
 @media (pointer: coarse) {
   [data-lang-below] > .trigger {
-    padding: 0 0 30px;
-    margin: 0 0 -30px;
+    position: relative;
+    padding: 0 0 8px;
+    margin: 0 0 -8px;
+  }
+  [data-lang-below] > .trigger::after {
+    content: '';
+    position: absolute;
+    inset: 100% 0 auto;
+    height: 22px;
   }
 }
 .rule {
