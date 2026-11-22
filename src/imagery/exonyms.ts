@@ -40,8 +40,11 @@ export interface ExonymTable {
   features: Map<string, string>
 }
 
-/** What a place is, for the lookup of its name: a town's label, a region's, a landmark's or feature's, or a where part. */
-export type NameAs = 'label' | 'region' | 'feature' | 'where'
+/**
+ * What a place is, for the lookup of its name: a town's label, a region's, a landmark's or feature's, a where line's
+ * last part (its region), or a part another follows (`locality`: a geocoder's city, as in "Odesa, Odesa Oblast").
+ */
+export type NameAs = 'label' | 'region' | 'feature' | 'where' | 'locality'
 
 /** The table's display half (src/i18n/en/exonyms.ts): a search-only entry (`~`) is left to ./exonymSearch.ts. */
 export function parseExonyms(src: string): ExonymTable {
@@ -132,8 +135,10 @@ export async function ensureExonyms(): Promise<void> {
 /**
  * `name` as the visitor's language names that place in country `cc` (ISO, any case; undefined: no country), or `name`
  * itself. `as` says what the name is (NameAs): a town's own name ('label': towns only), a first-level region's
- * ('region': regions only), a landmark's or a natural feature's ('feature': landmarks, then towns), or a part of a
- * where line ('where': regions first, then towns). Read at call time.
+ * ('region': regions only), a landmark's or a natural feature's ('feature': landmarks, then towns), a where line's last
+ * part ('where': regions first, then towns: Photon's state, the offline list's region), or a part another follows
+ * ('locality': towns first, then regions: Photon's city, Odesa in "Odesa, Odesa Oblast", is the city). Read at call
+ * time.
  */
 export function exonym(name: string, cc: string | undefined, as: NameAs): string {
   const t = activeTable(true)
@@ -143,6 +148,7 @@ export function exonym(name: string, cc: string | undefined, as: NameAs): string
   if (as === 'label') return t.towns.get(here) ?? name
   if (as === 'region') return t.regions.get(here) ?? name
   if (as === 'where') return t.regions.get(here) ?? t.towns.get(here) ?? name
+  if (as === 'locality') return t.towns.get(here) ?? t.regions.get(here) ?? name
   return t.features.get(here) ?? t.towns.get(here) ?? name
 }
 

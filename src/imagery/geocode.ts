@@ -176,16 +176,21 @@ export function displaySublabel(
       (all, part) => (part === 'D.C.' && all.length ? [...all.slice(0, -1), `${all.at(-1)}, ${part}`] : [...all, part]),
       [],
     )
-    .map((part) => {
-      const whole = exonym(part, cc, 'where')
+    // The last part is a region (the offline list's, Photon's state); one another follows is a city (Photon's: Odesa
+    // in "Odesa, Odesa Oblast" is the city, not its oblast).
+    .map((part, i, all) => {
+      const as = i < all.length - 1 ? 'locality' : 'where'
+      const whole = exonym(part, cc, as)
       if (whole !== part || locale === 'en') return whole
       // Two regions in one part (Nevada and Arizona), each with a name in the language: listed in it. A region named
       // with "and" (Sistan and Baluchestan) is one name, kept whole.
       const both = part.split(' and ')
-      const names = both.map((p) => exonym(p, cc, 'where'))
+      const names = both.map((p) => exonym(p, cc, as))
       return both.length === 2 && names.every((n, i) => n !== both[i]) ? inList(names, locale) : part
     })
     .filter((part) => !script || !LATIN.test(part))
+    // Two parts the language names alike say it once.
+    .filter((part, i, all) => i === 0 || part !== all[i - 1])
   const named = parts?.length ? parts.join(', ') : undefined
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
   return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)

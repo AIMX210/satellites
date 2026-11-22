@@ -141,6 +141,18 @@ describe('exonyms', () => {
     expect([displayLabel(munich), displaySublabel(munich)]).toEqual(['Munich', 'Bavaria, Germany'])
   })
 
+  it('reads a where line’s earlier parts as towns and its last as a region, and says a repeated name once', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
+    const names = 'UA:Odesa=Одеса;Chelyabinsk=Челябінськ;*Odesa=Одеська область;*Odesa Oblast=Одеська область;*Kyiv City=місто Київ;*Kyiv=місто Київ'
+    setBundleForTests('uk', { exonyms: { names, ownScript: true }, geo: { ...enGeo, where } })
+    // Photon's city, then its state: Odesa the city, in Odesa Oblast (not the oblast twice).
+    expect(displaySublabel({ label: 'Derybasivska', sublabel: 'Odesa, Odesa Oblast, Ukraine', countryCode: 'ua' })).toBe('Одеса, Одеська область, Україна')
+    // The offline list's region, and Photon's state on its own.
+    expect(displaySublabel({ label: 'Yuzhne', sublabel: 'Odesa, Ukraine', countryCode: 'ua' })).toBe('Одеська область, Україна')
+    expect(displaySublabel({ label: 'Golden Gate', sublabel: 'Kyiv, Ukraine', countryCode: 'ua' })).toBe('місто Київ, Україна')
+    expect(displaySublabel({ label: 'Kyiv', sublabel: 'Kyiv City, Kyiv, Ukraine', countryCode: 'ua' })).toBe('місто Київ, Україна')
+  })
+
   it('reads a landmark’s hand-written where line in the language: two countries, two regions', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
     setBundleForTests('it', { exonyms: { names: 'IT:Rome=Roma' }, geo: { ...enGeo, where } })
