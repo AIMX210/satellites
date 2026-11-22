@@ -62,7 +62,10 @@ export interface Rules {
   homeMinPop: number
   /** And a town this large in the neighbours its readers search most (Ukraine's towns in Russian) */
   near?: { countries: readonly string[]; minPop: number }
-  /** First-level regions named: every one at home, and abroad the regions of the countries listed (or all) */
+  /**
+   * First-level regions named: every one at home, and abroad the regions of the countries listed (or all), and any
+   * other that OVERRIDES names by its code (Crimea in Hindi)
+   */
   regionsAbroad: 'all' | readonly string[]
   /** How many of the best-known seas, oceans, gulfs and straits get their names (countryless) */
   waters: number

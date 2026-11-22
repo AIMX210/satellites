@@ -391,13 +391,15 @@ async function main() {
       if (shown) addDisplay(table, { english: spellings(t.id, t.name), cc: t.cc, region: false, pop: t.pop, home }, shown, { forced: over[t.id] !== undefined || ownName })
       else small.push(t)
     }
-    // Regions: every one at home, and abroad those of the countries the rules list. A Latin region whose English name
+    // Regions: every one at home, and abroad those of the countries the rules list, and any the language names by hand
+    // by its code (Crimea in Hindi, whose table names no other region of Ukraine). A Latin region whose English name
     // says what it is (Krasnodar Krai, Chelyabinsk Oblast, Opole Voivodeship, District of Columbia) is not named by a
     // bare name that is a town's in its country, in English or in the table (Krasnodar), or another region's (Altai);
     // a canton, a state or a city-state keeps its usual bare name (Zürich, Bayern, Berlin).
     for (const [id, r] of regions) {
       const home = atHome(rules, r.cc, r.code)
-      if (!home && rules.regionsAbroad !== 'all' && !rules.regionsAbroad.includes(r.cc)) continue
+      const listed = rules.regionsAbroad === 'all' || rules.regionsAbroad.includes(r.cc)
+      if (!home && !listed && over[r.code] === undefined) continue
       const classed = spellings(id, r.name).some((e) => /\b(krai|kray|oblast|voivodeship|district|okrug|autonomous)\b/i.test(e))
       const avoid = (n: string) => {
         const k = placeKey(n)
