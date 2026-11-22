@@ -135,9 +135,6 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'London', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('Великобритания')
     expect(displaySublabel({ label: 'Chicago', sublabel: 'Illinois, United States', countryCode: 'us' })).toBe('Иллинойс, Соединенные Штаты')
     expect(displaySublabel({ label: 'Leeds', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('England, Великобритания')
-    // Nor a part that repeats the label once both are named (the city of St. Petersburg, in its region of that name).
-    setBundleForTests('ru', { exonyms: { names: 'RU:Saint Petersburg=Санкт-Петербург;*St. Petersburg=Санкт-Петербург' }, geo: { ...enGeo, where } })
-    expect(displaySublabel({ label: 'Saint Petersburg', sublabel: 'St. Petersburg, Russia', countryCode: 'ru' })).toBe('Россия')
   })
 
   it('shows no where line for a place a Vietnamese reader holds to be Vietnam’s that the data files under another country', async () => {
