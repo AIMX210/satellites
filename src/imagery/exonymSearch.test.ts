@@ -334,6 +334,22 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(files.network()).toEqual([])
   })
 
+  it('names a country the list names otherwise as its where line does, and as it came in English', async () => {
+    serveFiles()
+    const first = async (q: string) => (await searchPlaces(q))[0]
+    await as('de', deNames)
+    const typed = await first('Palestinian')
+    expect([typed.label, displayLabel(typed)]).toEqual(['Palestinian Territory', 'Palästinensische Autonomiegebiete'])
+    for (const q of ['Niederlande', 'Türkei', 'Côte d’Ivoire']) expect(displayLabel(await first(q))).toBe(q)
+    await as('ru', ruNames)
+    expect(displayLabel(await first('Палестина'))).toBe(shownCountryName('PS', 'ru'))
+    for (const q of ['Турция', 'Кот-д’Ивуар', 'Нидерланды']) expect(displayLabel(await first(q))).toBe(q)
+    await as('vi')
+    for (const q of ['Hà Lan', 'Thổ Nhĩ Kỳ']) expect(displayLabel(await first(q))).toBe(q)
+    setBundleForTests('en', null)
+    expect(displayLabel(await first('Palestin'))).toBe('Palestinian Territory')
+  })
+
   it('knows the list’s own name for each country it names otherwise than the browser', () => {
     const dir = decodeURIComponent(new URL(`../../public/places/${PLACES_VERSION}/s/`, import.meta.url).pathname)
     const rows = fs

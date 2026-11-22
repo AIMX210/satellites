@@ -43,7 +43,15 @@ import {
   exonymVariants,
   namesCountries,
 } from './exonyms'
-import { countryCodeOf, countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
+import {
+  countryCodeOf,
+  countryName,
+  isListCountry,
+  nearestLocal,
+  searchLocal,
+  shownCountryName,
+  type LocalPlace,
+} from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
 import { fetchJson, hedge, HttpError, isAbortError, sleep, throwIfAborted } from './net'
@@ -104,9 +112,10 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
 /**
  * A place's name as shown to the visitor: the name the visitor's language gives that town, region or feature in that
  * country (./exonyms.ts: München, Київ; a region as a region, `kind`), else, for a country in a language whose table
- * says so, the browser's name for it (Германия for Germany, as the where line names it), else its label as it came, in
- * the language's apostrophe (Italian: L’Aquila, exonymApostrophes). In English, the label itself. Read at call time, as
- * displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups send.
+ * says so, the browser's name for it (Германия for Germany, as the where line names it; a country is known by the
+ * browser's English names or by the offline list's own, Palestinian Territory: isListCountry), else its label as it
+ * came, in the language's apostrophe (Italian: L’Aquila, exonymApostrophes). In English, the label itself. Read at call
+ * time, as displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups send.
  */
 export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'>): string {
   const bank = place.kind === 'region' ? westBank(place.label, place.countryCode) : undefined
@@ -115,7 +124,9 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
   const cc = place.countryCode
   if (shown !== place.label || !cc || !namesCountries()) return exonymApostrophes(shown)
   const key = placeKey(place.label)
-  if (key !== englishCountryKey(countryName(cc)) && key !== placeKey(shownCountryName(cc, 'en'))) return exonymApostrophes(shown)
+  // A country by the browser's English names for it, or by the offline list's own (Palestinian Territory).
+  const english = [englishCountryKey(countryName(cc)), placeKey(shownCountryName(cc, 'en'))]
+  if (!english.includes(key) && !isListCountry(place.label, cc)) return exonymApostrophes(shown)
   const local = shownCountryName(cc, currentLocale())
   return local.toUpperCase() === cc.toUpperCase() ? exonymApostrophes(shown) : local
 }

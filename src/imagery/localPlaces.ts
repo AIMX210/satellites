@@ -49,6 +49,9 @@ const hasTile = (i: number) => {
   return ((tileBits[i >> 3] >> (i & 7)) & 1) === 1
 }
 
+/** The country rows (kind 'c') of the files read in this page: their name's placeKey, by ISO code (isListCountry). */
+const countryRows = new Map<string, string>()
+
 export function parsePlaces(text: string): LocalPlace[] {
   const out: LocalPlace[] = []
   for (const l of text.split('\n')) {
@@ -58,9 +61,21 @@ export function parsePlaces(text: string): LocalPlace[] {
     const lon = Number(f[2])
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue
     const kind = f[6] === 'r' || f[6] === 'c' || f[6] === 'f' ? f[6] : ''
-    out.push({ name: f[0], lat, lon, cc: f[3], admin1: f[4], p: Number(f[5]) || 0, kind, key: placeKey(f[7] || f[0]) })
+    const key = placeKey(f[7] || f[0])
+    if (kind === 'c') countryRows.set(f[3].toUpperCase(), key)
+    out.push({ name: f[0], lat, lon, cc: f[3], admin1: f[4], p: Number(f[5]) || 0, kind, key })
   }
   return out
+}
+
+/**
+ * Is `name` the offline list's own name for country `cc`: its country row's (GeoNames': Palestinian Territory, Ivory
+ * Coast, The Netherlands, where the browser says Palestine, Côte d’Ivoire, Netherlands)? So a country row is named as
+ * a country, by its kind and code, not by an English name the browser may give otherwise (geocode.ts displayLabel).
+ * Known once a file holding that row has been read in the page, as every row a search shows from the list has been.
+ */
+export function isListCountry(name: string, cc: string): boolean {
+  return countryRows.get(cc.toUpperCase()) === placeKey(name)
 }
 
 /** The landmark file: `name|lat|lon|cc|where|alias;alias` (scripts/build-places.ts). */
