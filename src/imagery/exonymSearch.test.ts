@@ -19,7 +19,9 @@ import ruNames from '@/i18n/ru/exonyms.gen'
 import faNames from '@/i18n/fa/exonyms.gen'
 import hiNames from '@/i18n/hi/exonyms.gen'
 import { exonymSearch, LIST_COUNTRY_NAMES, typedKey } from './exonymSearch'
-import { displayLabel, reversePlace, searchPlaces } from './geocode'
+import type { Place } from '@/types'
+import { displayLabel, displaySublabel, reversePlace, searchPlaces } from './geocode'
+import { OPEN_METEO_GEOCODE } from './endpoints'
 import { englishCountryKey, ensureExonyms, exonymAlternates, exonymHome } from './exonyms'
 import { countryName, parsePlaces, searchLocal, shownCountryName } from './localPlaces'
 import { PLACES_VERSION } from './localPlaces.gen'
@@ -297,6 +299,80 @@ describe('searching in the visitor’s own names (real data)', () => {
     await as('hi', hiNames)
     for (const [q, name] of [['टेक्सास', 'टेक्सास'], ['वुहान', 'वुहान'], ['लेह', 'लेह'], ['एफ़िल टॉवर', 'एफ़िल टॉवर']]) expect([q, await shown(q)]).toEqual([q, name])
     expect(files.network()).toEqual([])
+  })
+
+  it('shows one row of those that read alike in one country, the best-ranked', async () => {
+    serveFiles()
+    const read = (ps: Place[]) => ps.map((p) => `${displayLabel(p)} · ${displaySublabel(p) ?? ''}`)
+    // The city and two villages of that name in its oblast; the capital and a hamlet; the country and its region.
+    await as('uk', ukNames)
+    const zaporizhzhia = await searchPlaces('Запоріжжя')
+    expect([read(zaporizhzhia), zaporizhzhia[0].lat]).toEqual([['Запоріжжя · Запорізька область, Україна'], 47.852])
+    await as('ru', ruNames)
+    expect(read(await searchPlaces('Запорожье'))).toEqual(['Запорожье · Запорожская область, Украина'])
+    await as('vi')
+    expect((await searchPlaces('Hà Nội')).map((p) => [p.label, p.lat])).toEqual([['Hanoi', 21.024]])
+    expect((await searchPlaces('Đài Loan')).map((p) => [displayLabel(p), p.kind])).toEqual([['Đài Loan', undefined]])
+    // English shows each row as it came.
+    setBundleForTests('en', null)
+    expect(read(await searchPlaces('Zaporizhzhya'))).toEqual(Array(3).fill('Zaporizhzhya · Zaporizhzhia, Ukraine'))
+  })
+
+  it('keeps rows that read otherwise: a city whose where line repeats its name, a namesake abroad', async () => {
+    const geocoder = (name: string, admin1: string, cc: string, country: string, lat: number, ADM1 = false) => ({
+      name,
+      latitude: lat,
+      longitude: 30,
+      country_code: cc,
+      country,
+      admin1,
+      population: 1000,
+      ...(ADM1 ? { feature_code: 'ADM1' } : {}),
+    })
+    vi.stubGlobal('fetch', async (input: string) => {
+      const url = String(input)
+      const file = url.startsWith('/places/') ? FILES[`/public${url}`] : undefined
+      if (url.startsWith('/places/')) return file ? new Response(await file()) : new Response('', { status: 404 })
+      if (!url.startsWith(OPEN_METEO_GEOCODE)) return Response.json({ features: [] })
+      return Response.json({
+        results: [
+          geocoder('Qwertyburg', 'Qwertyburg Krai', 'RU', 'Russia', 50),
+          geocoder('Qwertyburg Krai', '', 'RU', 'Russia', 51, true),
+          geocoder('Qwertyburg', 'Tver Oblast', 'RU', 'Russia', 52),
+          geocoder('Qwertyburg', 'Tver Oblast', 'RU', 'Russia', 54),
+          geocoder('Qwertyburg', 'Tver Oblast', 'BY', 'Belarus', 56),
+        ],
+      })
+    })
+    // A city and its region named alike, as Санкт-Петербург is; two towns alike in one oblast; one in another country.
+    const table = 'RU:Qwertyburg=Квертиград;*Qwertyburg Krai=Квертиград;*Tver Oblast=Тверская область'
+    await as('ru', `${table}|BY:Qwertyburg=Квертиград`)
+    const read = (ps: Place[]) => ps.map((p) => `${displayLabel(p)} · ${displaySublabel(p) ?? ''}`)
+    expect(read(await searchPlaces('Qwertyburg'))).toEqual([
+      'Квертиград · Квертиград, Россия',
+      'Квертиград · Россия',
+      'Квертиград · Тверская область, Россия',
+      'Квертиград · Tver Oblast, Беларусь',
+    ])
+  })
+
+  it('keeps the country where a region ranked above it reads alike', async () => {
+    // No offline list (its files will not load): the geocoder's region, then its country 50 km off, both Đài Loan.
+    const taiwan = (feature_code: string, population: number, latitude: number) =>
+      ({ name: 'Taiwan', latitude, longitude: 121, country_code: 'TW', country: 'Taiwan', feature_code, population })
+    const results = [taiwan('ADM1', 2, 24), taiwan('PCLI', 1, 23.5)]
+    vi.stubGlobal('fetch', async (input: string) =>
+      String(input).startsWith(OPEN_METEO_GEOCODE) ? Response.json({ results }) : new Response('', { status: 404 }),
+    )
+    // Fresh modules: the files earlier tests read stay in memory, and the list knows Taiwan.
+    vi.resetModules()
+    const runtime = await import('@/i18n/runtime')
+    const geocode = await import('./geocode')
+    runtime.setBundleForTests('vi', { exonyms: (await import('@/i18n/vi/exonyms')).default })
+    await (await import('./exonyms')).ensureExonyms()
+    const rows = await geocode.searchPlaces('Taiwan')
+    expect(rows.map((p) => [geocode.displayLabel(p), p.kind])).toEqual([['Đài Loan', undefined]])
+    runtime.setBundleForTests('en', null)
   })
 
   it('finds a country the list names otherwise by the browser’s name for it, offline and first', async () => {

@@ -123,12 +123,16 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
   const shown = exonym(place.label, place.countryCode, place.kind ?? 'label')
   const cc = place.countryCode
   if (shown !== place.label || !cc || !namesCountries()) return exonymApostrophes(shown)
-  const key = placeKey(place.label)
-  // A country by the browser's English names for it, or by the offline list's own (Palestinian Territory).
-  const english = [englishCountryKey(countryName(cc)), placeKey(shownCountryName(cc, 'en'))]
-  if (!english.includes(key) && !isListCountry(place.label, cc)) return exonymApostrophes(shown)
+  if (!namesCountry(place.label, cc)) return exonymApostrophes(shown)
   const local = shownCountryName(cc, currentLocale())
   return local.toUpperCase() === cc.toUpperCase() ? exonymApostrophes(shown) : local
+}
+
+/** Does `name` name country `cc`, as the browser does in English or as the offline list (Palestinian Territory)? */
+function namesCountry(name: string, cc: string): boolean {
+  const key = placeKey(name)
+  const english = [englishCountryKey(countryName(cc)), placeKey(shownCountryName(cc, 'en'))]
+  return english.includes(key) || isListCountry(name, cc)
 }
 
 /**
@@ -660,12 +664,35 @@ function echoes(admin1: string, name: string): boolean {
 /**
  * The places of a search as one list: the same rules as dedupePlaces, the names compared as the visitor reads them
  * (a city-state and its state, both Berlino; Huế and the province the table calls Huế, 14 km apart, are one row).
- * In English, each label as it came.
+ * In a language with names, rows that read the same, name and where line, in one country are one row too, however far
+ * apart: the best-ranked, or the country where a country and a region read alike (Đài Loan). Places of one name in
+ * one region read the same once named in the language (Запоріжжя · Запорізька область, Україна: the city and two
+ * villages of that name; Hà Nội · Việt Nam: the capital and a hamlet), and rows nobody can tell apart are noise. A
+ * city whose where line repeats its name is not its region's row (Санкт-Петербург · Санкт-Петербург, Россия, beside
+ * Санкт-Петербург · Россия). The first `fixed` rows, already on screen, stay as they are. In English, each label as it
+ * came.
  */
-const distinctAsShown = (places: Place[]) => dedupePlaces(places, undefined, undefined, exonymsActive() ? displayLabel : undefined)
+function distinctAsShown(places: Place[], fixed = 0): Place[] {
+  if (!exonymsActive()) return dedupePlaces(places)
+  const kept: Place[] = []
+  const reads: (string | undefined)[] = []
+  for (const p of dedupePlaces(places, undefined, undefined, displayLabel)) {
+    const read = p.countryCode && `${p.countryCode.toLowerCase()}|${displayLabel(p)}|${displaySublabel(p) ?? ''}`
+    const at = read ? reads.indexOf(read) : -1
+    if (at < 0) {
+      kept.push(p)
+      reads.push(read || undefined)
+    } else if (at >= fixed && isCountry(p) && !isCountry(kept[at])) kept[at] = p
+  }
+  return kept
+}
+
+/** Is the place a country itself: a row with no where line or kind, named as the browser or the list names it? */
+const isCountry = (p: Place) => !p.kind && !p.sublabel && !!p.countryCode && namesCountry(p.label, p.countryCode)
 
 /** `first`, then whatever in `more` is not already there (distinctAsShown's rules), at most MAX_RESULTS. */
-const appendNew = (first: Place[], more: Place[]) => distinctAsShown([...first, ...more]).slice(0, MAX_RESULTS)
+const appendNew = (first: Place[], more: Place[]) =>
+  distinctAsShown([...first, ...more], first.length).slice(0, MAX_RESULTS)
 
 /**
  * Up to 6 places matching `q`, best first. Coordinates are accepted and reverse-geocoded. Resolves [] for queries under
@@ -728,7 +755,7 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
     signal,
   )
   if (!local.length) {
-    const found = await net
+    const found = exonymsActive() ? distinctAsShown(await net) : await net
     searchCache.set(key, found)
     return found
   }
