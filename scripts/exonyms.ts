@@ -1120,9 +1120,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     ':Laptev Sea': 'Море Лаптєвих',
     /**
      * Second pass over the native review (2026-11-22): the towns of 10–16k a namesake's junk name hid (Миколаївка,
-     * Слобожанське, Гірник, Кальміуське: one name for every town so spelt), the best-known districts, the regions of Belarus, Poland and Russia
-     * GeoNames has no Ukrainian name for, OpenStreetMap's spellings of two oblasts, Chornobyl's plant as the
-     * geocoders name it, and Uluru.
+     * Слобожанське, Гірник, Кальміуське: one name for every town so spelt), the best-known districts, the regions of
+     * Belarus, Poland and Russia GeoNames has no Ukrainian name for, OpenStreetMap's spellings of two oblasts,
+     * Washington, D.C. as a where line writes it, Chornobyl's plant as the geocoders name it, and Uluru.
      */
     'UA:Mykolaivka': 'Миколаївка',
     // The districts of Kyiv, Kharkiv, Lviv and Odesa readers know by name, which a pin in the city is named by (the
@@ -1151,6 +1151,7 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'UA:*Zaporizhia Oblast': 'Запорізька область',
     'UA:*Vinnytsya Oblast': 'Вінницька область',
     'AU:Uluru': 'Улуру',
+    'US:Washington, D.C.': 'Вашингтон',
     'BY.01': 'Брестська область',
     'BY.03': 'Гродненська область',
     'BY.06': 'Могильовська область',
@@ -1292,7 +1293,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     /**
      * Second pass over the native review (2026-11-22): the regional seats under the size rule (Анадырь, Нарьян-Мар,
      * Магас), Moscow, Almaty and Osh as regions, Mecklenburg-Vorpommern, OpenStreetMap's spellings of the republics
-     * and krais and of three regions of Belarus and Kazakhstan (what Photon writes in a where line), and Uluru.
+     * and krais and of three regions of Belarus and Kazakhstan (what Photon writes in a where line), Washington, D.C.
+     * as a landmark's where line writes it, and Uluru.
      */
     'RU:Anadyr': 'Анадырь',
     "RU:Nar'yan-Mar": 'Нарьян-Мар',
@@ -1302,6 +1304,7 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'KG.10': 'Ош',
     'DE.12': 'Мекленбург — Передняя Померания',
     'AU:Uluru': 'Улуру',
+    'US:Washington, D.C.': 'Вашингтон',
     'RU:*Republic of Tatarstan': 'Татарстан',
     'RU:*Republic of Bashkortostan': 'Башкортостан',
     'RU:*Republic of Mordovia': 'Мордовия',
@@ -1609,7 +1612,7 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     /**
      * Second pass over the native review (2026-11-22): Omsk and Los Angeles as Persian writes them (one spelling for the
      * city and its airport), the capital and the large cities GeoNames has no Persian name for (Port Vila, Nagoya,
-     * Surat, Kano, Xiamen, Diyarbakır), and Crimea.
+     * Surat, Kano, Xiamen, Diyarbakır), Crimea, and Washington, D.C. as the curated places write it.
      */
     'RU:Omsk': 'اومسک',
     'US:Los Angeles': 'لس\u200cآنجلس',
@@ -1620,6 +1623,7 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'CN:Xiamen': 'شیامن',
     'TR:Diyarbakır': 'دیاربکر',
     'UA:*Crimea': 'کریمه',
+    'US:Washington, D.C.': 'واشینگتن دی\u200cسی',
   },
   /**
    * Hindi: the modern official names where GeoNames' first Hindi name is the old one (मुंबई, not बम्बई; बेंगलुरु, not
@@ -1773,11 +1777,13 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     /**
      * Second pass over the native review (2026-11-22): Manchester as the Hindi press spells it, Gurgaon's landmark row as
      * the city is now named, Aurangabad as its English label still has it (its renaming, like Port Blair's, is the
-     * owner's to decide), and the regions of Canada, Australia, the UK and Nepal GeoNames has no Hindi name for.
+     * owner's to decide), Washington, D.C. as hi.md's chip writes it, and the regions of Canada, Australia, the UK and
+     * Nepal GeoNames has no Hindi name for.
      */
     'GB:Manchester': 'मैनचेस्टर',
     'IN:Gurgaon': 'गुरुग्राम',
     'IN:Aurangabad': 'औरंगाबाद',
+    'US:Washington, D.C.': 'वॉशिंगटन डी.सी.',
     'CA.04': 'न्यू ब्रंसविक',
     'CA.05': 'न्यूफ़ाउंडलैंड और लैब्राडोर',
     'CA.07': 'नोवा स्कोटिया',
