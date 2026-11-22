@@ -203,7 +203,8 @@ export async function searchLocal(
   // its language at home by that name (Köln, not Cologne).
   const lookups = alternates.flatMap((a, i) => {
     const own = placeKey(a.shown)
-    return [{ i, key: a.key }, ...(home.includes(a.cc) && own !== a.key && shardOf(own) ? [{ i, key: own }] : [])]
+    const keys = [a.key, ...(a.also ?? [])]
+    return [...keys.map((key) => ({ i, key })), ...(home.includes(a.cc) && !keys.includes(own) && shardOf(own) ? [{ i, key: own }] : [])]
   })
   const [towns, marks, ...rest] = await Promise.allSettled([
     latin ? shardRows(shardFor(q, GROUPS, SPLIT)) : Promise.resolve(null),

@@ -35,6 +35,11 @@ export interface TypedName {
 export interface Alternate {
   /** placeKey of the English name the offline list files it under */
   key: string
+  /**
+   * The keys of the place's other English names that the table gives the same name to, in the same country (Photon's
+   * Zaporizhzhia beside the list's Zaporizhzhya, the Paracels' three): whichever the list has a row for finds it.
+   */
+  also?: string[]
   /** ISO country code, upper case */
   cc: string
   kind: 'town' | 'region' | 'country'
@@ -49,6 +54,8 @@ export type ExonymSearch = typeof import('./exonymSearch')
 
 /** At most this many places a typed name can stand for are looked up (each may be one more small file to read). */
 export const MAX_ALTERNATES = 5
+/** And at most this many more English names of each (Alternate.also). */
+const MAX_ALSO = 2
 
 /** A Cyrillic letter: a word with one is Cyrillic, so a Latin look-alike typed in it (i for і) is read as Cyrillic. */
 const CYRILLIC = /\p{Script=Cyrillic}/u
@@ -160,7 +167,8 @@ export function countriesTyped(): { compact: string; cc: string; shown: string }
  * end with London in Persian, and Shahr-e Qods is not Jerusalem), that start with it, or whose later words start with
  * it (3+ letters), each group in the table's order (largest first), and the `countries` named so (each country's
  * offline key from `countryKey`). A name two English names share in one country (the city Kyiv and the list's
- * landmark row for "Kiev" are both Киев) stands for the larger.
+ * landmark row for "Kiev" are both Киев) is one place, the larger, looked up under each of them (`also`, at most
+ * MAX_ALSO more): the table may write first a spelling the list has no row for (a geocoder's).
  */
 export function exonymSearch(
   src: string,
@@ -196,15 +204,23 @@ export function exonymSearch(
   }
   hits.sort((x, y) => x.tier - y.tier || x.rank - y.rank)
   const seen = new Set<string>()
+  const byName = new Map<string, Alternate>()
   const out: Alternate[] = []
   for (const { a, name } of hits) {
-    // One place per name in a country: Киев is the city Kyiv, not also the landmark row the list keeps for "Kiev".
+    // One place per name in a country: Киев is the city Kyiv, not also the landmark row the list keeps for "Kiev", but
+    // looked up under both.
     const k = `${a.kind}|${a.cc}|${a.key}`
     const named = `${a.kind}|${a.cc}|=${name}`
-    if (seen.has(k) || seen.has(named)) continue
-    seen.add(k).add(named)
+    if (seen.has(k)) continue
+    seen.add(k)
+    const same = byName.get(named)
+    if (same) {
+      if ((same.also ??= []).length < MAX_ALSO) same.also.push(a.key)
+      continue
+    }
+    if (out.length >= MAX_ALTERNATES) continue
+    byName.set(named, a)
     out.push(a)
-    if (out.length >= MAX_ALTERNATES) break
   }
   return out
 }

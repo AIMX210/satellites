@@ -89,6 +89,14 @@ describe('exonymSearch', () => {
     expect(find('xyz')).toEqual([])
   })
 
+  it('looks a name two English names share up under both, as one place', () => {
+    const r = exonymSearch('UA:Zaporizhzhia=Saporischschja;Zaporizhzhya=Saporischschja;*Zaporizhzhia=Oblast Saporischschja', 'Saporischschja', key)
+    expect(r.map((a) => [a.key, a.kind, a.also])).toEqual([
+      ['zaporizhzhia', 'town', ['zaporizhzhya']],
+      ['zaporizhzhia', 'region', undefined],
+    ])
+  })
+
   it('finds a German name typed without its umlauts', () => {
     const r = exonymSearch('DE:Cologne=Köln|VN:Thai Nguyen=Thái Nguyên', 'Koeln', key)
     expect(r).toEqual([{ key: 'cologne', cc: 'DE', kind: 'town', exact: true, shown: 'Köln' }])
@@ -173,6 +181,9 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(await first('Muenster')).toMatchObject({ label: 'Münster', countryCode: 'de' })
     expect(await first('Luebeck')).toMatchObject({ label: 'Lübeck', countryCode: 'de' })
     expect(await first('Peking')).toMatchObject({ label: 'Beijing', countryCode: 'cn' })
+    // The table writes a geocoder's spelling first, which the list has no row for: the city still leads its oblast.
+    expect(await first('Saporischschja')).toMatchObject({ label: 'Zaporizhzhya', countryCode: 'ua', lat: 47.852 })
+    expect(await first('Mykolajiw')).toMatchObject({ label: 'Mykolayiv', countryCode: 'ua', lat: 46.976 })
     await as('it', itNames)
     expect(await first('Kiev')).toMatchObject({ label: 'Kyiv', countryCode: 'ua' })
     await as('uk', ukNames)
