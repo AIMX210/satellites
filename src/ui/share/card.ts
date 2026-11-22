@@ -471,23 +471,13 @@ function wordSegmenter(locale: Locale) {
   return segmenters.get(locale)
 }
 
-/** No-break spaces (and the word joiner) at a piece's start or end: no line breaks on either side of one. */
-const GLUE_START = /^[\u00a0\u202f\u2007\u2060]/
-const GLUE_END = /[\u00a0\u202f\u2007\u2060]$/
-
-/**
- * The pieces of a run written without spaces, each a place a line may break before (by word; by character without
- * Intl.Segmenter). Intl.Segmenter makes a no-break space a piece of its own ("12,345", "\u00a0", "张"), so a piece that
- * starts with one, or follows one, joins the piece before it: zh-Hans "12,345\u00a0张图像已公开。" breaks after the 张, as the
- * preview and satori break it, never between the count and its noun.
- */
+/** The pieces of a run written without spaces, each a place a line may break before (by word; by character without Intl.Segmenter). */
 function spacelessPieces(text: string, locale: Locale): string[] {
   const seg = wordSegmenter(locale)
   const raw = seg ? Array.from(seg.segment(text), (x) => x.segment) : Array.from(text)
   const out: string[] = []
   for (const piece of raw) {
-    const prev = out[out.length - 1]
-    if (prev !== undefined && (NO_START.test(piece) || NO_END.test(prev) || GLUE_START.test(piece) || GLUE_END.test(prev))) out[out.length - 1] += piece
+    if (out.length && (NO_START.test(piece) || NO_END.test(out[out.length - 1]))) out[out.length - 1] += piece
     else out.push(piece)
   }
   return out
