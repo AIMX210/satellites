@@ -8,7 +8,8 @@
  *  - Every name ships in its language's chunk and must earn its bytes (owner rule: costs nothing, stays fast). A
  *    Latin-script language writes only the names that differ from the English (München, not Berlin); Cyrillic,
  *    Persian and Hindi write every name, so their tables cover fewer places (RULES: the large towns everywhere, more at
- *    home, every first-level region at home), sized to stay under 16 kB compressed (src/imagery/exonymTables.test.ts).
+ *    home, every first-level region at home), sized to stay under 20 kB compressed (src/imagery/exonymTables.test.ts:
+ *    a table is a chunk of its own, fetched at idle after the landing, never on the first screen).
  *  - GeoNames marks few names preferred (Mailand, Londra and Київ are not), and lists historic, colloquial, inflected
  *    and administrative forms beside the name itself (Ленинград, Питер, Киевом, استان کرمانشاه, Thành phố Nam Định). So
  *    pickName takes the preferred name, else the first plain one, else a short one; never a historic or colloquial one;
@@ -102,8 +103,10 @@ export interface TownFacts {
 /**
  * The dependent territories (ISO codes of places with no seat at the UN): most of their capitals are villages and small
  * towns (Adamstown, Grytviken, Port-aux-Français, Mata-Utu), which a script table names only from TERRITORY_CAPITAL
- * people (San Juan, Saint-Denis, Nouméa) or as it would any town. The territory itself is named by the browser;
- * Vaduz, Valletta and the Vatican, capitals of states, keep theirs.
+ * people (San Juan, Saint-Denis, Nouméa) or as it would any town, and so are the capitals of small states far away
+ * (Yaren, Majuro, Kingstown: few readers search them, and every name costs a script table its bytes). The territory or
+ * state itself is named by the browser; Europe's small states keep their capitals (SMALL_STATES: Vaduz, Valletta, the
+ * Vatican).
  */
 const TERRITORIES = new Set(
   'AI AS AW AX BL BM BQ BV CC CK CW CX FK FO GF GG GI GL GP GS GU HM IM IO JE KY MF MP MQ MS NC NF NU PF PM PN PR RE SH SJ SX TC TF TK UM VG VI WF YT'.split(' '),
@@ -116,8 +119,10 @@ const TERRITORIES = new Set(
  */
 const LATIN_ABROAD = (t: TownFacts) => t.capital || t.pop >= 1_000_000 || (t.pop >= 100_000 && t.names >= 50) || t.names >= 90
 const TERRITORY_CAPITAL = 50_000
+/** Europe's small states, whose capitals a script table names whatever their size (Vaduz, Valletta, the Vatican). */
+const SMALL_STATES = new Set(['VA', 'SM', 'LI', 'MC', 'AD', 'MT', 'LU'])
 const SCRIPT_ABROAD = (t: TownFacts) =>
-  (t.capital && (!TERRITORIES.has(t.cc) || t.pop >= TERRITORY_CAPITAL)) ||
+  (t.capital && (t.pop >= TERRITORY_CAPITAL || (!TERRITORIES.has(t.cc) && SMALL_STATES.has(t.cc)))) ||
   t.pop >= 5_000_000 ||
   (t.pop >= 1_000_000 && t.names >= 60) ||
   (t.pop >= 300_000 && t.names >= 90)

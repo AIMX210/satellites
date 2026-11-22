@@ -21,12 +21,21 @@
  * Source: GeoNames (CC BY 4.0).
  */
 import { spawn } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createInterface } from 'node:readline'
 import { gzipSync } from 'node:zlib'
 import { FEATURES, featurePop } from './features'
 import { LANDMARKS } from './landmarks'
+import { CURATED_NAMES } from '../src/i18n/en/plain/placeNames'
+import { EXAMPLE_PLACES, SURPRISE_PLACES } from '../src/ui/landing/places'
+import dePlaces from '../src/i18n/de/places'
+import itPlaces from '../src/i18n/it/places'
+import ukPlaces from '../src/i18n/uk/places'
+import ruPlaces from '../src/i18n/ru/places'
+import viPlaces from '../src/i18n/vi/places'
+import faPlaces from '../src/i18n/fa/places'
+import hiPlaces from '../src/i18n/hi/places'
 import { placeKey } from '../src/imagery/placeKey'
 import {
   addDisplay,
@@ -85,6 +94,36 @@ const WATER_SPELLINGS: Record<string, readonly string[]> = { 'Sea of Japan': ['J
 const SEAT_MIN_POP = 20_000
 /** How far from its point a landmark's GeoNames feature may be, in degrees (a lake's or a reef's point is far off). */
 const LANDMARK_REACH = 1
+/**
+ * The landing's curated places (example chips and Surprise me) as each language's translators named them
+ * (src/i18n/<locale>/places.ts, the guides' §4.3): the offline list carries them under their English label, so a search
+ * shows and finds them by the same name the chip does (Tschernobyl, Етна, Piramidi di Giza).
+ */
+const CURATED_IN: Record<Lang, Record<string, { label: string }>> = {
+  de: dePlaces,
+  it: itPlaces,
+  uk: ukPlaces,
+  ru: ruPlaces,
+  vi: viPlaces,
+  fa: faPlaces,
+  hi: hiPlaces,
+}
+/** The offline list's landmark rows (`CC|key`): a curated place that is a city has none (the town's row is it). */
+const LANDMARK_ROWS = new Set(
+  readFileSync(join('public/places', readdirSync('public/places')[0], 'l.txt'), 'utf8')
+    .split('\n')
+    .map((l) => l.split('|'))
+    .filter((f) => f.length >= 4)
+    .map((f) => `${f[3]}|${placeKey(f[0])}`),
+)
+const CURATED = [...EXAMPLE_PLACES, ...SURPRISE_PLACES]
+  .map((p) => ({
+    id: Object.keys(CURATED_NAMES).find((id) => CURATED_NAMES[id as keyof typeof CURATED_NAMES].label === p.label)!,
+    english: p.label,
+    cc: (p.countryCode ?? '').toUpperCase(),
+  }))
+  .filter((c) => LANDMARK_ROWS.has(`${c.cc}|${placeKey(c.english)}`))
+
 /** The countries some language names its features in (Rules.home): their features are read from allCountries. */
 const FEATURE_HOMES = new Set(LANGS.flatMap((l) => RULES[l].home.filter((h) => !h.includes('.'))))
 /**
@@ -412,6 +451,17 @@ async function main() {
       const english = [...englishOf(id, w.name, rules.latin), ...(WATER_SPELLINGS[w.name] ?? [])]
       addDisplay(table, { english, cc: '', region: false, pop: w.names }, shown)
       if (w.cc) addDisplay(table, { english: [w.name], cc: w.cc, region: false, pop: w.names }, shown, { landmark: sharedWithTown(w.cc, w.name) })
+    }
+    // The curated places the offline list has a landmark row for, as the language's own copy names them, where the table
+    // has no name for that key yet.
+    for (const c of CURATED) {
+      const shown = CURATED_IN[lang][c.id]?.label
+      const landmark = sharedWithTown(c.cc, c.english)
+      if (!shown || !c.cc || table.get(c.cc)?.has(`${landmark ? '^' : ''}${placeKey(c.english)}`)) continue
+      addDisplay(table, { english: [c.english], cc: c.cc, region: false, pop: 1e6, home: atHome(rules, c.cc, '') }, cleanName(shown, lang), {
+        forced: true,
+        landmark,
+      })
     }
     // Hand-made names given by English name (`CC:English`, `CC:*English` for a region, `CC:#English` for a region's own
     // label), countryless or in a country: written as given. A spelling of a place the table already names so (Photon's

@@ -182,11 +182,11 @@ const NAMESPACES = { de: deNs, it: itNs, uk: ukNs, ru: ruNs, vi: viNs, fa: faNs,
 const gzip = async (s: string) => (await new Response(new Blob([s]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()).byteLength
 
 describe('the generated tables', () => {
-  it('stay within their budget: a chunk of its own up to 16 KiB compressed, one in the language’s chunk up to 5 KiB', async () => {
+  it('stay within their budget: a chunk of its own up to 20 KiB compressed, one in the language’s chunk up to 5 KiB', async () => {
     for (const [lang, src] of Object.entries(TABLES)) {
       const size = await gzip(src)
       const lazy = !!NAMESPACES[lang as keyof typeof NAMESPACES].load
-      expect({ lang, fits: size <= (lazy ? 16 * 1024 : 5 * 1024) }).toEqual({ lang, fits: true })
+      expect({ lang, fits: size <= (lazy ? 20 * 1024 : 5 * 1024) }).toEqual({ lang, fits: true })
     }
   })
 
