@@ -181,7 +181,8 @@ export function shownCountryName(cc: string, locale: Locale): string {
  * another name, 3+ letters ("pyramids", "giza"), ranked as a small one. Rejects only if no file can be loaded.
  *
  * `alternates` are the places the query names in the visitor's language (./exonymSearch.ts: Москва
- * for Moscow, Hà Nội for Hanoi): each is looked up in its English name's file, by name and country, and ranked as the
+ * for Moscow, Hà Nội for Hanoi): each is looked up in its English name's file, by name and country (a country by its
+ * code alone: the list's name for it may not be the browser's, Palestinian Territory for Palestine), and ranked as the
  * place itself would be (its people, the exact bonus if the query is its whole name), so the capital Hà Nội leads the
  * hamlet of that name. Three rules settle the names a language shares between places: a place named exactly so in
  * the language's `home` countries leads one abroad (HOME_BONUS: Thái Nguyên is the Vietnamese city, not Taiyuan), and
@@ -253,8 +254,14 @@ export async function searchLocal(
   lookups.forEach(({ i, key }, n) => {
     const a = alternates[i]
     const exact = a.exact && (!asTyped || verbatim(a.shown) === typed)
+    // A country is its code's country row, whatever the list calls it: its name there is GeoNames' (Palestinian
+    // Territory, Turkey), the browser's English one may be another (Palestine, Türkiye). Once, if two files have it.
+    const isIt = (r: LocalPlace) =>
+      a.kind === 'country'
+        ? r.kind === 'c' && !hits.some((h) => h.r === r)
+        : r.key === key && KINDS[a.kind].includes(r.kind)
     for (const r of rowsOf(named[n]))
-      if (r.key === key && r.cc === a.cc && KINDS[a.kind].includes(r.kind))
+      if (r.cc === a.cc && isIt(r))
         hits.push({ r, score: r.p + (exact ? EXACT_BONUS + homeBonus(r) : 0), exact, named: a.kind === 'town', shown: a.shown })
     if ((a.kind === 'town' || a.kind === 'feature') && key === a.key)
       // A landmark by the visitor's name for it ranks as by another of its names: in full as a large city, else as a

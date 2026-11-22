@@ -18,12 +18,20 @@ import ukNames from '@/i18n/uk/exonyms.gen'
 import ruNames from '@/i18n/ru/exonyms.gen'
 import faNames from '@/i18n/fa/exonyms.gen'
 import hiNames from '@/i18n/hi/exonyms.gen'
-import { exonymSearch, typedKey } from './exonymSearch'
+import { exonymSearch, LIST_COUNTRY_NAMES, typedKey } from './exonymSearch'
 import { displayLabel, reversePlace, searchPlaces } from './geocode'
-import { ensureExonyms, exonymAlternates, exonymHome } from './exonyms'
-import { countryName, searchLocal } from './localPlaces'
+import { englishCountryKey, ensureExonyms, exonymAlternates, exonymHome } from './exonyms'
+import { countryName, parsePlaces, searchLocal, shownCountryName } from './localPlaces'
+import { PLACES_VERSION } from './localPlaces.gen'
+import { placeKey } from './placeKey'
 
 const FILES = import.meta.glob<string>('/public/places/**/*.txt', { query: '?raw', import: 'default' })
+// Node's file system by a runtime specifier (the app's tsconfig has no Node types), as src/styles/scriptFonts.test.ts.
+interface NodeFs {
+  readdirSync(path: string): string[]
+  readFileSync(path: string, encoding: 'utf8'): string
+}
+const fs = (await import('node:fs' as string)) as NodeFs
 
 /** Serves the committed place files; any other request (a network geocoder) is recorded and answered empty. */
 function serveFiles() {
@@ -289,6 +297,57 @@ describe('searching in the visitor’s own names (real data)', () => {
     await as('hi', hiNames)
     for (const [q, name] of [['टेक्सास', 'टेक्सास'], ['वुहान', 'वुहान'], ['लेह', 'लेह'], ['एफ़िल टॉवर', 'एफ़िल टॉवर']]) expect([q, await shown(q)]).toEqual([q, name])
     expect(files.network()).toEqual([])
+  })
+
+  it('finds a country the list names otherwise by the browser’s name for it, offline and first', async () => {
+    const files = serveFiles()
+    const first = async (q: string) => (await searchPlaces(q))[0]
+    const palestine = { label: 'Palestinian Territory', countryCode: 'ps' }
+    // The list says Palestinian Territory (GeoNames), the browser Palestine or Palestinian Territories (CLDR).
+    const asks: [keyof typeof HOME, string, string[]][] = [
+      ['ru', ruNames, ['Палестина', 'Палестинские территории']],
+      ['uk', ukNames, ['Палестина']],
+      ['fa', faNames, ['فلسطین']],
+      ['hi', hiNames, ['फ़िलिस्तीन', 'फिलिस्तीन']],
+      ['it', itNames, ['Palestina']],
+      ['de', deNames, ['Palästina', 'Palästinensische Autonomiegebiete']],
+    ]
+    for (const [lang, names, qs] of asks) {
+      await as(lang, names)
+      for (const q of qs) expect([lang, q, await first(q)]).toMatchObject([lang, q, palestine])
+    }
+    // And in a file of its own name, not the browser's: The Netherlands, Ivory Coast, Democratic Republic of the Congo.
+    await as('de', deNames)
+    expect(await first('Niederlande')).toMatchObject({ label: 'The Netherlands', countryCode: 'nl' })
+    expect(await first('Türkei')).toMatchObject({ label: 'Turkey', countryCode: 'tr' })
+    await as('vi')
+    expect(await first('Thành Vatican')).toMatchObject({ countryCode: 'va' })
+    expect(await first('Hà Lan')).toMatchObject({ label: 'The Netherlands', countryCode: 'nl' })
+    expect(await first('Thổ Nhĩ Kỳ')).toMatchObject({ label: 'Turkey', countryCode: 'tr' })
+    await as('ru', ruNames)
+    expect(await first('Кот-д’Ивуар')).toMatchObject({ label: 'Ivory Coast', countryCode: 'ci' })
+    const congo = { label: 'Democratic Republic of the Congo', countryCode: 'cd' }
+    expect(await first('Конго - Киншаса')).toMatchObject(congo)
+    expect(await first('Мьянма (Бирма)')).toMatchObject({ label: 'Myanmar', countryCode: 'mm' })
+    // A code the browser reads as another's (CS, Serbia and Montenegro, as Serbia) is not that country.
+    expect((await searchPlaces('Сербия')).map((p) => p.label)).toEqual(['Serbia'])
+    expect(files.network()).toEqual([])
+  })
+
+  it('knows the list’s own name for each country it names otherwise than the browser', () => {
+    const dir = decodeURIComponent(new URL(`../../public/places/${PLACES_VERSION}/s/`, import.meta.url).pathname)
+    const rows = fs
+      .readdirSync(dir)
+      .flatMap((f) => parsePlaces(fs.readFileSync(`${dir}${f}`, 'utf8')))
+      .filter((r) => r.kind === 'c' && new Intl.Locale(`und-${r.cc}`).region === r.cc)
+    expect(rows.length).toBeGreaterThan(240)
+    for (const r of rows) {
+      const browser = [countryName(r.cc), shownCountryName(r.cc, 'en')].map(englishCountryKey)
+      const listed = placeKey(LIST_COUNTRY_NAMES[r.cc] ?? '')
+      expect([r.cc, browser.includes(r.key) || listed === r.key]).toEqual([r.cc, true])
+    }
+    for (const [cc, name] of Object.entries(LIST_COUNTRY_NAMES))
+      expect([cc, rows.find((r) => r.cc === cc)?.key]).toEqual([cc, placeKey(name)])
   })
 
   it('finds a German or Italian exonym, and a country by the browser’s name for it', async () => {
