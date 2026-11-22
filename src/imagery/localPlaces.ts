@@ -128,9 +128,10 @@ export function countryName(cc: string, locale: Locale = 'en'): string {
  * The countries read by CLDR's short name on screen (owner, 2026-11-19): Hong Kong and Macao in every language, English
  * included (the long names are officialese in a where line: "Hong Kong SAR China", "R.A.S. chinoise de Hong Kong"), and
  * Palestine in Arabic and Indonesian (فلسطين, Palestina, for الأراضي الفلسطينية and Wilayah Palestina; the other
- * languages keep the long name). Never the short style wholesale: it turns the US and the UK into "US" and "UK".
+ * languages keep the long name), and the United States in Hindi (अमेरिका, as Hindi says it and its curated places
+ * write it, for संयुक्त राज्य). Never the short style wholesale: it turns the US and the UK into "US" and "UK".
  */
-const SHORT_NAMES: Record<string, true | readonly Locale[]> = { HK: true, MO: true, PS: ['ar', 'id'] }
+const SHORT_NAMES: Record<string, true | readonly Locale[]> = { HK: true, MO: true, PS: ['ar', 'id'], US: ['hi'] }
 
 /**
  * A country's name as the visitor reads it (geocode.ts displaySublabel): countryName in `locale`, or its CLDR short name

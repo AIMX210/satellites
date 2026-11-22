@@ -182,7 +182,7 @@ describe('countryName', () => {
     expect(countryName('HK')).toBe('Hong Kong SAR China')
   })
 
-  it('shows Hong Kong and Macao by their short names everywhere, Palestine in Arabic and Indonesian, and no other', () => {
+  it('shows Hong Kong and Macao by their short names everywhere, Palestine in Arabic and Indonesian, the US in Hindi, and no other', () => {
     expect(shownCountryName('hk', 'en')).toBe('Hong Kong')
     expect(shownCountryName('MO', 'en')).toBe('Macao')
     expect(shownCountryName('HK', 'fr')).toBe('Hong Kong')
@@ -193,6 +193,9 @@ describe('countryName', () => {
     expect(shownCountryName('PS', 'en')).toBe('Palestinian Territories')
     expect(shownCountryName('PS', 'de')).toBe('Palästinensische Autonomiegebiete')
     expect(shownCountryName('US', 'en')).toBe('United States')
+    expect(shownCountryName('US', 'hi')).toBe('अमेरिका')
+    expect(shownCountryName('US', 'ru')).toBe('Соединенные Штаты')
+    expect(shownCountryName('GB', 'hi')).toBe('यूनाइटेड किंगडम')
     expect(shownCountryName('GB', 'de')).toBe('Vereinigtes Königreich')
   })
 })
