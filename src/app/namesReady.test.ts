@@ -15,6 +15,17 @@ describe('placeNamesReady: what a report waits for before it names its place', (
     setBundleForTests('en', null)
   })
 
+  it('waits for nothing when nothing is on its way: the report goes on within a microtask', async () => {
+    // A layer handover (src/lib/backStack.ts) waits one microtask: the report must have gone on by then.
+    const order: string[] = []
+    const place: Place = { label: 'New York', lat: 43, lon: -75.5, source: 'search' }
+    const ready = placeNamesReady(place).then(() => order.push('ready'))
+    queueMicrotask(() => queueMicrotask(() => order.push('handover')))
+    await ready
+    await new Promise((r) => setTimeout(r, 0))
+    expect(order).toEqual(['ready', 'handover'])
+  })
+
   it('waits for a table still on its way, and for a link’s country, before resolving', async () => {
     const tiles: (() => void)[] = []
     vi.stubGlobal('fetch', async (input: string) => {
