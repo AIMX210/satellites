@@ -346,6 +346,11 @@ describe('searching in the visitor’s own names (real data)', () => {
     await as('vi')
     expect((await searchPlaces('Hà Nội')).map((p) => [p.label, p.lat])).toEqual([['Hanoi', 21.024]])
     expect((await searchPlaces('Đài Loan')).map((p) => [displayLabel(p), p.kind])).toEqual([['Đài Loan', undefined]])
+    // A country and its capital that read alike are two places, both shown.
+    await as('ru', ruNames)
+    const djibouti = await searchPlaces('Джибути')
+    const rows = djibouti.map((p) => [displayLabel(p), p.lat.toFixed(1)]).sort()
+    expect(rows).toEqual([['Джибути', '11.6'], ['Джибути', '11.8']])
     // English shows each row as it came.
     setBundleForTests('en', null)
     expect(read(await searchPlaces('Zaporizhzhya'))).toEqual(Array(3).fill('Zaporizhzhya · Zaporizhzhia, Ukraine'))

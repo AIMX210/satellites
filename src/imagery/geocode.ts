@@ -674,7 +674,8 @@ function echoes(admin1: string, name: string): boolean {
  * The places of a search as one list: the same rules as dedupePlaces, the names compared as the visitor reads them
  * (a city-state and its state, both Berlino; Huế and the province the table calls Huế, 14 km apart, are one row).
  * In a language with names, rows that read the same, name and where line, in one country are one row too, however far
- * apart: the best-ranked, or the country where a country and a region read alike (Đài Loan). Places of one name in
+ * apart: the best-ranked, or the country where a country and a region read alike (Đài Loan); never a country and a
+ * town (Джибути, the country and its capital). Places of one name in
  * one region read the same once named in the language (Запоріжжя · Запорізька область, Україна: the city and two
  * villages of that name; Hà Nội · Việt Nam: the capital and a hamlet), and rows nobody can tell apart are noise. A
  * city whose where line repeats its name is not its region's row (Санкт-Петербург · Санкт-Петербург, Россия, beside
@@ -694,7 +695,9 @@ function oneOfAlike(places: Place[], fixed = 0): Place[] {
   const reads: (string | undefined)[] = []
   for (const p of places) {
     const read = p.countryCode && `${p.countryCode.toLowerCase()}|${displayLabel(p)}|${displaySublabel(p) ?? ''}`
-    const at = read ? reads.indexOf(read) : -1
+    // A country and a town are two places someone means, however alike they read (Джибути, the country and its
+    // capital): only a country and a region (Đài Loan), or places of one kind, are one row.
+    const at = read ? reads.findIndex((r, i) => r === read && !countryAndTown(p, kept[i])) : -1
     if (at < 0) {
       kept.push(p)
       reads.push(read || undefined)
@@ -705,6 +708,12 @@ function oneOfAlike(places: Place[], fixed = 0): Place[] {
 
 /** Is the place a country itself: a row with no where line or kind, named as the browser or the list names it? */
 const isCountry = (p: Place) => !p.kind && !p.sublabel && !!p.countryCode && namesCountry(p.label, p.countryCode)
+
+/**
+ * Is one of the two a country and the other a town? A town is a row with no kind, and may read as the country itself:
+ * a capital named like its country has no where line (Djibouti's would only repeat its name).
+ */
+const countryAndTown = (a: Place, b: Place) => (isCountry(a) && !b.kind) || (isCountry(b) && !a.kind)
 
 /** `first`, then whatever in `more` is not already there (distinctAsShown's rules), at most MAX_RESULTS. */
 const appendNew = (first: Place[], more: Place[]) =>
