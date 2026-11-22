@@ -880,7 +880,7 @@
 /* The second line with the week's Share at its end: one baseline, no row of its own. The row takes the line's top
    margin (.moreInRow drops it), and the word never wraps or shrinks; the sentence wraps beside it if it must.
    The sentence is never narrower than its longest unbreakable run, so in a column too narrow for that run and the
-   word side by side (a 180 px landscape column: «Опубликовано», «1 713 снимков.») the word goes under the sentence,
+   word side by side (a 180 px landscape column: «Опубликовано», «Opublikowano») the word goes under the sentence,
    at its end, instead of over it. English's runs always fit beside it: its row is as it was. */
 .moreRow {
   display: flex;
@@ -972,11 +972,6 @@
 }
 .atLeastOff {
   display: none;
-}
-/* The animated count and the words its no-break space ties to it ("1 037 снимков."): a line may break on either side
-   of the count's box even against that space, never inside this span (Summary.tsx PhotosCount). */
-.held {
-  white-space: nowrap;
 }
 /* Why there is no photo: one plain sentence under the photos line. */
 .why {
