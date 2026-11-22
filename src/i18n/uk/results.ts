@@ -297,7 +297,8 @@ const results: typeof en = {
 
   // ── 02 / ПОВТОР ──────────────────────────────────────────────────────────────────────────
   replay: {
-    scrubLabel: 'Час кадру в межах прольоту',
+    // The replay's clock, as the HUD's «Повтор»: «кадр» is an image's word, and this is no image's capture time.
+    scrubLabel: 'Час у повторі прольоту',
     scrubValue: (tMinus: string, utc: string) => `${tMinus}, ${utc}`,
     play: 'Відтворити повтор',
     pause: 'Призупинити повтор',
