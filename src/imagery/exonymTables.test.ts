@@ -112,6 +112,29 @@ describe('choosing a name', () => {
     ])
   })
 
+  it('names a Vietnamese province and city under the geocoders’ spellings of it too', () => {
+    const forms = RULES.vi.regionForms!
+    expect(forms({ shown: 'Khánh Hòa', english: ['Khanh Hoa'] })).toEqual([
+      'Khanh Hoa',
+      'Khanh Hoa City',
+      'Khanh Hoa Province',
+      'Tỉnh Khánh Hòa',
+    ])
+    expect(forms({ shown: 'Huế', english: ['Thừa Thiên Huế Province'] })).toEqual([
+      'Thừa Thiên Huế',
+      'Hue',
+      'Hue City',
+      'Thành phố Huế',
+    ])
+    expect(forms({ shown: 'Thành phố Hồ Chí Minh', english: ['Ho Chi Minh City (HCMC)'] })).toEqual([
+      'Ho Chi Minh City (HCMC)',
+      'Ho Chi Minh',
+      'Ho Chi Minh City',
+      'Thành phố Hồ Chí Minh',
+    ])
+    expect(forms({ shown: 'Đắk Lắk', english: ['Dak Lak'] })).toContain('Dak Lak Province')
+  })
+
   it('cleans each language’s forms (native review, 2026-11-22)', () => {
     // Persian: the town of GeoNames' "City، Region", no direction marks, half-spaces where the parts join.
     expect(cleanName('فیلادلفیا، پنسیلوانیا', 'fa')).toBe('فیلادلفیا')
@@ -338,6 +361,31 @@ describe('the generated tables', () => {
       expect(crimea(src)).toEqual([krim, krim, krim])
     // BBC Hindi's Gaza and GeoNames' West Bank find them, and are never shown.
     expect([hi.includes('~Gaza=गज़ा'), hi.includes('~*West Bank=पश्चिमी तट')]).toEqual([true, true])
+  })
+
+  it('name Vietnam’s provinces under the geocoders’ spellings, so a where line says a city once (pre-ship)', () => {
+    const t = parseExonyms(vi)
+    const region = (english: string) => t.regions.get(`VN|${placeKey(english)}`)
+    // Photon's and Nominatim's states and cities (2026-11-22).
+    const states = ['Khanh Hoa province', 'Phu Tho province', 'Lâm Đồng Province', 'Bac Ninh City', 'Quang Ninh City']
+    expect(states.map(region)).toEqual([
+      'Khánh Hòa',
+      'Phú Thọ',
+      'Lâm Đồng',
+      'Bắc Ninh',
+      'Quảng Ninh',
+    ])
+    expect(['Quang Ninh', 'Thành phố Hà Nội', 'Ha Noi', 'Hồ Chí Minh', 'Thừa Thiên - Huế'].map(region)).toEqual([
+      'Quảng Ninh',
+      'Hà Nội',
+      'Hà Nội',
+      'Thành phố Hồ Chí Minh',
+      'Huế',
+    ])
+    // The city's row and its region's read alike, so a where line says it once (Hà Nội, Việt Nam).
+    expect(t.towns.get('VN|hanoi')).toBe(region('Thành phố Hà Nội'))
+    // A region's own label is unchanged: a province's is Tỉnh, a city's Thành phố.
+    expect([t.labels.get('VN|khanh hoa'), t.labels.get('VN|hanoi')]).toEqual(['Tỉnh Khánh Hòa', 'Thành phố Hà Nội'])
   })
 
   it('write Persian as fa.md §6.1 does: the ezafe’s hamza only on a final ه, no doubled ئ, no Arabic or Latin letters', () => {

@@ -1171,9 +1171,11 @@ Vietnamese readers, and the owner decides before `vi` is listed:
   follows each city's own name, as it does in every language. Gazetteer names are shown as they arrive, or as the
   generated table names them: Vietnam's towns and provinces in Vietnamese (*Hà Nội*, *Thành phố Hồ Chí Minh*, *Nghệ
   An*), a foreign place only where Vietnamese has a name of its own (*Luân Đôn*, *Bắc Kinh*, *Mát-xcơ-va*; *Kyiv* keeps
-  its own). *Sài Gòn* is never shown, and a search for it finds Ho Chi Minh City. The table names the Gaza Strip *Dải
-  Gaza* and the West Bank *Bờ Tây* (pre-ship review, 2026-11-22: «Gaza Strip» headlines read «… đã quan sát Gaza
-  Strip.»); *Gaza* keeps its own name.
+  its own). A where line names a province or city so whatever spelling the geocoder gives it (Photon's and Nominatim's
+  *Khanh Hoa province*, *Lâm Đồng Province*, *Bac Ninh City*, *Thành phố Hà Nội*: pre-ship review, 2026-11-22), and a
+  city's row and its region say it once (*One Pillar Pagoda · Hà Nội, Việt Nam*). *Sài Gòn* is never shown, and a
+  search for it finds Ho Chi Minh City. The table names the Gaza Strip *Dải Gaza* and the West Bank *Bờ Tây*
+  (pre-ship review, 2026-11-22: «Gaza Strip» headlines read «… đã quan sát Gaza Strip.»); *Gaza* keeps its own name.
 - Our copy takes no side: it says what the pictures show (the year, the date, the satellite). Never add *chiếm đóng*,
   *xâm lược*, *diệt chủng*, *khủng bố*, *giải phóng*, or either side's designation. If a line must say why a season is
   fixed, say *vùng chiến sự*.

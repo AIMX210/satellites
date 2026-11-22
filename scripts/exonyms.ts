@@ -83,6 +83,12 @@ export interface Rules {
    */
   spelledRegions?: readonly string[]
   /**
+   * The other spellings the geocoders give a region at home (Photon's and Nominatim's Khanh Hoa province, Bac Ninh
+   * City, Thành phố Hà Nội), from its name in the table (`shown`) and the data's English ones: each names it in a
+   * where line as the table does, so a line shows no province in English, nor a city twice (Hà Nội, Thành phố Hà Nội).
+   */
+  regionForms?: (region: { shown: string; english: readonly string[] }) => readonly string[]
+  /**
    * How many of the named features at home the offline list carries get their names (its lakes, castles, islands,
    * airports: scripts/features.ts), the best known first; none if unset. A Latin table writes only the ones that
    * differ.
@@ -171,6 +177,28 @@ const VIETNAMESE_REGION: Rules['regionLabel'] = ({ shown, cc, english, alts }) =
   if (english.some((e) => /\bprefecture\b/i.test(e))) return `Thủ đô ${shown}`
   return `Tỉnh ${shown}`
 }
+/**
+ * Vietnamese: the spellings Photon and Nominatim, asked in English, give the provinces and cities since the 2025
+ * merger (read 2026-11-22), beside GeoNames': without accents (Quang Ninh, Ha Noi), with "Province" or "City" after the
+ * name in either case (Khanh Hoa province, Lâm Đồng Province, Bac Ninh City and Quang Ninh City for provinces too), the
+ * data's name without its class word (Thừa Thiên Huế, which Photon still writes «Thừa Thiên - Huế»), and with the
+ * Vietnamese class noun before it, as OpenStreetMap names a place it has no English name for (Thành phố Hà Nội; Tỉnh
+ * Thanh Hóa). A key folds accents and case (placeKey), so one spelling stands for both ways of writing it.
+ */
+const VIETNAMESE_FORMS: Rules['regionForms'] = ({ shown, english }) => {
+  const bare = stripAdmin(shown, 'vi')
+  const plain = bare.normalize('NFD').replace(/\p{M}/gu, '').replace(/Đ/g, 'D').replace(/đ/g, 'd')
+  const city = bare !== shown || VIETNAMESE_CITIES.has(bare)
+  return [
+    ...new Set([
+      ...english.map((e) => e.replace(/ (Province|City)$/i, '')),
+      plain,
+      `${plain} City`,
+      ...(city ? [] : [`${plain} Province`]),
+      `${city ? 'Thành phố' : 'Tỉnh'} ${bare}`,
+    ]),
+  ]
+}
 
 export const RULES: Record<Lang, Rules> = {
   de: {
@@ -231,6 +259,7 @@ export const RULES: Record<Lang, Rules> = {
     ownNamesakes: ['CN', 'TW'],
     homeFeatures: 2_000,
     regionLabel: VIETNAMESE_REGION,
+    regionForms: VIETNAMESE_FORMS,
   },
   fa: {
     script: PERSIAN_NAME,

@@ -414,7 +414,9 @@ async function main() {
       const english = !rules.latin && (home || rules.spelledRegions?.includes(r.cc)) ? regionEnglish(id, r.name) : spellings(id, r.name)
       if (!shown) continue
       const pop = regionPop.get(r.code) ?? 0
-      addDisplay(table, { english, cc: r.cc, region: true, pop, home }, shown, { forced })
+      // At home, under the geocoders' other spellings too (Rules.regionForms: Khanh Hoa province, Thành phố Hà Nội).
+      const forms = home ? (rules.regionForms?.({ shown, english }) ?? []) : []
+      addDisplay(table, { english: [...english, ...forms], cc: r.cc, region: true, pop, home }, shown, { forced })
       // A region named like a town of its country gets a label of its own (Rules.regionLabel: استان قم, Tỉnh Thanh Hóa),
       // so the two rows of a search differ; its where-line name stays the plain one.
       const likeTown =
