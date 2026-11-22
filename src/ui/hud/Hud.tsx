@@ -51,6 +51,18 @@ const TOP_GAP = 8
 const MIN_ROW_GAP = 14
 
 /**
+ * What every panel beside the HUD adds to the inset it publishes, between its edge and the free rect (results/shell.ts
+ * useInsets, the landing's TEXT_CLEAR, ErrorNotice): the panel's own edge is that much inside its inset.
+ */
+const PANEL_CLEAR = 24
+
+/**
+ * Least clear space between the language's name and a panel's edge before the language steps down (useLanguageRoom).
+ * English keeps 5 px at 844 × 390, clear of the panel's hairline; it was under it at 812 × 375 (by 6 px).
+ */
+const PANEL_GAP = 4
+
+/**
  * After boot, the lines start wiping in this long after the loading screen starts to leave (src/app/bootCurtain.ts:
  * its wordmark glides 760 ms onto this one). The version and About lines wait for the logo to land (it passes
  * over their spot on its way in: they start at 780 / 820 ms, after the 760 ms glide, now that the wipes run on CSS
@@ -172,6 +184,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
   const topRight = useRef<HTMLDivElement>(null)
   useTopInset(topLeft, topRight)
   useCrowdedLine(topLeft, topRight)
+  useLanguageRoom(topLeft)
   // The stacked sun line gives way to the scene time during a replay and comes back after it: its
   // wipe plays with the HUD's first entrance only, never again on its return (one entrance per element).
   // Set during the render that unmounts it, so its `skip` never changes while it is mounted.
@@ -333,6 +346,74 @@ function useCrowdedLine(topLeft: RefObject<HTMLDivElement | null>, topRight: Ref
       window.removeEventListener('resize', check)
     }
   }, [topLeft, topRight])
+}
+
+/**
+ * Landscape phones: the results panel docks beside the top-left readout and reaches up to the bezel, and "How this
+ * works | language" ran under its edge in the longer languages (at 844 × 390 Dutch by 10 px, Russian by 15; at
+ * 812 × 375 and 800 × 360 English too, by 6 and 10). Where the row would come closer than PANEL_GAP to a panel's edge,
+ * the language steps down to a line of its own under "How this works", which stays whole on its line: every word on
+ * the left is needed (the language's full name, never a code, owner 2026-11-19), and a third line costs only some globe
+ * there (the top inset grows, so the camera frames below it). A portrait phone has no room for a third line (the
+ * results sheet's top snap), but nothing beside the row there either: its panels publish only a bottom inset.
+ *
+ * The panels publish what they cover (store.uiInsets, each PANEL_CLEAR wider than the panel), so this needs no panel's
+ * markup. The row's width is the About link's plus the language's as it sits in the row (its hairline included, read
+ * while it is in the row), so it is the same on either layout and nothing flips back and forth. Right to left the
+ * corners and the dock swap: the row is at the right, a panel's edge is its left inset. Written to the DOM like
+ * useCrowdedLine: the line remounts on boot, which the observers see.
+ */
+function useLanguageRoom(topLeft: RefObject<HTMLDivElement | null>) {
+  useLayoutEffect(() => {
+    const tl = topLeft.current
+    if (!tl || typeof ResizeObserver === 'undefined') return
+    // The switcher's hairline and its margins: in the row, it is what the trigger has beyond the name.
+    let rule = 0
+    const watched = new WeakSet<Element>()
+    const watch = (el: Element) => {
+      if (watched.has(el)) return
+      watched.add(el)
+      ro.observe(el)
+    }
+    const check = () => {
+      const row = tl.querySelector<HTMLElement>(`.${s.aboutLine}`)
+      const trigger = row?.querySelector<HTMLElement>('[aria-haspopup="menu"]')
+      const name = trigger?.querySelector<HTMLElement>('[lang]')
+      if (!row || !trigger || !name) return
+      watch(row)
+      watch(name)
+      const about = row.querySelector<HTMLElement>(`.${s.about}`)
+      const below = row.hasAttribute('data-lang-below')
+      const nameW = name.getBoundingClientRect().width
+      if (!below) rule = trigger.getBoundingClientRect().width - nameW
+      const need = (about?.getBoundingClientRect().width ?? 0) + rule + nameW
+      const r = row.getBoundingClientRect()
+      if (!r.width) return
+      const { left, right } = useApp.getState().uiInsets
+      const rtl = getComputedStyle(tl).direction === 'rtl'
+      const fits = rtl
+        ? left <= 0 || r.right - need - PANEL_GAP >= left - PANEL_CLEAR
+        : right <= 0 || r.left + need + PANEL_GAP <= window.innerWidth - right + PANEL_CLEAR
+      row.toggleAttribute('data-lang-below', !fits)
+    }
+    const ro = new ResizeObserver(check)
+    ro.observe(tl)
+    // A panel that arrives, leaves or moves publishes new insets.
+    const unsub = useApp.subscribe((st, prev) => {
+      if (st.uiInsets.left !== prev.uiInsets.left || st.uiInsets.right !== prev.uiInsets.right) check()
+    })
+    // A remounted line (the boot entrance) is a new element.
+    const mo = new MutationObserver(check)
+    mo.observe(tl, { childList: true })
+    window.addEventListener('resize', check)
+    check()
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+      unsub()
+      window.removeEventListener('resize', check)
+    }
+  }, [topLeft])
 }
 
 /** Publish store.uiInsets.top = the lower of the two top readouts' bottoms + TOP_GAP. */

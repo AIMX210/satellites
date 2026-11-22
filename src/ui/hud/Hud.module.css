@@ -171,6 +171,12 @@
     padding: 22px 0 8px;
     margin: -22px 0 -8px;
   }
+  /* With the language on the line below (Hud.tsx useLanguageRoom), it ends at that line, where the language's own
+     box starts (LanguageSwitcher.module.css), and reaches further up instead. */
+  .aboutLine[data-lang-below] .about {
+    padding: 27px 0 3px;
+    margin: -27px 0 -3px;
+  }
 }
 /* A box ring would collide with the wordmark line 3px above; a signal underline marks focus instead
    (on the words only: the key cap beside them keeps its own frame). */
@@ -208,6 +214,13 @@
    class). */
 .aboutLine {
   min-width: 0;
+}
+/* Beside a panel that would cover the language (Hud.tsx useLanguageRoom): the language on a line of its own under
+   "How this works", the corner's line gap apart (the switcher drops its hairline and turns its touch box down). */
+.aboutLine[data-lang-below] {
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: inherit;
 }
 /* The phone's sun line, where it would crowd "How this works" (Hud.tsx useCrowdedLine): kept in place, unseen. */
 .sunLine[data-crowded] {
