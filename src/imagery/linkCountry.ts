@@ -12,8 +12,8 @@
  * (English fetches nothing for it), so a name is never shown first one way and then another; and before a switch to a
  * language with a table shows the link's place on screen in it (the page was in English until then). A report waits
  * for it EXONYM_WAIT_MS at most (waitForLinkCountry), as for the table: a tile that stalls must not hold the report,
- * and the boot curtain over it, for ever. Past that wait the link is countryless for the rest of the page, and an
- * answer that comes later is not applied.
+ * and the boot curtain over it, for ever. Past that wait, or once its name has been shown without a country (a switch
+ * waits 3 s at most too), the link is countryless for the rest of the page: an answer that comes later is not applied.
  */
 import type { Place } from '@/types'
 import { EXONYM_WAIT_MS, exonymsActive } from './exonyms'
@@ -33,7 +33,10 @@ const keyOf = (p: Pick<Place, 'label' | 'lat' | 'lon'>) => `${p.lat.toFixed(3)},
 export const needsLinkCountry = (place: Place, forSwitch = false): boolean =>
   place.source === 'url' && !place.countryCode && place.canonicalLabel === undefined && (forSwitch || exonymsActive()) && !resolved.has(keyOf(place))
 
-/** Settle a link's lookup, unless it is settled already (countryless once a wait gave up: a later answer is late). */
+/**
+ * Settle a link's lookup, unless it is settled already: countryless once a wait gave up or the name was shown without
+ * it, so a later answer is late.
+ */
 function settle(key: string, found: Linked) {
   if (!resolved.has(key)) resolved.set(key, found)
 }
@@ -73,9 +76,16 @@ export async function waitForLinkCountry(place: Pick<Place, 'label' | 'lat' | 'l
   settle(key, {})
 }
 
-/** A linked place as its name is looked up: with the country (and kind) resolveLinkCountry found, if any. */
+/**
+ * A linked place as its name is looked up: with the country (and kind) resolveLinkCountry found, if any. Asked in a
+ * language with names before the lookup has answered (a switch that stopped waiting for it), the name is shown without
+ * a country now, and so the link stays countryless for the rest of the page: an answer that comes later would rename
+ * the place on screen. On an English page nothing is settled: a switch still looks the country up.
+ */
 export function linkedForName<P extends Pick<Place, 'label' | 'lat' | 'lon' | 'countryCode' | 'kind'>>(place: P): P {
   if (place.countryCode) return place
-  const found = resolved.get(keyOf(place))
+  const key = keyOf(place)
+  if (exonymsActive()) settle(key, {})
+  const found = resolved.get(key)
   return found?.countryCode ? { ...place, ...found } : place
 }

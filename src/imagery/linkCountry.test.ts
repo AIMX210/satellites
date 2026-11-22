@@ -64,4 +64,24 @@ describe('a linked place’s name', () => {
     await ensureExonyms()
     expect(displayLabel(linkedForName(p))).toBe('Kyjiw')
   })
+
+  it('keeps the name a link was shown under: an answer after it was shown countryless is not applied', async () => {
+    const held: (() => void)[] = []
+    vi.stubGlobal('fetch', async (input: string) => {
+      const file = FILES[`/public${String(input)}`]
+      await new Promise<void>((done) => held.push(done))
+      return file ? new Response(await file()) : new Response('', { status: 404 })
+    })
+    const p = link('Moscow', 55.756, 37.617)
+    expect(displayLabel(linkedForName(p))).toBe('Moscow') // on screen in English
+    expect(needsLinkCountry(p, true)).toBe(true) // a switch still looks its country up
+    const lookup = resolveLinkCountry(p) // the switch's, stalled
+    // The switch stopped waiting and shows the page in German: the name, without its country.
+    setBundleForTests('de', { exonyms: { names: deNames, countries: true } })
+    expect(displayLabel(linkedForName(p))).toBe('Moscow')
+    await vi.waitFor(() => expect(held.length).toBeGreaterThan(0))
+    for (const done of held) done()
+    await lookup
+    expect(displayLabel(linkedForName(p))).toBe('Moscow') // not Moskau
+  })
 })
