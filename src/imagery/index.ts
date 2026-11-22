@@ -34,7 +34,7 @@ export { spotCloud, spotCheck, classifyScl, classifySclArea, classifyQaPixel, ty
 export type { SpotCloud } from './cloud'
 
 export { searchPlaces, reversePlace, locateMe, timeZoneAt, ensureTz, tzReady, nauticalZone, coordinateLabel, displayLabel, displaySublabel, parseCoordinates, LocateError } from './geocode'
-export { ensureExonyms, exonymsReady } from './exonyms'
+export { ensureExonyms, exonymsReady, onExonymsReady } from './exonyms'
 export { needsLinkCountry, resolveLinkCountry, waitForLinkCountry, linkedForName } from './linkCountry'
 export type { LocateErrorCode } from './geocode'
 

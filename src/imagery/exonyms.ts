@@ -76,6 +76,21 @@ let parsed: { src: string; table: ExonymTable } | undefined
 /** Namespaces whose table arrived after a name was shown without it: kept out for the rest of the page. */
 const late = new WeakSet<object>()
 
+/** Told whenever the active language's names may have become ready (onExonymsReady). */
+const readyListeners = new Set<() => void>()
+const tellReady = () => readyListeners.forEach((fn) => fn())
+/** Table downloads whose arrival tells them (one hook a download, however many calls wait for it). */
+const hooked = new WeakSet<Promise<void>>()
+
+/**
+ * Call `fn` whenever the active language's names may have become ready (exonymsReady): its table has arrived, or is
+ * kept out as late because a name was shown before it. What waits to name a place until then (the tab's title,
+ * src/app/head.ts) names it once, with the name the page shows. Asked of a table ensureExonyms has asked for.
+ */
+export function onExonymsReady(fn: () => void): void {
+  readyListeners.add(fn)
+}
+
 /** The active language's table source, or '' for one that has none (English) or whose table is not in yet. */
 function activeSource(shown: boolean): string {
   const m = msgs(enExonyms)
@@ -83,6 +98,7 @@ function activeSource(shown: boolean): string {
   // A name shown now, before the language's own chunk of names is in: this page keeps showing it as it came.
   if (!m.names && shown && m.load) {
     late.add(m)
+    queueMicrotask(tellReady) // not while the name is still being rendered
     if (import.meta.env.DEV) console.warn('A place name was shown before its language’s names loaded; they stay as they came on this page.')
   }
   return m.names
@@ -138,8 +154,13 @@ export async function ensureExonyms(): Promise<void> {
     (x) => void (search = x),
     () => void (searchLoad = undefined),
   )
+  const table = exonymsReady() ? undefined : m.load?.()
+  if (table && !hooked.has(table)) {
+    hooked.add(table)
+    void table.then(tellReady, () => undefined)
+  }
   const pending = (p: Promise<void> | undefined): p is Promise<void> => !!p && !overdue.has(p)
-  const downloads = [exonymsReady() ? undefined : m.load?.(), searchLoad].filter(pending)
+  const downloads = [table, searchLoad].filter(pending)
   if (!downloads.length) return
   const both = Promise.all(downloads).catch(() => {
     /* offline or a stale build: names as they came */

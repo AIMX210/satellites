@@ -223,6 +223,12 @@ describe('headFor: the tab title and the canonical link', () => {
     expect(headFor('results', munich, undefined, { ...EN, name }).title).toBe('Munich: this week’s satellite images and passes · Watched')
   })
 
+  it('leaves the tab\'s title as it is while the name the page will show is not known yet', () => {
+    const page = { ...DE, name: () => undefined }
+    expect(headFor('computing', tokyo, undefined, page)).toEqual({ title: undefined, canonical: '/' })
+    expect(headFor('idle', undefined, undefined, page)).toEqual({ title: DE.home, canonical: '/' })
+  })
+
   it('knows a place page\'s place under the name another language gives it', () => {
     const giza: PagePlace = { path: '/place/pyramids-of-giza', label: 'Pyramids of Giza', lat: 29.979, lon: 31.134 }
     const shown = { label: 'Pyramides de Gizeh', canonicalLabel: 'Pyramids of Giza', lat: 29.979, lon: 31.134 }
