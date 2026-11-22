@@ -13,6 +13,7 @@ import {
   persianForm,
   pickName,
   serializeDisplay,
+  stripAdmin,
   type AltName,
   type DisplayTable,
 } from '../../scripts/exonyms'
@@ -85,6 +86,50 @@ describe('choosing a name', () => {
     expect(displayName([alt('Città del Messico')], 'it')).toBe('Città del Messico')
     expect(displayName([alt('Provincia di Teheran')], 'it', { region: true })).toBe('Teheran')
   })
+
+  it('cleans each language’s forms (native review, 2026-11-22)', () => {
+    // Persian: the town of GeoNames' "City، Region", no direction marks, half-spaces where the parts join.
+    expect(cleanName('فیلادلفیا، پنسیلوانیا', 'fa')).toBe('فیلادلفیا')
+    expect(cleanName('پوئبلا٬ پوئبلا', 'fa')).toBe('پوئبلا')
+    expect(cleanName('گیلان\u200e', 'fa')).toBe('گیلان')
+    expect(cleanName('خرم آباد', 'fa')).toBe('خرم\u200cآباد')
+    expect(cleanName('نظر آباد', 'fa')).toBe('نظرآباد') // ر never joins: one word
+    expect(cleanName('ناحیه های تابع جمهوری', 'fa')).toBe('ناحیه\u200cهای تابع جمهوری')
+    expect(cleanName('خانآباد', 'fa')).toBe('خان\u200cآباد')
+    expect(displayName([alt('پاروں')], 'fa')).toBeUndefined() // an Urdu letter
+    // Hindi: the anusvara for a nasal before its own class, no nukta on क ख ग (ज़ and फ़ keep theirs).
+    expect(cleanName('इन्दौर', 'hi')).toBe('इंदौर')
+    expect(cleanName('लद्दाख़', 'hi')).toBe('लद्दाख')
+    expect(cleanName('ज़्यूरिख़', 'hi')).toBe('ज़्यूरिख')
+    expect(cleanName('दिल्ली', 'hi')).toBe('दिल्ली')
+    // Cyrillic class words in lower case, and no qualifier; Italian's apostrophe; Vietnamese Đ.
+    expect(cleanName('Тихий Океан', 'ru')).toBe('Тихий океан')
+    expect(cleanName('Ла-Манш (пролив)', 'ru')).toBe('Ла-Манш')
+    expect(cleanName("Francoforte sull'Oder", 'it')).toBe('Francoforte sull’Oder')
+    expect(cleanName('Ðà Lạt', 'vi')).toBe('Đà Lạt')
+    // Ukrainian г abroad, ґ at home; an Italian region without its article.
+    expect(displayName([alt('Гамбурґ')], 'uk')).toBe('Гамбург')
+    expect(displayName([alt('Ґорґани')], 'uk', { home: true })).toBe('Ґорґани')
+    expect(displayName([alt('La Piccola Polonia')], 'it', { region: true })).toBe('Piccola Polonia')
+    expect(displayName([alt('La Spezia')], 'it', { home: true })).toBe('La Spezia')
+  })
+
+  it('takes a language’s own name, not a transliteration, and a region’s full name where its short one is a town’s', () => {
+    expect(displayName([alt('Jerevan')], 'it', { cc: 'AM' })).toBeUndefined()
+    expect(displayName([alt('Qostanay')], 'it', { cc: 'KZ' })).toBeUndefined()
+    expect(displayName([alt('Lago d’Aral')], 'it', { cc: 'KZ' })).toBe('Lago d’Aral')
+    expect(displayName([alt('Erevan')], 'it', { cc: 'AM' })).toBe('Erevan')
+    // Sino-Vietnamese names need no Vietnamese letter in China; a tone mark over a plain vowel counts as one.
+    expect(displayName([alt('Nam Ninh')], 'vi', { cc: 'CN', english: ['Nanning'] })).toBe('Nam Ninh')
+    expect(displayName([alt('Nanning')], 'vi', { cc: 'CN', english: ['Nanning'] })).toBeUndefined()
+    expect(displayName([alt('Nam Ninh')], 'vi', { cc: 'RU' })).toBeUndefined()
+    expect(displayName([alt('Vũ Hán')], 'vi', { cc: 'CN' })).toBe('Vũ Hán')
+    const town = (n: string) => n === 'Krasnodar'
+    expect(displayName([alt('Region Krasnodar', 'P'), alt('Krasnodar', 'S')], 'de', { region: true, avoid: town })).toBe('Region Krasnodar')
+    expect(displayName([alt('Region Krasnodar', 'P'), alt('Krasnodar', 'S')], 'de', { region: true })).toBe('Krasnodar')
+    expect(stripAdmin('Thị Trấn Đông Triều', 'vi')).toBe('Đông Triều')
+    expect(stripAdmin('Quận Mười', 'vi')).toBe('Quận Mười') // a number is no name: Quận 10 is fixed by hand
+  })
 })
 
 describe('building a table', () => {
@@ -106,6 +151,16 @@ describe('building a table', () => {
     )
     // The largest country first, each country's names largest first; a key two names claim is left out (Novyi).
     expect(serializeDisplay(t, true)).toMatch(/^VN:Hanoi=Hà Nội\|/)
+  })
+
+  it('writes a name fixed by hand as it is, a landmark a town shares for landmarks only, and Sino-Vietnamese namesakes apart', () => {
+    const t: DisplayTable = new Map()
+    // Not "worth writing" by latinWorthWriting (Thừa Thiên is no English class word), but fixed by hand.
+    addDisplay(t, { english: ['Thừa Thiên Huế Province'], cc: 'VN', region: true, pop: 1 }, 'Huế', { forced: true })
+    addDisplay(t, { english: ['White House'], cc: 'US', region: false, pop: 1 }, 'Nhà Trắng', { landmark: true })
+    addDisplay(t, { english: ['Suzhou'], cc: 'CN', region: false, pop: 6_000_000 }, 'Tô Châu')
+    addNamesake(t, { english: ['Suzhou'], cc: 'CN', region: false, pop: 1_600_000 }, undefined, { ownNames: true })
+    expect(serializeDisplay(t, true)).toBe('US:^White House=Nhà Trắng|VN:*Thừa Thiên Huế Province=Huế')
   })
 })
 

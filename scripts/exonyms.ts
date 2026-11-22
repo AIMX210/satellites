@@ -39,8 +39,11 @@ export type Lang = (typeof LANGS)[number]
 
 const LATIN_NAME = /^[\p{Script=Latin}\p{M}\p{N}][\p{Script=Latin}\p{M}\p{N} .,'’()/-]*$/u
 const CYRILLIC_NAME = /^[\p{Script=Cyrillic}\p{M}\p{N}][\p{Script=Cyrillic}\p{M}\p{N} .,'’ʼ()-]*$/u
-/** Persian letters, marks and the zero-width non-joiner Persian writes inside words (U+200C). */
-const PERSIAN_NAME = /^[\p{Script=Arabic}\p{M}][\p{Script=Arabic}\p{M}\u200c ()-]*$/u
+/**
+ * Persian letters, marks and the zero-width non-joiner Persian writes inside words (U+200C); not Urdu's own letters
+ * (ں ہ ے ٹ ڈ ڑ: GeoNames gives a few Afghan towns their Urdu or Pashto spelling).
+ */
+const PERSIAN_NAME = /^(?![^]*[ںہےۓٹڈڑ])[\p{Script=Arabic}\p{M}][\p{Script=Arabic}\p{M}\u200c ()-]*$/u
 const DEVANAGARI_NAME = /^[\p{Script=Devanagari}\p{M}][\p{Script=Devanagari}\p{M}\u200c\u200d ()-]*$/u
 
 /** How a language's table is built. */
@@ -59,8 +62,21 @@ export interface Rules {
   near?: { countries: readonly string[]; minPop: number }
   /** First-level regions named: every one at home, and abroad the regions of the countries listed (or all) */
   regionsAbroad: 'all' | readonly string[]
-  /** How many of the largest seas and oceans (countryless) get their names */
+  /** How many of the best-known seas, oceans, gulfs and straits get their names (countryless) */
   waters: number
+  /**
+   * In a Sino-Vietnamese reading, one romanization is many names (Suzhou is Tô Châu in Jiangsu and Túc Châu in Anhui):
+   * in these countries a namesake with no name of its own is not presumed to share the larger place's (addNamesake).
+   */
+  ownNamesakes?: readonly string[]
+  /** Towns named whatever their size, by GeoNames id: the ones its readers know that the thresholds miss (Sotschi, Милан) */
+  include?: readonly string[]
+  /**
+   * A script table writes one English spelling of a place (the data's). Its home regions, and these countries', get
+   * every current English one too (Kharkiv Oblast, Rostov Oblast, Republic of Tatarstan): what Photon and Open-Meteo
+   * write in a where line.
+   */
+  spelledRegions?: readonly string[]
 }
 
 /** What the rules know of a town. */
@@ -173,13 +189,24 @@ const NEVER = new Set(
  * language's own name for the place or nothing new. A script table takes a name with one only if the place has no
  * other (and a region's is its usual form: استان تهران).
  */
-const ADMIN_FORM: Partial<Record<Lang, RegExp>> = {
+export const ADMIN_FORMS: Partial<Record<Lang, RegExp>> = {
   fa: /^(استان|شهرستان|شهرک|شهرك|شهر|بخش|دهستان|روستای|منطقه|ناحیه|بندر) /u,
   ru: /^(город|посёлок|поселок|село|деревня|станица|пгт|аул) /iu,
   uk: /^(місто|селище|село) /iu,
   vi: /^(thành phố|tp\.?|thị xã|thị trấn|tỉnh|huyện|quận|xã|phường) /iu,
   de: /^(Bundesstaat|Bundesland|Provinz|Präfektur|Distrikt|Departement|Département|Gouvernement|Gouvernorat|Woiwodschaft|Kanton|Region|Republik|Staat|Emirat|Bezirk|Landkreis|Kreis|Gemeinde|Stadt|Municipio) /u,
   it: /^(Provincia|Regione|Stato|Distretto|Divisione|Dipartimento|Governatorato|Prefettura|Cantone|Canton|Repubblica|Contea|Voivodato|Città-Stato|Città metropolitana|Comune|Municipio|Emirato)( autonoma| autonomo| federale)?( di| del| della| dello| dei| degli| delle| dell[’']|d[’'])? ?/iu,
+}
+
+/**
+ * A name without its class noun (ADMIN_FORMS), unless what is left is a number: Ho Chi Minh City's districts are Quận
+ * 10, not 10 (nor Mười).
+ */
+export function stripAdmin(name: string, lang: Lang): string {
+  const admin = ADMIN_FORMS[lang]
+  if (!admin) return name
+  const bare = name.replace(admin, '').trim()
+  return /^(\d+|một|hai|ba|bốn|năm|sáu|bảy|tám|chín|mười)( |$)/iu.test(bare) ? name : bare
 }
 
 /**
@@ -192,10 +219,26 @@ const PERSIAN_REGION = /^(استان|ولایت) /u
  * Names a language never takes for a place abroad: in Italian, a scholarly transliteration of a Cyrillic name (Iževsk,
  * Charkiv, Tjumen'), which is no Italian name; Italian has one only where it is a word of its own (Leopoli, Mosca).
  */
-const FOREIGN_FORM: Partial<Record<Lang, RegExp>> = { it: /[čšžČŠŽ]|(?<!Oblast)'(?= |$)/u }
+const FOREIGN_FORM: Partial<Record<Lang, RegExp>> = { it: /[čšžČŠŽ]|(?<!Oblast)['’](?= |$)/u }
+/**
+ * And in Italian, in the countries that write Cyrillic or a Turkic or Caucasian Latin alphabet: a transliteration's
+ * letters (Jerevan, Semej, Ul'janovsk, Mahilëŭ, Şımkent, Qostanay, Aşgabat, Gäncä), which Italian names never have
+ * there (an elided d’ or l’ is Italian: Lago d’Aral).
+ */
+const FOREIGN_LETTERS: Partial<Record<Lang, { countries: ReadonlySet<string>; letters: RegExp }>> = {
+  it: { countries: new Set(['RU', 'UA', 'BY', 'KZ', 'KG', 'TJ', 'UZ', 'TM', 'AZ', 'AM', 'GE', 'MD']), letters: /[jJqQëŭşŞıİäöüğĞʹ]|(?<![dDlL])['’]/u },
+}
 
-/** A Vietnamese letter: it tells a Vietnamese name for a foreign place (Luân Đôn, Bắc Kinh) from the place's own (Moskva). */
-const VIETNAMESE = /[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/iu
+/**
+ * A Vietnamese letter: it tells a Vietnamese name for a foreign place (Luân Đôn, Bắc Kinh, Vũ Hán) from the place's own
+ * (Moskva). Its tone marks over a plain vowel count too (à, í, ũ): Vũ Hán, Cam Túc.
+ */
+const VIETNAMESE = /[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹàáãèéìíòóõùúýĩũ]/iu
+/**
+ * The countries whose towns Vietnamese names by Sino-Vietnamese readings, which need no Vietnamese letter to be its own
+ * (Nam Ninh for Nanning, Nam Kinh for Nanjing): any name that is not the data's spelling is one.
+ */
+const SINO_VIETNAMESE = new Set(['CN', 'TW', 'HK', 'MO'])
 
 const marks = (s: string) => (s.normalize('NFD').match(/\p{M}/gu) ?? []).length
 /** Is the key `inner` a whole-word run of the key `outer`? */
@@ -219,7 +262,7 @@ export function latinWorthWriting(english: string, shown: string, home: boolean)
 }
 
 /** The English class words around a place's name in the data (Nghệ An Province, Kyiv City, Moscow Oblast). */
-const ENGLISH_CLASS = /^((province|city|region|district|oblast|governorate|prefecture|state|municipality|county|division|krai|kray|republic|of|the) ?)+$/
+const ENGLISH_CLASS = /^((province|city|region|district|oblast|governorate|prefecture|state|municipality|county|division|krai|kray|republic|voivodeship|autonomous|okrug|territory|of|the) ?)+$/
 
 /** Persian writes Persian letters: Arabic ي and ك become ی and ک, the tatweel goes, and the vowel marks too. */
 export function persianForm(s: string): string {
@@ -236,20 +279,61 @@ export function persianForm(s: string): string {
 const ukApostrophe = (s: string) => s.replace(/['ʼ]/g, '’')
 
 /**
- * A name as the language's table writes it: Unicode normalization, Persian letter forms, Hindi without joiners, the
- * Cyrillic apostrophe, no stress marks (GeoNames marks the stress on a few names), and a region's class word in lower
- * case as Russian and Ukrainian write it (GeoNames writes «Свердловская Область»).
+ * Persian joins a word's parts with the zero-width non-joiner, never a space (fa.md §6.1): GeoNames writes خرم آباد,
+ * خمینی شهر and ناحیه های for خرم‌آباد, خمینی‌شهر and ناحیه‌های, and خانآباد with آ joined on. After a letter that
+ * never joins the next, the parts are simply one word (نظرآباد, فولادشهر).
+ */
+const persianJoins = (s: string) =>
+  s
+    .replace(/([اأدذرزژو]) (آباد|شهر)(?= |$)/gu, '$1$2')
+    .replace(/(\S) (آباد|شهر|ها|های)(?= |$)/gu, '$1\u200c$2')
+    .replace(/([بپتثجچحخسشصضطظعغفقکگلمنهی])آ/gu, '$1\u200cآ')
+
+/**
+ * Hindi spelling as the Central Hindi Directorate writes it (hi.md §0): a nasal before a consonant of its own class is
+ * the anusvara (इन्दौर → इंदौर, हिन्द → हिंद, ताशकन्द → ताशकंद), and क, ख, ग take no nukta (लद्दाख़ → लद्दाख); ज़ and फ़ keep it.
+ */
+const hindiForm = (s: string) =>
+  s
+    .replace(/\u200d/g, '')
+    .replace(/ङ्(?=[कखगघ])|ञ्(?=[चछजझ])|ण्(?=[टठडढ])|न्(?=[तथदध])|म्(?=[पफबभ])/gu, 'ं')
+    .normalize('NFD')
+    .replace(/([कखग])\u093c/gu, '$1')
+    .normalize('NFC')
+
+/**
+ * A name as the language's table writes it: Unicode normalization, Persian letter forms and half-spaces, with no
+ * direction marks and only the town's part of GeoNames' "City، Region" form (فیلادلفیا، پنسیلوانیا), Hindi without
+ * joiners and in the Directorate's spelling, the Cyrillic apostrophe, no stress marks (GeoNames marks the stress on a
+ * few names), a class word in lower case as Russian and Ukrainian write it (GeoNames writes «Свердловская Область»,
+ * «Тихий Океан»), Italian's typographic apostrophe (Francoforte sull’Oder, it.md), and Vietnamese Đ where GeoNames
+ * writes the Icelandic Ð (Ðà Lạt).
  */
 export function cleanName(name: string, lang: Lang): string {
   const s = name.normalize('NFC').trim()
-  if (lang === 'fa') return persianForm(s)
+  if (lang === 'fa') return persianJoins(persianForm(s.replace(/[\u200e\u200f\u202a-\u202e]/g, '').split(/\s*[،٬]\s*/)[0]))
   // GeoNames spells a few Hindi names with zero-width joiners that force half forms (Minsk): the plain spelling.
-  if (lang === 'hi') return s.replace(/\u200d/g, '')
+  if (lang === 'hi') return hindiForm(s)
   if (lang === 'uk' || lang === 'ru')
     return ukApostrophe(s)
       .replace(/[\u0300\u0301]/g, '')
-      .replace(/ (Область|Край|Округ|Автономный Округ|Автономна Республіка)(?= |$)/gu, (w) => w.toLowerCase())
+      // A qualifier GeoNames adds (Ла-Манш (пролив)) is not the name.
+      .replace(/\s*\([^)]*\)$/u, '')
+      .replace(/ (Область|Край|Округ|Автономный Округ|Автономна Республіка|Океан|Море|Озеро|Залив|Затока|Пролив|Протока)(?= |$)/gu, (w) => w.toLowerCase())
+  if (lang === 'it') return s.replace(/'/g, '’')
+  if (lang === 'vi') return s.replace(/Ð/g, 'Đ').replace(/ð/g, 'đ')
   return s
+}
+
+/**
+ * What depends on the place, not only the language: Ukrainian writes г, not ґ, in a foreign place's name (Правопис 2019
+ * §122: Гамбург, Гібралтар; ґ stays at home, Ґорґани), and an Italian region takes no article (Piccola Polonia, not La
+ * Piccola Polonia: a label never starts with one, as OVERRIDES' Pentagono).
+ */
+function placeForm(name: string, lang: Lang, { home, region }: { home: boolean; region: boolean }): string {
+  if (lang === 'uk' && !home) return name.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г')
+  if (lang === 'it' && region) return name.replace(/^(La|Il|Lo|Le|Gli|I) (?=\p{Lu})|^L’(?=\p{Lu})/u, '')
+  return name
 }
 
 /** Has the name vowel marks (Persian harakat), so a plain spelling should be preferred? */
@@ -282,29 +366,38 @@ export function pickName(
  * in one of the language's own countries (abroad, a Vietnamese name must be Vietnamese: Luân Đôn, not Moskva). `cc`:
  * its country (GeoNames writes some Vietnamese places' Đ as GJ in other languages: GJien Bien).
  */
-export function displayName(alts: readonly AltName[] | undefined, lang: Lang, { region = false, home = false, cc = '' } = {}): string | undefined {
+export function displayName(
+  alts: readonly AltName[] | undefined,
+  lang: Lang,
+  { region = false, home = false, cc = '', english = [] as readonly string[], avoid }: { region?: boolean; home?: boolean; cc?: string; english?: readonly string[]; avoid?: (name: string) => boolean } = {},
+): string | undefined {
   const rules = RULES[lang]
-  const admin = ADMIN_FORM[lang]
+  const admin = ADMIN_FORMS[lang]
   // A vocalized spelling (Persian vowel marks: س\u0650ن\u064e\u0651) is a dictionary's, not a map's: taken only if nothing plain is left,
   // and judged before cleanName strips the marks (سن\u0651 without them is another word).
   const plain = (alts ?? []).filter((a) => !VOCALIZED.test(a.name))
-  let usable = (plain.some((a) => !a.historic && !a.colloquial) ? plain : (alts ?? [])).map((a) => ({ ...a, name: cleanName(a.name, lang) }))
-  if (rules.latin && admin) usable = usable.map((a) => ({ ...a, name: a.name.replace(admin, '').trim() }))
+  const cleaned = (plain.some((a) => !a.historic && !a.colloquial) ? plain : (alts ?? [])).map((a) => ({ ...a, name: placeForm(cleanName(a.name, lang), lang, { home, region }) }))
+  let usable = cleaned
+  if (rules.latin && admin) usable = usable.map((a) => ({ ...a, name: stripAdmin(a.name, lang) }))
   if (lang === 'fa' && region) usable = usable.map((a) => ({ ...a, name: a.name.replace(PERSIAN_REGION, '') }))
   const foreign = home ? undefined : FOREIGN_FORM[lang]
-  const picked = pickName(
-    usable,
-    (n) =>
-      !!n &&
-      rules.script.test(n) &&
-      !RESERVED.test(n) &&
-      !NEVER.has(n) &&
-      (lang !== 'vi' || home || VIETNAMESE.test(n)) &&
-      !(cc === 'VN' && /G[Jj]/.test(n)) &&
-      !foreign?.test(n),
-    (n) => !rules.latin && !region && !!admin?.test(n),
-    region && rules.latin,
-  )
+  const letters = home ? undefined : FOREIGN_LETTERS[lang]
+  const theData = new Set(english.map(placeKey))
+  const ok = (n: string) =>
+    !!n &&
+    rules.script.test(n) &&
+    !RESERVED.test(n) &&
+    !NEVER.has(n) &&
+    (lang !== 'vi' || home || VIETNAMESE.test(n) || (SINO_VIETNAMESE.has(cc) && !theData.has(placeKey(n)))) &&
+    !(cc === 'VN' && /G[Jj]/.test(n)) &&
+    !foreign?.test(n) &&
+    !(letters?.countries.has(cc) && letters.letters.test(n))
+  const pick = (list: AltName[], asRegion: boolean, fine: (n: string) => boolean) =>
+    pickName(list, (n) => ok(n) && fine(n), (n) => !rules.latin && !region && !!admin?.test(n), asRegion)
+  let picked = pick(usable, region && rules.latin, () => true)
+  // A Latin region's short or bare name that is a town's (Krasnodar for Region Krasnodar, Tscheljabinsk for Oblast
+  // Tscheljabinsk, Columbia for Distretto di Columbia) or another region's names the wrong place: its full name.
+  if (picked && region && rules.latin && avoid?.(picked)) picked = pick(cleaned, false, (n) => !avoid(n)) ?? picked
   if (!picked) return undefined
   // A name GeoNames writes in lower case ("oblast' di Zaporižžja") starts a label with a capital.
   return picked.charAt(0).toLocaleUpperCase(lang) + picked.slice(1)
@@ -329,6 +422,10 @@ export interface Entry {
   pop: number
   /** In one of the language's own countries */
   home: boolean
+  /** Written whatever latinWorthWriting says: a name fixed by hand (OVERRIDES), or the data's own name cleaned at home */
+  forced?: boolean
+  /** A landmark's or feature's name that a town shares the key of: written for landmarks only (`^`) */
+  landmark?: boolean
 }
 /** A table being built: by country, then by key (`*` before a region's). */
 export type DisplayTable = Map<string, Map<string, Entry>>
@@ -339,14 +436,14 @@ const keyOf = (english: string, region: boolean) => `${region ? '*' : ''}${place
  * Add a place's name to a table, under each of its English spellings' keys. Where another place in the same country
  * has the same key and another name, the key names neither (`shown` null): the label could be either.
  */
-export function addDisplay(table: DisplayTable, place: Named, shown: string) {
+export function addDisplay(table: DisplayTable, place: Named, shown: string, { forced = false, landmark = false } = {}) {
   let country = table.get(place.cc)
   if (!country) table.set(place.cc, (country = new Map()))
   for (const english of place.english) {
     if (!placeKey(english) || RESERVED.test(english)) continue
-    const key = keyOf(english, place.region)
+    const key = `${landmark ? '^' : ''}${keyOf(english, place.region)}`
     const had = country.get(key)
-    if (!had) country.set(key, { spellings: new Set([english]), shown, pop: place.pop, home: !!place.home })
+    if (!had) country.set(key, { spellings: new Set([english]), shown, pop: place.pop, home: !!place.home, ...(forced ? { forced } : {}), ...(landmark ? { landmark } : {}) })
     else {
       had.spellings.add(english)
       had.pop = Math.max(had.pop, place.pop)
@@ -359,14 +456,15 @@ export function addDisplay(table: DisplayTable, place: Named, shown: string) {
  * A place too small for the table (`shown`: its own name in the language, if it has one): a key it shares with a
  * place in the table, in the same country, names neither if their names differ and the namesake is not tiny beside
  * it (a tenth of its people or more). A namesake with no name in the language is presumed to share the larger
- * place's, and so is a hamlet (Hanoi has a namesake of no people that GeoNames calls Lâm in Vietnamese).
+ * place's (unless `ownNames`: Rules.ownNamesakes), and so is a hamlet (Hanoi has a namesake of no people that GeoNames
+ * calls Lâm in Vietnamese). A name fixed by hand stays.
  */
-export function addNamesake(table: DisplayTable, place: Named, shown: string | undefined) {
+export function addNamesake(table: DisplayTable, place: Named, shown: string | undefined, { ownNames = false } = {}) {
   const country = table.get(place.cc)
-  if (!country || shown === undefined) return
+  if (!country || (shown === undefined && !ownNames)) return
   for (const english of place.english) {
     const had = country.get(keyOf(english, place.region))
-    if (had && had.shown !== null && had.shown !== shown && place.pop * 10 >= had.pop) had.shown = null
+    if (had && had.shown !== null && !had.forced && had.shown !== shown && place.pop * 10 >= had.pop) had.shown = null
   }
 }
 
@@ -381,7 +479,9 @@ export interface Alias {
  * The table as src/i18n/en/exonyms.ts describes it, by country (the countries with the largest places first, the
  * countryless names last), each country's names largest first, so a search ranks by the order: a key's entry only if
  * it names one place and some spelling of it in the data is worth the bytes (in a Latin table, latinWorthWriting:
- * Zurich for Zürich at home; in a script table, any spelling), written under that spelling.
+ * Zurich for Zürich at home; in a script table, any spelling; a name fixed by hand, any spelling it is not), written
+ * under that spelling. A region gets its own entry even where a town of its name is shown alike (Moscow), since a
+ * region's label is looked up among regions only.
  */
 export function serializeDisplay(table: DisplayTable, latin: boolean, aliases: readonly Alias[] = []): string {
   const groups: { cc: string; top: number; entries: string[] }[] = []
@@ -390,17 +490,16 @@ export function serializeDisplay(table: DisplayTable, latin: boolean, aliases: r
     const rows: { pop: number; text: string }[] = []
     const here = table.get(cc)
     for (const [key, e] of here ?? []) {
-      // A region named like a town of the same country, and shown alike (Moscow, the city and the federal city), needs
-      // no entry of its own: a part of the where line falls back to the towns (src/imagery/exonyms.ts).
-      if (e.shown === null || (key.startsWith('*') && here?.get(key.slice(1))?.shown === e.shown)) continue
+      if (e.shown === null) continue
       const shown = e.shown
-      const english = [...e.spellings].find((s) => (latin ? latinWorthWriting(s, shown, e.home) : placeKey(s) !== placeKey(shown)))
+      const differs = (s: string) => placeKey(s) !== placeKey(shown) || s !== shown
+      const english = [...e.spellings].find((s) => (e.forced ? differs(s) : latin ? latinWorthWriting(s, shown, e.home) : placeKey(s) !== placeKey(shown)))
       if (english === undefined) continue
-      rows.push({ pop: e.pop, text: `${key.startsWith('*') ? '*' : ''}${english}=${e.shown}` })
+      rows.push({ pop: e.pop, text: `${key.startsWith('*') ? '*' : key.startsWith('^') ? '^' : ''}${english}=${e.shown}` })
     }
     rows.sort((a, b) => b.pop - a.pop)
     const entries = rows.map((r) => r.text)
-    for (const a of aliases) if (a.cc === cc && !RESERVED.test(a.english + a.alias)) entries.push(`~${a.english}=${a.alias}`)
+    for (const a of aliases) if (a.cc === cc && !RESERVED.test(a.english.replace(/^\*/, '') + a.alias)) entries.push(`~${a.english}=${a.alias}`)
     if (entries.length) groups.push({ cc, top: cc ? (rows[0]?.pop ?? 0) : -1, entries })
   }
   groups.sort((a, b) => b.top - a.top || a.cc.localeCompare(b.cc))
@@ -728,8 +827,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
 }
 
 /**
- * Search-only names, by GeoNames id: what people type for a place whose shown name is another (Sài Gòn for Ho Chi Minh
- * City, colloquial and never shown, docs/i18n/vi.md). Never displayed.
+ * Search-only names, by GeoNames id or by `CC:English` (`CC:*English` for a region): what people type for a place whose
+ * shown name is another (Sài Gòn for Ho Chi Minh City, colloquial and never shown, docs/i18n/vi.md; Kiew for Kyiv in
+ * German, Киев for Київ in Ukrainian, a former name for a renamed town). Never displayed.
  */
 export const ALIASES: Record<Lang, Record<string, readonly string[]>> = {
   de: {},
