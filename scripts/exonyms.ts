@@ -8,7 +8,7 @@
  *  - Every name ships in its language's chunk and must earn its bytes (owner rule: costs nothing, stays fast). A
  *    Latin-script language writes only the names that differ from the English (München, not Berlin); Cyrillic,
  *    Persian and Hindi write every name, so their tables cover fewer places (RULES: the large towns everywhere, more at
- *    home, every first-level region at home), sized to stay under ~12 kB compressed (src/imagery/exonymTables.test.ts).
+ *    home, every first-level region at home), sized to stay under 16 kB compressed (src/imagery/exonymTables.test.ts).
  *  - GeoNames marks few names preferred (Mailand, Londra and Київ are not), and lists historic, colloquial, inflected
  *    and administrative forms beside the name itself (Ленинград, Питер, Киевом, استان کرمانشاه, Thành phố Nam Định). So
  *    pickName takes the preferred name, else the first plain one, else a short one; never a historic or colloquial one;
@@ -85,7 +85,19 @@ export interface TownFacts {
   /** How many names it has in other languages in GeoNames: how widely it is known (Venice has 150, Weifang 24) */
   names: number
   capital: boolean
+  /** ISO country code */
+  cc: string
 }
+
+/**
+ * The dependent territories (ISO codes of places with no seat at the UN): most of their capitals are villages and small
+ * towns (Adamstown, Grytviken, Port-aux-Français, Mata-Utu), which a script table names only from TERRITORY_CAPITAL
+ * people (San Juan, Saint-Denis, Nouméa) or as it would any town. The territory itself is named by the browser;
+ * Vaduz, Valletta and the Vatican, capitals of states, keep theirs.
+ */
+const TERRITORIES = new Set(
+  'AI AS AW AX BL BM BQ BV CC CK CW CX FK FO GF GG GI GL GP GS GU HM IM IO JE KY MF MP MQ MS NC NF NU PF PM PN PR RE SH SJ SX TC TF TK UM VG VI WF YT'.split(' '),
+)
 
 /**
  * Abroad, a table names the capitals and the towns that are large and widely known: population alone would spend a
@@ -93,7 +105,12 @@ export interface TownFacts {
  * writes only its differing names, so it can name many more.
  */
 const LATIN_ABROAD = (t: TownFacts) => t.capital || t.pop >= 1_000_000 || (t.pop >= 100_000 && t.names >= 50) || t.names >= 90
-const SCRIPT_ABROAD = (t: TownFacts) => t.capital || t.pop >= 5_000_000 || (t.pop >= 1_000_000 && t.names >= 60) || (t.pop >= 300_000 && t.names >= 90)
+const TERRITORY_CAPITAL = 50_000
+const SCRIPT_ABROAD = (t: TownFacts) =>
+  (t.capital && (!TERRITORIES.has(t.cc) || t.pop >= TERRITORY_CAPITAL)) ||
+  t.pop >= 5_000_000 ||
+  (t.pop >= 1_000_000 && t.names >= 60) ||
+  (t.pop >= 300_000 && t.names >= 90)
 
 /**
  * The thresholds per language, chosen by size (src/imagery/exonymTables.test.ts holds each table to its budget).
@@ -213,7 +230,8 @@ const NEVER = new Set(
  * (استان کرمانشاه for Kermanshah), a Russian or Ukrainian settlement type; in a Latin table, the class noun before a
  * name (Thành phố Nam Định, Provinz Nghe An, Provincia di Teheran), which is dropped, so that what is left is the
  * language's own name for the place or nothing new. A script table takes a name with one only if the place has no
- * other (and a region's is its usual form: استان تهران).
+ * other (and a region's is its usual form: استان تهران). Italian's longer articles are tried first: voivodato della
+ * Piccola Polonia is Piccola Polonia, not la Piccola Polonia.
  */
 export const ADMIN_FORMS: Partial<Record<Lang, RegExp>> = {
   fa: /^(استان|شهرستان|شهرک|شهرك|شهر|بخش|دهستان|روستای|منطقه|ناحیه|بندر) /u,
@@ -221,7 +239,7 @@ export const ADMIN_FORMS: Partial<Record<Lang, RegExp>> = {
   uk: /^(місто|селище|село) /iu,
   vi: /^(thành phố|tp\.?|thị xã|thị trấn|tỉnh|huyện|quận|xã|phường) /iu,
   de: /^(Bundesstaat|Bundesland|Provinz|Präfektur|Distrikt|Departement|Département|Gouvernement|Gouvernorat|Woiwodschaft|Kanton|Region|Republik|Staat|Emirat|Bezirk|Landkreis|Kreis|Gemeinde|Stadt|Municipio) /u,
-  it: /^(Provincia|Regione|Stato|Distretto|Divisione|Dipartimento|Governatorato|Prefettura|Cantone|Canton|Repubblica|Contea|Voivodato|Città-Stato|Città metropolitana|Comune|Municipio|Emirato)( autonoma| autonomo| federale)?( di| del| della| dello| dei| degli| delle| dell[’']|d[’'])? ?/iu,
+  it: /^(Provincia|Regione|Stato|Distretto|Divisione|Dipartimento|Governatorato|Prefettura|Cantone|Canton|Repubblica|Contea|Voivodato|Città-Stato|Città metropolitana|Comune|Municipio|Emirato)( autonoma| autonomo| federale)?( della| dello| delle| degli| dell[’']| dei| del| di|d[’'])? ?/iu,
 }
 
 /**

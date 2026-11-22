@@ -138,6 +138,9 @@ describe('choosing a name', () => {
     expect(displayName([alt('Region Krasnodar', 'P'), alt('Krasnodar', 'S')], 'de', { region: true })).toBe('Krasnodar')
     expect(stripAdmin('Thị Trấn Đông Triều', 'vi')).toBe('Đông Triều')
     expect(stripAdmin('Quận Mười', 'vi')).toBe('Quận Mười') // a number is no name: Quận 10 is fixed by hand
+    // Italian's longer articles first: the region is Piccola Polonia, not la Piccola Polonia.
+    expect(displayName([alt('voivodato della Piccola Polonia')], 'it', { region: true, cc: 'PL' })).toBe('Piccola Polonia')
+    expect(stripAdmin('Regione della Mecca', 'it')).toBe('Mecca')
   })
 })
 

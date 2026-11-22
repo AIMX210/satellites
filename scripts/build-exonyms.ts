@@ -77,6 +77,8 @@ const WELL_KNOWN_WATERS = new Map(
   ].map((name, i, all) => [placeKey(name), all.length - i] as const),
 )
 const WATERS = Math.max(...LANGS.map((l) => RULES[l].waters))
+/** The offline list's own spellings of a few waters, where it names one otherwise than GeoNames does. */
+const WATER_SPELLINGS: Record<string, readonly string[]> = { 'Sea of Japan': ['Japan Sea'] }
 /** A regional seat at home is named down to this size (Magadan, Batken; not a hamlet GeoNames files as a seat). */
 const SEAT_MIN_POP = 20_000
 /** How far from its point a landmark's GeoNames feature may be, in degrees (a lake's or a reef's point is far off). */
@@ -211,21 +213,36 @@ async function main() {
     const en = both ? pickName(alts.get(id)?.get('en'), (n) => !!placeKey(n)) : undefined
     return en && en !== name ? [name, en] : [name]
   }
-  /** A region's English spellings in a script table, at home (Rules.spelledRegions): the data's and every current one. */
-  const regionEnglish = (id: string, name: string) => [
-    name,
-    ...(alts.get(id)?.get('en') ?? [])
-      // Not a transliteration or a description (Kharkivs’ka Oblast’, Rostovskaya Oblast, The 10th Province).
-      .filter(
-        (a) =>
-          !a.historic &&
-          !a.colloquial &&
-          !/['’()]|skaya\b|skiy\b|\d(st|nd|rd|th)\b|\bostan\b|governor/i.test(a.name) &&
-          !!placeKey(a.name) &&
-          placeKey(a.name) !== placeKey(name),
-      )
-      .map((a) => a.name),
-  ]
+  /** Each region's own name in the data, by country and key: another region's English spelling never takes it. */
+  const regionNamed = new Map([...regions].map(([id, r]) => [`${r.cc}|${placeKey(r.name)}`, id]))
+  /**
+   * A region's English spellings in a script table, at home (Rules.spelledRegions): the data's and every current one,
+   * each also without "Province", as OpenStreetMap names Iran's in a where line (Gilan, Kurdistan, Lorestan); never
+   * another region's own name (Moscow Oblast is also called Moscow in English, which is the city's region).
+   */
+  const regionEnglish = (id: string, name: string) => {
+    const cc = regions.get(id)?.cc ?? ''
+    const others = (e: string) => (regionNamed.get(`${cc}|${placeKey(e)}`) ?? id) !== id
+    const all = [
+      name,
+      ...(alts.get(id)?.get('en') ?? [])
+        // Not a transliteration or a description (Kharkivs’ka Oblast’, Rostovskaya Oblast, The 10th Province).
+        .filter(
+          (a) =>
+            !a.historic &&
+            !a.colloquial &&
+            !/['’()]|skaya\b|skiy\b|\d(st|nd|rd|th)\b|\bostan\b|governor/i.test(a.name) &&
+            !!placeKey(a.name) &&
+            placeKey(a.name) !== placeKey(name) &&
+            !others(a.name),
+        )
+        .map((a) => a.name),
+    ]
+    const bare = all
+      .map((e) => e.replace(/ Province$/i, ''))
+      .filter((e) => e && !others(e) && !all.some((x) => placeKey(x) === placeKey(e)))
+    return [...all, ...new Set(bare)]
+  }
 
   // Every town's key, by country: a landmark sharing one is written for landmarks only (`^`), and a Latin region's
   // bare name that is one is written in full.
@@ -334,7 +351,8 @@ async function main() {
       const fixed = over[`:${w.name}`]
       const shown = fixed === undefined ? nameOf(id, '', false) : fixed && cleanName(fixed, lang)
       if (!shown) continue
-      addDisplay(table, { english: englishOf(id, w.name, rules.latin), cc: '', region: false, pop: w.names }, shown)
+      const english = [...englishOf(id, w.name, rules.latin), ...(WATER_SPELLINGS[w.name] ?? [])]
+      addDisplay(table, { english, cc: '', region: false, pop: w.names }, shown)
       if (w.cc) addDisplay(table, { english: [w.name], cc: w.cc, region: false, pop: w.names }, shown, { landmark: sharedWithTown(w.cc, w.name) })
     }
     // Hand-made names given by English name (`CC:English`), countryless or in a country: written as given.
