@@ -89,11 +89,26 @@ describe('choosing a name', () => {
     expect(latinWorthWriting('New York', 'New York City', false)).toBe(false)
     expect(latinWorthWriting('Nghệ An Province', 'Nghệ An', true)).toBe(true) // an English class word dropped
     expect(latinWorthWriting('Sankt Augustin', 'St. Augustin', true)).toBe(false)
+    // A feature's English class word dropped is the language's name too (Rügen for Rügen Island), not a town's.
+    expect([latinWorthWriting('Rügen Island', 'Rügen', true, true), latinWorthWriting('Rügen Island', 'Rügen', true)]).toEqual([true, false])
     // An Italian name for a place abroad is never a scholarly transliteration.
     expect(displayName([alt('Čerkasy')], 'it')).toBeUndefined()
     expect(displayName([alt('Leopoli')], 'it')).toBe('Leopoli')
     expect(displayName([alt('Città del Messico')], 'it')).toBe('Città del Messico')
     expect(displayName([alt('Provincia di Teheran')], 'it', { region: true })).toBe('Teheran')
+  })
+
+  it('writes a region’s own label apart from its where-line name, and a Vietnamese one as a Vietnamese map labels it', () => {
+    const t: DisplayTable = new Map()
+    addDisplay(t, { english: ['Qom Province'], cc: 'IR', region: true, pop: 2 }, 'قم')
+    addDisplay(t, { english: ['Qom Province'], cc: 'IR', region: false, pop: 2 }, RULES.fa.regionLabel!({ shown: 'قم', cc: 'IR', english: ['Qom Province'], alts: [] })!, { forced: true, label: true })
+    expect(serializeDisplay(t, false)).toBe('IR:*Qom Province=قم;#Qom Province=استان قم')
+    const vi = (shown: string, cc: string, english: string[]) => RULES.vi.regionLabel!({ shown, cc, english, alts: [] })
+    expect([vi('Thanh Hóa', 'VN', ['Thanh Hóa Province']), vi('Hải Phòng', 'VN', ['Hai Phong']), vi('Thượng Hải', 'CN', ['Shanghai', 'Shanghai Municipality'])]).toEqual([
+      'Tỉnh Thanh Hóa',
+      'Thành phố Hải Phòng',
+      'Thành phố Thượng Hải',
+    ])
   })
 
   it('cleans each language’s forms (native review, 2026-11-22)', () => {

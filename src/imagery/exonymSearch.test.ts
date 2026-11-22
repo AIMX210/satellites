@@ -257,6 +257,33 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(files.network()).toEqual([])
   })
 
+  it('finds what the third review typed (2026-11-22), offline and first, shown in the language', async () => {
+    const files = serveFiles()
+    const first = async (q: string) => (await searchPlaces(q))[0]
+    const shown = async (q: string) => displayLabel(await first(q))
+    await as('de', deNames)
+    for (const [q, name] of [['Tschernobyl', 'Tschernobyl'], ['Vesuv', 'Vesuv'], ['Eiffelturm', 'Eiffelturm'], ['Gardasee', 'Gardasee'], ['Slowjansk', 'Slowjansk'], ['Straße von Hormus', 'Straße von Hormus'], ['Vierwaldstättersee', 'Vierwaldstättersee']])
+      expect([q, await shown(q)]).toEqual([q, name])
+    expect(await first('Rjasan')).toMatchObject({ label: 'Ryazan’', countryCode: 'ru' }) // the city before its oblast
+    await as('it', itNames)
+    for (const [q, name] of [['Striscia di Gaza', 'Striscia di Gaza'], ['Cisgiordania', 'Cisgiordania'], ['Piazza San Pietro', 'Piazza San Pietro'], ['Fontana di Trevi', 'Fontana di Trevi'], ['Pirenei', 'Pirenei'], ['Gomel', 'Gomel']])
+      expect([q, await shown(q)]).toEqual([q, name])
+    await as('uk', ukNames)
+    for (const [q, name] of [['Газа', 'Газа'], ['Венеція', 'Венеція'], ['Перська затока', 'Перська затока'], ['Говерла', 'Говерла'], ['Борщагівка', 'Борщагівка']])
+      expect([q, await shown(q)]).toEqual([q, name])
+    expect(await first('Луганск')).toMatchObject({ label: 'Luhansk' }) // its Russian spelling, a search name
+    await as('ru', ruNames)
+    for (const [q, name] of [['Краматорск', 'Краматорск'], ['Этна', 'Этна'], ['Алушта', 'Алушта']]) expect([q, await shown(q)]).toEqual([q, name])
+    await as('vi')
+    expect(await first('Quần đảo Hoàng Sa')).toMatchObject({ lat: 16.5, lon: 112 })
+    expect(await first('Sapa')).toMatchObject({ label: 'Sa Pa', countryCode: 'vn' })
+    await as('fa', faNames)
+    for (const [q, name] of [['غزه', 'غزه'], ['تخت جمشید', 'تخت جمشید'], ['آلماتی', 'آلماتی'], ['کیش', 'کیش']]) expect([q, await shown(q)]).toEqual([q, name])
+    await as('hi', hiNames)
+    for (const [q, name] of [['टेक्सास', 'टेक्सास'], ['वुहान', 'वुहान'], ['लेह', 'लेह'], ['एफ़िल टॉवर', 'एफ़िल टॉवर']]) expect([q, await shown(q)]).toEqual([q, name])
+    expect(files.network()).toEqual([])
+  })
+
   it('finds a German or Italian exonym, and a country by the browser’s name for it', async () => {
     serveFiles()
     await as('de', deNames)
