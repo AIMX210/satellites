@@ -186,6 +186,12 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(await first('Mykolajiw')).toMatchObject({ label: 'Mykolayiv', countryCode: 'ua', lat: 46.976 })
     await as('it', itNames)
     expect(await first('Kiev')).toMatchObject({ label: 'Kyiv', countryCode: 'ua' })
+    expect(await first('Betlemme')).toMatchObject({ label: 'Bethlehem', countryCode: 'ps' }) // not a hamlet in Apulia
+    await as('vi')
+    // The city before the province the table names alike, however either was found; an exact name at home first.
+    for (const [q, label] of [['Huế', 'Huế'], ['hue', 'Huế'], ['Thanh Hoá', 'Thanh Hóa'], ['Hải Phòng', 'Haiphong'], ['hai phong', 'Haiphong']])
+      expect([q, (await first(q)).label, (await first(q)).kind]).toEqual([q, label, undefined])
+    expect(await first('Quận 1')).toMatchObject({ label: 'Quận Một' })
     await as('uk', ukNames)
     expect(await first('харкив')).toMatchObject({ label: 'Kharkiv' }) // и for і, from a Russian layout
     expect(await first('Киев')).toMatchObject({ label: 'Kyiv' }) // a search name, never shown

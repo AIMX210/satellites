@@ -37,6 +37,7 @@ import {
   exonymAlternates,
   exonymContested,
   exonymHome,
+  exonymsActive,
   exonymsOwnScript,
   exonymVariants,
   namesCountries,
@@ -629,7 +630,8 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
 
   let exact = false
   const alternates = exonymAlternates(query, countryName)
-  const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query)).then(
+  const shownOf = exonymsActive() ? (r: LocalPlace) => displayLabel(localToPlace(r, 'search')) : undefined
+  const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query), shownOf).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
       return dedupePlaces(rows.map((r) => localToPlace(r, 'search')))
