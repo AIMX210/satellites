@@ -14,6 +14,7 @@
  * Not named clarity.ts: the bundler names this module's chunk after the file, and AdGuard's Tracking Protection list
  * blocks any `/clarity-*.js` (Microsoft Clarity's tracker). Both the results panel and the globe import this module,
  * so with that list on, neither could load and every search ended in the fault notice with no globe (2026-11-22).
+ * The build now refuses such names (scripts/blockerNames.ts).
  */
 import type { Capture, SpotCloud } from '@/types'
 
