@@ -187,6 +187,13 @@ export function shownCountryName(cc: string, locale: Locale): string {
 }
 
 /**
+ * shownCountryName, shared with ./exonymSearch.ts by Symbol.for, as src/lib/staleBuild.ts shares its quiet chunks: the
+ * search's chunk must not import this module, which would then be split into files of its own (with ./lru.ts), two
+ * more requests on every page, English's too.
+ */
+;(globalThis as { [k: symbol]: unknown })[Symbol.for('watched.shownCountryName')] = shownCountryName
+
+/**
  * Up to `limit` places matching `query`, best first, from the search file for its first letters and the landmark
  * file (both small; each fetched once a page). Towns, states and countries match from the start of the name, the
  * larger first, an exact name counted as a hundred times the people (so "toro" leads with Toronto, not a village

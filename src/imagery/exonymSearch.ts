@@ -9,8 +9,7 @@
  * costs well under a millisecond).
  */
 import { currentLocale } from '@/i18n/runtime'
-import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
-import { shownCountryName } from './localPlaces'
+import { LOCALE_INFO, type Locale } from '../../api/_lib/i18n/locales'
 import { placeKey, SPELLED } from './placeKey'
 
 /** One name a search can find: as the visitor types it, the place it names, and its rank in the table. */
@@ -181,6 +180,14 @@ function ownCode(cc: string): boolean {
     return true
   }
 }
+
+/**
+ * ./localPlaces.ts shownCountryName, which that module shares by Symbol.for: importing it would split it out of the
+ * chunk it rides in, into files of its own on every page. Undefined (the browser's names only) if it is not loaded.
+ */
+const SHOWN_NAME = Symbol.for('watched.shownCountryName')
+const shownCountryName = (cc: string, locale: Locale): string | undefined =>
+  (globalThis as { [k: symbol]: ((cc: string, locale: Locale) => string) | undefined })[SHOWN_NAME]?.(cc, locale)
 
 /**
  * Every country by each name the browser gives it in the active language (by its own code only: ownCode), and by the
