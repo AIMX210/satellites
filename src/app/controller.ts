@@ -33,7 +33,7 @@ import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/cata
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { msgs } from '@/i18n/runtime'
-import { ensureTz } from '@/imagery'
+import { ensureExonyms, ensureTz, exonymsReady } from '@/imagery'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
 import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
 import { installHeadSync } from './head'
@@ -186,6 +186,9 @@ export async function boot() {
   if (target) {
     void ensureTz()
     void loadEngine().catch(() => undefined)
+    // Its report waits for the visitor's place names (runReport, src/imagery/exonyms.ts): fetched now, beside the
+    // engine, they are in long before it starts.
+    void ensureExonyms()
   }
   startCatalog()
   const fonts = loadFirstFonts()
@@ -230,11 +233,15 @@ export async function boot() {
   warmAfterLanding()
 }
 
-/** Once the landing's entrance is over: the report engine, its workers, the time-zone table and the hover names. */
+/**
+ * Once the landing's entrance is over: the report engine, its workers, the time-zone table, the hover names, and the
+ * visitor's place names where they are a chunk of their own (src/imagery/exonyms.ts: in long before a search shows any).
+ */
 function warmAfterLanding() {
   afterLandingEntrance(() => {
     void loadEngine().then(warmPassWorkers, () => undefined)
     void ensureTz()
+    void ensureExonyms()
     loadNamesWhenIdle()
   })
 }
@@ -383,6 +390,10 @@ function retryCatalog(): Promise<void> {
 }
 
 export async function runReport(place: Place, opts: RunOpts = {}) {
+  // The place's name is on screen from the first frame of the search: in the visitor's language, never before it
+  // (src/imagery/exonyms.ts). Its table is in by now (the search, the pin and the link wait for it), unless a language's
+  // table is still on its way: then the search waits for it, rather than show a name that changes.
+  if (!exonymsReady()) await ensureExonyms()
   mark('run-report')
   // The visitor's own search (or the late share itself, already answered): a pending share no longer opens.
   lateShare.cancel()
