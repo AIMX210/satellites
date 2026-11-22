@@ -23,14 +23,19 @@
 }
 .hud::before {
   top: 0;
-  height: calc(var(--bezel-inset) + 96px + env(safe-area-inset-top, 0px));
+  height: calc(var(--bezel-inset) + 96px + var(--scrim-more, 0px) + env(safe-area-inset-top, 0px));
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--ink-0) 88%, transparent),
-    color-mix(in srgb, var(--ink-0) 80%, transparent) calc(var(--bezel-inset) + 50px + env(safe-area-inset-top, 0px)),
-    color-mix(in srgb, var(--ink-0) 36%, transparent) calc(var(--bezel-inset) + 74px + env(safe-area-inset-top, 0px)),
+    color-mix(in srgb, var(--ink-0) 80%, transparent) calc(var(--bezel-inset) + 50px + var(--scrim-more, 0px) + env(safe-area-inset-top, 0px)),
+    color-mix(in srgb, var(--ink-0) 36%, transparent) calc(var(--bezel-inset) + 74px + var(--scrim-more, 0px) + env(safe-area-inset-top, 0px)),
     transparent
   );
+}
+/* The language stepped down to a third line beside a panel (Hud.tsx useLanguageRoom): the plateau reaches one corner
+   line lower (CornerReadout: line-height 1.4, 3 px apart), so that line is as legible over cloud as the two above. */
+.hud:has(.aboutLine[data-lang-below]) {
+  --scrim-more: calc(1.4 * var(--fs-label) + 3px);
 }
 .hud::after {
   bottom: 0;
