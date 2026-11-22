@@ -10,10 +10,13 @@
  * whose name the list does not know near its point (a street, a typed label) stays countryless. Resolved before the
  * report shows the name (src/app/controller.ts runReport), once per link, and never in a language without a table
  * (English fetches nothing for it), so a name is never shown first one way and then another; and before a switch to a
- * language with a table shows the link's place on screen in it (the page was in English until then).
+ * language with a table shows the link's place on screen in it (the page was in English until then). A report waits
+ * for it EXONYM_WAIT_MS at most (waitForLinkCountry), as for the table: a tile that stalls must not hold the report,
+ * and the boot curtain over it, for ever. Past that wait the link is countryless for the rest of the page, and an
+ * answer that comes later is not applied.
  */
 import type { Place } from '@/types'
-import { exonymsActive } from './exonyms'
+import { EXONYM_WAIT_MS, exonymsActive } from './exonyms'
 import { localNamed } from './localPlaces'
 
 type Linked = Pick<Place, 'countryCode' | 'kind'>
@@ -30,22 +33,44 @@ const keyOf = (p: Pick<Place, 'label' | 'lat' | 'lon'>) => `${p.lat.toFixed(3)},
 export const needsLinkCountry = (place: Place, forSwitch = false): boolean =>
   place.source === 'url' && !place.countryCode && place.canonicalLabel === undefined && (forSwitch || exonymsActive()) && !resolved.has(keyOf(place))
 
+/** Settle a link's lookup, unless it is settled already (countryless once a wait gave up: a later answer is late). */
+function settle(key: string, found: Linked) {
+  if (!resolved.has(key)) resolved.set(key, found)
+}
+
 /**
- * Find the country the offline list gives a linked place's name at its point. Never rejects: a tile that cannot be
- * read leaves the name countryless (and remembered so, so it never changes later in the page).
+ * Find the country the offline list gives a linked place's name at its point: start the lookup, or join the one under
+ * way, and resolve when it answers, however long that takes (the boot starts it beside the engine). Never rejects: a
+ * tile that cannot be read leaves the name countryless (and remembered so, so it never changes later in the page).
  */
 export function resolveLinkCountry(place: Pick<Place, 'label' | 'lat' | 'lon'>): Promise<void> {
   const key = keyOf(place)
   if (resolved.has(key)) return Promise.resolve()
   let p = pending.get(key)
   if (!p) {
+    const kindOf = (k: string) => (k === 'r' ? 'region' : k === 'f' || k === 'l' ? 'feature' : undefined)
     p = localNamed(place.label, place.lat, place.lon).then(
-      (r) => void resolved.set(key, r ? { countryCode: r.cc.toLowerCase() || undefined, kind: r.kind === 'r' ? 'region' : r.kind === 'f' || r.kind === 'l' ? 'feature' : undefined } : {}),
-      () => void resolved.set(key, {}),
+      (r) => settle(key, r ? { countryCode: r.cc.toLowerCase() || undefined, kind: kindOf(r.kind) } : {}),
+      () => settle(key, {}),
     )
     pending.set(key, p)
   }
   return p
+}
+
+/**
+ * resolveLinkCountry, waited for EXONYM_WAIT_MS at most: what anything about to show a link's name waits for. Past
+ * the wait, the link is countryless for the rest of the page (its name as the countryless names give it), whatever
+ * the lookup answers later. Never rejects.
+ */
+export async function waitForLinkCountry(place: Pick<Place, 'label' | 'lat' | 'lon'>): Promise<void> {
+  const key = keyOf(place)
+  if (resolved.has(key)) return
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const limit = new Promise<void>((done) => (timer = setTimeout(done, EXONYM_WAIT_MS)))
+  await Promise.race([resolveLinkCountry(place), limit])
+  clearTimeout(timer)
+  settle(key, {})
 }
 
 /** A linked place as its name is looked up: with the country (and kind) resolveLinkCountry found, if any. */
