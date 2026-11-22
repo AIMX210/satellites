@@ -10,6 +10,7 @@
  */
 import { currentLocale } from '@/i18n/runtime'
 import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
+import { shownCountryName } from './localPlaces'
 import { placeKey, SPELLED } from './placeKey'
 
 /** One name a search can find: as the visitor types it, the place it names, and its rank in the table. */
@@ -181,7 +182,12 @@ function ownCode(cc: string): boolean {
   }
 }
 
-/** Every country by each name the browser gives it in the active language (by its own code only: ownCode). */
+/**
+ * Every country by each name the browser gives it in the active language (by its own code only: ownCode), and by the
+ * name its where line shows (./localPlaces.ts shownCountryName: a short name, or one a language's guide pins, as
+ * German's Palästinensische Autonomiegebiete where Chromium says Palästina), each also without its aside in brackets
+ * (Мьянма for Мьянма (Бирма)), so the name a visitor reads on the page finds it.
+ */
 export function countriesTyped(): { compact: string; cc: string; shown: string }[] {
   const locale = currentLocale()
   if (countryNames?.locale === locale) return countryNames.list
@@ -194,10 +200,11 @@ export function countriesTyped(): { compact: string; cc: string; shown: string }
         const cc = String.fromCharCode(a, b)
         const english = en.of(cc)
         if (!english || english === cc || NOT_COUNTRIES.test(english) || !ownCode(cc)) continue
-        for (const names of styles) {
-          const name = names.of(cc)
+        const named = [...styles.map((names) => names.of(cc)), shownCountryName(cc, locale)]
+        for (const name of named.flatMap((n) => (n ? [n, n.replace(/\s*\([^)]*\)/g, '')] : []))) {
           const compact = name && name !== cc ? typedKey(name).replace(/ /g, '') : ''
-          if (compact && name && !list.some((x) => x.cc === cc && x.compact === compact)) list.push({ compact, cc, shown: name })
+          const known = list.some((x) => x.cc === cc && x.compact === compact)
+          if (compact && !known) list.push({ compact, cc, shown: name })
         }
       }
   } catch {
