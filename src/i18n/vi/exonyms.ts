@@ -8,10 +8,10 @@
  * carry, so neither the Vietnamese chunk nor the first paint holds it. `load` fetches it, once, and fills `names` in;
  * src/imagery/exonyms.ts calls it at idle once the landing is up and awaits it before anything shows a place name (a
  * search, a pin, a report, a switch to Vietnamese), so a name is never shown first in English and then changed.
+ * A failed download never reloads the page (../optionalChunks.ts tableChunk): the names show as they came.
  */
 import type en from '../en/exonyms'
-
-let loading: Promise<void> | undefined
+import { tableChunk } from '../optionalChunks'
 
 const exonyms: typeof en = {
   names: '',
@@ -24,13 +24,5 @@ const exonyms: typeof en = {
     [7.0, 111.0, 12.0, 116.0],
     [8.5, 116.0, 12.0, 117.0],
   ],
-  load: () =>
-    (loading ??= import('./exonyms.gen').then(
-      (m) => void (exonyms.names = m.default),
-      (err: unknown) => {
-        loading = undefined // offline or a stale build: the next call tries again
-        throw err
-      },
-    )),
 }
-export default exonyms
+export default tableChunk(exonyms, () => import('./exonyms.gen'))

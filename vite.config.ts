@@ -41,9 +41,11 @@ const PURE_LIB_MODULES = /src[\\/]lib[\\/]geo3\.ts$/
  * them): Rolldown cut each into its own sliver, because the locale chunks import them too, and English's first load
  * went from 17 files to 23. Held in one chunk instead. Only zustand's own entry: its `traditional` one (and
  * use-sync-external-store under it) is React Three Fiber's, and taking it here pulled the globe into the first load.
+ * The place-name tables' loader (src/i18n/optionalChunks.ts) too: the table languages' chunks and the imagery code
+ * share it, and neither may pull the other in.
  */
 const I18N_CORE =
-  /src[\\/]i18n[\\/](ns|accentFont|runtime|Rich)\.tsx?$|api[\\/]_lib[\\/]i18n[\\/](locales|parts|format|units)\.ts$|src[\\/]ui[\\/]system[\\/]format\.ts$|src[\\/]imagery[\\/]placeKey\.ts$|src[\\/]i18n[\\/]en[\\/]time\.ts$|src[\\/]ui[\\/]results[\\/]lib[\\/]time\.ts$|node_modules[\\/]zustand[\\/]esm[\\/](index|vanilla|react)\.mjs$/
+  /src[\\/]i18n[\\/](ns|accentFont|runtime|Rich|optionalChunks)\.tsx?$|api[\\/]_lib[\\/]i18n[\\/](locales|parts|format|units)\.ts$|src[\\/]ui[\\/]system[\\/]format\.ts$|src[\\/]imagery[\\/]placeKey\.ts$|src[\\/]i18n[\\/]en[\\/]time\.ts$|src[\\/]ui[\\/]results[\\/]lib[\\/]time\.ts$|node_modules[\\/]zustand[\\/]esm[\\/](index|vanilla|react)\.mjs$/
 
 /**
  * The verdicts' English names ride with the results' meta (the results panel and About both load it), not in a chunk

@@ -10,7 +10,8 @@
  * Workers need nothing here: a worker that fails to load falls back to the main thread (engine/pool.ts,
  * imagery/pixelsClient.ts). Nor do the place-name tables and their search (src/i18n/<locale>/exonyms.gen.ts,
  * imagery/exonymSearch.ts): they are fetched at idle, maybe while the visitor types, and without them the names show as
- * they came, so a reload would only lose what was typed (OPTIONAL).
+ * they came, so a reload would only lose what was typed (OPTIONAL; and in QUIET_CHUNKS while they download, for
+ * Safari's error: src/i18n/optionalChunks.ts).
  *
  * A prefetch nobody waits for (the share card's measure, src/ui/share/measure.ts) does not reload either: its failure
  * is as likely a dropped connection as a new build, and reloading the results someone is reading for a chunk they may

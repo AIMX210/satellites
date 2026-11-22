@@ -27,6 +27,7 @@
  * (./linkCountry.ts), so a link to London, Ontario shows London.
  */
 import enExonyms from '@/i18n/en/exonyms'
+import { quietImport, SEARCH_CHUNK } from '@/i18n/optionalChunks'
 import { msgs } from '@/i18n/runtime'
 import { placeKey } from './placeKey'
 import type { Alternate, ExonymSearch } from './exonymSearch'
@@ -118,23 +119,6 @@ let searchLoad: Promise<void> | undefined
 export const EXONYM_WAIT_MS = 3_000
 
 /**
- * While a table or its search downloads, src/lib/staleBuild.ts lets a failed import through without reloading the page
- * (the names show as they came): it reads these chunk names in a set shared by Symbol.for, as the share card's measure
- * does. The chunk's name alone is not enough: Safari's error names no module.
- */
-const QUIET = Symbol.for('watched.quietChunks')
-const CHUNKS = ['exonyms.gen-', 'exonymSearch-']
-let downloads = 0
-function quiet(step: 1 | -1) {
-  const set = ((globalThis as { [QUIET]?: Set<string> })[QUIET] ??= new Set())
-  downloads += step
-  for (const name of CHUNKS) {
-    if (downloads > 0) set.add(name)
-    else set.delete(name)
-  }
-}
-
-/**
  * Downloads a wait has run out on (a table or a search still pending after EXONYM_WAIT_MS): no later call waits for
  * them again, or a stalled search chunk would hold every search and every pin 3 s; one that arrives is used all the
  * same. A download asked again after a failure is a new one, and is waited for.
@@ -144,12 +128,13 @@ const overdue = new WeakSet<Promise<void>>()
 /**
  * Load the active language's table if it is a chunk of its own, and the search through it (idempotent, shared by every
  * caller; nothing in English). Never rejects, and resolves within EXONYM_WAIT_MS: a failed load leaves the names as
- * they came, and the next call tries again, until a name has been shown.
+ * they came, and the next call tries again, until a name has been shown. Neither download's failure reloads the page,
+ * Safari's included (src/i18n/optionalChunks.ts: the table's `load` is quiet itself, so a language switch's is too).
  */
 export async function ensureExonyms(): Promise<void> {
   const m = msgs(enExonyms)
   if (!m.names && !m.load) return
-  searchLoad ??= import('./exonymSearch').then(
+  searchLoad ??= quietImport(SEARCH_CHUNK, () => import('./exonymSearch')).then(
     (x) => void (search = x),
     () => void (searchLoad = undefined),
   )
@@ -159,8 +144,6 @@ export async function ensureExonyms(): Promise<void> {
   const both = Promise.all(downloads).catch(() => {
     /* offline or a stale build: names as they came */
   })
-  quiet(1)
-  void both.finally(() => quiet(-1))
   let timer: ReturnType<typeof setTimeout> | undefined
   const ranOut = new Promise<boolean>((done) => (timer = setTimeout(() => done(true), EXONYM_WAIT_MS)))
   if (await Promise.race([both.then(() => false), ranOut])) for (const p of downloads) overdue.add(p)

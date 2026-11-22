@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { tableChunk } from '@/i18n/optionalChunks'
 import { setBundleForTests } from '@/i18n/runtime'
 import enGeo from '@/i18n/en/geo'
 import koExonyms from '@/i18n/ko/exonyms'
@@ -104,17 +105,14 @@ describe('exonyms', () => {
     const shared = globalThis as { [k: symbol]: Set<string> | undefined }
     const quiet = () => [...(shared[Symbol.for('watched.quietChunks')] ?? [])]
     let fail: ((err: Error) => void) | undefined
-    const ns: { names: string; load: () => Promise<void> } = {
-      names: '',
-      load: () => new Promise<void>((_, no) => (fail = no)),
-    }
+    const ns = tableChunk({ names: '' }, () => new Promise<{ default: string }>((_, no) => (fail = no)))
     setBundleForTests('ru', { exonyms: ns })
     const done = ensureExonyms()
-    expect(quiet()).toEqual(expect.arrayContaining(['exonyms.gen-', 'exonymSearch-']))
+    expect(quiet()).toContain('exonyms.gen-')
     fail?.(new TypeError('Importing a module script failed.'))
     await done
     expect(quiet()).not.toContain('exonyms.gen-')
-    expect(quiet()).not.toContain('exonymSearch-')
+    expect(quiet()).not.toContain('exonymSearch-') // in long since
   })
 
   it('names nothing in English, or in a language without a table', () => {
