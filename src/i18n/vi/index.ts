@@ -8,8 +8,9 @@
  * fall back to English for that namespace only. The share card's copy is not a file of this folder: it lives with the
  * server (api/_lib/i18n/card/vi.ts), because the Open Graph card and the share page print the same words as the share
  * sheet's preview, and this bundle lists that very module as `card`, so the card is translated once. Every namespace is
- * typed against its English file, so a missing or changed message fails the typecheck here. There is no exonyms table
- * yet: the East Sea names are an owner question (docs/i18n/vi.md §8). docs/i18n/vi.md is the authority on the words.
+ * typed against its English file, so a missing or changed message fails the typecheck here. `exonyms` names places in
+ * Vietnamese (Hà Nội, Luân Đôn, Biển Đông: docs/i18n/vi.md §8), small enough to ride in this chunk (./exonyms.ts).
+ * docs/i18n/vi.md is the authority on the words.
  */
 import type { Bundle } from '../runtime'
 import switcher from './switcher'
@@ -32,6 +33,7 @@ import results from './results'
 import verdicts from './verdicts'
 import pass from './pass'
 import engine from './engine'
+import exonyms from './exonyms'
 import card from '../../../api/_lib/i18n/card/vi'
 
 export default {
@@ -55,5 +57,6 @@ export default {
   verdicts,
   pass,
   engine,
+  exonyms,
   card,
 } satisfies Bundle

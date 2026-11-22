@@ -11,8 +11,9 @@
  *
  * The card is the one namespace that lives outside this folder: the share card and share page print the same words as
  * the share sheet's preview and PNG, and the server cannot import the app's catalogs, so the app takes the very module
- * the server reads (api/_lib/i18n/card/hi.ts). Hindi needs no exonyms table: place names are shown as they come. The
- * style guide behind every word is docs/i18n/hi.md.
+ * the server reads (api/_lib/i18n/card/hi.ts). `exonyms` names places in Hindi (नई दिल्ली, मुंबई, लंदन): its table is a
+ * chunk of its own, which `ready` loads before a switch to Hindi shows a place (./exonyms.ts). The style guide behind
+ * every word is docs/i18n/hi.md.
  */
 import type { Bundle } from '../runtime'
 import switcher from './switcher'
@@ -35,6 +36,7 @@ import results from './results'
 import verdicts from './verdicts'
 import pass from './pass'
 import engine from './engine'
+import exonyms from './exonyms'
 import card from '../../../api/_lib/i18n/card/hi'
 
 export default {
@@ -58,5 +60,8 @@ export default {
   verdicts,
   pass,
   engine,
+  exonyms,
   card,
 } satisfies Bundle
+/** Before a switch to this language shows it: its place names (./exonyms.ts, a chunk of its own). */
+export const ready = (): Promise<void> => exonyms.load?.() ?? Promise.resolve()

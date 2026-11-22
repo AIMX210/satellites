@@ -7,8 +7,8 @@
  * Each key is the namespace's file name, which is the key its English file declares with ns() (src/i18n/en/*.ts), so
  * runtime.msgs() finds a namespace by the same word in every language; a missing key would fall back to English for
  * that namespace only. Every file is typed against its English (`typeof en`), so a missing message or a changed
- * parameter is a compile error here, not a blank on screen. There is no `exonyms`: ru shows gazetteer names as they
- * come (docs/i18n/ru.md Appendix B).
+ * parameter is a compile error here, not a blank on screen. `exonyms` names places in Russian (Москва, Киев): its table
+ * is a chunk of its own, which `ready` loads before a switch to Russian shows a place (./exonyms.ts).
  *
  * The card is the one namespace that lives outside this folder: the share card and share page print the same words as
  * the share sheet's preview and PNG, and the server cannot import the app's catalogs, so the app takes the very module
@@ -35,6 +35,7 @@ import results from './results'
 import verdicts from './verdicts'
 import pass from './pass'
 import engine from './engine'
+import exonyms from './exonyms'
 import card from '../../../api/_lib/i18n/card/ru'
 
 export default {
@@ -58,5 +59,8 @@ export default {
   verdicts,
   pass,
   engine,
+  exonyms,
   card,
 } satisfies Bundle
+/** Before a switch to this language shows it: its place names (./exonyms.ts, a chunk of its own). */
+export const ready = (): Promise<void> => exonyms.load?.() ?? Promise.resolve()
