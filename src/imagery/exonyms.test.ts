@@ -153,6 +153,14 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'Kyiv', sublabel: 'Kyiv City, Kyiv, Ukraine', countryCode: 'ua' })).toBe('місто Київ, Україна')
   })
 
+  it('joins the parts it names as the language joins a list (Persian «، »), and leaves the data’s own as they came', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}، ${country}`)
+    setBundleForTests('fa', { exonyms: { names: 'US:Atlanta=آتلانتا;*Georgia=جورجیا', ownScript: true }, geo: { ...enGeo, where, parts: '، ' } })
+    const airport = { label: 'Hartsfield–Jackson Atlanta International Airport', sublabel: 'Atlanta, Georgia, United States', countryCode: 'us' }
+    expect(displaySublabel(airport)).toBe('آتلانتا، جورجیا، ایالات متحده')
+    expect(displaySublabel({ label: 'Mall', sublabel: 'Peachtree, Brookhaven, United States', countryCode: 'us' })).toBe('Peachtree, Brookhaven، ایالات متحده')
+  })
+
   it('reads a landmark’s hand-written where line in the language: two countries, two regions', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
     setBundleForTests('it', { exonyms: { names: 'IT:Rome=Roma' }, geo: { ...enGeo, where } })

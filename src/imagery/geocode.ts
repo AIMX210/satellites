@@ -191,7 +191,9 @@ export function displaySublabel(
     .filter((part) => !script || !LATIN.test(part))
     // Two parts the language names alike say it once.
     .filter((part, i, all) => i === 0 || part !== all[i - 1])
-  const named = parts?.length ? parts.join(', ') : undefined
+  // As it came, the rest is the geocoder's data; named in the language, it is one list in it (Persian «، »: `parts`).
+  const asCame = parts?.join(', ') === rest
+  const named = parts?.length ? parts.join(asCame ? ', ' : (msgs(enGeo).parts ?? ', ')) : undefined
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
   return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
 }

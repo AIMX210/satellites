@@ -16,7 +16,18 @@
  */
 import { ns } from '../ns'
 
-export default ns('geo', {
+/** The namespace: `where`, and how the where line's own parts are joined once they are named in the language. */
+export interface GeoNamespace {
+  where: (rest: string | undefined, country: string) => string
+  /**
+   * The separator between the where line's own parts once the page names them in your language (a place-name table:
+   * "Одеса, Одеська область"), so the line is one list in it: Persian «، ». Default ", ". Never used while `rest` is
+   * the geocoder's data as it came.
+   */
+  parts?: string
+}
+
+export default ns<GeoNamespace>('geo', {
   /**
    * A place's "where" line under its name (search results, the dropped pin, the results' place), when it ends with
    * the place's country: `rest` is everything before the country as the geocoder wrote it ("Ontario", "Paris,
