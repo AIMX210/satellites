@@ -42,6 +42,11 @@ export interface LocaleInfo {
   percentFirst?: boolean
   /** The digit-group separator, where the language's typography differs from Intl's default (Spanish: a no-break space) */
   group?: string
+  /**
+   * The hemisphere letters after a coordinate's degree sign, north, south, east, west, where the international N S E W
+   * would mislead: in Vietnamese N is nam, south, beside a compass that writes north B (bắc).
+   */
+  hemispheres?: string
 }
 
 const L = (
@@ -50,7 +55,7 @@ const L = (
   english: string,
   script: Script,
   plurals: readonly PluralCategory[],
-  extra: Partial<Pick<LocaleInfo, 'dir' | 'intl' | 'listed' | 'sentenceGap' | 'percentGap' | 'percentFirst' | 'group'>> = {},
+  extra: Partial<Pick<LocaleInfo, 'dir' | 'intl' | 'listed' | 'sentenceGap' | 'percentGap' | 'percentFirst' | 'group' | 'hemispheres'>> = {},
 ): LocaleInfo => ({ code, native, english, script, dir: 'ltr', intl: code, plurals, listed: true, sentenceGap: ' ', ...extra })
 
 export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
@@ -74,12 +79,18 @@ export const LOCALE_INFO: Record<Locale, LocaleInfo> = {
   // Added 2026-11-21 (owner: 20 languages). Persian keeps Western digits as Arabic does (the mono face has no others);
   // Hindi's Intl digits are Western by default.
   ru: L('ru', 'Русский', 'Russian', 'cyrillic', ['one', 'few', 'many', 'other']),
-  vi: L('vi', 'Tiếng Việt', 'Vietnamese', 'latin', ['other']),
+  vi: L('vi', 'Tiếng Việt', 'Vietnamese', 'latin', ['other'], { hemispheres: 'BNĐT' }),
   fa: L('fa', 'فارسی', 'Persian', 'arabic', ['one', 'other'], { dir: 'rtl', intl: 'fa-u-nu-latn' }),
   hi: L('hi', 'हिन्दी', 'Hindi', 'devanagari', ['one', 'other']),
 }
 
 export const DEFAULT_LOCALE: Locale = 'en'
+
+/** A coordinate's hemisphere letter in `locale`: "N" for a northern latitude, "B" on a Vietnamese page. */
+export function hemisphere(locale: Locale, axis: 'lat' | 'lon', value: number): string {
+  const letters = LOCALE_INFO[locale].hemispheres ?? 'NSEW'
+  return letters[axis === 'lat' ? (value >= 0 ? 0 : 1) : value >= 0 ? 2 : 3]
+}
 
 export function isLocale(v: unknown): v is Locale {
   return typeof v === 'string' && (LOCALES as readonly string[]).includes(v)

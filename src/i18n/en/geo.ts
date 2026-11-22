@@ -11,7 +11,8 @@
  *    which is data (the stats and lookups keep it), and a place does not carry the tag itself, so on screen it stays
  *    English in every language for now. It is expected, and rare (two search results that read exactly alike).
  *  - Why "Use my location" failed: that notice is the landing's (landing.ts `locateErrors`), the only one shown.
- *  - Coordinates ("43.4723°N 80.5449°W"): international notation, the same in every language.
+ *  - Coordinates ("43.4723°N 80.5449°W"): international notation, the same in every language (a Vietnamese page shows
+ *    its own hemisphere letters, locales.ts `hemispheres`; a place's label keeps N S E W, geocode.ts coordinateLabel).
  */
 import { ns } from '../ns'
 

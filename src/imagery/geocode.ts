@@ -28,7 +28,6 @@ import { haversineKm } from '@/lib/geo'
 import type { LatLon, Place } from '@/types'
 import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
-import { fmtLat, fmtLon } from '@/ui/system/format'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
 import { exonym } from './exonyms'
 import { countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
@@ -129,9 +128,13 @@ export function displaySublabel(place: Pick<Place, 'sublabel' | 'countryCode'>):
   return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
 }
 
-/** "43.4723°N 80.5449°W": international notation, the same in every language. */
+/**
+ * "43.4723°N 80.5449°W": international notation, the same in every language, Vietnamese included (a place's label is
+ * data: it travels in share links and lookups, so it never takes one page's hemisphere letters, fmtLat).
+ */
 export function coordinateLabel(lat: number, lon: number): string {
-  return `${fmtLat(lat)} ${fmtLon(lon)}`
+  const l = ((((lon + 180) % 360) + 360) % 360) - 180
+  return `${Math.abs(lat).toFixed(4)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(l).toFixed(4)}°${l >= 0 ? 'E' : 'W'}`
 }
 
 const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n)
