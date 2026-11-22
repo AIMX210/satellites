@@ -2,6 +2,8 @@
  * Where the Worker sends every path, what it caches, and the headers it adds on the way out.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { panCacheQuery, panQuery } from '../api/_lib/pan.js'
+import { cardCacheQuery } from '../api/_lib/share.js'
 import { SECURITY_HEADERS, route, type Routes } from './router.ts'
 
 const BOT = 'Mozilla/5.0 (compatible; Twitterbot/1.0)'
@@ -128,12 +130,12 @@ describe('cache-control as browsers get it', () => {
 
 describe('edge cache', () => {
   /** A cache keyed by URL, as Cloudflare's is for these requests, counting each handler's calls. */
-  function cachedRoutes(answers: Record<string, () => Response>) {
+  function cachedRoutes(answers: Record<string, () => Response>, keys: Pick<Routes, 'cardKey' | 'panKey'> = {}) {
     const store = new Map<string, Response>()
     const calls: string[] = []
     const stored: Promise<unknown>[] = []
     const handler = (name: string) => async (r: Request) => {
-      calls.push(`${name} ${new URL(r.url).pathname}${new URL(r.url).search}`)
+      calls.push(`${name} ${new URL(r.url).pathname}${new URL(r.url).search}${method === 'GET' ? '' : ` ${r.method}`}`)
       return answers[name]()
     }
     const r: Routes = {
@@ -146,9 +148,13 @@ describe('edge cache', () => {
         put: async (key, res) => void store.set(key.url, res),
       },
       waitUntil: (work) => void stored.push(work),
+      ...keys,
     }
-    const get = async (path: string, ua = PERSON) => {
-      const res = await route(new Request(`https://www.watched.earth${path}`, { headers: { 'user-agent': ua } }), r)
+    // The method the visitor used (calls name the handler's own when it differs: a HEAD reaches it as a GET).
+    let method = 'GET'
+    const get = async (path: string, ua = PERSON, as = 'GET') => {
+      method = as
+      const res = await route(new Request(`https://www.watched.earth${path}`, { method: as, headers: { 'user-agent': ua } }), r)
       await Promise.all(stored)
       return res
     }
@@ -175,6 +181,53 @@ describe('edge cache', () => {
     await get('/api/pan?bbox=1')
     await get('/s/missing1')
     expect([...store.keys()]).toEqual(['https://www.watched.earth/api/s?id=missing1'])
+  })
+
+  it('keeps one entry for a card or a pan crop however its address is spelled', async () => {
+    const T = Date.now() - 86_400_000
+    const crop = panQuery([304845, 2771175, 319845, 2786175], 32640, T)
+    const { get, calls, store } = cachedRoutes(
+      { og: respond(200, 'public, max-age=86400, s-maxage=31536000'), pan: respond(200, 'public, max-age=604800, s-maxage=31536000') },
+      { cardKey: cardCacheQuery, panKey: (q) => panCacheQuery(q, Date.now()) },
+    )
+    // A stored share's card: its id, its language and the current version are all it is drawn from.
+    for (const q of ['id=ab3d5f7h&v=5', 'v=5&id=ab3d5f7h', 'id=ab3d5f7h&v=5&x=1', 'id=ab3d5f7h&v=5&x=2&place=Elsewhere', 'id=ab3d5f7h&v=5&l=xx', 'id=ab3d5f7h&v=5&l=ar']) await get(`/api/og?${q}`)
+    expect(calls).toEqual(['og /api/og?id=ab3d5f7h&v=5'])
+    // Another language is another card; so is an out-of-date version (one entry for every such `v`).
+    await get('/api/og?id=ab3d5f7h&v=5&l=ja')
+    await get('/api/og?id=ab3d5f7h&v=4')
+    await get('/api/og?id=ab3d5f7h&v=999')
+    await get('/api/og?id=ab3d5f7h')
+    expect(calls.length).toBe(3)
+    // A card drawn from its address: the same parameters in any order, with anything else dropped.
+    calls.length = 0
+    await get('/api/og?place=Waterloo&lat=43.47&lon=-80.54&verdict=imaged&norad=60989')
+    await get('/api/og?norad=60989&verdict=imaged&lon=-80.54&lat=43.47&place=Waterloo&utm_source=x&fbclid=y')
+    expect(calls.length).toBe(1)
+    // A pan crop: panQuery's own string.
+    calls.length = 0
+    await get(`/api/pan?${crop}`)
+    await get(`/api/pan?x=1&t=${T}&crs=32640&bbox=304845,2771175,319845,2786175`)
+    expect(calls.length).toBe(1)
+    expect([...store.keys()].filter((k) => k.includes('/api/pan'))).toEqual([`https://www.watched.earth/api/pan?${crop}`])
+  })
+
+  it('answers a HEAD from the same entry as a GET, and the handler as a GET when there is none', async () => {
+    const seen: string[] = []
+    const { get, calls, store } = cachedRoutes({
+      og: () => {
+        seen.push('og')
+        return new Response('card', { headers: { 'cache-control': 'public, max-age=86400, s-maxage=31536000' } })
+      },
+    })
+    const head = await get('/api/og?id=ab3d5f7h', PERSON, 'HEAD')
+    expect(head.status).toBe(200)
+    expect(await head.text()).toBe('')
+    expect((await get('/api/og?id=ab3d5f7h')).status).toBe(200)
+    await get('/api/og?id=ab3d5f7h', PERSON, 'HEAD')
+    expect(calls).toEqual(['og /api/og?id=ab3d5f7h GET'])
+    expect(seen.length).toBe(1)
+    expect([...store.keys()]).toEqual(['https://www.watched.earth/api/og?id=ab3d5f7h'])
   })
 
   it('keys a rewritten request by the URL its handler sees', async () => {
