@@ -114,4 +114,26 @@ describe('exonyms', () => {
     setBundleForTests('en', null)
     expect([displayLabel(munich), displaySublabel(munich)]).toEqual(['Munich', 'Bavaria, Germany'])
   })
+
+  it('reads a landmark’s hand-written where line in the language: two countries, two regions', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
+    setBundleForTests('it', { exonyms: { names: 'IT:Rome=Roma' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ sublabel: 'France and Italy', countryCode: 'fr' })).toBe('Francia e Italia')
+    expect(displaySublabel({ sublabel: 'France and Italy', countryCode: 'ch' })).toBe('France and Italy') // not its country
+    expect(displaySublabel({ sublabel: 'Rome, Italy', countryCode: 'va' })).toBe('Rome, Italy') // another country: as it came
+    expect(displaySublabel({ sublabel: 'Southern basin, Israel and Jordan', countryCode: 'jo' })).toBe('Southern basin, Israele e Giordania')
+    setBundleForTests('ru', { exonyms: { names: 'US:*Nevada=Невада;*Arizona=Аризона;*Sistan and Baluchestan=x|IR:*Fars=Фарс' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ sublabel: 'Nevada and Arizona, United States', countryCode: 'us' })).toBe('Невада и Аризона, Соединенные Штаты')
+    expect(displaySublabel({ sublabel: 'Sistan and Baluchestan, Iran', countryCode: 'ir' })).toBe('Sistan and Baluchestan, Иран') // one name
+    setBundleForTests('en', null)
+    expect(displaySublabel({ sublabel: 'France and Italy', countryCode: 'fr' })).toBe('France and Italy')
+  })
+
+  it('leaves out a part in Latin letters under a label in another script, and keeps it under a Latin one', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
+    setBundleForTests('ru', { exonyms: { names: 'GB:London=Лондон|US:*Illinois=Иллинойс' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ label: 'London', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('Великобритания')
+    expect(displaySublabel({ label: 'Chicago', sublabel: 'Illinois, United States', countryCode: 'us' })).toBe('Иллинойс, Соединенные Штаты')
+    expect(displaySublabel({ label: 'Leeds', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('England, Великобритания')
+  })
 })

@@ -29,8 +29,9 @@ import type { LatLon, Place } from '@/types'
 import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
+import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
 import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, exonymHome, exonymVariants, namesCountries } from './exonyms'
-import { countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
+import { countryCodeOf, countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
 import { fetchJson, hedge, HttpError, isAbortError, sleep, throwIfAborted } from './net'
@@ -115,25 +116,67 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
  * Macao by their short names. Any other sublabel (no country code, a geocoder's own spelling of the country, a curated
  * place's copy already in the visitor's language) is shown as it came.
  *
+ * In another language, two more things. A landmark's where line, written by hand in English, that names two countries
+ * (the place's and another: "France and Italy") or two regions the language names ("Nevada and Arizona, United
+ * States") lists them in the language (Intl.ListFormat: Francia e Italia, Невада и Аризона). Under a label
+ * the language writes in another script (Лондон, لندن, लंदन), a part it has no name for is left out rather than shown
+ * in Latin letters beside it (Лондон · Велика Британія, not Лондон · England, Велика Британія), as English leaves out
+ * a geocoder's non-Latin parts (sublabelOf).
+ *
  * Read at call time: React callers subscribe to the language (useLocale()) so a switch re-renders it. The Place keeps
  * its English sublabel, which is what the usage stats and lookups send.
  */
-export function displaySublabel(place: Pick<Place, 'sublabel' | 'countryCode'>): string | undefined {
+export function displaySublabel(
+  place: Pick<Place, 'sublabel' | 'countryCode'> & Partial<Pick<Place, 'label' | 'kind'>>,
+): string | undefined {
   const sub = place.sublabel
   const cc = place.countryCode
   if (!sub || !cc) return sub
+  const locale = currentLocale()
   const long = countryName(cc)
   const short = shownCountryName(cc, 'en')
-  const country = [long, short].find((c) => sub === c || sub.endsWith(`, ${c}`))
+  let country = [long, short].find((c) => sub === c || sub.endsWith(`, ${c}`))
+  let shown: string | undefined
+  if (country === undefined && locale !== 'en') {
+    // A landmark's where line, written by hand, may name two countries, the place's one of them.
+    const at = sub.lastIndexOf(', ')
+    const last = at < 0 ? sub : sub.slice(at + 2)
+    const pair = last.split(' and ').map(countryCodeOf)
+    if (pair.length === 2 && pair[0] && pair[1] && pair.includes(cc.toUpperCase())) {
+      country = last
+      shown = inList(pair.map((c) => shownCountryName(c!, locale)), locale)
+    }
+  }
   if (country === undefined) return sub
   const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
-  const shown = shownCountryName(cc, currentLocale())
-  const named = rest
+  shown ??= shownCountryName(cc, locale)
+  // Under a label in another script, a part left in Latin letters is left out (unless the language writes Latin).
+  const label = place.label && displayLabel({ label: place.label, countryCode: cc, kind: place.kind })
+  const script = locale !== 'en' && !!label && !LATIN.test(label)
+  const parts = rest
     ?.split(', ')
-    .map((part) => exonym(part, cc, 'where'))
-    .join(', ')
+    .map((part) => {
+      const whole = exonym(part, cc, 'where')
+      if (whole !== part || locale === 'en') return whole
+      // Two regions in one part (Nevada and Arizona), each with a name in the language: listed in it. A region named
+      // with "and" (Sistan and Baluchestan) is one name, kept whole.
+      const both = part.split(' and ')
+      const names = both.map((p) => exonym(p, cc, 'where'))
+      return both.length === 2 && names.every((n, i) => n !== both[i]) ? inList(names, locale) : part
+    })
+    .filter((part) => !script || !LATIN.test(part))
+  const named = parts?.length ? parts.join(', ') : undefined
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
   return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
+}
+
+/** Names as a list in the visitor's language ("Francia e Italia"), or joined by "/" where the browser has no lists. */
+function inList(names: string[], locale: string): string {
+  try {
+    return new Intl.ListFormat(LOCALE_INFO[locale as keyof typeof LOCALE_INFO].intl, { type: 'conjunction' }).format(names)
+  } catch {
+    return names.join(' / ')
+  }
 }
 
 /**

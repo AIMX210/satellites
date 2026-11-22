@@ -125,6 +125,25 @@ export function countryName(cc: string, locale: Locale = 'en'): string {
   return regionName(cc, locale, 'long')
 }
 
+let byEnglishName: Map<string, string> | undefined
+
+/**
+ * The country an English name (countryName's, as a landmark's where line writes it: "Italy", "Israel and Jordan"'s
+ * parts) is, as an upper-case ISO code; undefined for anything else. Built once, from the browser's names.
+ */
+export function countryCodeOf(english: string): string | undefined {
+  if (!byEnglishName) {
+    byEnglishName = new Map()
+    for (let a = 65; a <= 90; a++)
+      for (let b = 65; b <= 90; b++) {
+        const cc = String.fromCharCode(a, b)
+        const name = countryName(cc)
+        if (name !== cc && !byEnglishName.has(placeKey(name))) byEnglishName.set(placeKey(name), cc)
+      }
+  }
+  return byEnglishName.get(placeKey(english))
+}
+
 /**
  * The countries read by CLDR's short name on screen (owner, 2026-11-19): Hong Kong and Macao in every language, English
  * included (the long names are officialese in a where line: "Hong Kong SAR China", "R.A.S. chinoise de Hong Kong"), and
