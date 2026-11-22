@@ -728,6 +728,40 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'UA:Sheptytskyi': 'Scheptyzkyj',
     'HU:*Baranya': '',
     ':White Sea': 'Weißes Meer',
+    /**
+     * Second pass over the native review (2026-11-22): the regions GeoNames names as their capital or not at all
+     * (Region Stawropol, Oblast Orjol, Republik Altai; Luhansk, Sumy and Ternopil, the offline list's bare oblast names
+     * in a where line), and the seas and straits GeoNames has no German name for (Golf von Biskaya, Straße von
+     * Gibraltar, Beringmeer); Wattenmeer without GeoNames' qualifier, Korallenmeer in one word.
+     */
+    'RU.70': 'Region Stawropol',
+    'RU.56': 'Oblast Orjol',
+    'RU.03': 'Republik Altai',
+    'RU.49': 'Oblast Murmansk',
+    'UA.14': 'Oblast Luhansk',
+    'UA.21': 'Oblast Sumy',
+    'UA.22': 'Oblast Ternopil',
+    // Photon's spellings of two cities the data spells otherwise (Mykolayiv, Zaporizhzhya).
+    'UA:Mykolaiv': 'Mykolajiw',
+    'UA:Zaporizhzhia': 'Saporischschja',
+    ':Bay of Biscay': 'Golf von Biskaya',
+    ':Strait of Gibraltar': 'Straße von Gibraltar',
+    ':Bering Sea': 'Beringmeer',
+    ':East China Sea': 'Ostchinesisches Meer',
+    ':Sea of Japan': 'Japanisches Meer',
+    ':Barents Sea': 'Barentssee',
+    ':Gulf of Finland': 'Finnischer Meerbusen',
+    ':Gulf of Bothnia': 'Bottnischer Meerbusen',
+    ':Irish Sea': 'Irische See',
+    ':Ionian Sea': 'Ionisches Meer',
+    ':Kara Sea': 'Karasee',
+    ':Laptev Sea': 'Laptewsee',
+    ':Gulf of Thailand': 'Golf von Thailand',
+    ':Gulf of Tonkin': 'Golf von Tonkin',
+    ':Andaman Sea': 'Andamanensee',
+    ':Tasman Sea': 'Tasmansee',
+    ':Coral Sea': 'Korallenmeer',
+    ':Wadden Sea': 'Wattenmeer',
   },
   /**
    * Italian: France's new regions by their Italian names (GeoNames has the provisional ones: Nord-Passo di
@@ -901,6 +935,43 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     ':South China Sea': 'Mar Cinese Meridionale',
     ':Sea of Japan': 'Mar del Giappone',
     ':Bay of Biscay': 'Golfo di Biscaglia',
+    /**
+     * Second pass over the native review (2026-11-22): Marrakech (GeoNames' Italian name is not kept), Heraklion for the
+     * data's Irákleion, Lago di Ginevra, Friburgo for the Swiss city as for its canton, the Danish capital region and
+     * central Serbia, Ukraine's oblasts as the table writes Kyiv's (Oblast di Kharkiv, in the gazetteer's spelling,
+     * it.md §17), and the Greenland Sea.
+     */
+    2542997: 'Marrakech',
+    'GR:Irákleion': 'Heraklion',
+    'CH:Lake Leman': 'Lago di Ginevra',
+    'CH:Lake Geneva': 'Lago di Ginevra',
+    'CH:Fribourg': 'Friburgo',
+    'DK.17': 'Regione Hovedstaden',
+    'RS.SE': 'Serbia centrale',
+    ':Greenland Sea': 'Mare di Groenlandia',
+    'UA.01': 'Oblast di Cherkasy',
+    'UA.02': 'Oblast di Chernihiv',
+    'UA.03': 'Oblast di Chernivtsi',
+    'UA.04': 'Oblast di Dnipropetrovsk',
+    'UA.05': 'Oblast di Donetsk',
+    'UA.06': 'Oblast di Ivano-Frankivsk',
+    'UA.07': 'Oblast di Kharkiv',
+    'UA.08': 'Oblast di Kherson',
+    'UA.09': 'Oblast di Khmelnytskyi',
+    'UA.10': 'Oblast di Kirovohrad',
+    'UA.14': 'Oblast di Luhansk',
+    'UA.15': 'Oblast di Leopoli',
+    'UA.16': 'Oblast di Mykolaiv',
+    'UA.17': 'Oblast di Odesa',
+    'UA.18': 'Oblast di Poltava',
+    'UA.19': 'Oblast di Rivne',
+    'UA.21': 'Oblast di Sumy',
+    'UA.22': 'Oblast di Ternopil',
+    'UA.23': 'Oblast di Vinnytsia',
+    'UA.24': 'Oblast di Volinia',
+    'UA.25': 'Transcarpazia',
+    'UA.26': 'Oblast di Zaporizhzhia',
+    'UA.27': 'Oblast di Zhytomyr',
   },
   /**
    * Ukraine's first-level names as its Constitution lists them (docs/i18n/uk.md §4.3: official names are never
@@ -1047,6 +1118,56 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'NP:Mount Everest': 'Еверест',
     'AU:Ayers Rock': 'Улуру',
     ':Laptev Sea': 'Море Лаптєвих',
+    /**
+     * Second pass over the native review (2026-11-22): the towns of 10–16k a namesake's junk name hid (Миколаївка,
+     * Слобожанське, Гірник, Кальміуське: one name for every town so spelt), the best-known districts, the regions of Belarus, Poland and Russia
+     * GeoNames has no Ukrainian name for, OpenStreetMap's spellings of two oblasts, Chornobyl's plant as the
+     * geocoders name it, and Uluru.
+     */
+    'UA:Mykolaivka': 'Миколаївка',
+    // The districts of Kyiv, Kharkiv, Lviv and Odesa readers know by name, which a pin in the city is named by (the
+    // table names no section of a city by rule: GeoNames' Ukrainian names for them are a namesake's as often as not).
+    'UA:Obolon': 'Оболонь',
+    'UA:Podil': 'Поділ',
+    'UA:Pechersk': 'Печерськ',
+    'UA:Vyhurivshchyna-Troyeshchyna': 'Вигурівщина-Троєщина',
+    'UA:Darnytsya': 'Дарниця',
+    'UA:Pozniaky': 'Позняки',
+    'UA:Teremky': 'Теремки',
+    'UA:Lukyanivka': 'Лук’янівка',
+    'UA:Shulyavka': 'Шулявка',
+    'UA:Kurenivka': 'Куренівка',
+    'UA:Rusanivka': 'Русанівка',
+    'UA:Svyatoshyn': 'Святошин',
+    'UA:Holosiyiv': 'Голосіїв',
+    'UA:Vynohradar': 'Виноградар',
+    'UA:Saltivka': 'Салтівка',
+    'UA:Sykhiv': 'Сихів',
+    'UA:Moldavanka': 'Молдаванка',
+    'UA:Slobozhanske': 'Слобожанське',
+    'UA:Hirnyk': 'Гірник',
+    "UA:Kal'mius'ke": 'Кальміуське',
+    'UA:Chornobyl Nuclear Power Plant': 'Чорнобильська АЕС',
+    'UA:*Zaporizhia Oblast': 'Запорізька область',
+    'UA:*Vinnytsya Oblast': 'Вінницька область',
+    'AU:Uluru': 'Улуру',
+    'BY.01': 'Брестська область',
+    'BY.03': 'Гродненська область',
+    'BY.06': 'Могильовська область',
+    'PL.73': 'Куявсько-Поморське воєводство',
+    'PL.78': 'Мазовецьке воєводство',
+    'PL.79': 'Опольське воєводство',
+    'PL.81': 'Підляське воєводство',
+    'PL.82': 'Поморське воєводство',
+    'PL.83': 'Сілезьке воєводство',
+    'PL.84': 'Свентокшиське воєводство',
+    'RU.29': 'Кемеровська область',
+    'RU.32': 'Ханти-Мансійський автономний округ',
+    'RU.66': 'Санкт-Петербург',
+    'RU.68': 'Північна Осетія',
+    'RU.80': 'Удмуртія',
+    'RU.91': 'Красноярський край',
+    'RU.92': 'Камчатський край',
   },
   /**
    * Russian: Ukraine's oblasts by their standard Russian names (docs/i18n/ru.md §8: Днепропетровская, Кировоградская;
@@ -1168,6 +1289,40 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     ':Gulf of Tonkin': 'Тонкинский залив',
     'RU.63': 'Якутия',
     ':English Channel': 'Ла-Манш',
+    /**
+     * Second pass over the native review (2026-11-22): the regional seats under the size rule (Анадырь, Нарьян-Мар,
+     * Магас), Moscow, Almaty and Osh as regions, Mecklenburg-Vorpommern, OpenStreetMap's spellings of the republics
+     * and krais and of three regions of Belarus and Kazakhstan (what Photon writes in a where line), and Uluru.
+     */
+    'RU:Anadyr': 'Анадырь',
+    "RU:Nar'yan-Mar": 'Нарьян-Мар',
+    'RU:Magas': 'Магас',
+    'RU.48': 'Москва',
+    'KZ.02': 'Алматы',
+    'KG.10': 'Ош',
+    'DE.12': 'Мекленбург — Передняя Померания',
+    'AU:Uluru': 'Улуру',
+    'RU:*Republic of Tatarstan': 'Татарстан',
+    'RU:*Republic of Bashkortostan': 'Башкортостан',
+    'RU:*Republic of Mordovia': 'Мордовия',
+    'RU:*Primorsky Krai': 'Приморский край',
+    'RU:*Stavropol Krai': 'Ставропольский край',
+    'RU:*Zabaykalsky Krai': 'Забайкальский край',
+    'RU:*Republic of Dagestan': 'Дагестан',
+    'RU:*Udmurt Republic': 'Удмуртия',
+    'RU:*Republic of Buryatia': 'Бурятия',
+    'RU:*Sakha Republic': 'Якутия',
+    'RU:*Republic of Ingushetia': 'Ингушетия',
+    'RU:*Kabardino-Balkarian Republic': 'Кабардино-Балкария',
+    'RU:*Karachay-Cherkess Republic': 'Карачаево-Черкесия',
+    'RU:*Republic of Adygea': 'Адыгея',
+    'RU:*Republic of Kalmykia': 'Калмыкия',
+    'RU:*Republic of Khakassia': 'Хакасия',
+    'RU:*Mari El Republic': 'Марий Эл',
+    'RU:*Khanty-Mansi Autonomous Okrug': 'Ханты-Мансийский автономный округ',
+    'BY:*Hrodna Region': 'Гродненская область',
+    'BY:*Grodno Region': 'Гродненская область',
+    'KZ:*Jetisu Region': 'Жетысуская область',
   },
   /**
    * Vietnamese: the 34 provinces and cities since the 2025 merger by their Vietnamese names (GeoNames has few, and
@@ -1307,6 +1462,34 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'MO:Macao': '',
     'GB:Newcastle upon Tyne': '',
     'US:Golden Gate Park': '',
+    /**
+     * Second pass over the native review (2026-11-22): Itu Aba (Đảo Ba Bình) as the offline list names it, the regions
+     * named like their cities (Bắc Kinh, Thượng Hải, Thiên Tân, Phnôm Pênh), Taiwan's two, and the seas GeoNames has no
+     * Vietnamese name for; Taishan and Fuyang are two cities each in China with one English name, so neither is named
+     * (a search still finds the larger by its name, ALIASES).
+     */
+    ':Itu Aba Island': 'Đảo Ba Bình',
+    'CN.22': 'Bắc Kinh',
+    'CN.23': 'Thượng Hải',
+    'CN.28': 'Thiên Tân',
+    'KH.22': 'Phnôm Pênh',
+    'TW.01': 'Phúc Kiến',
+    'TW.04': 'Đài Loan',
+    'CN:Taishan': '',
+    'CN:Fuyang': '',
+    ':Mediterranean Sea': 'Địa Trung Hải',
+    ':Red Sea': 'Biển Đỏ',
+    ':East China Sea': 'Biển Hoa Đông',
+    ':Arctic Ocean': 'Bắc Băng Dương',
+    ':Southern Ocean': 'Nam Đại Dương',
+    ':Andaman Sea': 'Biển Andaman',
+    ':Persian Gulf': 'Vịnh Ba Tư',
+    ':Arabian Sea': 'Biển Ả Rập',
+    ':Caspian Sea': 'Biển Caspi',
+    ':Sea of Japan': 'Biển Nhật Bản',
+    ':North Sea': 'Biển Bắc',
+    ':Baltic Sea': 'Biển Baltic',
+    ':Gulf of Mexico': 'Vịnh Mexico',
   },
   /**
    * Persian: Delhi is دهلی (GeoNames' first Persian name for it is Old Delhi), Gorgan گرگان; the Persian Gulf is
@@ -1423,6 +1606,20 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'AF:Mehtar Lām': 'مهترلام',
     'AF:Aībak': 'ایبک',
     'AF:Tarinkot': 'ترینکوت',
+    /**
+     * Second pass over the native review (2026-11-22): Omsk and Los Angeles as Persian writes them (one spelling for the
+     * city and its airport), the capital and the large cities GeoNames has no Persian name for (Port Vila, Nagoya,
+     * Surat, Kano, Xiamen, Diyarbakır), and Crimea.
+     */
+    'RU:Omsk': 'اومسک',
+    'US:Los Angeles': 'لس\u200cآنجلس',
+    'VU:Port-Vila': 'پورت ویلا',
+    'JP:Nagoya': 'ناگویا',
+    'IN:Surat': 'سورت',
+    'NG:Kano': 'کانو',
+    'CN:Xiamen': 'شیامن',
+    'TR:Diyarbakır': 'دیاربکر',
+    'UA:*Crimea': 'کریمه',
   },
   /**
    * Hindi: the modern official names where GeoNames' first Hindi name is the old one (मुंबई, not बम्बई; बेंगलुरु, not
@@ -1573,6 +1770,33 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     ':Arctic Ocean': 'आर्कटिक महासागर',
     'NP:Mount Everest': 'माउंट एवरेस्ट',
     'IN.22': 'पुडुचेरी',
+    /**
+     * Second pass over the native review (2026-11-22): Manchester as the Hindi press spells it, Gurgaon's landmark row as
+     * the city is now named, Aurangabad as its English label still has it (its renaming, like Port Blair's, is the
+     * owner's to decide), and the regions of Canada, Australia, the UK and Nepal GeoNames has no Hindi name for.
+     */
+    'GB:Manchester': 'मैनचेस्टर',
+    'IN:Gurgaon': 'गुरुग्राम',
+    'IN:Aurangabad': 'औरंगाबाद',
+    'CA.04': 'न्यू ब्रंसविक',
+    'CA.05': 'न्यूफ़ाउंडलैंड और लैब्राडोर',
+    'CA.07': 'नोवा स्कोटिया',
+    'CA.09': 'प्रिंस एडवर्ड आइलैंड',
+    'CA.10': 'क्यूबेक',
+    'CA.11': 'सस्केचेवान',
+    'CA.12': 'युकॉन',
+    'CA.13': 'नॉर्थवेस्ट टेरिटरीज़',
+    'CA.14': 'नुनावुत',
+    'AU.04': 'क्वींसलैंड',
+    'AU.05': 'दक्षिण ऑस्ट्रेलिया',
+    'GB.WLS': 'वेल्स',
+    'NP.1': 'कोशी प्रदेश',
+    'NP.2': 'मधेश प्रदेश',
+    'NP.3': 'बागमती प्रदेश',
+    'NP.4': 'गंडकी प्रदेश',
+    'NP.5': 'लुंबिनी प्रदेश',
+    'NP.6': 'कर्णाली प्रदेश',
+    'NP.7': 'सुदूरपश्चिम प्रदेश',
   },
 }
 
@@ -1590,7 +1814,7 @@ export const ALIASES: Record<Lang, Record<string, readonly string[]>> = {
     3553478: ['Avana'],
     2747373: ['Aia'],
     'IL:Western Wall': ['Muro Occidentale'],
-    2660718: ['Friburgo'],
+    'CH:Lake Leman': ['Lago Lemano'],
   },
   uk: {
     703448: ['Киев'],
@@ -1610,7 +1834,14 @@ export const ALIASES: Record<Lang, Record<string, readonly string[]>> = {
     588409: ['Таллинн'],
     'UA:Chernobyl': ['Чернобыль'],
   },
-  vi: { 1566083: ['Sài Gòn', 'Hồ Chí Minh', 'TP Hồ Chí Minh', 'TPHCM'], 1586896: ['Buôn Mê Thuột', 'Ban Mê Thuột'] },
+  vi: {
+    1566083: ['Sài Gòn', 'Hồ Chí Minh', 'TP Hồ Chí Minh', 'TPHCM'],
+    1586896: ['Buôn Mê Thuột', 'Ban Mê Thuột'],
+    // Two cities in China each, one English name: shown as it comes, found by the larger's name (Jiangsu's, Fujian's, Anhui's).
+    'CN:Suzhou': ['Tô Châu'],
+    'CN:Fuzhou': ['Phúc Châu'],
+    'CN:Fuyang': ['Phụ Dương'],
+  },
   fa: {
     703448: ['کیف'],
     4140963: ['واشنگتن'],
