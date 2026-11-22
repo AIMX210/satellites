@@ -993,10 +993,10 @@ is accepted because it is rare: towns and cities, which most searches are, take 
 article to a gazetteer label**, and do not port English `placeInProse`.
 
 **Gazetteer labels are usually English.** The geocoders are asked for English names (`lang=en` / `language=en` in
-`geocode.ts`) and the offline list is English, so a visitor who types *München* gets *Munich*, *Wien* gives *Vienna*,
-and the where line can read *Bavaria, Deutschland*. This is expected, and it is never fixed in a catalog string. The
-label may also be in a local script (*Москва*). Never translate it and never fix its spelling. (A German display-name
-table is an open question for the owner; see the summary.)
+`geocode.ts`) and the offline list is English. On screen, the generated German table names them (*München*, *Wien*,
+*Bayern, Deutschland*, *Mailand*, *Kyjiw*: `src/i18n/de/exonyms.gen.ts`, docs/I18N.md, Place names), and a search for
+*München* finds Munich; a place it does not name shows as it came. This is never fixed in a catalog string: a wrong
+name is fixed in `scripts/exonyms.ts`. Never translate a label and never fix its spelling.
 
 ### 5.2 [SAT]: gender unknown
 

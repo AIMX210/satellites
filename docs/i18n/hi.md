@@ -844,7 +844,9 @@ Strategies, in order:
 - **The time-lapse in war zones** (`src/imagery/seasonRegions.ts`: Gaza Strip, West Bank, Ukraine, Lebanon). Every year
   there is one season (owner, 2026-11-16), and the caption says only that and the count: `11 साफ़ झलकें · हर साल पतझड़
   में एक`. Never add `युद्ध`, `तबाही`, `हमला`, `बमबारी`, `कब्ज़ा` or any characterisation the English does not make.
-- **Names, in strings we write** (runtime gazetteer names are shown as they come and never patched): `ग़ाज़ा पट्टी`,
+- **Names, in strings we write** (runtime gazetteer names take the generated Hindi table's names, GeoNames' own with
+  modern official forms: मुंबई, बेंगलुरु, प्रयागराज; Kashmir and disputed areas exactly as GeoNames names them, with no
+  qualifier added; docs/I18N.md, Place names): `ग़ाज़ा पट्टी`,
   `वेस्ट बैंक`, `यूक्रेन`, `लेबनान`, as Hindi news writes them. The country Intl gives for PS is `फ़िलिस्तीनी क्षेत्र`; add
   no qualifier. Crimea is named as the data has it (in Ukraine), with no qualifier (`क्रीमिया (रूस)` never).
 - **`पट्टी` is also the Gaza Strip.** Our swath is `पट्टी`, and Hindi calls the Gaza Strip `ग़ाज़ा पट्टी`. Never put both

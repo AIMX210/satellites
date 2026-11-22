@@ -1141,12 +1141,10 @@ Never *ẩn danh hoàn toàn*, *an toàn 100%*, *cam kết*.
 *Biển Đông* ("the East Sea"), the Paracel Islands *Quần đảo Hoàng Sa* and the Spratly Islands *Quần đảo Trường Sa*, and
 Vietnamese readers treat the English and Chinese names in a Vietnamese interface as taking a side (products and films
 have been withdrawn from Vietnam over a map). Our copy names none of them. The place data does (GeoNames' *South China
-Sea*, OpenStreetMap's *Paracel Islands*), and shows them as they come. **Owner question before `vi` is listed:** a
-display-only exonym table for `vi`, as Korean's (`src/i18n/ko/exonyms.ts`), with countryless names *South China Sea =
-Biển Đông*, *Paracel Islands = Quần đảo Hoàng Sa*, *Spratly Islands = Quần đảo Trường Sa* (and the data's variants:
-*Xisha Islands*, *Nansha Islands*). Usage stats and links keep the English label, as for Korean, so nothing splits.
-**Owner, 2026-11-22: approved** (the principle of Korean's 동해). The names come with Vietnamese's generated place-name
-table (`src/i18n/vi/exonyms`); until that table ships, they show as the data has them.
+Sea*, OpenStreetMap's *Paracel Islands*). **Owner, 2026-11-22: approved** (the principle of Korean's 동해): the
+generated `vi` table (display only) names them *Biển Đông*, *Quần đảo Hoàng Sa*, *Quần đảo Trường Sa* (and the data's
+variants: *Xisha Islands*, *Nansha Islands*), countryless and where GeoNames files the sea under Vietnam or Thailand
+(`scripts/exonyms.ts` OVERRIDES). Usage stats and links keep the English label, as for Korean, so nothing splits.
 
 **Country names.** They come from `Intl.DisplayNames('vi')` (CLDR): *Trung Quốc*, *Đài Loan*, *Ukraina*, *Israel*,
 *Jordan*, *Li-băng*, *Ai Cập*, *Timor-Leste*. Translators never override them. Two CLDR long names misread for
@@ -1163,7 +1161,10 @@ Vietnamese readers, and the owner decides before `vi` is listed:
 **War zones in the time-lapse (Gaza Strip, West Bank, Ukraine, Lebanon).**
 - Names: *Dải Gaza*, *Bờ Tây*, *Ukraina*, *Li-băng* (CLDR); Ukrainian cities in Ukrainian transliteration: *Kyiv*,
   *Kharkiv*, *Odesa*. Much of the Vietnamese press still writes *Kiev*, *Kharkov*, *Odessa* (from Russian); the product
-  follows each city's own name, as it does in every language. Gazetteer names are shown as they arrive.
+  follows each city's own name, as it does in every language. Gazetteer names are shown as they arrive, or as the
+  generated table names them: Vietnam's towns and provinces in Vietnamese (*Hà Nội*, *Thành phố Hồ Chí Minh*, *Nghệ
+  An*), a foreign place only where Vietnamese has a name of its own (*Luân Đôn*, *Bắc Kinh*, *Mát-xcơ-va*; *Kyiv* keeps
+  its own). *Sài Gòn* is never shown, and a search for it finds Ho Chi Minh City.
 - Our copy takes no side: it says what the pictures show (the year, the date, the satellite). Never add *chiếm đóng*,
   *xâm lược*, *diệt chủng*, *khủng bố*, *giải phóng*, or either side's designation. If a line must say why a season is
   fixed, say *vùng chiến sự*.
@@ -1302,7 +1303,7 @@ what they did before.
   `Accept-Language`: one cache entry per link. The default card drawn for an `l=vi` link is Vietnamese, with the
   four-line hero (§3.1), and `card.defaultAlt` describes it.
 - **Owner questions (each free at runtime):**
-  1. The East Sea exonym table (§8): `src/i18n/vi/exonyms.ts`, countryless, display only.
+  1. The East Sea names (§8): in the generated `vi` table since 2026-11-22, display only; confirm or remove.
   2. `vi` in `SHORT_NAMES.PS` (*Palestine*, §8).
   3. `'Asia/Ho_Chi_Minh': 'ICT'` in the zone abbreviation tables? Vietnamese readers write *GMT+7* or *giờ Việt Nam*
      and rarely *ICT*; *UTC+7*, which the app shows today, is correct and familiar. Recommended: leave it.
@@ -1444,8 +1445,9 @@ results. Every letter is set in the Vietnamese faces (no fallback, no tofu), and
 - *LIÊN / KẾT* in the share sheet's 48 px column, *GẦN NHẤT · / ĐỊA PHƯƠNG* at 360 and 390 px, the pass strip's
   two-line labels at 360 px (English wraps OFF- / NADIR there too): clean breaks between words, values aligned.
 
-**Reported, not fixable here:** Vietnamese place names (*Hanoi*, *Da Nang City*: no `vi` exonym table, and a search for
-*Hà Nội* finds a hamlet in Ninh Bình, not the capital); the geostationary frame time's live dot shrinking to 0 px when
+**Reported, not fixable here:** (Vietnamese place names, *Hanoi* and *Da Nang City*, and a search for *Hà Nội* that found
+a hamlet in Ninh Bình: fixed 2026-11-22 by the generated table, docs/I18N.md, Place names); the geostationary frame
+time's live dot shrinking to 0 px when
 the relative time (*1 GIỜ TRƯỚC*) is wider than the thumbnail; *Asia/Bangkok* as Hanoi's zone in the computing readout;
 slash counters (*03 / 12*) that read as dates beside *20/12/2017* (since fixed: *3 trên 12*, decision 20); the
 landscape headline column.

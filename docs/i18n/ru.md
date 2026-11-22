@@ -60,7 +60,7 @@ A third, smaller one: **a numeral governs its noun and its verb** (21 → «см
 | Punctuation | «ёлочки», nested „лапки“; one-character ellipsis …; em dash — with spaces (NBSP before it), used where Russian grammar puts it (noun — noun), not as decoration, and never in About (§6.3); no exclamation marks. |
 | ё | Written everywhere («пролёт», «ещё», «всё», «её», «тёмный»): «пролет» is also a flight of stairs, «все» and «всё» are different words. Intl's own strings are left as they come. |
 | Euphony | «со» before «с», «з», «ш», «ж» + consonant and before «второго» (fixed words, and «Со 2 ноября», §5.6); «в», «с», «к», «о» everywhere else. |
-| Place exonyms in static copy | Standard Russian names: Киев, Харьков, Одесса, Львов, Днепр, Чернобыль, Киевская область (§8). Gazetteer data is shown as it comes. |
+| Place exonyms in static copy | Standard Russian names: Киев, Харьков, Одесса, Львов, Днепр, Чернобыль, Киевская область (§8). Gazetteer data is shown by the generated Russian names (Москва, Киев, Днепр: docs/I18N.md, Place names), else as it comes. |
 | Crimea, the war | Crimea is shown as Ukraine (the data is corrected, owner); the war, if copy ever names it, is «война России против Украины»; never «СВО», «спецоперация», «конфликт на Украине» (§8). |
 | Cost and speed | Catalog text, `Intl`, the shared Cyrillic fonts already shipped for Ukrainian. No new service, file or request (Appendix B). |
 
@@ -1108,8 +1108,10 @@ Assembly's resolution 68/262, and says nothing about it in copy.
   «Артёмовск»), Чернобыль, Припять, Киевская область. These are the Russian language's own words for those places, as
   «Варшава» and «Пекин» are, not a position: the English "Kyiv / Kiev" question is about the romanisation of the
   Ukrainian name and does not apply to Russian. The Ukrainian edition writes the Ukrainian forms.
-- Gazetteer results (the offline list, Open-Meteo, Photon, Nominatim) are data, shown as they come («Kyiv»), and only
-  the country after them is Russian.
+- Gazetteer results (the offline list, Open-Meteo, Photon, Nominatim) are data and stay English in the Place; on screen
+  they take the generated Russian table's names (`src/i18n/ru/exonyms.gen.ts`, from GeoNames, fixed in
+  `scripts/exonyms.ts`: Киев, Харьков, Одесса, Днепр, Бахмут; Ukraine's oblasts as above; Crimea is «Крым», in Ukraine,
+  never «Республика Крым»; no Soviet-era name), else they show as they come («Kyiv»). The country after them is Russian.
 - Neighbours: «Беларусь» (CLDR's name; never «Белоруссия» in our copy), «Молдова», «Кишинёв», «Казахстан», «Кыргызстан»,
   «Туркменистан».
 - Country names come from `Intl.DisplayNames('ru')` as CLDR gives them («Тайвань», «Косово», «Палестинские
@@ -1332,8 +1334,10 @@ Found while writing this guide, for the coordinator (none is a copy change):
    GOST 7.79-2000 system B / BGN-like table GeoNames uses for Russia (Москва → moskva, Санкт-Петербург →
    sankt-peterburg, Новосибирск → novosibirsk, ё → e, й → y, х → kh, ц → ts, ч → ch, ш → sh, щ → shch, ы → y, ь ъ
    dropped, э → e, ю → yu, я → ya). About 0.3 kB.
-3. **Russian names for places** (Москва for "Moscow", Киев for "Kyiv") would need a generated `exonyms` table
-   (`scripts/build-exonyms.ts`); the ru bundle ships none for now, so gazetteer names appear as they come, in Latin.
+3. **Russian names for places** (Москва for "Moscow", Киев for "Kyiv"): done (2026-11-22). The generated table
+   (`scripts/build-exonyms.ts`, ~860 names, 12 kB compressed, a chunk of its own) names them, and answers Cyrillic
+   searches offline in place of item 2's transliteration: «Москва» finds Moscow, «Киев» Kyiv (docs/I18N.md, Place
+   names).
 4. **Street words** for the analytics backstop (`src/lib/telemetry.ts`): §8.
 5. **Percent:** §6.4 (one flag if the owner wants «25 %»).
 6. **Dev servers in a git worktree**: a worktree whose `node_modules` is a symlink to the main checkout gets 403 for
