@@ -76,6 +76,30 @@ describe('exonyms', () => {
     }
   })
 
+  it('waits for a stalled table once: later calls never wait for it again, and use it once it arrives', async () => {
+    vi.useFakeTimers()
+    try {
+      let arrive: (() => void) | undefined
+      const ns: { names: string; load: () => Promise<void> } = { names: '', load: () => table }
+      const table = new Promise<void>((done) => (arrive = () => ((ns.names = 'RU:Moscow=Москва'), done())))
+      setBundleForTests('ru', { exonyms: ns })
+      let waits = 0
+      const call = () => void ensureExonyms().then(() => waits++)
+      call()
+      await vi.advanceTimersByTimeAsync(EXONYM_WAIT_MS + 100)
+      expect(waits).toBe(1)
+      call()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(waits).toBe(2) // a search typed after it: no second wait
+      arrive?.()
+      call()
+      await vi.advanceTimersByTimeAsync(0)
+      expect([waits, exonymsReady(), exonym('Moscow', 'ru', 'label')]).toEqual([3, true, 'Москва'])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('keeps a failed table download from reloading the page while it runs, Safari included', async () => {
     const shared = globalThis as { [k: symbol]: Set<string> | undefined }
     const quiet = () => [...(shared[Symbol.for('watched.quietChunks')] ?? [])]

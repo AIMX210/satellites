@@ -112,7 +112,8 @@ let searchLoad: Promise<void> | undefined
 /**
  * How long anything that shows a place name waits for the table and its search, at most: a request that stalls (a
  * mobile network that never answers) must not hold a search or a report for ever. Past it, the names are shown as
- * they came, and the table, when it does arrive, is kept out of the page (`late`), so nothing changes once shown.
+ * they came, and the table, when it does arrive, is kept out of the page (`late`), so nothing changes once shown; and
+ * nothing waits for that download again (`overdue`).
  */
 export const EXONYM_WAIT_MS = 3_000
 
@@ -134,6 +135,13 @@ function quiet(step: 1 | -1) {
 }
 
 /**
+ * Downloads a wait has run out on (a table or a search still pending after EXONYM_WAIT_MS): no later call waits for
+ * them again, or a stalled search chunk would hold every search and every pin 3 s; one that arrives is used all the
+ * same. A download asked again after a failure is a new one, and is waited for.
+ */
+const overdue = new WeakSet<Promise<void>>()
+
+/**
  * Load the active language's table if it is a chunk of its own, and the search through it (idempotent, shared by every
  * caller; nothing in English). Never rejects, and resolves within EXONYM_WAIT_MS: a failed load leaves the names as
  * they came, and the next call tries again, until a name has been shown.
@@ -145,13 +153,17 @@ export async function ensureExonyms(): Promise<void> {
     (x) => void (search = x),
     () => void (searchLoad = undefined),
   )
-  const both = Promise.all([exonymsReady() ? undefined : m.load?.(), searchLoad]).catch(() => {
+  const pending = (p: Promise<void> | undefined): p is Promise<void> => !!p && !overdue.has(p)
+  const downloads = [exonymsReady() ? undefined : m.load?.(), searchLoad].filter(pending)
+  if (!downloads.length) return
+  const both = Promise.all(downloads).catch(() => {
     /* offline or a stale build: names as they came */
   })
   quiet(1)
   void both.finally(() => quiet(-1))
   let timer: ReturnType<typeof setTimeout> | undefined
-  await Promise.race([both, new Promise<void>((done) => (timer = setTimeout(done, EXONYM_WAIT_MS)))])
+  const ranOut = new Promise<boolean>((done) => (timer = setTimeout(() => done(true), EXONYM_WAIT_MS)))
+  if (await Promise.race([both.then(() => false), ranOut])) for (const p of downloads) overdue.add(p)
   clearTimeout(timer)
 }
 
