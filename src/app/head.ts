@@ -11,8 +11,10 @@
  * A search engine that runs the app runs it in English, so the title it reads here is the sentence the static page
  * carries (pageTitle). Another language names the place and the brand and no more: the sentence is not translated
  * (it would need each language's grammar for an inserted name), and an English sentence in a French tab would be
- * wrong. A curated place is named as that language shows it (Place.label); any other by the name the page shows it
- * under (imagery displayLabel: Москва for Moscow, as the headline says it), once the language's place names are in.
+ * wrong. A curated place, or a link to one, is named as that language's copy names it, at once and again after a
+ * switch (ui/results/placeName.ts copyName: it needs no table, so a table that fails never leaves the tab unnamed);
+ * any other by the name the page shows it under (imagery displayLabel: Москва for Moscow, as the headline says it),
+ * once the language's place names are in.
  * Until then (a place page or a link booting, a table still on its way) the tab's title stays as it is: the label
  * first and the language's name after would rename the place in the tab, and asking for a name before its table is in
  * would keep the table out of the page (src/imagery/exonyms.ts). The title follows once the names are in, or are kept
@@ -27,11 +29,11 @@
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { currentLocale, msgs, useLocaleStore } from '@/i18n/runtime'
-import { displayLabel, exonymsReady, linkedForName, onExonymsReady, prefetchExonyms } from '@/imagery'
+import { exonymsReady, onExonymsReady, prefetchExonyms } from '@/imagery'
 import { bootPlace, isPagePlace, pagePlace, pageTitle, type NamedSpot, type PagePlace } from '@/lib/placePage'
-import { curatedId } from '@/ui/landing/places'
 import { useApp, type Phase } from '@/state/store'
 import type { Place } from '@/types'
+import { copyName, placeName } from '@/ui/results/placeName'
 import { linkPlaceIn, pageTarget } from './links'
 
 export interface Head {
@@ -76,16 +78,15 @@ export function headFor(
 }
 
 /**
- * A place's name as the results show it (ui/results/placeName.ts), for the tab: a curated place's label, any other's
- * name in the language once its table is in or kept out (a link's in the country found at its point); undefined
- * before, while the name the page will show is not known.
+ * A place's name as the results show it (ui/results/placeName.ts), for the tab, in the language on screen: a curated
+ * place's, or a link's to one, from the language's copy at once; any other's in the language once its table is in or
+ * kept out (a link's in the country found at its point); undefined before, while the name the page will show is not
+ * known.
  */
 function shownName(spot: NamedSpot): string | undefined {
-  const place = spot as Partial<Place> & NamedSpot
-  if (!('source' in place) || curatedId(place as Place)) return spot.label
-  if (!exonymsReady()) return undefined
-  const link = place.source === 'url' && place.canonicalLabel === undefined
-  return displayLabel(link ? linkedForName(place as Place) : (place as Place))
+  if (!('source' in spot)) return spot.label
+  const place = spot as Place
+  return copyName(place) ?? (exonymsReady() ? placeName(place) : undefined)
 }
 
 function apply(head: Head) {

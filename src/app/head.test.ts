@@ -37,7 +37,7 @@ function pageDocument(page: object, title: string) {
 }
 
 /** Boot a place page in `locale` (with `bundle`): the head as the controller installs it, and the store. */
-async function bootPage(page: { path: string }, locale: 'fr' | 'ru', bundle: () => Promise<Bundle>) {
+async function bootPage(page: { path: string }, locale: 'fr' | 'ru' | 'de', bundle: () => Promise<Bundle>) {
   vi.resetModules()
   const { doc, titles } = pageDocument(page, 'static')
   vi.stubGlobal('document', doc)
@@ -64,7 +64,7 @@ async function bootPage(page: { path: string }, locale: 'fr' | 'ru', bundle: () 
     if (place) displayLabel(place)
     await new Promise((r) => setTimeout(r, 0))
   }
-  return { titles, openReport, shownByPage }
+  return { titles, openReport, shownByPage, runtime }
 }
 
 describe('the tab title of a place page', () => {
@@ -95,5 +95,20 @@ describe('the tab title of a place page', () => {
     ru.arrive()
     await new Promise((r) => setTimeout(r, 0))
     expect(titles).toEqual(['Moscow · Watched'])
+  })
+
+  it('names a curated place at once in a language with a table, its table on its way or never coming', async () => {
+    const ru = await russianWaiting()
+    const { titles, openReport } = await bootPage(GIZA, 'ru', async () => ru.bundle)
+    openReport()
+    expect(titles).toEqual(['Пирамиды Гизы · Watched']) // the 'places' copy names it: no table to wait for
+  })
+
+  it('renames a curated place in the tab as the results do when the language changes', async () => {
+    const fr = async () => (await import('@/i18n/fr/index')).default
+    const { titles, openReport, runtime } = await bootPage(GIZA, 'fr', fr)
+    openReport()
+    runtime.setBundleForTests('de', (await import('@/i18n/de/index')).default)
+    expect(titles).toEqual(['Pyramides de Gizeh · Watched', 'Pyramiden von Gizeh · Watched'])
   })
 })
