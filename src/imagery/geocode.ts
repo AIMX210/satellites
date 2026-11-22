@@ -48,6 +48,7 @@ import {
   countryName,
   isListCountry,
   nearestLocal,
+  prefetchLocal,
   searchLocal,
   shownCountryName,
   type LocalPlace,
@@ -711,7 +712,10 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   throwIfAborted(signal)
   const query = q.trim().replace(/\s+/g, ' ')
   if (query.length < 2 || !hasText(query)) return []
-  // The visitor's own names (./exonyms.ts) are part of the answer, and are shown in it: in before either.
+  // The visitor's own names (./exonyms.ts) are part of the answer, and are shown in it: in before either. The files a
+  // Latin query reads in any case load meanwhile, so the first search after the landing waits for the longer download,
+  // not for both in turn (English has no names to wait for, and reads them as before).
+  if (exonymsActive() && !parseCoordinates(query)) prefetchLocal(query)
   await ensureExonyms()
   throwIfAborted(signal)
   const key = `${currentLocale()}|${textKey(query)}`

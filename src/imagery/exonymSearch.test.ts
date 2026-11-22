@@ -198,6 +198,39 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(displayLabel(delhi)).toBe('नई दिल्ली')
   })
 
+  it('reads a Latin query’s own files while the names download, and shows nothing before they are in', async () => {
+    const asked: string[] = []
+    vi.stubGlobal('fetch', async (input: string) => {
+      const url = String(input)
+      asked.push(url)
+      const file = FILES[`/public${url}`]
+      return file ? new Response(await file()) : Response.json({ results: [], features: [] })
+    })
+    // Fresh modules: the files earlier tests read stay in memory.
+    vi.resetModules()
+    const runtime = await import('@/i18n/runtime')
+    const geocode = await import('./geocode')
+    let arrive: (() => void) | undefined
+    const ns: { names: string; countries: boolean; load: () => Promise<void> } = {
+      names: '',
+      countries: true,
+      load: () => new Promise<void>((done) => (arrive = () => ((ns.names = ruNames), done()))),
+    }
+    runtime.setBundleForTests('ru', { exonyms: ns })
+    let found: Place[] | undefined
+    const search = geocode.searchPlaces('Paris').then((r) => (found = r))
+    await vi.waitFor(() => expect(arrive).toBeDefined())
+    const files = [`/places/${PLACES_VERSION}/s/pari.txt`, `/places/${PLACES_VERSION}/l.txt`]
+    await vi.waitFor(() => expect(asked).toEqual(expect.arrayContaining(files)))
+    await new Promise((r) => setTimeout(r, 50))
+    expect(found).toBeUndefined()
+    arrive?.()
+    await search
+    expect(geocode.displayLabel(found![0])).toBe('Париж')
+    expect(asked.filter((u) => u === files[0])).toHaveLength(1) // read once
+    runtime.setBundleForTests('en', null)
+  })
+
   it('shows nothing of a search or a pin before the table is in, so its names never change once shown', async () => {
     serveFiles()
     let arrive: (() => void) | undefined

@@ -227,8 +227,7 @@ export async function searchLocal(
   const q = placeKey(query)
   const latin = !!shardOf(q)
   if (!latin && !alternates.length) return []
-  const shardRows = (shard: ReturnType<typeof shardFor>) =>
-    shard ? load(`s/${shard.file}.txt`, signal).then((rows) => (rows || !shard.head ? rows : load(`s/${shard.head}.txt`, signal))) : Promise.resolve(null)
+  const shardRows = (shard: ReturnType<typeof shardFor>) => searchFile(shard, signal)
   const spelled = latin ? [...new Set(variants.map(placeKey))].filter((k) => k !== q && !!shardOf(k)) : []
   // Each alternate under its English name's key, and at home under its own name's too: the list files a town named in
   // its language at home by that name (Köln, not Cologne).
@@ -328,6 +327,26 @@ export async function searchLocal(
     })
     .slice(0, limit)
     .map((h) => (h.exact ? { ...h.r, exact: true } : h.r))
+}
+
+/** A search file's places (its group's head file's, where it has none), or null. */
+function searchFile(shard: ReturnType<typeof shardFor>, signal?: AbortSignal): Promise<LocalPlace[] | null> {
+  if (!shard) return Promise.resolve(null)
+  const head = shard.head
+  return load(`s/${shard.file}.txt`, signal).then((rows) => (rows || !head ? rows : load(`s/${head}.txt`, signal)))
+}
+
+/**
+ * Start reading the files a search for `query` reads whatever it finds, its own search file and the landmarks, and
+ * wait for neither (geocode.ts searchPlaces, while a language's names download): the first search then waits for the
+ * longer of the two downloads, not one after the other. Nothing for a query with no Latin key, whose files depend on
+ * the names. A file that fails is asked again by the search.
+ */
+export function prefetchLocal(query: string): void {
+  const shard = shardFor(placeKey(query), GROUPS, SPLIT)
+  if (!shard) return
+  void searchFile(shard).catch(() => undefined)
+  void load(LANDMARKS).catch(() => undefined)
 }
 
 /** The offline list's kinds of row an alternate of each kind may be. */
