@@ -33,7 +33,7 @@ import { isCatalogLoadError, loadCatalog, loadCatalogNames } from '@/engine/cata
 import enApp from '@/i18n/en/app'
 import enPlaces from '@/i18n/en/places'
 import { msgs } from '@/i18n/runtime'
-import { ensureExonyms, ensureTz, exonymsReady } from '@/imagery'
+import { ensureExonyms, ensureTz, exonymsReady, needsLinkCountry, resolveLinkCountry } from '@/imagery'
 import { getShare, recordLookup, type Share } from '@/lib/backend'
 import { addressOf, bootPlace, homePath, pagePlace } from '@/lib/placePage'
 import { installHeadSync } from './head'
@@ -186,9 +186,10 @@ export async function boot() {
   if (target) {
     void ensureTz()
     void loadEngine().catch(() => undefined)
-    // Its report waits for the visitor's place names (runReport, src/imagery/exonyms.ts): fetched now, beside the
-    // engine, they are in long before it starts.
-    void ensureExonyms()
+    // Its report waits for the visitor's place names (runReport, src/imagery/exonyms.ts) and, for a link, the country
+    // its name has at its point: fetched now, beside the engine, they are in long before it starts.
+    const linked = target.kind === 'q' ? target.place : undefined
+    void ensureExonyms().then(() => (linked && needsLinkCountry(linked) ? resolveLinkCountry(linked) : undefined))
   }
   startCatalog()
   const fonts = loadFirstFonts()
@@ -392,8 +393,10 @@ function retryCatalog(): Promise<void> {
 export async function runReport(place: Place, opts: RunOpts = {}) {
   // The place's name is on screen from the first frame of the search: in the visitor's language, never before it
   // (src/imagery/exonyms.ts). Its table is in by now (the search, the pin and the link wait for it), unless a language's
-  // table is still on its way: then the search waits for it, rather than show a name that changes.
+  // table is still on its way: then the search waits for it, rather than show a name that changes. A link's place is
+  // named in the country the offline list gives its name at its point (imagery resolveLinkCountry, begun at boot).
   if (!exonymsReady()) await ensureExonyms()
+  if (needsLinkCountry(place)) await resolveLinkCountry(place)
   mark('run-report')
   // The visitor's own search (or the late share itself, already answered): a pending share no longer opens.
   lateShare.cancel()

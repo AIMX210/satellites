@@ -254,6 +254,32 @@ function tilesAround(lat: number, lon: number): string[] {
   return [...out]
 }
 
+/** How far from a link's point the place it names may be, in degrees (a city's point in OpenStreetMap and in GeoNames). */
+const NAMED_REACH = 0.3
+
+/**
+ * The place of the offline list named `name` nearest (lat, lon), within NAMED_REACH: a town, region or feature in the
+ * tiles around the point, or a landmark. What a link's place is (./linkCountry.ts). Undefined when the list has no
+ * place of that name there. Rejects if a file can't be loaded.
+ */
+export async function localNamed(name: string, lat: number, lon: number, signal?: AbortSignal): Promise<LocalPlace | undefined> {
+  throwIfAborted(signal)
+  const key = placeKey(name)
+  if (!key) return undefined
+  const lists = await Promise.all([...tilesAround(lat, lon).map((f) => load(`t/${f}.txt`, signal)), load(LANDMARKS, signal)])
+  let best: LocalPlace | undefined
+  let bestKm = Infinity
+  for (const r of lists.flatMap((l) => l ?? [])) {
+    if ((r.key !== key && !r.aliases?.includes(key)) || Math.abs(r.lat - lat) > NAMED_REACH) continue
+    const km = haversineKm({ lat, lon }, r)
+    if (km < bestKm && km <= NAMED_REACH * 111) {
+      best = r
+      bestKm = km
+    }
+  }
+  return best
+}
+
 /**
  * The settlement (lat, lon) is in, as far as points can say: among places whose reach (reachKm) covers the spot, the
  * one it is relatively nearest. Undefined when none does (open sea, ice, wilderness): the caller asks a network

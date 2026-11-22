@@ -23,7 +23,8 @@
  * (Bavaria), then towns (a city in a geocoder's where line). A landmark or a natural feature takes the names written
  * for landmarks (`^`: the White House is Nhà Trắng, White House, Tennessee is not), then a town's, then a countryless
  * one: a sea the data files under a country (the English Channel under GB) is the same sea. A place with no country (a
- * sea; a place opened from a link) is looked up among the countryless names only, so a link to "London" shows London.
+ * sea) is looked up among the countryless names; a place opened from a link takes its country from the offline list at
+ * its point (./linkCountry.ts), so a link to London, Ontario shows London.
  */
 import enExonyms from '@/i18n/en/exonyms'
 import { msgs } from '@/i18n/runtime'
@@ -84,6 +85,12 @@ function activeTable(shown: boolean): ExonymTable | undefined {
   if (!src) return undefined
   if (parsed?.src !== src) parsed = { src, table: parseExonyms(src) }
   return parsed.table
+}
+
+/** Has the active language a table at all (in or still to load)? English has none. */
+export function exonymsActive(): boolean {
+  const m = msgs(enExonyms)
+  return !!m.names || !!m.load
 }
 
 /** Is the active language's table in (or has it none to load)? Synchronous: what a caller checks before awaiting. */

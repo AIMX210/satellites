@@ -14,7 +14,7 @@
 import { linkPlaceIn } from '@/app/links'
 import enPlaces from '@/i18n/en/places'
 import { msgs } from '@/i18n/runtime'
-import { displayLabel } from '@/imagery'
+import { displayLabel, linkedForName } from '@/imagery'
 import type { Place } from '@/types'
 import { localizedPlace } from '@/ui/landing/curated'
 import { curatedId } from '@/ui/landing/places'
@@ -24,9 +24,10 @@ export function placeName(place: Place): string {
   if (curatedId(place)) return localizedPlace(place).label
   if (place.source !== 'url') return displayLabel(place)
   // A link to a curated place: named again from its English label (canonicalLabel, once a language renamed it), as
-  // opening the link names it. Any other link's place by its label as it came (a link carries no country).
+  // opening the link names it. Any other link's place by its label, in the country the offline list gives that name
+  // at its point (imagery linkedForName: a link carries no country of its own).
   const { canonicalLabel, ...rest } = place
   const english = canonicalLabel === undefined ? place : { ...rest, label: canonicalLabel }
   const linked = linkPlaceIn(english, msgs(enPlaces))
-  return linked === english ? displayLabel(english) : linked.label
+  return linked === english ? displayLabel(linkedForName(english)) : linked.label
 }
