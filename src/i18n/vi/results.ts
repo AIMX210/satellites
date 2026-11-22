@@ -33,6 +33,12 @@ const day = (ms: number, timeZone: string) => viTime.day(ms, timeZone, localPart
  * line) bind their compounds; body text wraps as it will.
  */
 const bind = (s: string) => s.replace(/ /g, '\u00a0')
+/**
+ * A place's own class noun held together the same way, at its start (*Thành phố* Hồ Chí Minh, *Quần đảo* Hoàng Sa:
+ * the table's names, src/i18n/vi/exonyms.gen.ts), so the headline never ends a line on *Thành*.
+ */
+const bindPlace = (place: string) =>
+  place.replace(/^(Thành phố|Quần đảo|Sân bay|Công viên|Eo biển|Đồng bằng) /u, (m) => `${bind(m.trimEnd())} `)
 
 /** A ground pixel as written ("10 m", "2 km"): never grouped; a fraction (none expected) takes the decimal comma */
 const px = (n: number) => String(n).replace('.', ',')
@@ -60,7 +66,7 @@ const results: typeof en = {
         : `${bind(`Từ ${dayMonth(when.fromMs, when.timeZone)}`)} ${bind(`đến ${dayMonth(when.toMs, when.timeZone)}`)}, `,
       strong(num(f.int(n)), `\u00a0${bind('vệ tinh')} ${bind('đã quan sát')}`),
       ' ',
-      accent(place),
+      accent(bindPlace(place)),
       '.',
     ],
     /**
@@ -69,7 +75,7 @@ const results: typeof en = {
      */
     none: (place: string, past: boolean): Rich => [
       `Không ${bind('vệ tinh')} nào trong ${bind('danh mục')} của ${bind('chúng tôi')} ${bind('quan sát')} `,
-      accent(place),
+      accent(bindPlace(place)),
       past ? ` ${bind('tuần đó')}.` : ` ${bind('tuần này')}.`,
     ],
   },
