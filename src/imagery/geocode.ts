@@ -108,6 +108,8 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
  * send.
  */
 export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'>): string {
+  const bank = place.kind === 'region' ? westBank(place.label, place.countryCode) : undefined
+  if (bank) return bank
   const shown = exonym(place.label, place.countryCode, place.kind ?? 'label')
   const cc = place.countryCode
   if (shown !== place.label || !cc || !namesCountries()) return shown
@@ -115,6 +117,19 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
   if (key !== englishCountryKey(countryName(cc)) && key !== placeKey(shownCountryName(cc, 'en'))) return shown
   const local = shownCountryName(cc, currentLocale())
   return local.toUpperCase() === cc.toUpperCase() ? shown : local
+}
+
+/**
+ * Israel's region for the West Bank in the place data (GeoNames' and OpenStreetMap's "Judea and Samaria Area", under
+ * which they file the settlements): in a language that names the West Bank (PS's region), that name, and a where line
+ * that ends with it has no country after it (Ariel · Westjordanland). The guides decide neutral naming there (de.md and
+ * it.md §8: Westjordanland, Cisgiordania; never Giudea e Samaria), and "Westjordanland, Israel" would put the West
+ * Bank in Israel. Undefined for any other name, and in a language without a name for the West Bank (as it came).
+ */
+function westBank(name: string, cc: string | undefined): string | undefined {
+  if (cc?.toUpperCase() !== 'IL' || placeKey(name) !== 'judea and samaria area') return undefined
+  const bank = exonym('West Bank', 'PS', 'region')
+  return bank === 'West Bank' ? undefined : bank
 }
 
 /**
@@ -164,6 +179,13 @@ export function displaySublabel(
   }
   if (country === undefined) return sub
   const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
+  if (locale !== 'en' && cc.toUpperCase() === 'IL') {
+    // The West Bank as the language names it, with no country after it (westBank).
+    if (place.label && place.kind === 'region' && westBank(place.label, cc) && rest === undefined) return undefined
+    const at = rest?.lastIndexOf(', ') ?? -1
+    const bank = rest === undefined ? undefined : westBank(rest.slice(at + 1).trim(), cc)
+    if (bank) return at < 0 ? bank : msgs(enGeo).where(rest!.slice(0, at), bank)
+  }
   shown ??= shownCountryName(cc, locale)
   // Under a label in the language's own script, a part left in Latin letters is left out (Ukrainian, Russian, Persian,
   // Hindi: exonymsOwnScript).

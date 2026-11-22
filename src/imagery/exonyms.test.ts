@@ -153,6 +153,21 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'Kyiv', sublabel: 'Kyiv City, Kyiv, Ukraine', countryCode: 'ua' })).toBe('місто Київ, Україна')
   })
 
+  it('names Israel’s region for the West Bank as the West Bank, with no country after it', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
+    setBundleForTests('de', { exonyms: { names: 'PS:*West Bank=Westjordanland;*Gaza Strip=Gazastreifen' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ label: 'Ariel', sublabel: 'Judea and Samaria Area, Israel', countryCode: 'il' })).toBe('Westjordanland')
+    expect(displaySublabel({ label: 'Mall', sublabel: 'Ariel, Judea and Samaria Area, Israel', countryCode: 'il' })).toBe('Ariel, Westjordanland')
+    const region = { label: 'Judea and Samaria Area', sublabel: 'Israel', countryCode: 'il', kind: 'region' as const }
+    expect([displayLabel(region), displaySublabel(region)]).toEqual(['Westjordanland', undefined])
+    expect(displaySublabel({ label: 'Haifa', sublabel: 'Haifa, Israel', countryCode: 'il' })).toBe('Haifa, Israel')
+    // A language with no name for the West Bank, and English: as it came.
+    setBundleForTests('vi', { exonyms: { names: 'PS:Gaza=Gaza' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ label: 'Ariel', sublabel: 'Judea and Samaria Area, Israel', countryCode: 'il' })).toBe('Judea and Samaria Area, Israel')
+    setBundleForTests('en', null)
+    expect([displayLabel(region), displaySublabel(region)]).toEqual(['Judea and Samaria Area', 'Israel'])
+  })
+
   it('joins the parts it names as the language joins a list (Persian «، »), and leaves the data’s own as they came', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}، ${country}`)
     setBundleForTests('fa', { exonyms: { names: 'US:Atlanta=آتلانتا;*Georgia=جورجیا', ownScript: true }, geo: { ...enGeo, where, parts: '، ' } })
