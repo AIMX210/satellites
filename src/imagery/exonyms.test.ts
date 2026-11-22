@@ -135,6 +135,11 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'London', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('Великобритания')
     expect(displaySublabel({ label: 'Chicago', sublabel: 'Illinois, United States', countryCode: 'us' })).toBe('Иллинойс, Соединенные Штаты')
     expect(displaySublabel({ label: 'Leeds', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('England, Великобритания')
+    // Washington, D.C. is one part: never the state of Washington (Persian showed the White House in ایالت واشینگتن).
+    setBundleForTests('ru', { exonyms: { names: 'US:^White House=Белый дом;Washington, D.C.=Вашингтон;*Washington=Вашингтон (штат)' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ label: 'White House', sublabel: 'Washington, D.C., United States', countryCode: 'us', kind: 'feature' })).toBe('Вашингтон, Соединенные Штаты')
+    setBundleForTests('en', null)
+    expect(displaySublabel({ label: 'White House', sublabel: 'Washington, D.C., United States', countryCode: 'us' })).toBe('Washington, D.C., United States')
   })
 
   it('shows no where line for a place a Vietnamese reader holds to be Vietnam’s that the data files under another country', async () => {

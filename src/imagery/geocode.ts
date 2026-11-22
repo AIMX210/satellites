@@ -159,6 +159,11 @@ export function displaySublabel(
   const script = locale !== 'en' && !!label && !LATIN.test(label)
   const parts = rest
     ?.split(', ')
+    // "Washington, D.C." is one name, not Washington (the state) and D.C.
+    .reduce<string[]>(
+      (all, part) => (part === 'D.C.' && all.length ? [...all.slice(0, -1), `${all.at(-1)}, ${part}`] : [...all, part]),
+      [],
+    )
     .map((part) => {
       const whole = exonym(part, cc, 'where')
       if (whole !== part || locale === 'en') return whole
