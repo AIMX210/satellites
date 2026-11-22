@@ -22,6 +22,15 @@ describe('exonyms', () => {
     expect(t.towns.size + t.regions.size).toBe(8)
   })
 
+  it('gives a region its own label where the table writes one, and its plain name in a where line', () => {
+    const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}، ${country}`)
+    setBundleForTests('fa', { exonyms: { names: 'IR:Qom=قم;*Qom Province=قم;#Qom Province=استان قم' }, geo: { ...enGeo, where } })
+    expect(displayLabel({ label: 'Qom Province', countryCode: 'ir', kind: 'region' })).toBe('استان قم')
+    expect(displayLabel({ label: 'Qom', countryCode: 'ir' })).toBe('قم')
+    expect(displaySublabel({ label: 'Kahak', sublabel: 'Qom Province, Iran', countryCode: 'ir' })).toBe('قم، ایران')
+    expect(parseExonyms('IR:#Qom Province=استان قم').labels.get('IR|qom province')).toBe('استان قم')
+  })
+
   it('keeps a search-only name off the screen', () => {
     const t = parseExonyms('VN:Ho Chi Minh City=Thành phố Hồ Chí Minh;~Ho Chi Minh City=Sài Gòn')
     expect([...t.towns]).toEqual([['VN|ho chi minh city', 'Thành phố Hồ Chí Minh']])

@@ -117,7 +117,7 @@ export function typedNames(src: string): TypedName[] {
       .split(';')
       .forEach((entry, i) => {
         const body = entry.startsWith('~') ? entry.slice(1) : entry
-        const region = body.startsWith('*')
+        const region = body.startsWith('*') || body.startsWith('#')
         const mark = region || body.startsWith('^') ? 1 : 0
         const eq = body.indexOf('=')
         const english = body.slice(mark, eq)

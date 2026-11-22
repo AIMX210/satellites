@@ -104,6 +104,11 @@ describe('exonymSearch', () => {
     ])
   })
 
+  it('finds a region by its own label too', () => {
+    const r = exonymSearch('IR:Qom=قم;*Qom Province=قم;#Qom Province=استان قم', 'استان قم', key)
+    expect(r.map((a) => [a.key, a.kind, a.exact])).toEqual([['qom province', 'region', true]])
+  })
+
   it('finds a German name typed without its umlauts', () => {
     const r = exonymSearch('DE:Cologne=Köln|VN:Thai Nguyen=Thái Nguyên', 'Koeln', key)
     expect(r).toEqual([{ key: 'cologne', cc: 'DE', kind: 'town', exact: true, shown: 'Köln' }])

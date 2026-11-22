@@ -38,6 +38,8 @@ export interface ExonymTable {
   regions: Map<string, string>
   /** The same, for landmarks and natural features only (`^`: a town shares the English name) */
   features: Map<string, string>
+  /** A region's own label where it differs from its name in a where line (`#`: استان قم for the province, قم in a line) */
+  labels: Map<string, string>
 }
 
 /**
@@ -51,20 +53,22 @@ export function parseExonyms(src: string): ExonymTable {
   const towns = new Map<string, string>()
   const regions = new Map<string, string>()
   const features = new Map<string, string>()
+  const labels = new Map<string, string>()
+  const kinds: Record<string, Map<string, string>> = { '*': regions, '^': features, '#': labels }
   for (const group of src.split('|')) {
     const at = group.indexOf(':')
     if (at < 0) continue
     const cc = group.slice(0, at).trim().toUpperCase()
     for (const entry of group.slice(at + 1).split(';')) {
       const eq = entry.indexOf('=')
-      const mark = entry[0] === '*' || entry[0] === '^' ? entry[0] : ''
+      const mark = kinds[entry[0]] ? entry[0] : ''
       const english = entry.slice(mark.length, eq)
       const shown = entry.slice(eq + 1)
       if (eq < 0 || entry.startsWith('~') || !placeKey(english) || !shown) continue
-      ;(mark === '*' ? regions : mark === '^' ? features : towns).set(`${cc}|${placeKey(english)}`, shown)
+      ;(kinds[mark] ?? towns).set(`${cc}|${placeKey(english)}`, shown)
     }
   }
-  return { towns, regions, features }
+  return { towns, regions, features, labels }
 }
 
 let parsed: { src: string; table: ExonymTable } | undefined
@@ -135,7 +139,7 @@ export async function ensureExonyms(): Promise<void> {
 /**
  * `name` as the visitor's language names that place in country `cc` (ISO, any case; undefined: no country), or `name`
  * itself. `as` says what the name is (NameAs): a town's own name ('label': towns only), a first-level region's
- * ('region': regions only), a landmark's or a natural feature's ('feature': landmarks, then towns), a where line's last
+ * ('region': regions only, its own label first: استان قم), a landmark's or a natural feature's ('feature': landmarks, then towns), a where line's last
  * part ('where': regions first, then towns: Photon's state, the offline list's region), or a part another follows
  * ('locality': towns first, then regions: Photon's city, Odesa in "Odesa, Odesa Oblast", is the city). Read at call
  * time.
@@ -146,7 +150,7 @@ export function exonym(name: string, cc: string | undefined, as: NameAs): string
   const key = placeKey(name)
   const here = `${(cc ?? '').toUpperCase()}|${key}`
   if (as === 'label') return t.towns.get(here) ?? name
-  if (as === 'region') return t.regions.get(here) ?? name
+  if (as === 'region') return t.labels.get(here) ?? t.regions.get(here) ?? name
   if (as === 'where') return t.regions.get(here) ?? t.towns.get(here) ?? name
   if (as === 'locality') return t.towns.get(here) ?? t.regions.get(here) ?? name
   return t.features.get(here) ?? t.towns.get(here) ?? name
