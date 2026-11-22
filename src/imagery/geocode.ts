@@ -168,17 +168,30 @@ export function displaySublabel(
   const short = shownCountryName(cc, 'en')
   let country = [long, short].find((c) => sub === c || sub.endsWith(`, ${c}`))
   let shown: string | undefined
+  // The country whose names the parts take: the place's, or for a landmark or feature, the one its line ends with (Rome,
+  // Italy for the Vatican: Roma, Italia).
+  let partsIn = cc
   if (country === undefined && locale !== 'en') {
-    // A landmark's where line, written by hand, may name two countries, the place's one of them.
+    // A landmark's where line, written by hand, may name two countries, the place's one of them, or another country.
     const at = sub.lastIndexOf(', ')
     const last = at < 0 ? sub : sub.slice(at + 2)
     const pair = last.split(' and ').map(countryCodeOf)
     if (pair.length === 2 && pair[0] && pair[1] && pair.includes(cc.toUpperCase())) {
       country = last
       shown = inList(pair.map((c) => shownCountryName(c!, locale)), locale)
+    } else if (pair.length === 1 && pair[0] && place.kind === 'feature') {
+      country = last
+      shown = shownCountryName(pair[0], locale)
+      partsIn = pair[0]
     }
   }
-  if (country === undefined) return sub
+  if (country === undefined) {
+    // A landmark's line with no country in it ("Jerusalem", "Chagos Archipelago"): named in the language if every part is.
+    if (locale === 'en' || place.kind !== 'feature') return sub
+    const all = sub.split(', ')
+    const named = all.map((part) => exonym(part, cc, 'where'))
+    return named.every((n, i) => n !== all[i]) ? exonymApostrophes(named.join(msgs(enGeo).parts ?? ', ')) : sub
+  }
   const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
   if (locale !== 'en' && cc.toUpperCase() === 'IL') {
     // The West Bank as the language names it, with no country after it (westBank).
@@ -203,13 +216,15 @@ export function displaySublabel(
     // in "Odesa, Odesa Oblast" is the city, not its oblast).
     .map((part, i, all) => {
       const as = i < all.length - 1 ? 'locality' : 'where'
-      const whole = exonym(part, cc, as)
+      const whole = exonym(part, partsIn, as)
       if (whole !== part || locale === 'en') return whole
-      // Two regions in one part (Nevada and Arizona), each with a name in the language: listed in it. A region named
-      // with "and" (Sistan and Baluchestan) is one name, kept whole.
+      // Two regions in one part (Nevada and Arizona), each with a name in the language: listed in it, and so are two US
+      // states a Latin table writes as they are (Arizona e Utah). A region named with "and" (Sistan and Baluchestan) is
+      // one name, kept whole.
       const both = part.split(' and ')
-      const names = both.map((p) => exonym(p, cc, as))
-      return both.length === 2 && names.every((n, i) => n !== both[i]) ? inList(names, locale) : part
+      const names = both.map((p) => exonym(p, partsIn, as))
+      const states = partsIn.toUpperCase() === 'US' && both.every((p) => /^\p{Lu}/u.test(p))
+      return both.length === 2 && (states || names.every((n, i) => n !== both[i])) ? inList(names, locale) : part
     })
     .filter((part) => !script || !LATIN.test(part))
     // Two parts the language names alike say it once.

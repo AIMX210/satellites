@@ -199,7 +199,13 @@ describe('exonyms', () => {
     setBundleForTests('it', { exonyms: { names: 'IT:Rome=Roma' }, geo: { ...enGeo, where } })
     expect(displaySublabel({ sublabel: 'France and Italy', countryCode: 'fr' })).toBe('Francia e Italia')
     expect(displaySublabel({ sublabel: 'France and Italy', countryCode: 'ch' })).toBe('France and Italy') // not its country
-    expect(displaySublabel({ sublabel: 'Rome, Italy', countryCode: 'va' })).toBe('Rome, Italy') // another country: as it came
+    // Another country at the end: the parts in its names (the Vatican's Rome, Italy), and a line with no country at all.
+    expect(displaySublabel({ sublabel: 'Rome, Italy', countryCode: 'va', kind: 'feature' })).toBe('Roma, Italia')
+    expect(displaySublabel({ sublabel: 'Rome, Italy', countryCode: 'va' })).toBe('Rome, Italy') // a geocoder's: as it came
+    setBundleForTests('it', { exonyms: { names: 'IT:Rome=Roma|IL:Jerusalem=Gerusalemme|US:*California=California' }, geo: { ...enGeo, where } })
+    expect(displaySublabel({ sublabel: 'Jerusalem', countryCode: 'il', kind: 'feature' })).toBe('Gerusalemme')
+    expect(displaySublabel({ sublabel: 'Chagos Archipelago', countryCode: 'io', kind: 'feature' })).toBe('Chagos Archipelago')
+    expect(displaySublabel({ sublabel: 'Arizona and Utah, United States', countryCode: 'us' })).toBe('Arizona e Utah, Stati Uniti')
     expect(displaySublabel({ sublabel: 'Southern basin, Israel and Jordan', countryCode: 'jo' })).toBe('Southern basin, Israele e Giordania')
     setBundleForTests('ru', { exonyms: { names: 'US:*Nevada=Невада;*Arizona=Аризона;*Sistan and Baluchestan=x|IR:*Fars=Фарс' }, geo: { ...enGeo, where } })
     expect(displaySublabel({ sublabel: 'Nevada and Arizona, United States', countryCode: 'us' })).toBe('Невада и Аризона, Соединенные Штаты')
