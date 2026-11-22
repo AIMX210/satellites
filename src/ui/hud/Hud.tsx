@@ -7,7 +7,8 @@
  * Stacked layouts (and short landscape phones) would collide the bottom corners with the landing
  * panel and the bottom sheet, so those are hidden and the sun joins the top-right block.
  * When the scene is not showing live time (replay / scrub), the TR block adds the scene time, in the
- * place's own zone like every other time on the pass (the live clock stays UTC).
+ * place's own zone like every other time on the pass (the live clock stays UTC; a phone too narrow for both beside
+ * the top-left readout shows the scene time in the clock's place, useCrowdedLine).
  *
  * Over a scene (results, a pass) functional ink scrims sit behind the readouts so they stay legible
  * over bright cloud (decision 5); the landing keeps the pure view. The HUD publishes the height it
@@ -43,8 +44,9 @@ const BRAND = 'Watched'
 const TOP_GAP = 8
 
 /**
- * Least clear space between "How this works · language" and the sun line beside it on a phone. Less, and the sun line
- * steps aside (useCrowdedSun): at 320 px they overlapped in English, at 360 px German and Polish left 6 px, Turkish 13.
+ * Least clear space between "How this works · language" and the sun or scene line beside it on a phone. Less, and that
+ * line makes room (useCrowdedLine): at 320 px the sun overlapped them in English, at 360 px German and Polish left 6 px,
+ * Turkish 13; the scene time overlapped them by 4 px in English at 390 px, by 17 at 360.
  */
 const MIN_ROW_GAP = 14
 
@@ -58,8 +60,9 @@ const AFTER_BOOT = 300
 
 /**
  * The scene clock, when the globe isn't on live time (replay / scrub), at the place: the same clock and
- * date style as the pass header ("Scene Sun 1 Nov 11:21:13 EST"; phones drop the day so it clears the
- * top-left readout: "Scene 11:21:13 EST"). The zone always shows. UTC until the place's zone is known.
+ * date style as the pass header ("Scene Sun 1 Nov 11:21:13 EST"; phones drop the day: "Scene 11:21:13 EST", and
+ * where even that would crowd the top-left readout it takes the live clock's line, useCrowdedLine). The zone
+ * always shows. UTC until the place's zone is known.
  *
  * Written straight into the DOM from the globe's per-frame clock (sceneClock), the one the replay
  * controls read, so its seconds turn on the same frame as theirs; text changes only when a second
@@ -96,7 +99,7 @@ function SceneTime() {
   useLayoutEffect(write)
   useSceneFrame(write)
   return (
-    <span className={cx(s.line, s.dim)}>
+    <span className={cx(s.line, s.dim, s.sceneLine)}>
       {m.scene}
       <span className={s.sceneValue}>
         <span ref={dayRef} className={s.desk} />
@@ -168,7 +171,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
   const topLeft = useRef<HTMLDivElement>(null)
   const topRight = useRef<HTMLDivElement>(null)
   useTopInset(topLeft, topRight)
-  useCrowdedSun(topLeft, topRight)
+  useCrowdedLine(topLeft, topRight)
   // The stacked sun line gives way to the scene time during a replay and comes back after it: its
   // wipe plays with the HUD's first entrance only, never again on its return (one entrance per element).
   // Set during the render that unmounts it, so its `skip` never changes while it is mounted.
@@ -218,7 +221,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
       </CornerReadout>
 
       <CornerReadout corner="tr" label={m.regionTime} ref={topRight}>
-        <Reveal key={`${k}-clock`} skip={booting} axis="x" duration={480} delay={at(0)} as="div" className={s.line}>
+        <Reveal key={`${k}-clock`} skip={booting} axis="x" duration={480} delay={at(0)} as="div" className={cx(s.line, s.clockLine)}>
           <UtcClock />
         </Reveal>
         {live ? null : <SceneTime />}
@@ -274,14 +277,22 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
 }
 
 /**
- * On a phone the sun joins the top right, on the same line as "How this works" and the language on the left. Where the
- * two would come closer than MIN_ROW_GAP (narrow phones, longer languages) the sun line is hidden, never the About
- * link or the language switcher (the sun's readout is the extra one; wide screens show it in its own corner). It is
- * hidden, not removed: it keeps its box, so it is still measured as the screen or the words change, and nothing in
- * the corner moves (the top left's two lines set the top inset either way). Written to the DOM, not React state: the
- * line remounts after a replay and on boot, which the observers below see.
+ * On a phone the top right's second line sits beside "How this works" and the language on the left: the sun, or during
+ * a replay the scene time. Where the two would come closer than MIN_ROW_GAP (narrow phones, longer languages), that
+ * line makes room, never the About link or the language switcher (the left's words are all needed: a language is
+ * named in full, never by a code, owner 2026-11-19):
+ *  - the sun line is hidden: its readout is the extra one (wide screens show it in its own corner);
+ *  - the scene time moves up into the live clock's line, which steps aside until the replay ends. It is the one time
+ *    that cannot go: it says what moment the globe shows (honest labelling), and while a replay runs every other time
+ *    on screen is the scene's too, so the live UTC clock is what a phone can spare. It cannot go down a line either:
+ *    a third line would run under the results sheet at its top snap and past the scrim. The top right then holds one
+ *    line, as it already does on such a phone outside a replay (its sun line is hidden there).
+ * Both keep their boxes: the sun is hidden, not removed, and the scene time is as wide on either line (the lines are
+ * right-aligned in one fixed box), so each is still measured as the screen or the words change, nothing else in the
+ * corner moves and nothing flips back and forth (the top left's two lines set the top inset either way). Written to
+ * the DOM, not React state: the lines remount after a replay and on boot, which the observers below see.
  */
-function useCrowdedSun(topLeft: RefObject<HTMLDivElement | null>, topRight: RefObject<HTMLDivElement | null>) {
+function useCrowdedLine(topLeft: RefObject<HTMLDivElement | null>, topRight: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
     const tl = topLeft.current
     const tr = topRight.current
@@ -294,17 +305,18 @@ function useCrowdedSun(topLeft: RefObject<HTMLDivElement | null>, topRight: RefO
     }
     const check = () => {
       const about = tl.querySelector<HTMLElement>(`.${s.aboutLine}`)
-      const sun = tr.querySelector<HTMLElement>(`.${s.sunLine}`)
-      if (!about || !sun) return
+      // One or the other: the scene time takes the sun line's place during a replay.
+      const line = tr.querySelector<HTMLElement>(`.${s.sunLine}, .${s.sceneLine}`)
+      if (!about || !line) return
       watch(about)
-      watch(sun)
+      watch(line)
       const a = about.getBoundingClientRect()
-      const b = sun.getBoundingClientRect()
-      if (!a.width || !b.width) return // the sun line is not shown here (wide screens, a replay)
-      // Right to left the corners swap: the language line is at the right, the sun at the left.
+      const b = line.getBoundingClientRect()
+      if (!a.width || !b.width) return // the sun line is not shown here (wide screens)
+      // Right to left the corners swap: the language line is at the right, the sun or scene at the left.
       const rtl = getComputedStyle(tr).direction === 'rtl'
       const gap = rtl ? a.left - b.right : b.left - a.right
-      sun.toggleAttribute('data-crowded', gap < MIN_ROW_GAP)
+      line.toggleAttribute('data-crowded', gap < MIN_ROW_GAP)
     }
     const ro = new ResizeObserver(check)
     ro.observe(tl)

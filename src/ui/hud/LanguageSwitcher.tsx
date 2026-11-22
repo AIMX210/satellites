@@ -50,7 +50,7 @@ const ORDER: readonly Locale[] = [
 /**
  * The name the trigger shows, on every screen: the language's own name, as the list writes it ("English", "Deutsch",
  * "日本語"), never a code (owner, 2026-11-19: "EN" said less than "English"). Indonesian's is shortened (the list
- * keeps "Bahasa Indonesia"). On a narrow phone the sun line beside it steps aside (Hud.tsx useCrowdedSun).
+ * keeps "Bahasa Indonesia"). On a narrow phone the sun or scene line beside it makes room (Hud.tsx useCrowdedLine).
  */
 const SHORT: Partial<Record<Locale, string>> = { id: 'Indonesia' }
 

@@ -204,12 +204,22 @@
 .mob {
   display: none !important;
 }
-/* The About line, which the phone's sun line keeps clear of (Hud.tsx useCrowdedSun reads its box by this class). */
+/* The About line, which the phone's sun or scene line keeps clear of (Hud.tsx useCrowdedLine reads its box by this
+   class). */
 .aboutLine {
   min-width: 0;
 }
-/* The phone's sun line, where it would crowd "How this works" (Hud.tsx useCrowdedSun): kept in place, unseen. */
+/* The phone's sun line, where it would crowd "How this works" (Hud.tsx useCrowdedLine): kept in place, unseen. */
 .sunLine[data-crowded] {
+  visibility: hidden;
+}
+/* The scene time, where it would crowd "How this works" (useCrowdedLine): up in the live clock's line, in its place;
+   the clock keeps its box there, unseen, until the replay ends. Same cell, same right edge: nothing else moves. */
+.sceneLine[data-crowded],
+.clockLine:has(~ .sceneLine[data-crowded]) {
+  grid-area: 1 / 1;
+}
+.clockLine:has(~ .sceneLine[data-crowded]) {
   visibility: hidden;
 }
 
