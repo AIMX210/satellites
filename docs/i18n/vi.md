@@ -1308,7 +1308,8 @@ what they did before.
   `Accept-Language`: one cache entry per link. The default card drawn for an `l=vi` link is Vietnamese, with the
   four-line hero (§3.1), and `card.defaultAlt` describes it.
 - **Owner questions (each free at runtime):**
-  1. The East Sea names (§8): in the generated `vi` table since 2026-11-22, display only; confirm or remove.
+  1. The archipelagos' where line (§8): a reef or island there that the data files under another country shows none
+     (`contested`); confirm or remove. The East Sea names themselves are approved (owner, 2026-11-22).
   2. `vi` in `SHORT_NAMES.PS` (*Palestine*, §8).
   3. `'Asia/Ho_Chi_Minh': 'ICT'` in the zone abbreviation tables? Vietnamese readers write *GMT+7* or *giờ Việt Nam*
      and rarely *ICT*; *UTC+7*, which the app shows today, is correct and familiar. Recommended: leave it.

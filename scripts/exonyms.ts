@@ -1331,8 +1331,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
    * Vietnamese: the 34 provinces and cities since the 2025 merger by their Vietnamese names (GeoNames has few, and
    * writes the new ones in ASCII), bare as a where line writes them (Nghệ An, not Tỉnh Nghệ An); Ho Chi Minh City by
    * its official name, as the task and docs/i18n/vi.md write it. The East Sea and its islands by their Vietnamese names
-   * on Vietnamese pages, display only, as Korean shows 동해 (vi.md §8; flagged to the owner): countryless, and in the
-   * countries the data files them under.
+   * on Vietnamese pages, display only, as Korean shows 동해 (vi.md §8; approved by the owner, 2026-11-22): countryless,
+   * and in the countries the data files them under.
    */
   vi: {
     'VN.01': 'Hà Nội',
@@ -1389,10 +1389,10 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     /**
      * Native review (2026-11-22). The Paracels as the offline list names them (Xisha Islands(Paracel Islands)), the
      * islands and reefs of both archipelagos by their Vietnamese names wherever the data files them (display only, as
-     * Biển Đông: vi.md §8, the owner's to confirm; the country GeoNames gives some, China, is the owner's to decide
-     * too), the country's own features, airports and sights in Vietnamese, Ho Chi Minh City's districts by number,
-     * GeoNames' misspellings at home, the Chinese provinces and towns GeoNames names in pinyin, and namesakes that
-     * took another place's name (Longshan as Liêu Nguyên).
+     * Biển Đông: vi.md §8, approved by the owner on 2026-11-22; the country GeoNames gives some, China, is still the
+     * owner's to decide), the country's own features, airports and sights in Vietnamese, Ho Chi Minh City's districts
+     * by number, GeoNames' misspellings at home, the Chinese provinces and towns GeoNames names in pinyin, and
+     * namesakes that took another place's name (Longshan as Liêu Nguyên).
      */
     ':Xisha Islands(Paracel Islands)': 'Quần đảo Hoàng Sa',
     'CN:Johnson Reef': 'Đá Gạc Ma',
