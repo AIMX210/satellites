@@ -1286,6 +1286,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'UA:Kyiv': '',
     'US:Denali': '',
     'MO:Macau': '',
+    'MO:Macao': '',
+    'GB:Newcastle upon Tyne': '',
+    'US:Golden Gate Park': '',
   },
   /**
    * Persian: Delhi is دهلی (GeoNames' first Persian name for it is Old Delhi), Gorgan گرگان; the Persian Gulf is
