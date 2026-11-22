@@ -168,7 +168,8 @@ export function displaySublabel(
       const names = both.map((p) => exonym(p, cc, 'where'))
       return both.length === 2 && names.every((n, i) => n !== both[i]) ? inList(names, locale) : part
     })
-    .filter((part) => !script || !LATIN.test(part))
+    // Nor is a part shown that repeats the label once both are in the language (Санкт-Петербург · Санкт-Петербург).
+    .filter((part) => (!script || !LATIN.test(part)) && (locale === 'en' || part !== label))
   const named = parts?.length ? parts.join(', ') : undefined
   // A browser with no name for it in that language answers with the code: keep the English name rather than "CA".
   return msgs(enGeo).where(named, shown.toUpperCase() === cc.toUpperCase() ? short : shown)
