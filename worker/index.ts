@@ -37,6 +37,8 @@ import { handleEvents } from '../api/e.ts'
 import { handleGeoFrames } from '../api/geo-frames.ts'
 import { handleGeo } from '../api/geo.ts'
 import { handleOg } from '../api/og.tsx'
+import { panCacheQuery } from '../api/_lib/pan.js'
+import { cardCacheQuery } from '../api/_lib/share.js'
 import { handlePan } from '../api/pan.ts'
 import { handleSharePage } from '../api/s.ts'
 import { jpegCodec } from './jpegCodec.ts'
@@ -112,11 +114,13 @@ export default {
       og: handleOg,
       share: handleSharePage,
       events: handleEvents,
-      pan: handlePan,
+      pan: (r) => handlePan(r, { cache: edgeCache, waitUntil }),
       geo: (r) => handleGeo(r, geo),
       geoFrames: (r) => handleGeoFrames(r, geo),
       cache: edgeCache,
       waitUntil,
+      cardKey: cardCacheQuery,
+      panKey: (q) => panCacheQuery(q, Date.now()),
     })
   },
 

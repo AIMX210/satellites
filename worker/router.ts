@@ -60,6 +60,12 @@ export interface Routes {
   /** Cloudflare's cache, and the Worker's `ctx.waitUntil` to store into it after answering. None: no caching. */
   cache?: EdgeCache
   waitUntil?: (work: Promise<unknown>) => void
+  /**
+   * The query a card or a pan crop is cached under (`cached`): only what its handler reads, in one order
+   * (api/_lib/share.ts cardCacheQuery, api/_lib/pan.ts panCacheQuery). Null, or no function: the query as it came.
+   */
+  cardKey?: (query: URLSearchParams) => string | null
+  panKey?: (query: URLSearchParams) => string | null
 }
 
 /** The same request at another path on the same host: a rewrite, so the visitor's address does not change. */
@@ -79,14 +85,25 @@ export function edgeCacheable(res: Response): boolean {
 /**
  * A GET answered from the cache when it holds this URL, else by the handler (then stored, after answering). The key
  * is the URL the handler sees, nothing else: every one of these responses depends on its URL alone.
+ *
+ * For a card and a pan crop the key is narrower still: `keyQuery` gives the part of the query the handler reads.
+ * Keyed on the whole address, `&x=1` (or the same parameters in another order) was a miss, so one address spelled
+ * a thousand ways drew a card a thousand times and asked its archive for the picture each time: EUMETSAT's map
+ * service for a Meteosat frame, CDSE's monthly quota for a pan crop.
+ *
+ * A HEAD is the same question as a GET (some unfurlers ask one first): it is answered from the same entry, by the
+ * handler as a GET when there is none, and it used to go to the handler uncached every time.
  */
-async function cached(request: Request, handler: Handler, routes: Routes): Promise<Response> {
+async function cached(request: Request, handler: Handler, routes: Routes, keyQuery?: (query: URLSearchParams) => string | null): Promise<Response> {
   const cache = routes.cache
-  if (!cache || request.method !== 'GET') return handler(request)
-  const key = new Request(request.url)
+  const head = request.method === 'HEAD'
+  if (!cache || (request.method !== 'GET' && !head)) return handler(request)
+  const url = new URL(request.url)
+  const query = keyQuery?.(url.searchParams) ?? null
+  const key = new Request(query === null ? request.url : `${url.origin}${url.pathname}${query ? `?${query}` : ''}`)
   const hit = await cache.match(key)
   if (hit) return hit
-  const res = await handler(request)
+  const res = await handler(head ? new Request(request.url, { method: 'GET', headers: request.headers }) : request)
   if (edgeCacheable(res)) {
     const store = cache.put(key, res.clone()).catch((err: unknown) => console.error('[worker] cache put failed', err))
     if (routes.waitUntil) routes.waitUntil(store)
@@ -129,13 +146,13 @@ async function dispatch(request: Request, url: URL, routes: Routes): Promise<Res
   }
   switch (path) {
     case '/api/og':
-      return cached(request, routes.og, routes)
+      return cached(request, routes.og, routes, routes.cardKey)
     case '/api/s':
       return cached(request, routes.share, routes)
     case '/api/e':
       return routes.events(request)
     case '/api/pan':
-      return cached(request, routes.pan, routes)
+      return cached(request, routes.pan, routes, routes.panKey)
     case '/api/geo':
       return cached(request, routes.geo, routes)
     case '/api/geo-frames':
@@ -187,7 +204,8 @@ export async function route(request: Request, routes: Routes): Promise<Response>
     },
   }
   const res = await dispatch(request, url, { ...routes, assets: files })
-  const out = new Response(res.body, res) // static-file responses have immutable headers
+  // static-file responses have immutable headers; a HEAD's answer (a card drawn or found for it) goes without its body
+  const out = new Response(request.method === 'HEAD' ? null : res.body, res)
   // Static files keep their headers (public/_headers); everything built here gets the browser's form of its own.
   if (!fromFiles.has(res)) out.headers.set('Cache-Control', browserCacheControl(res.headers.get('cache-control')))
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) if (!out.headers.has(name)) out.headers.set(name, value)
