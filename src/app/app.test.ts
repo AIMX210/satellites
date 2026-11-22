@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import enPlaces from '@/i18n/en/places'
 import { msgs, setBundleForTests } from '@/i18n/runtime'
+import { displayLabel } from '@/imagery/geocode'
 import type { PagePlace } from '@/lib/placePage'
 import type { Pass, Place } from '@/types'
 import { localizedPlace } from '@/ui/landing/curated'
@@ -70,6 +71,20 @@ describe('readUrlTarget', () => {
     expect(readUrlTarget('?s=abcd2345', NOW, page)).toEqual({ kind: 'share', id: 'abcd2345' })
     expect(readUrlTarget('?q=43.47,-80.54&n=Waterloo', NOW, page)).toMatchObject({ kind: 'q', place: { label: 'Waterloo' } })
     expect(readUrlTarget('?sandbox=globe', NOW, page)).toBeNull()
+  })
+
+  it('opens a landmark\'s page as a landmark, which a language names as one (Nhà Trắng, not a town\'s name)', () => {
+    const house: PagePlace = { path: '/place/white-house', label: 'White House', sublabel: 'Washington, D.C., United States', lat: 38.8977, lon: -77.0365, cc: 'us', kind: 'feature' }
+    const opened = readUrlTarget('', NOW, house)
+    expect(opened).toMatchObject({ kind: 'q', place: { label: 'White House', countryCode: 'us', kind: 'feature' } })
+    const city = readUrlTarget('', NOW, { path: '/place/paris', label: 'Paris', lat: 48.8566, lon: 2.3522, cc: 'fr' })
+    expect(city).not.toHaveProperty('place.kind')
+    try {
+      setBundleForTests('vi', { exonyms: { names: 'US:^White House=Nhà Trắng' } })
+      expect(opened?.kind === 'q' && displayLabel(opened.place)).toBe('Nhà Trắng')
+    } finally {
+      setBundleForTests('en', null)
+    }
   })
 
   it('falls back to the pass id when t or norad is missing or invalid', () => {

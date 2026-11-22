@@ -66,8 +66,17 @@ export function readUrlTarget(search: string, now: number = Date.now(), page?: P
   const q = params.get('q')
   if (!q) {
     if (!page) return null
-    // The page says more than a link can: where the place is, as the search box would have named it.
-    const place: Place = { label: page.label, sublabel: page.sublabel, lat: page.lat, lon: page.lon, countryCode: page.cc, source: 'url' }
+    // The page says more than a link can: where the place is, as the search box would have named it, and whether it is
+    // a landmark, which a language names as one (Place.kind).
+    const place: Place = {
+      label: page.label,
+      sublabel: page.sublabel,
+      lat: page.lat,
+      lon: page.lon,
+      countryCode: page.cc,
+      source: 'url',
+      ...(page.kind ? { kind: page.kind } : {}),
+    }
     return { kind: 'q', place, opts: { selectPassId: params.get('p') ?? undefined } }
   }
   const [lat, lon] = q.split(',').map(Number)
