@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { setBundleForTests } from '@/i18n/runtime'
 import enGeo from '@/i18n/en/geo'
 import koExonyms from '@/i18n/ko/exonyms'
-import { exonym, parseExonyms } from './exonyms'
+import { ensureExonyms, exonym, exonymsReady, parseExonyms } from './exonyms'
 import { displayLabel, displaySublabel } from './geocode'
 
 /** A small German table, in the generated tables' format. */
@@ -20,6 +20,27 @@ describe('exonyms', () => {
     expect(t.regions.get('DE|north rhine westphalia')).toBe('Nordrhein-Westfalen')
     expect(t.towns.get('|sea of japan')).toBe('동해')
     expect(t.towns.size + t.regions.size).toBe(8)
+  })
+
+  it('keeps a search-only name off the screen', () => {
+    const t = parseExonyms('VN:Ho Chi Minh City=Thành phố Hồ Chí Minh;~Ho Chi Minh City=Sài Gòn')
+    expect([...t.towns]).toEqual([['VN|ho chi minh city', 'Thành phố Hồ Chí Minh']])
+  })
+
+  it('waits for a table that is a chunk of its own, and never changes a name once it is shown', async () => {
+    const lazy = () => {
+      const ns: { names: string; load: () => Promise<void> } = { names: '', load: async () => void (ns.names = 'RU:Moscow=Москва') }
+      return ns
+    }
+    setBundleForTests('ru', { exonyms: lazy() })
+    expect(exonymsReady()).toBe(false)
+    await ensureExonyms()
+    expect([exonymsReady(), exonym('Moscow', 'ru', 'label')]).toEqual([true, 'Москва'])
+    // Shown before its table was in: the page keeps the name it showed, even once the table could load.
+    setBundleForTests('ru', { exonyms: lazy() })
+    expect(exonym('Moscow', 'ru', 'label')).toBe('Moscow')
+    await ensureExonyms()
+    expect(exonym('Moscow', 'ru', 'label')).toBe('Moscow')
   })
 
   it('names nothing in English, or in a language without a table', () => {

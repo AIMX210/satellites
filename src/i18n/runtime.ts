@@ -59,10 +59,14 @@ export function useMsgs<T extends object>(english: T): T {
 export const useLocale = (): Locale => useLocaleStore((s) => s.locale)
 
 // One bundle per locale, each its own chunk. English has none: its namespaces ship with the code that uses them.
-/** A language's chunk: its messages, and for CJK the serif accent face (src/i18n/accentFont.ts). */
+/**
+ * A language's chunk: its messages, for CJK the serif accent face (src/i18n/accentFont.ts), and what a switch to it
+ * waits for besides (`ready`: a large place-name table, which is a chunk of its own: src/i18n/<locale>/exonyms.ts).
+ */
 interface LocaleModule {
   default: Bundle
   accentFont?: AccentFont
+  ready?: () => Promise<void>
 }
 const loaders = import.meta.glob<LocaleModule>(['./*/index.ts', '!./en/**'])
 
@@ -132,7 +136,8 @@ export async function setLocale(locale: Locale): Promise<void> {
   const mod = await fetchModule(locale)
   if (wanted !== locale) return
   if (!mod && locale !== DEFAULT_LOCALE) return
-  await installAccentFont(mod?.accentFont)
+  // The place names too: a name on screen (the results' place, a suggestion) changes once, with the rest of the page.
+  await Promise.all([installAccentFont(mod?.accentFont), mod?.ready?.().catch(() => undefined)])
   if (wanted !== locale) return
   bundle = mod?.default ?? null
   active = locale
