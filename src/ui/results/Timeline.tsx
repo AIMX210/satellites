@@ -17,9 +17,12 @@
  *
  * Words: the 'results' namespace (timeline) and the 'verdicts' vocabulary, read at render, and the day labels written
  * from each midnight's local fields (the model's day marks hold no words), so a language switch rewords the strip.
+ * A day label shows only where it fits before the next: a Latin or Cyrillic one is counted in mono cells, any other
+ * is measured as drawn (useLabelWidth).
  */
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { fmt } from '../../../api/_lib/i18n/format'
+import { LOCALE_INFO, type Locale } from '../../../api/_lib/i18n/locales'
 import { Rich, withUnits } from '@/i18n/Rich'
 import enResults from '@/i18n/en/results'
 import enVerdicts from '@/i18n/en/verdicts'
@@ -115,9 +118,12 @@ export function Timeline({ model, selectedId, onSelect, compact = false, index =
   const reduced = useReducedMotion()
   const m = useMsgs(enResults).timeline
   const vm = useMsgs(enVerdicts)
-  const int = fmt(useLocale()).int
+  const locale = useLocale()
+  const int = fmt(locale).int
   const plotRef = useRef<HTMLDivElement>(null)
   const headRef = useRef<HTMLDivElement>(null)
+  const axisRef = useRef<HTMLDivElement>(null)
+  const labelWidth = useLabelWidth(axisRef, locale)
   const [size, setSize] = useState({ w: 0, h: 0 })
   const [hover, setHover] = useState<{ pass: Pass; x: number } | null>(null)
   const replaying = useApp((st) => st.timeMode !== 'live')
@@ -387,7 +393,8 @@ export function Timeline({ model, selectedId, onSelect, compact = false, index =
         ? `${fmtLocalTime(t1, tz)} ${zoneAbbr(t1, tz)}`
         : fmtLocalDay(t1, tz)
   const charW = compact ? 6.2 : 6.6
-  const endRoom = endLabel ? endLabel.length * charW + 14 : 0
+  const widthOf = (text: string) => labelWidth?.(text) ?? text.length * charW
+  const endRoom = endLabel ? widthOf(endLabel) + 14 : 0
 
   return (
     <div className={cx(s.timeline, compact && s.compact, className)} role="group" aria-label={m.keysHint(summary)}>
@@ -481,13 +488,13 @@ export function Timeline({ model, selectedId, onSelect, compact = false, index =
           </div>
 
           {/* Day labels at local midnights: one format for every day */}
-          <div className={s.axis} aria-hidden>
+          <div ref={axisRef} className={s.axis} aria-hidden>
             {axisDays.map((d, i) => {
               const next = axisDays[i + 1]?.t ?? t1
               const x = ((d.t - t0) / span) * size.w
               const limit = Math.min(((next - t0) / span) * size.w, size.w - endRoom)
               const text = dayLabel(d, tz, dayW)
-              const fits = x + text.length * charW + 8 <= limit
+              const fits = x + widthOf(text) + 8 <= limit
               return (
                 <span key={d.t} className={cx(s.day, d.t === t0 && s.dayStart)} style={{ left: `${(((d.t - t0) / span) * 100).toFixed(3)}%` }}>
                   {fits ? text : ''}
@@ -502,6 +509,51 @@ export function Timeline({ model, selectedId, onSelect, compact = false, index =
       </div>
     </div>
   )
+}
+
+/**
+ * The width of an axis label as the page draws it, for a script whose letters are not one mono cell each: Devanagari's
+ * vowel signs and virama join their consonant (counted as characters, a Hindi day that fits was blanked), CJK's are
+ * two cells wide, Arabic's join. null for Latin and Cyrillic, whose mono faces are fixed-width: the cell count is exact
+ * enough there, and English is unchanged. Measured again when a web font finishes loading.
+ */
+function useLabelWidth(ref: RefObject<HTMLDivElement | null>, locale: Locale): ((text: string) => number) | null {
+  const script = LOCALE_INFO[locale].script
+  const on = script !== 'latin' && script !== 'cyrillic'
+  const [fontsLoaded, setFontsLoaded] = useState(0)
+  const [measure, setMeasure] = useState<((text: string) => number) | null>(null)
+  useEffect(() => {
+    const fonts = typeof document !== 'undefined' ? document.fonts : undefined
+    if (!on || !fonts) return
+    const bump = () => setFontsLoaded((n) => n + 1)
+    fonts.addEventListener('loadingdone', bump)
+    return () => fonts.removeEventListener('loadingdone', bump)
+  }, [on])
+  useLayoutEffect(() => {
+    const el = ref.current
+    const ctx = on && el ? document.createElement('canvas').getContext('2d') : null
+    if (!el || !ctx) {
+      setMeasure(null)
+      return
+    }
+    const cs = getComputedStyle(el)
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+    if (cs.fontStretch === '87.5%') ctx.fontStretch = 'semi-condensed'
+    const track = parseFloat(cs.letterSpacing) || 0
+    const seg = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(locale, { granularity: 'grapheme' }) : null
+    const cache = new Map<string, number>()
+    setMeasure(() => (text: string) => {
+      let w = cache.get(text)
+      if (w === undefined) {
+        const shown = text.toLocaleUpperCase(locale)
+        const clusters = seg ? [...seg.segment(shown)].length : Array.from(shown).length
+        w = ctx.measureText(shown).width + track * clusters
+        cache.set(text, w)
+      }
+      return w
+    })
+  }, [ref, on, locale, fontsLoaded])
+  return measure
 }
 
 /** What the mark form means, in words (the legend lives here now), in the active language. */
