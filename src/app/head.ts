@@ -11,7 +11,10 @@
  * A search engine that runs the app runs it in English, so the title it reads here is the sentence the static page
  * carries (pageTitle). Another language names the place and the brand and no more: the sentence is not translated
  * (it would need each language's grammar for an inserted name), and an English sentence in a French tab would be
- * wrong. A curated place is named as that language shows it (Place.label).
+ * wrong. A curated place is named as that language shows it (Place.label); any other by the name the page shows it
+ * under (imagery displayLabel: Москва for Moscow, as the headline says it), once the language's place names are in.
+ * Until then (the boot of a link, a table still on its way) the tab keeps the label: asking for a name before its
+ * table is in would keep the table out of the page (src/imagery/exonyms.ts), and no name on screen may change.
  *
  * The landing's title is never read back from document.title: before the app runs, the boot words
  * (src/i18n/bootText.ts) have already set the boot language's title there, so a German page switched to English, or
@@ -19,8 +22,11 @@
  */
 import enApp from '@/i18n/en/app'
 import { currentLocale, msgs, useLocaleStore } from '@/i18n/runtime'
+import { displayLabel, exonymsReady, linkedForName } from '@/imagery'
 import { bootPlace, isPagePlace, pagePlace, pageTitle, type NamedSpot, type PagePlace } from '@/lib/placePage'
+import { curatedId } from '@/ui/landing/places'
 import { useApp, type Phase } from '@/state/store'
+import type { Place } from '@/types'
 
 export interface Head {
   title: string
@@ -33,6 +39,8 @@ export interface HeadWords {
   home: string
   /** Whether that language is English: only then is a place's title the static page's sentence */
   english: boolean
+  /** A place's name as the page shows it, in a language other than English (else its label) */
+  name?: (place: NamedSpot) => string
 }
 
 /** A place is on screen from the moment its search starts, whatever comes of it. */
@@ -49,7 +57,18 @@ export function headFor(phase: Phase, place: NamedSpot | undefined, page: PagePl
   const shown = SHOWS_PLACE.includes(phase) ? place : phase === 'boot' ? opening : undefined
   if (!shown) return { title: words.home, canonical: '/' }
   // Any other place is a search, not a page: search engines keep the landing for it.
-  return { title: words.english ? pageTitle(shown.label) : plainPlaceTitle(shown.label), canonical: isPagePlace(shown, page) ? page.path : '/' }
+  const title = words.english ? pageTitle(shown.label) : plainPlaceTitle(words.name?.(shown) ?? shown.label)
+  return { title, canonical: isPagePlace(shown, page) ? page.path : '/' }
+}
+
+/**
+ * A place's name as the results show it (ui/results/placeName.ts), for the tab: a curated place's label, any other's
+ * name in the language once its table is in (a link's in the country found at its point), else the label.
+ */
+function shownName(spot: NamedSpot): string {
+  const place = spot as Partial<Place> & NamedSpot
+  if (!exonymsReady() || !('source' in place) || curatedId(place as Place)) return spot.label
+  return displayLabel(place.source === 'url' && place.canonicalLabel === undefined ? linkedForName(place as Place) : (place as Place))
 }
 
 function apply(head: Head) {
@@ -71,7 +90,8 @@ export function installHeadSync(): void {
   const opening = bootPlace()
   const sync = () => {
     const st = useApp.getState()
-    apply(headFor(st.phase, st.place, page, { home: msgs(enApp).documentTitle, english: currentLocale() === 'en' }, opening))
+    const english = currentLocale() === 'en'
+    apply(headFor(st.phase, st.place, page, { home: msgs(enApp).documentTitle, english, name: english ? undefined : shownName }, opening))
   }
   sync()
   useApp.subscribe((st, prev) => {

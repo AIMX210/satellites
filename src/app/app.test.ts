@@ -216,6 +216,13 @@ describe('headFor: the tab title and the canonical link', () => {
     expect(headFor('boot', undefined, page, DE, page)).toEqual({ title: 'Paris · Watched', canonical: '/place/paris' })
   })
 
+  it('names a place as the page shows it in another language (München, as the headline says it)', () => {
+    const munich = { label: 'Munich', lat: 48.137, lon: 11.575 }
+    const name = (p: { label: string }) => (p.label === 'Munich' ? 'München' : p.label)
+    expect(headFor('results', munich, undefined, { ...DE, name }).title).toBe('München · Watched')
+    expect(headFor('results', munich, undefined, { ...EN, name }).title).toBe('Munich: this week’s satellite images and passes · Watched')
+  })
+
   it('knows a place page\'s place under the name another language gives it', () => {
     const giza: PagePlace = { path: '/place/pyramids-of-giza', label: 'Pyramids of Giza', lat: 29.979, lon: 31.134 }
     const shown = { label: 'Pyramides de Gizeh', canonicalLabel: 'Pyramids of Giza', lat: 29.979, lon: 31.134 }
