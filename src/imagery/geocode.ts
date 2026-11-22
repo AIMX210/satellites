@@ -129,10 +129,16 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
   return local.toUpperCase() === cc.toUpperCase() ? exonymApostrophes(shown) : local
 }
 
-/** Does `name` name country `cc`, as the browser does in English or as the offline list (Palestinian Territory)? */
+/**
+ * Does `name` name country `cc`, as the browser does in English, with or without its aside in brackets (Chromium's
+ * Falkland Islands (Islas Malvinas), where the list says Falkland Islands), or as the offline list (Palestinian
+ * Territory)?
+ */
 function namesCountry(name: string, cc: string): boolean {
   const key = placeKey(name)
-  const english = [englishCountryKey(countryName(cc)), placeKey(shownCountryName(cc, 'en'))]
+  const [long, short] = [countryName(cc), shownCountryName(cc, 'en')]
+  const bare = (n: string) => n.replace(/\s*\([^)]*\)/g, '')
+  const english = [englishCountryKey(long), englishCountryKey(bare(long)), placeKey(short), placeKey(bare(short))]
   return english.includes(key) || isListCountry(name, cc)
 }
 
