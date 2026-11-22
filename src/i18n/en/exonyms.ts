@@ -18,11 +18,13 @@ import { ns } from '../ns'
 export interface ExonymsNamespace {
   /**
    * The table: countries apart by `|`, each `<ISO code>:` then its names apart by `;`, each `<English name>=<shown
-   * name>`, a first-level region's starting with `*`. The English name is matched as typed in a search (case, accents
-   * and punctuation aside). A country code of nothing (`:Sea of Japan=동해`) holds names for places that have no
-   * country (a sea). An entry starting with `~` is a search name only, never shown (`~Ho Chi Minh City=Sài Gòn`). Each
-   * country's names come largest first, which is how a search through them ranks. No name may hold `|`, `;`, `=`,
-   * `:` or `~`, nor start with `*`.
+   * name>`, a first-level region's starting with `*`, and a landmark's or natural feature's starting with `^` where a
+   * town has the same English name (`^White House=Nhà Trắng`: White House, Tennessee keeps its own). The English name
+   * is matched as typed in a search (case, accents and punctuation aside). A country code of nothing (`:Sea of
+   * Japan=동해`) holds names for places that have no country (a sea), and for a feature the data files under one (the
+   * English Channel under GB). An entry starting with `~` is a search name only, never shown (`~Ho Chi Minh City=Sài
+   * Gòn`). Each country's names come largest first, which is how a search through them ranks, and the language's own
+   * countries come first. No name may hold `|`, `;`, `=`, `:` or `~`, nor start with `*` or `^`.
    * E.g. `DE:Munich=München;Cologne=Köln;*Bavaria=Bayern|AT:Vienna=Wien`.
    */
   names: string

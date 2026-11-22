@@ -7,7 +7,7 @@ import { displayLabel, displaySublabel } from './geocode'
 
 /** A small German table, in the generated tables' format. */
 const DE = 'DE:Munich=München;Cologne=Köln;*Bavaria=Bayern;*North Rhine-Westphalia=Nordrhein-Westfalen|IT:Milan=Mailand;*Lombardy=Lombardei|GB:London=London'
-const UK = 'UA:Kyiv=Київ;Lviv=Львів;*Lviv=Львівська область;*Kyiv City=місто Київ|PL:Warsaw=Варшава'
+const UK = 'UA:Kyiv=Київ;Lviv=Львів;*Lviv=Львівська область;*Kyiv City=місто Київ;*Kherson=Херсонська область|PL:Warsaw=Варшава'
 
 describe('exonyms', () => {
   afterEach(() => setBundleForTests('en', null))
@@ -59,11 +59,28 @@ describe('exonyms', () => {
     expect(exonym('Milan', 'us', 'label')).toBe('Milan')
   })
 
-  it('reads a label among towns first and a part of the where line among regions first', () => {
+  it('names a town as a town, a region as a region, and a part of the where line among regions first', () => {
     setBundleForTests('uk', { exonyms: { names: UK } })
     expect(exonym('Lviv', 'ua', 'label')).toBe('Львів')
+    expect(exonym('Lviv', 'ua', 'region')).toBe('Львівська область')
     expect(exonym('Lviv', 'ua', 'where')).toBe('Львівська область')
-    expect(exonym('Kyiv City', 'ua', 'label')).toBe('місто Київ') // only a region by that name
+    expect(exonym('Kyiv City', 'ua', 'region')).toBe('місто Київ')
+    // A town the table has no name for never takes its region's (Kherson the city is not Херсонська область), nor a
+    // region its capital's.
+    expect(exonym('Kherson', 'ua', 'label')).toBe('Kherson')
+    expect(exonym('Warsaw', 'pl', 'region')).toBe('Warsaw')
+    expect(exonym('Kyiv City', 'ua', 'label')).toBe('Kyiv City')
+    expect(displayLabel({ label: 'Kherson', countryCode: 'ua', kind: 'region' })).toBe('Херсонська область')
+    expect(displayLabel({ label: 'Kherson', countryCode: 'ua' })).toBe('Kherson')
+  })
+
+  it('names a landmark by a name written for landmarks, and a sea the data files under a country by its own', () => {
+    setBundleForTests('vi', { exonyms: { names: 'US:^White House=Nhà Trắng;Central Park=Công viên Trung tâm|:English Channel=Biển Manche' } })
+    expect(displayLabel({ label: 'White House', countryCode: 'us', kind: 'feature' })).toBe('Nhà Trắng')
+    expect(displayLabel({ label: 'White House', countryCode: 'us' })).toBe('White House') // the town in Tennessee
+    expect(displayLabel({ label: 'English Channel', countryCode: 'gb', kind: 'feature' })).toBe('Biển Manche')
+    expect(displayLabel({ label: 'English Channel', countryCode: 'gb' })).toBe('English Channel') // a pub in Brighton
+    expect(displayLabel({ label: 'English Channel' })).toBe('Biển Manche')
   })
 
   it('shows Korean readers 동해, 독도, 백두산 and 황해 where the data names them otherwise, and nothing else', () => {

@@ -16,10 +16,14 @@
  * after it is shown (owner rule), so a table that arrives after a name was shown without it is not applied in that
  * page: the page keeps the names it showed.
  *
- * Why by country: the same English name is many places (London, Ontario is never Londra; Kyiv the city is Київ, Kyiv
- * the oblast's sublabel is Київська область), so a name is looked up in the place's own country, among towns first
- * for a label and among regions first for a part of the where line. A place with no country code (a sea; a place
- * opened from a link) is looked up among the table's countryless names only, so a link to "London" shows London.
+ * Why by country and by kind: the same English name is many places (London, Ontario is never Londra; Kyiv the city is
+ * Київ, Kyiv the oblast's sublabel is Київська область), so a name is looked up in the place's own country, and as
+ * what the place is: a town's label among towns only (never its oblast's name: Kherson the city is not Oblast Cherson),
+ * a region's among regions only (Chelyabinsk Oblast is not the city), a part of the where line among regions first
+ * (Bavaria), then towns (a city in a geocoder's where line). A landmark or a natural feature takes the names written
+ * for landmarks (`^`: the White House is Nhà Trắng, White House, Tennessee is not), then a town's, then a countryless
+ * one: a sea the data files under a country (the English Channel under GB) is the same sea. A place with no country (a
+ * sea; a place opened from a link) is looked up among the countryless names only, so a link to "London" shows London.
  */
 import enExonyms from '@/i18n/en/exonyms'
 import { msgs } from '@/i18n/runtime'
@@ -31,26 +35,32 @@ export interface ExonymTable {
   towns: Map<string, string>
   /** The same, for first-level regions */
   regions: Map<string, string>
+  /** The same, for landmarks and natural features only (`^`: a town shares the English name) */
+  features: Map<string, string>
 }
+
+/** What a place is, for the lookup of its name: a town's label, a region's, a landmark's or feature's, or a where part. */
+export type NameAs = 'label' | 'region' | 'feature' | 'where'
 
 /** The table's display half (src/i18n/en/exonyms.ts): a search-only entry (`~`) is left to ./exonymSearch.ts. */
 export function parseExonyms(src: string): ExonymTable {
   const towns = new Map<string, string>()
   const regions = new Map<string, string>()
+  const features = new Map<string, string>()
   for (const group of src.split('|')) {
     const at = group.indexOf(':')
     if (at < 0) continue
     const cc = group.slice(0, at).trim().toUpperCase()
     for (const entry of group.slice(at + 1).split(';')) {
       const eq = entry.indexOf('=')
-      const region = entry.startsWith('*')
-      const english = entry.slice(region ? 1 : 0, eq)
+      const mark = entry[0] === '*' || entry[0] === '^' ? entry[0] : ''
+      const english = entry.slice(mark.length, eq)
       const shown = entry.slice(eq + 1)
       if (eq < 0 || entry.startsWith('~') || !placeKey(english) || !shown) continue
-      ;(region ? regions : towns).set(`${cc}|${placeKey(english)}`, shown)
+      ;(mark === '*' ? regions : mark === '^' ? features : towns).set(`${cc}|${placeKey(english)}`, shown)
     }
   }
-  return { towns, regions }
+  return { towns, regions, features }
 }
 
 let parsed: { src: string; table: ExonymTable } | undefined
@@ -106,15 +116,19 @@ export async function ensureExonyms(): Promise<void> {
 
 /**
  * `name` as the visitor's language names that place in country `cc` (ISO, any case; undefined: no country), or `name`
- * itself. `as` says what the name is: a place's own name ('label': towns first) or a part of its where line ('where':
- * regions first). Read at call time.
+ * itself. `as` says what the name is (NameAs): a town's own name ('label': towns only), a first-level region's
+ * ('region': regions only), a landmark's or a natural feature's ('feature': landmarks, then towns, then a countryless
+ * name), or a part of a where line ('where': regions first, then towns). Read at call time.
  */
-export function exonym(name: string, cc: string | undefined, as: 'label' | 'where'): string {
+export function exonym(name: string, cc: string | undefined, as: NameAs): string {
   const t = activeTable(true)
   if (!t) return name
-  const key = `${(cc ?? '').toUpperCase()}|${placeKey(name)}`
-  const [first, then] = as === 'label' ? [t.towns, t.regions] : [t.regions, t.towns]
-  return first.get(key) ?? then.get(key) ?? name
+  const key = placeKey(name)
+  const here = `${(cc ?? '').toUpperCase()}|${key}`
+  if (as === 'label') return t.towns.get(here) ?? name
+  if (as === 'region') return t.regions.get(here) ?? name
+  if (as === 'where') return t.regions.get(here) ?? t.towns.get(here) ?? name
+  return t.features.get(here) ?? t.towns.get(here) ?? t.towns.get(`|${key}`) ?? name
 }
 
 /** Does the active language name countries by the browser's names on their own label too (its namespace says so)? */

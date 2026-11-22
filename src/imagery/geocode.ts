@@ -89,14 +89,14 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
 }
 
 /**
- * A place's name as shown to the visitor: the name the visitor's language gives that town or region in that country
- * (./exonyms.ts: München, Київ), else, for a country in a language whose table says so, the browser's name for it
+ * A place's name as shown to the visitor: the name the visitor's language gives that town, region or feature in that
+ * country (./exonyms.ts: München, Київ; a region as a region, `kind`), else, for a country in a language whose table says so, the browser's name for it
  * (Германия for Germany, as the where line names it), else its label as it came. In English, the label itself. Read
  * at call time, as displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups
  * send.
  */
-export function displayLabel(place: Pick<Place, 'label' | 'countryCode'>): string {
-  const shown = exonym(place.label, place.countryCode, 'label')
+export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'>): string {
+  const shown = exonym(place.label, place.countryCode, place.kind ?? 'label')
   const cc = place.countryCode
   if (shown !== place.label || !cc || !namesCountries()) return shown
   const key = placeKey(place.label)
@@ -239,6 +239,7 @@ export function photonToPlace(feature: PhotonFeature, source: Place['source'] = 
     countryCode: p.countrycode?.toLowerCase() || undefined,
     source,
     ...(isStreetLevel(p, label === address) ? { streetLevel: true } : {}),
+    ...((p.osm_value === 'state' || p.type === 'state') && label === p.name ? { kind: 'region' as const } : {}),
   }
 }
 
@@ -441,6 +442,8 @@ export interface OpenMeteoPlace {
   country?: string
   admin1?: string
   population?: number
+  /** GeoNames' feature code: ADM1 for a first-level region */
+  feature_code?: string
 }
 
 const words = (s: string) => textKey(s).split(/[^\p{L}\p{N}]+/u).filter(Boolean)
@@ -469,6 +472,7 @@ export function openMeteoToPlaces(results: OpenMeteoPlace[] | undefined, query: 
       sublabel: sublabelOf(label, [r.admin1, fixed?.country ?? r.country]),
       countryCode: (fixed?.code ?? r.country_code)?.toLowerCase() || undefined,
       source: 'search',
+      ...(r.feature_code === 'ADM1' ? { kind: 'region' as const } : {}),
     })
   }
   return out
@@ -519,6 +523,7 @@ const localToPlace = (r: LocalPlace, source: Place['source']): Place => ({
   sublabel: r.kind === 'l' ? r.where : r.kind === 'c' ? undefined : sublabelOf(r.name, [echoes(r.admin1, r.name) ? undefined : r.admin1, countryName(r.cc)]),
   countryCode: r.cc.toLowerCase() || undefined,
   source,
+  ...(r.kind === 'r' ? { kind: 'region' as const } : r.kind === 'f' || r.kind === 'l' ? { kind: 'feature' as const } : {}),
 })
 
 /** A state that only repeats the city's name ("Berlin · State of Berlin") says nothing: "Berlin · Germany". */
