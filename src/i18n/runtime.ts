@@ -118,6 +118,17 @@ export async function startLocale(): Promise<void> {
   useLocaleStore.setState({ locale, version: useLocaleStore.getState().version + 1 })
 }
 
+/**
+ * How long a switch waits for what the language's `ready` loads (its place names), at most: a request that stalls must
+ * not hold the switch for ever. Never rejects.
+ */
+const READY_WAIT_MS = 3_000
+function withinWait(p: Promise<unknown>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const limit = new Promise<void>((done) => (timer = setTimeout(done, READY_WAIT_MS)))
+  return Promise.race([p.then(() => undefined, () => undefined), limit]).finally(() => clearTimeout(timer))
+}
+
 /** The latest language asked for: a chunk that arrives after a newer choice is never applied over it. */
 let wanted: Locale | undefined
 
@@ -137,7 +148,8 @@ export async function setLocale(locale: Locale): Promise<void> {
   if (wanted !== locale) return
   if (!mod && locale !== DEFAULT_LOCALE) return
   // The place names too: a name on screen (the results' place, a suggestion) changes once, with the rest of the page.
-  await Promise.all([installAccentFont(mod?.accentFont), mod?.ready?.().catch(() => undefined)])
+  // At most READY_WAIT_MS for them: past it the page switches with the names as they came (and keeps them so).
+  await Promise.all([installAccentFont(mod?.accentFont), mod?.ready && withinWait(mod.ready())])
   if (wanted !== locale) return
   bundle = mod?.default ?? null
   active = locale

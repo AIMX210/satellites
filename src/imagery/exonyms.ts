@@ -103,9 +103,16 @@ let search: ExonymSearch | undefined
 let searchLoad: Promise<void> | undefined
 
 /**
+ * How long anything that shows a place name waits for the table and its search, at most: a request that stalls (a
+ * mobile network that never answers) must not hold a search or a report for ever. Past it, the names are shown as
+ * they came, and the table, when it does arrive, is kept out of the page (`late`), so nothing changes once shown.
+ */
+export const EXONYM_WAIT_MS = 3_000
+
+/**
  * Load the active language's table if it is a chunk of its own, and the search through it (idempotent, shared by every
- * caller; nothing in English). Never rejects: a failed load leaves the names as they came, and the next call tries
- * again, until a name has been shown.
+ * caller; nothing in English). Never rejects, and resolves within EXONYM_WAIT_MS: a failed load leaves the names as
+ * they came, and the next call tries again, until a name has been shown.
  */
 export async function ensureExonyms(): Promise<void> {
   const m = msgs(enExonyms)
@@ -114,11 +121,12 @@ export async function ensureExonyms(): Promise<void> {
     (x) => void (search = x),
     () => void (searchLoad = undefined),
   )
-  try {
-    await Promise.all([exonymsReady() ? undefined : m.load?.(), searchLoad])
-  } catch {
+  const both = Promise.all([exonymsReady() ? undefined : m.load?.(), searchLoad]).catch(() => {
     /* offline or a stale build: names as they came */
-  }
+  })
+  let timer: ReturnType<typeof setTimeout> | undefined
+  await Promise.race([both, new Promise<void>((done) => (timer = setTimeout(done, EXONYM_WAIT_MS)))])
+  clearTimeout(timer)
 }
 
 /**

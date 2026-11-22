@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setBundleForTests } from '@/i18n/runtime'
 import enGeo from '@/i18n/en/geo'
 import koExonyms from '@/i18n/ko/exonyms'
-import { ensureExonyms, exonym, exonymsReady, parseExonyms } from './exonyms'
+import { ensureExonyms, EXONYM_WAIT_MS, exonym, exonymsReady, parseExonyms } from './exonyms'
 import { displayLabel, displaySublabel } from './geocode'
 
 /** A small German table, in the generated tables' format. */
@@ -41,6 +41,30 @@ describe('exonyms', () => {
     expect(exonym('Moscow', 'ru', 'label')).toBe('Moscow')
     await ensureExonyms()
     expect(exonym('Moscow', 'ru', 'label')).toBe('Moscow')
+  })
+
+  it('waits for a table that never arrives no longer than EXONYM_WAIT_MS, and then keeps the names as they came', async () => {
+    vi.useFakeTimers()
+    try {
+      let arrive: (() => void) | undefined
+      const ns: { names: string; load: () => Promise<void> } = {
+        names: '',
+        load: () => new Promise<void>((done) => (arrive = () => ((ns.names = 'RU:Moscow=Москва'), done()))),
+      }
+      setBundleForTests('ru', { exonyms: ns })
+      let waited = false
+      void ensureExonyms().then(() => (waited = true))
+      await vi.advanceTimersByTimeAsync(EXONYM_WAIT_MS - 100)
+      expect(waited).toBe(false)
+      await vi.advanceTimersByTimeAsync(200)
+      expect(waited).toBe(true)
+      expect(exonym('Moscow', 'ru', 'label')).toBe('Moscow')
+      arrive?.()
+      await vi.advanceTimersByTimeAsync(0)
+      expect(exonym('Moscow', 'ru', 'label')).toBe('Moscow')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('names nothing in English, or in a language without a table', () => {
