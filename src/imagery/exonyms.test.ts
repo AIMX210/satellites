@@ -74,13 +74,14 @@ describe('exonyms', () => {
     expect(displayLabel({ label: 'Kherson', countryCode: 'ua' })).toBe('Kherson')
   })
 
-  it('names a landmark by a name written for landmarks, and a sea the data files under a country by its own', () => {
-    setBundleForTests('vi', { exonyms: { names: 'US:^White House=Nhà Trắng;Central Park=Công viên Trung tâm|:English Channel=Biển Manche' } })
+  it('names a landmark by a name written for landmarks, which a town of that name never takes', () => {
+    setBundleForTests('vi', { exonyms: { names: 'US:^White House=Nhà Trắng;Central Park=Công viên Trung tâm|:Woody Island=Đảo Phú Lâm' } })
     expect(displayLabel({ label: 'White House', countryCode: 'us', kind: 'feature' })).toBe('Nhà Trắng')
     expect(displayLabel({ label: 'White House', countryCode: 'us' })).toBe('White House') // the town in Tennessee
-    expect(displayLabel({ label: 'English Channel', countryCode: 'gb', kind: 'feature' })).toBe('Biển Manche')
-    expect(displayLabel({ label: 'English Channel', countryCode: 'gb' })).toBe('English Channel') // a pub in Brighton
-    expect(displayLabel({ label: 'English Channel' })).toBe('Biển Manche')
+    expect(displayLabel({ label: 'Central Park', countryCode: 'us', kind: 'feature' })).toBe('Công viên Trung tâm')
+    // A countryless name is a countryless place's: Woody Island in Australia keeps its name.
+    expect(displayLabel({ label: 'Woody Island' })).toBe('Đảo Phú Lâm')
+    expect(displayLabel({ label: 'Woody Island', countryCode: 'au', kind: 'feature' })).toBe('Woody Island')
   })
 
   it('shows Korean readers 동해, 독도, 백두산 and 황해 where the data names them otherwise, and nothing else', () => {

@@ -21,10 +21,10 @@
  * what the place is: a town's label among towns only (never its oblast's name: Kherson the city is not Oblast Cherson),
  * a region's among regions only (Chelyabinsk Oblast is not the city), a part of the where line among regions first
  * (Bavaria), then towns (a city in a geocoder's where line). A landmark or a natural feature takes the names written
- * for landmarks (`^`: the White House is Nhà Trắng, White House, Tennessee is not), then a town's, then a countryless
- * one: a sea the data files under a country (the English Channel under GB) is the same sea. A place with no country (a
- * sea) is looked up among the countryless names; a place opened from a link takes its country from the offline list at
- * its point (./linkCountry.ts), so a link to London, Ontario shows London.
+ * for landmarks (`^`: the White House is Nhà Trắng, White House, Tennessee is not), then a town's. A place with no
+ * country (a sea) is looked up among the countryless names (a sea the data files under a country is written under it
+ * too: the English Channel under GB); a place opened from a link takes its country from the offline list at its point
+ * (./linkCountry.ts), so a link to London, Ontario shows London.
  */
 import enExonyms from '@/i18n/en/exonyms'
 import { msgs } from '@/i18n/runtime'
@@ -124,8 +124,8 @@ export async function ensureExonyms(): Promise<void> {
 /**
  * `name` as the visitor's language names that place in country `cc` (ISO, any case; undefined: no country), or `name`
  * itself. `as` says what the name is (NameAs): a town's own name ('label': towns only), a first-level region's
- * ('region': regions only), a landmark's or a natural feature's ('feature': landmarks, then towns, then a countryless
- * name), or a part of a where line ('where': regions first, then towns). Read at call time.
+ * ('region': regions only), a landmark's or a natural feature's ('feature': landmarks, then towns), or a part of a
+ * where line ('where': regions first, then towns). Read at call time.
  */
 export function exonym(name: string, cc: string | undefined, as: NameAs): string {
   const t = activeTable(true)
@@ -135,7 +135,7 @@ export function exonym(name: string, cc: string | undefined, as: NameAs): string
   if (as === 'label') return t.towns.get(here) ?? name
   if (as === 'region') return t.regions.get(here) ?? name
   if (as === 'where') return t.regions.get(here) ?? t.towns.get(here) ?? name
-  return t.features.get(here) ?? t.towns.get(here) ?? t.towns.get(`|${key}`) ?? name
+  return t.features.get(here) ?? t.towns.get(here) ?? name
 }
 
 /** The active language's own countries (its namespace's `home`): a name they share with a place abroad is theirs first. */
