@@ -43,7 +43,7 @@ glyph check. Run `node -e` with `s.normalize('NFC') === s` over a file before co
 | Zones | Arrive formatted; a translator never writes or changes one. |
 | Time-lapse | The loan **time-lapse** (upright, hyphenated), as Vietnamese photographers and the press write it. |
 | Tone marks | The new placement (*hòa*, *thủy*, *hủy*, *khỏe*), and *y* in *kỹ*, *Mỹ*, *lý* (§6.1). |
-| Country names | CLDR `vi` via `Intl.DisplayNames`; owner questions on *Lãnh thổ Palestine* and *Biển Đông* (§8). |
+| Country names | CLDR `vi` via `Intl.DisplayNames`; owner question on *Lãnh thổ Palestine*; *Biển Đông* approved (owner, 2026-11-22; §8). |
 
 ---
 
@@ -1145,7 +1145,8 @@ Sea*, OpenStreetMap's *Paracel Islands*), and shows them as they come. **Owner q
 display-only exonym table for `vi`, as Korean's (`src/i18n/ko/exonyms.ts`), with countryless names *South China Sea =
 Biển Đông*, *Paracel Islands = Quần đảo Hoàng Sa*, *Spratly Islands = Quần đảo Trường Sa* (and the data's variants:
 *Xisha Islands*, *Nansha Islands*). Usage stats and links keep the English label, as for Korean, so nothing splits.
-Until the owner decides, the names show as the data has them.
+**Owner, 2026-11-22: approved** (the principle of Korean's 동해). The names come with Vietnamese's generated place-name
+table (`src/i18n/vi/exonyms`); until that table ships, they show as the data has them.
 
 **Country names.** They come from `Intl.DisplayNames('vi')` (CLDR): *Trung Quốc*, *Đài Loan*, *Ukraina*, *Israel*,
 *Jordan*, *Li-băng*, *Ai Cập*, *Timor-Leste*. Translators never override them. Two CLDR long names misread for
