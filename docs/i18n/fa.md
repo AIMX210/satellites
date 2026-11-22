@@ -628,6 +628,11 @@ letters arrive written. They are left-to-right islands in DOM text (§6.2) and a
   `بُرد` (range), where it prevents a misreading. No other vowel marks.
 - **`آ`** is always written with its madda (`آسمان`، `آرشیو`، `آب‌های`).
 - **Words, not stand-ins:** `«…»` for quotes, never `"…"`; `…` (U+2026), never three dots.
+- **Place names** (the generated table, docs/I18N.md, Place names) are held to the same letters and to the ezafe's
+  hamza on a final `ه` only (`exonymTables.test.ts`). GeoNames' Dari forms that break them are fixed by hand in
+  `scripts/exonyms.ts`: it named Kandahar's and Kabul's airports `میدانٔ هوائئ کندهار` and `میدانٔ هوائیٔ کابل` (the
+  hamza on `ن`, a doubled `ئ`, `کندهار` beside the table's `قندهار`); an airport is `فرودگاه`, as Iranian Persian and
+  the table's others name it (`فرودگاه قندهار`، `فرودگاه بین‌المللی کابل`).
 
 ### 6.2 Direction
 

@@ -2192,6 +2192,13 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'AF:Pul-e Alam': 'پل علم',
     'AF:Qala i Naw': 'قلعه نو',
     'AF:Chaghcharan': 'چغچران',
+    /**
+     * Pre-ship review (2026-11-22): the two Afghan airports GeoNames names in malformed Dari (میدانٔ هوائئ کندهار: the
+     * ezafe's hamza on ن, a doubled ئ, and کندهار beside the table's قندهار), named as Iranian Persian names an
+     * airport, as the table's others are (فرودگاه مهرآباد); Kabul's by its city, as Persian reporting names it.
+     */
+    'AF:Kandahar Airport': 'فرودگاه قندهار',
+    'AF:Hamid Karzai International Airport': 'فرودگاه بین‌المللی کابل',
   },
   /**
    * Hindi: the modern official names where GeoNames' first Hindi name is the old one (मुंबई, not बम्बई; बेंगलुरु, not

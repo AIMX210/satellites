@@ -300,4 +300,15 @@ describe('the generated tables', () => {
     // A landmark a town shares is a landmark's name only.
     expect(vi).toMatch(/\|US:[^|]*;\^White House=Nhà Trắng[;|]/)
   })
+
+  it('write Persian as fa.md §6.1 does: the ezafe’s hamza only on a final ه, no doubled ئ, no Arabic or Latin letters', () => {
+    const t = parseExonyms(fa)
+    const names = [t.towns, t.regions, t.features, t.labels].flatMap((m) => [...m.values()])
+    expect(names.filter((n) => /[^ه]ٔ|ٔ(?![\s‌]|$)|ئئ|[يكىة]|\p{Script=Latin}/u.test(n))).toEqual([])
+    // The Afghan airports GeoNames names میدانٔ هوائئ کندهار and میدانٔ هوائیٔ کابل (pre-ship review, 2026-11-22).
+    expect([t.towns.get('AF|kandahar airport'), t.towns.get('AF|hamid karzai international airport')]).toEqual([
+      'فرودگاه قندهار',
+      'فرودگاه بین‌المللی کابل',
+    ])
+  })
 })
