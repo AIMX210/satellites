@@ -8,18 +8,18 @@
  * (./exonymSearch.ts, read by geocode.ts searchPlaces through exonymAlternates).
  *
  * The names come from the active language's 'exonyms' namespace (src/i18n/en/exonyms.ts gives its format), so each
- * language's table ships with that language only; English has none, and an English page shows every name as it came
- * and downloads nothing for it. A small table is in the language's chunk; a large one (Cyrillic, Persian and Hindi
- * write every name) is a chunk of its own, fetched at idle once the landing is up (ensureExonyms) and awaited by
- * everything that shows a place name first: a search, a pin, a report, a language switch. The search through a table
- * is a chunk of its own too (./exonymSearch.ts), loaded with it, so English carries none of it. A name must never change
- * after it is shown (owner rule), so a table that arrives after a name was shown without it is not applied in that
- * page: the page keeps the names it showed.
+ * language's table ships with that language only; English has none, and an English page shows every name as it came and
+ * downloads nothing for it. A small table is in the language's chunk; a large one (Cyrillic, Persian and Hindi write
+ * every name) is a chunk of its own, fetched at idle once the landing is up (ensureExonyms) and awaited by everything
+ * that shows a place name first: a search, a pin, a report, a language switch. The search through a table is a chunk of
+ * its own too (./exonymSearch.ts), loaded with it, so English carries none of it. A name must never change after it is
+ * shown (owner rule), so a table that arrives after a name was shown without it is not applied in that page: the page
+ * keeps the names it showed.
  *
  * Why by country and by kind: the same English name is many places (London, Ontario is never Londra; Kyiv the city is
- * Київ, Kyiv the oblast's sublabel is Київська область), so a name is looked up in the place's own country, and as
- * what the place is: a town's label among towns only (never its oblast's name: Kherson the city is not Oblast Cherson),
- * a region's among regions only (Chelyabinsk Oblast is not the city), a part of the where line among regions first
+ * Київ, Kyiv the oblast's sublabel is Київська область), so a name is looked up in the place's own country, and as what
+ * the place is: a town's label among towns only (never its oblast's name: Kherson the city is not Oblast Cherson), a
+ * region's among regions only (Chelyabinsk Oblast is not the city), a part of the where line among regions first
  * (Bavaria), then towns (a city in a geocoder's where line). A landmark or a natural feature takes the names written
  * for landmarks (`^`: the White House is Nhà Trắng, White House, Tennessee is not), then a town's. A place with no
  * country (a sea) is looked up among the countryless names (a sea the data files under a country is written under it
@@ -139,10 +139,10 @@ export async function ensureExonyms(): Promise<void> {
 /**
  * `name` as the visitor's language names that place in country `cc` (ISO, any case; undefined: no country), or `name`
  * itself. `as` says what the name is (NameAs): a town's own name ('label': towns only), a first-level region's
- * ('region': regions only, its own label first: استان قم), a landmark's or a natural feature's ('feature': landmarks, then towns), a where line's last
- * part ('where': regions first, then towns: Photon's state, the offline list's region), or a part another follows
- * ('locality': towns first, then regions: Photon's city, Odesa in "Odesa, Odesa Oblast", is the city). Read at call
- * time.
+ * ('region': regions only, its own label first: استان قم), a landmark's or a natural feature's ('feature': landmarks,
+ * then towns), a where line's last part ('where': regions first, then towns: Photon's state, the offline list's
+ * region), or a part another follows ('locality': towns first, then regions: Photon's city, Odesa in "Odesa, Odesa
+ * Oblast", is the city). Read at call time.
  */
 export function exonym(name: string, cc: string | undefined, as: NameAs): string {
   const t = activeTable(true)

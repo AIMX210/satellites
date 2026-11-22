@@ -137,20 +137,20 @@ function westBank(name: string, cc: string | undefined): string | undefined {
  * A place's sublabel as shown to the visitor. When the sublabel ends with the English name of the place's own country
  * (as the offline list and the geocoders, asked in English, write it: CLDR's long name, or the short one SHORT_NAMES
  * shows), that country is named as the visitor reads it (shownCountryName: the browser's own names, a few by their
- * short name) and joined to the rest by the 'geo' namespace's `where`. The rest stays as it came, one piece of data
- * in its own order and punctuation, except that each of its names the visitor's language names otherwise in that
- * country is shown so (./exonyms.ts: "Bavaria" → Bayern). In English that is the sublabel itself, except Hong Kong and
- * Macao by their short names. Any other sublabel (no country code, a geocoder's own spelling of the country, a curated
- * place's copy already in the visitor's language) is shown as it came.
+ * short name) and joined to the rest by the 'geo' namespace's `where`. The rest stays as it came, one piece of data in
+ * its own order and punctuation, except that each of its names the visitor's language names otherwise in that country
+ * is shown so (./exonyms.ts: "Bavaria" → Bayern). In English that is the sublabel itself, except Hong Kong and Macao by
+ * their short names. Any other sublabel (no country code, a geocoder's own spelling of the country, a curated place's
+ * copy already in the visitor's language) is shown as it came.
  *
  * In another language, three more things. A landmark's where line, written by hand in English, that names two countries
- * (the place's and another: "France and Italy") or two regions the language names ("Nevada and Arizona, United
- * States") lists them in the language (Intl.ListFormat: Francia e Italia, Невада и Аризона). Under a label the
- * language writes in its own script (Лондон, لندن, लंदन: its namespace's `ownScript`), a part it has no name for is
- * left out rather than shown in Latin letters beside it (Лондон · Велика Британія, not Лондон · England, Велика
- * Британія), as English leaves out a geocoder's non-Latin parts (sublabelOf); Korean's where line stays the data's. And a place in an area the language's readers hold to be their own, filed
- * by the data under another country (the Paracels and Spratlys, in Vietnamese: ./exonyms.ts exonymContested), shows
- * no where line at all.
+ * (the place's and another: "France and Italy") or two regions the language names ("Nevada and Arizona, United States")
+ * lists them in the language (Intl.ListFormat: Francia e Italia, Невада и Аризона). Under a label the language writes
+ * in its own script (Лондон, لندن, लंदन: its namespace's `ownScript`), a part it has no name for is left out rather
+ * than shown in Latin letters beside it (Лондон · Велика Британія, not Лондон · England, Велика Британія), as English
+ * leaves out a geocoder's non-Latin parts (sublabelOf); Korean's where line stays the data's. And a place in an area
+ * the language's readers hold to be their own, filed by the data under another country (the Paracels and Spratlys, in
+ * Vietnamese: ./exonyms.ts exonymContested), shows no where line at all.
  *
  * Read at call time: React callers subscribe to the language (useLocale()) so a switch re-renders it. The Place keeps
  * its English sublabel, which is what the usage stats and lookups send.
@@ -657,17 +657,17 @@ const distinctAsShown = (places: Place[]) => dedupePlaces(places, undefined, und
 const appendNew = (first: Place[], more: Place[]) => distinctAsShown([...first, ...more]).slice(0, MAX_RESULTS)
 
 /**
- * Up to 6 places matching `q`, best first. Coordinates are accepted and reverse-geocoded. Resolves [] for queries
- * under 2 characters or with no letters or digits. Rejects on network failure with nothing found offline (show
- * "search unavailable") and on abort.
+ * Up to 6 places matching `q`, best first. Coordinates are accepted and reverse-geocoded. Resolves [] for queries under
+ * 2 characters or with no letters or digits. Rejects on network failure with nothing found offline (show "search
+ * unavailable") and on abort.
  *
- * The offline list answers first (./localPlaces.ts: towns, states, countries and landmarks, in ~50 ms), by the
- * names the visitor's language gives them too (./exonyms.ts: Москва, Hà Nội, Mailand). With at least
- * ENOUGH_LOCAL matches, or one named exactly what was typed, that is the answer, and no geocoder is asked: most searches never leave the site, which keeps
- * them fast and Open-Meteo's free quota for the rest. Otherwise Open-Meteo is asked, and Photon too if Open-Meteo is
- * slow or has nothing (it knows streets and points of interest); `onEarly` gets the offline matches meanwhile, and
- * the promise resolves with them first and the network's new ones after, so a list on screen only grows at the
- * bottom.
+ * The offline list answers first (./localPlaces.ts: towns, states, countries and landmarks, in ~50 ms), by the names
+ * the visitor's language gives them too (./exonyms.ts: Москва, Hà Nội, Mailand). With at least ENOUGH_LOCAL matches, or
+ * one named exactly what was typed, that is the answer, and no geocoder is asked: most searches never leave the site,
+ * which keeps them fast and Open-Meteo's free quota for the rest. Otherwise Open-Meteo is asked, and Photon too if
+ * Open-Meteo is slow or has nothing (it knows streets and points of interest); `onEarly` gets the offline matches
+ * meanwhile, and the promise resolves with them first and the network's new ones after, so a list on screen only grows
+ * at the bottom.
  */
 export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (places: Place[]) => void): Promise<Place[]> {
   throwIfAborted(signal)

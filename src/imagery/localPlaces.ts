@@ -3,11 +3,11 @@
  * pin without waiting on a network geocoder, which can stall for tens of seconds (Photon, 2026-11-12).
  *
  * It is split so nobody downloads the whole list: a search fetches the one file for its first letters (two, or more
- * where the group is large; at most 800 places, ~1–20 kB compressed), a pin the one 5° tile under it (plus a neighbour near an edge). Files sit under a versioned path that
- * public/_headers caches as immutable, so a returning visitor fetches nothing, and the generated manifest
- * (localPlaces.gen.ts, ~1.5 kB) says which groups exist and which are split, so a request for a file that doesn't
- * exist is rare (a typo) and its 404 is remembered. Each file is fetched once per
- * page and kept in memory (a small LRU), shared by every caller: an abort only stops that caller waiting.
+ * where the group is large; at most 800 places, ~1–20 kB compressed), a pin the one 5° tile under it (plus a neighbour
+ * near an edge). Files sit under a versioned path that public/_headers caches as immutable, so a returning visitor
+ * fetches nothing, and the generated manifest (localPlaces.gen.ts, ~1.5 kB) says which groups exist and which are
+ * split, so a request for a file that doesn't exist is rare (a typo) and its 404 is remembered. Each file is fetched
+ * once per page and kept in memory (a small LRU), shared by every caller: an abort only stops that caller waiting.
  */
 import { haversineKm } from '@/lib/geo'
 import { LOCALE_INFO, type Locale } from '../../api/_lib/i18n/locales'
@@ -160,9 +160,9 @@ const SHORT_NAMES: Record<string, true | readonly Locale[]> = { HK: true, MO: tr
 const PINNED: Record<string, Partial<Record<Locale, string>>> = { PS: { de: 'Palästinensische Autonomiegebiete' } }
 
 /**
- * A country's name as the visitor reads it (geocode.ts displaySublabel): countryName in `locale`, or its CLDR short name
- * for the few countries SHORT_NAMES lists, or the name PINNED fixes. Display only: matching, the stored labels and the usage stats keep
- * countryName's English.
+ * A country's name as the visitor reads it (geocode.ts displaySublabel): countryName in `locale`, or its CLDR short
+ * name for the few countries SHORT_NAMES lists, or the name PINNED fixes. Display only: matching, the stored labels and
+ * the usage stats keep countryName's English.
  */
 export function shownCountryName(cc: string, locale: Locale): string {
   const pinned = PINNED[cc.toUpperCase()]?.[locale]

@@ -9,14 +9,14 @@
  * home, the first-level regions (admin1CodesASCII), the curated landmarks (scripts/landmarks.ts) GeoNames knows (found
  * in allCountries by name, near the landmark's point), the large seas and oceans (countryless features with an English
  * Wikipedia article), the named features at home that the offline list carries (scripts/features.ts: its lakes,
- * castles, islands and airports, Rules.homeFeatures), and the hand-made OVERRIDES and search ALIASES. Countries are not in it: the browser names them
- * (Intl.DisplayNames).
+ * castles, islands and airports, Rules.homeFeatures), and the hand-made OVERRIDES and search ALIASES. Countries are not
+ * in it: the browser names them (Intl.DisplayNames).
  *
- * Usage: NODE_OPTIONS=--max-old-space-size=6000 npm run data:exonyms <dir with the GeoNames downloads>
- *   The dir must hold cities500.zip, admin1CodesASCII.txt, allCountries.zip and alternateNamesV2.zip from
- *   https://download.geonames.org/export/dump/ (~650 MB; needs `unzip` on the PATH). Keep the downloads out of the
- *   repository. Takes ~1 minute and ~3 GB of memory, and prints each table's size; src/imagery/exonymTables.test.ts
- *   checks the size budget.
+ * Usage: NODE_OPTIONS=--max-old-space-size=6000 npm run data:exonyms <dir with the GeoNames downloads> The dir must
+ * hold cities500.zip, admin1CodesASCII.txt, allCountries.zip and alternateNamesV2.zip from
+ * https://download.geonames.org/export/dump/ (~650 MB; needs `unzip` on the PATH). Keep the downloads out of the
+ * repository. Takes ~1 minute and ~3 GB of memory, and prints each table's size; src/imagery/exonymTables.test.ts
+ * checks the size budget.
  *
  * Source: GeoNames (CC BY 4.0).
  */
@@ -67,12 +67,11 @@ const SKIP = new Set(['PPLH', 'PPLQ', 'PPLW', 'PPLCH', 'PPLR'])
 /** Sections of a city: named only when they are as large as a town the table names anywhere. */
 const SECTION = 'PPLX'
 /**
- * Seas, oceans, gulfs, bays and straits with an English Wikipedia article: the well-known ones first, in WELL_KNOWN_WATERS'
- * order (
- * GeoNames' own name counts put the Ligurian, Irminger and Java Seas above the Caspian, the Sea of Azov and the Bay of
- * Bengal), then by how many names GeoNames gives them. Named countryless, as the offline list files most of them; the
- * few it files under a country (the English Channel under GB) take the countryless name too (src/imagery/exonyms.ts,
- * a feature's label).
+ * Seas, oceans, gulfs, bays and straits with an English Wikipedia article: the well-known ones first, in
+ * WELL_KNOWN_WATERS' order ( GeoNames' own name counts put the Ligurian, Irminger and Java Seas above the Caspian, the
+ * Sea of Azov and the Bay of Bengal), then by how many names GeoNames gives them. Named countryless, as the offline
+ * list files most of them; the few it files under a country (the English Channel under GB) take the countryless name
+ * too (src/imagery/exonyms.ts, a feature's label).
  */
 const WATER_CODES = new Set(['OCN', 'SEA', 'GULF', 'BAY', 'STRT'])
 const WELL_KNOWN_WATERS = new Map(

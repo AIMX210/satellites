@@ -5,7 +5,7 @@
  * Open-Meteo, and a Vietnamese one finds the capital Hà Nội before a hamlet of that name.
  *
  * A chunk of its own, loaded with the table (exonyms.ts ensureExonyms) and only in a language that has one: English
- * downloads none of it. The table is indexed once, the first time a search reads it (~900 names: a scan per keystroke
+ * downloads none of it. The table is indexed once, the first time a search reads it (~1,300 names: a scan per keystroke
  * costs well under a millisecond).
  */
 import { currentLocale } from '@/i18n/runtime'
@@ -172,14 +172,14 @@ export function countryAliasesTyped(aliases: Readonly<Record<string, readonly st
 
 /**
  * The places `query` stands for in the table `src`, best first, at most MAX_ALTERNATES: the names that are the query
- * (exact), whose later words are all of it (Hồ Chí Minh for Thành phố Hồ Chí Minh, but not exact: London's airports
- * end with London in Persian, and Shahr-e Qods is not Jerusalem), that start with it, or whose later words start with
- * it (3+ letters), and the `countries` named so (each country's offline key from `countryKey`). The exact ones come
- * first, in the table's order (largest first); then the rest, the language's `home` countries' first (Hà N is Hà Nội
- * before Hà Nam in China, Ки is Київ before Китай), each group in the table's order: the cap must not leave out the
- * capital at home for the first names the table writes abroad. A name two English names share in one country (the city Kyiv and the list's
- * landmark row for "Kiev" are both Киев) is one place, the larger, looked up under each of them (`also`, at most
- * MAX_ALSO more): the table may write first a spelling the list has no row for (a geocoder's).
+ * (exact), whose later words are all of it (Hồ Chí Minh for Thành phố Hồ Chí Minh, but not exact: London's airports end
+ * with London in Persian, and Shahr-e Qods is not Jerusalem), that start with it, or whose later words start with it
+ * (3+ letters), and the `countries` named so (each country's offline key from `countryKey`). The exact ones come first,
+ * in the table's order (largest first); then the rest, the language's `home` countries' first (Hà N is Hà Nội before Hà
+ * Nam in China, Ки is Київ before Китай), each group in the table's order: the cap must not leave out the capital at
+ * home for the first names the table writes abroad. A name two English names share in one country (the city Kyiv and
+ * the list's landmark row for "Kiev" are both Киев) is one place, the larger, looked up under each of them (`also`, at
+ * most MAX_ALSO more): the table may write first a spelling the list has no row for (a geocoder's).
  */
 export function exonymSearch(
   src: string,

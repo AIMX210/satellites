@@ -5,23 +5,24 @@
  * Москва, Hà Nội, تهران, नई दिल्ली.
  *
  * Why these rules:
- *  - Every name ships in its language's chunk and must earn its bytes (owner rule: costs nothing, stays fast). A
- *    Latin-script language writes only the names that differ from the English (München, not Berlin); Cyrillic,
- *    Persian and Hindi write every name, so their tables cover fewer places (RULES: the large towns everywhere, more at
- *    home, every first-level region at home), sized to stay under 20 kB compressed (src/imagery/exonymTables.test.ts:
- *    a table is a chunk of its own, fetched at idle after the landing, never on the first screen).
+ *  - Every name ships in its language's table, a chunk of its own, and must earn its bytes (owner rule: costs nothing,
+ *    stays fast). A Latin-script language writes only the names that differ from the English (München, not Berlin);
+ *    Cyrillic, Persian and Hindi write every name, so their tables cover fewer places (RULES: the large towns
+ *    everywhere, more at home, every first-level region at home), sized to stay under 20 kB compressed
+ *    (src/imagery/exonymTables.test.ts: a table is a chunk of its own, fetched at idle after the landing, never on the
+ *    first screen).
  *  - GeoNames marks few names preferred (Mailand, Londra and Київ are not), and lists historic, colloquial, inflected
  *    and administrative forms beside the name itself (Ленинград, Питер, Киевом, استان کرمانشاه, Thành phố Nam Định). So
  *    pickName takes the preferred name, else the first plain one, else a short one; never a historic or colloquial one;
  *    only in the language's script; and never a form `penalty` marks while a plain one exists.
  *  - The data is not always right for a reader (Mumbai's first Hindi name is बम्बई, Delhi's Persian one is Old Delhi):
- *    OVERRIDES fixes a name by GeoNames id or first-level code, and is the only place a name is written by hand. A wrong
- *    name is fixed there, then the tables are generated again.
+ *    OVERRIDES fixes a name by GeoNames id or first-level code, and is the only place a name is written by hand. A
+ *    wrong name is fixed there, then the tables are generated again.
  *  - A name is the same place's in every language, so one town is one row in the usage stats: a table only displays,
  *    and adds search names (ALIASES: Sài Gòn) that find the place without ever being shown.
  *
- * Pure TypeScript with no Node or DOM dependency: the build script reads the files and calls these, and the app's
- * tests check them.
+ * Pure TypeScript with no Node or DOM dependency: the build script reads the files and calls these, and the app's tests
+ * check them.
  */
 import { placeKey } from '../src/imagery/placeKey'
 
@@ -80,7 +81,8 @@ export interface Rules {
   spelledRegions?: readonly string[]
   /**
    * How many of the named features at home the offline list carries get their names (its lakes, castles, islands,
-   * airports: scripts/features.ts), the best known first; none if unset. A Latin table writes only the ones that differ.
+   * airports: scripts/features.ts), the best known first; none if unset. A Latin table writes only the ones that
+   * differ.
    */
   homeFeatures?: number
   /**
@@ -89,8 +91,8 @@ export interface Rules {
    */
   compounds?: boolean
   /**
-   * Search names in another language's spelling for the large towns at home (Ukrainian: Russian's, Луганск for Луганськ,
-   * as many readers type a town's Russian name): `lang`'s name for each town of `minPop` people, never shown.
+   * Search names in another language's spelling for the large towns at home (Ukrainian: Russian's, Луганск for
+   * Луганськ, as many readers type a town's Russian name): `lang`'s name for each town of `minPop` people, never shown.
    */
   searchAs?: { lang: Lang; minPop: number }
   /**
@@ -303,8 +305,8 @@ export function stripAdmin(name: string, lang: Lang): string {
 }
 
 /**
- * A Persian region is named bare in a where line, as an Iranian or Afghan address writes it (کرج، البرز، ایران): GeoNames
- * writes some with استان (province) or ولایت (Afghan province) and some without.
+ * A Persian region is named bare in a where line, as an Iranian or Afghan address writes it (کرج، البرز، ایران):
+ * GeoNames writes some with استان (province) or ولایت (Afghan province) and some without.
  */
 const PERSIAN_REGION = /^(استان|ولایت) /u
 
@@ -391,7 +393,8 @@ const persianJoins = (s: string) =>
 
 /**
  * Hindi spelling as the Central Hindi Directorate writes it (hi.md §0): a nasal before a consonant of its own class is
- * the anusvara (इन्दौर → इंदौर, हिन्द → हिंद, ताशकन्द → ताशकंद), and क, ख, ग take no nukta (लद्दाख़ → लद्दाख); ज़ and फ़ keep it.
+ * the anusvara (इन्दौर → इंदौर, हिन्द → हिंद, ताशकन्द → ताशकंद), and क, ख, ग take no nukta (लद्दाख़ → लद्दाख); ज़ and
+ * फ़ keep it.
  */
 const hindiForm = (s: string) =>
   s
@@ -634,8 +637,8 @@ export function serializeDisplay(table: DisplayTable, latin: boolean, aliases: r
  */
 export const OVERRIDES: Record<Lang, Record<string, string>> = {
   /**
-   * German: Ukraine's oblasts and capital as docs/i18n/de.md §8 writes them (Kyjiw, Oblast Kyjiw: GeoNames mixes Kiew and
-   * city names), Spain's and France's regions by their German names (GeoNames has Nordkastilien, Neuguitanien), the
+   * German: Ukraine's oblasts and capital as docs/i18n/de.md §8 writes them (Kyjiw, Oblast Kyjiw: GeoNames mixes Kiew
+   * and city names), Spain's and France's regions by their German names (GeoNames has Nordkastilien, Neuguitanien), the
    * Klagemauer; names GeoNames gives that are old, ancient or another language's are removed (Haltern in Westfalen,
    * Tralleis, Gäncä, Merath), and Aarhus is spelt so since 2011.
    */
@@ -992,8 +995,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     /**
      * Native review (2026-11-22): the Persian Gulf as it.md §8 names it, Cadice, the District of Columbia whole, the
      * Altai Republic without an article, the neutral Santa Sofia, Italian exonyms the thresholds or the old-spelling
-     * rule missed (Zara, La Valletta, Coira, Mentone, the bilingual Istrian and Slovene towns, Bengasi, Gedda, Betlemme,
-     * Calcutta), and the scholarly transliterations GeoNames gives (Lipeck, Habarovsk, Vicebsk) removed.
+     * rule missed (Zara, La Valletta, Coira, Mentone, the bilingual Istrian and Slovene towns, Bengasi, Gedda,
+     * Betlemme, Calcutta), and the scholarly transliterations GeoNames gives (Lipeck, Habarovsk, Vicebsk) removed.
      */
     ':Persian Gulf': 'Golfo Persico',
     ':Arabian Gulf': 'Golfo Persico',
@@ -1132,9 +1135,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     ':Sea of Japan': 'Mar del Giappone',
     ':Bay of Biscay': 'Golfo di Biscaglia',
     /**
-     * Second pass over the native review (2026-11-22): Marrakech (GeoNames' Italian name is not kept), Heraklion for the
-     * data's Irákleion, Lago di Ginevra, Friburgo for the Swiss city as for its canton, the Danish capital region and
-     * central Serbia, Ukraine's oblasts as the table writes Kyiv's (Oblast di Kharkiv, in the gazetteer's spelling,
+     * Second pass over the native review (2026-11-22): Marrakech (GeoNames' Italian name is not kept), Heraklion for
+     * the data's Irákleion, Lago di Ginevra, Friburgo for the Swiss city as for its canton, the Danish capital region
+     * and central Serbia, Ukraine's oblasts as the table writes Kyiv's (Oblast di Kharkiv, in the gazetteer's spelling,
      * it.md §17), and the Greenland Sea.
      */
     2542997: 'Marrakech',
@@ -1302,11 +1305,12 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'RU:Yekaterinburg': 'Єкатеринбург',
     "BY:Homyel'": 'Гомель',
     /**
-     * Native review (2026-11-22). Towns GeoNames still names by a former name (Ювілейне for Katerynivka, Юнокомунарівськ
-     * for Bunhe, renamed in 2016) or by a neighbour's (Станично-Луганське), and towns it has no Ukrainian name for, or
-     * too few people (Druzhkivka, Kadiyivka); Delhi, not Old Delhi; the Golden Gate Bridge as uk.md §4.4 names it; the
-     * standard spellings where GeoNames' first is another (Сан-Франциско, Братислава, Брюссель, Макао; abroad, г for
-     * ґ by Правопис §122); the capitals and large cities GeoNames has no Ukrainian name for; and Chernobyl's plant.
+     * Native review (2026-11-22). Towns GeoNames still names by a former name (Ювілейне for Katerynivka,
+     * Юнокомунарівськ for Bunhe, renamed in 2016) or by a neighbour's (Станично-Луганське), and towns it has no
+     * Ukrainian name for, or too few people (Druzhkivka, Kadiyivka); Delhi, not Old Delhi; the Golden Gate Bridge as
+     * uk.md §4.4 names it; the standard spellings where GeoNames' first is another (Сан-Франциско, Братислава,
+     * Брюссель, Макао; abroad, г for ґ by Правопис §122); the capitals and large cities GeoNames has no Ukrainian name
+     * for; and Chernobyl's plant.
      */
     688073: 'Бунге',
     8354605: 'Святопетрівське',
@@ -1676,9 +1680,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
      * Third review (2026-11-22). The geocoders' "Republic of Crimea" is Крым (ru.md §8), and Crimea's resort towns; the
      * Ukrainian towns the news names whose GeoNames populations are stale (Краматорск, Славянск, Буча, Ирпень); the
      * tourist places, the best-known cities of Europe and the US, and the home towns under 100,000 Russian readers
-     * search; the world's best-known landmarks; Gaza, the Gaza Strip and the West Bank; the state of Washington as ru.md
-     * §4.3 writes it, and New York's as a state on its own row; Dubai's airport as short as the others, the Gateway Arch
-     * as ru.wikipedia names it; two home regions as Open-Meteo spells them.
+     * search; the world's best-known landmarks; Gaza, the Gaza Strip and the West Bank; the state of Washington as
+     * ru.md §4.3 writes it, and New York's as a state on its own row; Dubai's airport as short as the others, the
+     * Gateway Arch as ru.wikipedia names it; two home regions as Open-Meteo spells them.
      */
     'UA:*Republic of Crimea': 'Крым',
     713513: 'Алушта',
@@ -2007,9 +2011,10 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'AF:Ghazni': 'غزنی',
     /**
      * Native review (2026-11-22). Lviv by its Ukrainian-based name (fa.md §8.9), Bombay and Casablanca as Persian
-     * writes them, Shahr-e Qods by its full name (bare قدس reads as Jerusalem), Iranian towns by their official spellings
-     * and half-spaces, Afghan and Tajik names in Dari and Tajik Persian, misspelt or cut capitals (مونته‌ویدئ), and the
-     * capitals and cities Persian readers know that GeoNames has no Persian name for, or the thresholds miss.
+     * writes them, Shahr-e Qods by its full name (bare قدس reads as Jerusalem), Iranian towns by their official
+     * spellings and half-spaces, Afghan and Tajik names in Dari and Tajik Persian, misspelt or cut capitals
+     * (مونته‌ویدئ), and the capitals and cities Persian readers know that GeoNames has no Persian name for, or the
+     * thresholds miss.
      */
     702550: 'لویو',
     1275339: 'بمبئی',
@@ -2088,8 +2093,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'AF:Aībak': 'ایبک',
     'AF:Tarinkot': 'ترینکوت',
     /**
-     * Second pass over the native review (2026-11-22): Omsk and Los Angeles as Persian writes them (one spelling for the
-     * city and its airport), the capital and the large cities GeoNames has no Persian name for (Port Vila, Nagoya,
+     * Second pass over the native review (2026-11-22): Omsk and Los Angeles as Persian writes them (one spelling for
+     * the city and its airport), the capital and the large cities GeoNames has no Persian name for (Port Vila, Nagoya,
      * Surat, Kano, Xiamen, Diyarbakır), Crimea, and Washington, D.C. as the curated places write it.
      */
     'RU:Omsk': 'اومسک',
@@ -2106,8 +2111,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
      * Third review (2026-11-22). The war-zone places fa.md §8.2 lists: Gaza, the Gaza Strip, the West Bank and Gaza's
      * towns, and Ukraine's cities in the news (Chernobyl is §8.9's own example); Iran's, Afghanistan's and Tajikistan's
      * landmarks and features, which GeoNames names in Persian rarely or not at all; the seas Persian readers know;
-     * Bokhtar is Bactria's باختر, Almaty آلماتی (not Alma-Ata's), Shymkent شمکند, as Persian Wikipedia writes them; and the
-     * spellings the review corrected (تورینگن, ایلینوی, خاروغ, لشکرگاه, اوخوتسک, نووگورود, غازی‌آنتپ, the ezafe of تنگهٔ).
+     * Bokhtar is Bactria's باختر, Almaty آلماتی (not Alma-Ata's), Shymkent شمکند, as Persian Wikipedia writes them; and
+     * the spellings the review corrected (تورینگن, ایلینوی, خاروغ, لشکرگاه, اوخوتسک, نووگورود, غازی‌آنتپ, the ezafe of
+     * تنگهٔ).
      */
     'PS:Gaza': 'غزه',
     'PS.GZ': 'نوار غزه',
@@ -2189,8 +2195,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
   },
   /**
    * Hindi: the modern official names where GeoNames' first Hindi name is the old one (मुंबई, not बम्बई; बेंगलुरु, not
-   * बंगलौर; प्रयागराज, not इलाहाबाद), the common spellings of Moscow and Paris, and the states and territories it has no
-   * Hindi name for, in the Central Hindi Directorate's spelling (anusvara: झारखंड, आंध्र प्रदेश).
+   * बंगलौर; प्रयागराज, not इलाहाबाद), the common spellings of Moscow and Paris, and the states and territories it has
+   * no Hindi name for, in the Central Hindi Directorate's spelling (anusvara: झारखंड, आंध्र प्रदेश).
    */
   hi: {
     1275339: 'मुंबई',
@@ -2337,8 +2343,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'NP:Mount Everest': 'माउंट एवरेस्ट',
     'IN.22': 'पुडुचेरी',
     /**
-     * Second pass over the native review (2026-11-22): Manchester as the Hindi press spells it, Gurgaon's landmark row as
-     * the city is now named, Aurangabad as its English label still has it (its renaming, like Port Blair's, is the
+     * Second pass over the native review (2026-11-22): Manchester as the Hindi press spells it, Gurgaon's landmark row
+     * as the city is now named, Aurangabad as its English label still has it (its renaming, like Port Blair's, is the
      * owner's to decide), Washington, D.C. as hi.md's chip writes it, and the regions of Canada, Australia, the UK and
      * Nepal GeoNames has no Hindi name for.
      */
@@ -2366,11 +2372,11 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'NP.6': 'कर्णाली प्रदेश',
     'NP.7': 'सुदूरपश्चिम प्रदेश',
     /**
-     * Third review (2026-11-22). The US states as the curated chips spell them (एरिज़ोना, नेवादा, यूटा, ओरेगन, कैनसस; GeoNames
-     * has the candra-e and old word-for-word forms: टॅक्सस, नया मेक्सिको) and New York's as a state on its own row; Rio,
-     * Wuhan and Tel Aviv as the Hindi press writes them (the chip writes रियो डी जनेरियो); Leh and Kavaratti, missing
-     * though GeoNames names them; Venice and Cape Town as the chips write them; the nukta on ज़ and फ़ (hi.md §0); and the
-     * world's best-known landmarks.
+     * Third review (2026-11-22). The US states as the curated chips spell them (एरिज़ोना, नेवादा, यूटा, ओरेगन, कैनसस;
+     * GeoNames has the candra-e and old word-for-word forms: टॅक्सस, नया मेक्सिको) and New York's as a state on its own
+     * row; Rio, Wuhan and Tel Aviv as the Hindi press writes them (the chip writes रियो डी जनेरियो); Leh and Kavaratti,
+     * missing though GeoNames names them; Venice and Cape Town as the chips write them; the nukta on ज़ and फ़ (hi.md
+     * §0); and the world's best-known landmarks.
      */
     'US.TX': 'टेक्सास',
     'US.NM': 'न्यू मैक्सिको',

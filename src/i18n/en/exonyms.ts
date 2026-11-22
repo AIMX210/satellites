@@ -20,14 +20,13 @@ export interface ExonymsNamespace {
    * The table: countries apart by `|`, each `<ISO code>:` then its names apart by `;`, each `<English name>=<shown
    * name>`, a first-level region's starting with `*`, and a landmark's or natural feature's starting with `^` where a
    * town has the same English name (`^White House=Nhà Trắng`: White House, Tennessee keeps its own), and a region's own
-   * label starting with `#` where it differs from its name in a where line (a province named like its capital:
-   * `#Qom Province=استان قم` beside `*Qom Province=قم`, so a search lists قم and استان قم, and a town there reads
-   * «… · قم، ایران»). The English name
-   * is matched as typed in a search (case, accents and punctuation aside). A country code of nothing (`:Sea of
-   * Japan=동해`) holds names for places that have no country (a sea). An entry starting with `~` is a search name
-   * only, never shown (`~Ho Chi Minh City=Sài Gòn`; `~*` for a region's). Each country's names come largest first,
-   * which is how a search through them ranks. No name may hold `|`, `;`, `=`, `:` or `~`, nor start with `*`, `^` or `#`.
-   * E.g. `DE:Munich=München;Cologne=Köln;*Bavaria=Bayern|AT:Vienna=Wien`.
+   * label starting with `#` where it differs from its name in a where line (a province named like its capital: `#Qom
+   * Province=استان قم` beside `*Qom Province=قم`, so a search lists قم and استان قم, and a town there reads «… · قم،
+   * ایران»). The English name is matched as typed in a search (case, accents and punctuation aside). A country code of
+   * nothing (`:Sea of Japan=동해`) holds names for places that have no country (a sea). An entry starting with `~` is a
+   * search name only, never shown (`~Ho Chi Minh City=Sài Gòn`; `~*` for a region's). Each country's names come largest
+   * first, which is how a search through them ranks. No name may hold `|`, `;`, `=`, `:` or `~`, nor start with `*`,
+   * `^` or `#`. E.g. `DE:Munich=München;Cologne=Köln;*Bavaria=Bayern|AT:Vienna=Wien`.
    */
   names: string
   /**
