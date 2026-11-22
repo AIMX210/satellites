@@ -156,10 +156,19 @@ export function shownCountryName(cc: string, locale: Locale): string {
  * `alternates` are the places the query names in the visitor's language (./exonymSearch.ts: Москва
  * for Moscow, Hà Nội for Hanoi): each is looked up in its English name's file, by name and country, and ranked as the
  * place itself would be (its people, the exact bonus if the query is its whole name), so the capital Hà Nội leads the
- * hamlet of that name. A query with no Latin key (Cyrillic, Persian, Devanagari) is answered by them alone; with
- * none, [].
+ * hamlet of that name. Three rules settle the names a language shares between places: a place named exactly so in
+ * the language's `home` countries leads one abroad (HOME_BONUS: Thái Nguyên is the Vietnamese city, not Taiyuan); a town leads the region
+ * of the same name (Qom the city, then the province); and a place whose name is the query as typed, accents and all,
+ * leads one whose name only folds to it (Nha Trang the city, not Nhà Trắng, the White House). A query with no Latin
+ * key (Cyrillic, Persian, Devanagari) is answered by the alternates alone; with none, [].
  */
-export async function searchLocal(query: string, signal?: AbortSignal, limit = 6, alternates: readonly Alternate[] = []): Promise<LocalPlace[]> {
+export async function searchLocal(
+  query: string,
+  signal?: AbortSignal,
+  limit = 6,
+  alternates: readonly Alternate[] = [],
+  home: readonly string[] = [],
+): Promise<LocalPlace[]> {
   throwIfAborted(signal)
   const q = placeKey(query)
   const latin = !!shardOf(q)
@@ -178,7 +187,7 @@ export async function searchLocal(query: string, signal?: AbortSignal, limit = 6
   const hits: { r: LocalPlace; score: number; exact?: boolean }[] = []
   for (const r of rowsOf(towns)) {
     const exact = r.key === q || (q.startsWith(`${r.key} `) && inContext(q.slice(r.key.length + 1), r))
-    if (exact || r.key.startsWith(q)) hits.push({ r, score: r.p + (exact ? EXACT_BONUS : 0), exact })
+    if (exact || r.key.startsWith(q)) hits.push({ r, score: r.p + (exact ? EXACT_BONUS + (home.includes(r.cc) ? HOME_BONUS : 0) : 0), exact })
   }
   for (const r of latin ? rowsOf(marks) : []) {
     const aliases = r.aliases ?? []
@@ -188,15 +197,29 @@ export async function searchLocal(query: string, signal?: AbortSignal, limit = 6
     else if (q.length >= 3 && (aliases.some((k) => k.startsWith(q)) || keys.some((k) => k.split(' ').slice(1).some((w) => w.startsWith(q)))))
       hits.push({ r, score: LANDMARK_WORD_SCORE })
   }
-  alternates.forEach((a, i) => {
-    const bonus = a.exact ? EXACT_BONUS : 0
+  // The query as typed, accents and all: a place named exactly so outranks a name that only folds to it.
+  const typed = verbatim(query)
+  const asTyped = hits.some((h) => h.exact && verbatim(h.r.name) === typed)
+  const townScore = new Map<string, number>()
+  // Towns first, so a region named like one knows its score.
+  const order = alternates.map((a, i) => [a, i] as const).sort(([a], [b]) => Number(a.kind !== 'town') - Number(b.kind !== 'town'))
+  order.forEach(([a, i]) => {
+    const exact = a.exact && (!asTyped || verbatim(a.shown) === typed)
+    const bonus = exact ? EXACT_BONUS + (home.includes(a.cc) ? HOME_BONUS : 0) : 0
+    const same = `${a.cc}|${verbatim(a.shown)}`
     for (const r of rowsOf(named[i]))
-      if (r.key === a.key && r.cc === a.cc && KINDS[a.kind].includes(r.kind)) hits.push({ r, score: r.p + bonus, exact: a.exact })
+      if (r.key === a.key && r.cc === a.cc && KINDS[a.kind].includes(r.kind)) {
+        let score = r.p + bonus
+        // A region named like a town of its country follows the town (both show the same name).
+        if (a.kind === 'town') townScore.set(same, Math.max(townScore.get(same) ?? -Infinity, score))
+        else if (a.kind === 'region' && townScore.has(same)) score = Math.min(score, townScore.get(same)! - 1)
+        hits.push({ r, score, exact })
+      }
     if (a.kind === 'town')
       // A landmark by the visitor's name for it ranks as by another of its names: in full as a large city, else as a
       // word of it (Моск finds Москва before Московский Кремль, as "mosc" finds Moscow before the Kremlin).
       for (const r of rowsOf(marks))
-        if (r.key === a.key && r.cc === a.cc) hits.push({ r, score: a.exact ? LANDMARK_SCORE + EXACT_BONUS : LANDMARK_WORD_SCORE, exact: a.exact })
+        if (r.key === a.key && r.cc === a.cc) hits.push({ r, score: exact ? LANDMARK_SCORE + EXACT_BONUS : LANDMARK_WORD_SCORE, exact })
   })
   // Files are largest first and the sort is stable, so equal scores stay largest first.
   const seen = new Set<string>()
@@ -217,6 +240,11 @@ const KINDS: Record<Alternate['kind'], readonly LocalPlace['kind'][]> = { town: 
 
 /** An exact name's head start, on the log scale of `p` (20 per factor of ten): a hundred times the people. */
 const EXACT_BONUS = 40
+/** And a place at home's, over a place abroad that the language names alike: a hundred times the people again. */
+const HOME_BONUS = 40
+
+/** A name as typed, accents and all (case and spacing aside): what an alternate's shown name is compared with. */
+const verbatim = (s: string) => s.normalize('NFC').toLowerCase().replace(/[\s\p{P}]+/gu, ' ').trim()
 /** A landmark named from its start ranks as a city of ~30 million; from a later word, as a town of ~300,000. */
 const LANDMARK_SCORE = 150
 const LANDMARK_WORD_SCORE = 110

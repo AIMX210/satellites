@@ -138,6 +138,9 @@ export function exonym(name: string, cc: string | undefined, as: NameAs): string
   return t.features.get(here) ?? t.towns.get(here) ?? t.towns.get(`|${key}`) ?? name
 }
 
+/** The active language's own countries (its namespace's `home`): a name they share with a place abroad is theirs first. */
+export const exonymHome = (): readonly string[] => (activeSource(false) ? (msgs(enExonyms).home ?? []) : [])
+
 /** Does the active language name countries by the browser's names on their own label too (its namespace says so)? */
 export const namesCountries = (): boolean => !!msgs(enExonyms).countries && !!activeTable(true)
 

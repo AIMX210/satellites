@@ -13,7 +13,7 @@ import faNames from '@/i18n/fa/exonyms.gen'
 import hiNames from '@/i18n/hi/exonyms.gen'
 import { exonymSearch, typedKey } from './exonymSearch'
 import { displayLabel, searchPlaces } from './geocode'
-import { ensureExonyms, exonymAlternates } from './exonyms'
+import { ensureExonyms, exonymAlternates, exonymHome } from './exonyms'
 import { countryName, searchLocal } from './localPlaces'
 
 const FILES = import.meta.glob<string>('/public/places/**/*.txt', { query: '?raw', import: 'default' })
@@ -48,6 +48,19 @@ describe('typedKey', () => {
     expect(typedKey('می\u200cشود')).toBe(typedKey('میشود')) // the zero-width non-joiner
     expect(typedKey('ग़ाज़ियाबाद')).toBe(typedKey('गाजियाबाद')) // the nukta
     expect(typedKey('मुंबई')).not.toBe(typedKey('मंबई')) // vowel signs kept
+    // As keyboards type them: Persian without its madda or hamza, Ukrainian on a Russian layout or with a Latin i,
+    // Hindi with a half nasal or chandrabindu for the anusvara, and ॉ for ा.
+    expect(typedKey('اسلام اباد')).toBe(typedKey('اسلام آباد'))
+    expect(typedKey('اذربایجان')).toBe(typedKey('آذربایجان'))
+    expect(typedKey('قایم شهر')).toBe(typedKey('قائم شهر'))
+    expect(typedKey('харкив')).toBe(typedKey('Харків'))
+    expect(typedKey('Кривий Рiг')).toBe(typedKey('Кривий Ріг'))
+    expect(typedKey('Белгород')).toBe(typedKey('Бєлгород'))
+    expect(typedKey('मुम्बई')).toBe(typedKey('मुंबई'))
+    expect(typedKey('चण्डीगढ़')).toBe(typedKey('चंडीगढ़'))
+    expect(typedKey('रांची')).toBe(typedKey('राँची'))
+    expect(typedKey('मास्को')).toBe(typedKey('मॉस्को'))
+    expect(typedKey('Hanoi')).toBe('hanoi') // Latin stays Latin
   })
 })
 
@@ -59,15 +72,20 @@ describe('exonymSearch', () => {
     const find = (q: string) => exonymSearch(T, q, key).map((a) => `${a.cc}:${a.key}:${a.kind}${a.exact ? '!' : ''}`)
     expect(find('Hà Nội')).toEqual(['VN:hanoi:town!', 'VN:hanoi:region!'])
     expect(find('ha noi')).toEqual(['VN:hanoi:town!', 'VN:hanoi:region!'])
-    expect(find('Hồ Chí Minh')).toEqual(['VN:ho chi minh city:town!']) // the name after its class noun
+    expect(find('Hồ Chí Minh')).toEqual(['VN:ho chi minh city:town']) // the name after its class noun, not whole
     expect(find('Sài Gòn')).toEqual(['VN:ho chi minh city:town!'])
     expect(find('ha')).toEqual(['VN:hanoi:town', 'VN:hanoi:region', 'CN:hainan:town'])
     expect(find('xyz')).toEqual([])
   })
 
+  it('finds a German name typed without its umlauts', () => {
+    const r = exonymSearch('DE:Cologne=Köln|VN:Thai Nguyen=Thái Nguyên', 'Koeln', key)
+    expect(r).toEqual([{ key: 'cologne', cc: 'DE', kind: 'town', exact: true, shown: 'Köln' }])
+  })
+
   it('finds the countries the browser names in the language', () => {
-    const r = exonymSearch(T, 'Đức', key, [{ compact: typedKey('Đức'), cc: 'DE' }])
-    expect(r).toEqual([{ key: 'de', cc: 'DE', kind: 'country', exact: true }])
+    const r = exonymSearch(T, 'Đức', key, [{ compact: typedKey('Đức'), cc: 'DE', shown: 'Đức' }])
+    expect(r).toEqual([{ key: 'de', cc: 'DE', kind: 'country', exact: true, shown: 'Đức' }])
   })
 })
 
@@ -88,6 +106,18 @@ describe('searching in the visitor’s own names (real data)', () => {
     const hcmc = await searchPlaces('Sài Gòn')
     expect(hcmc[0]).toMatchObject({ label: 'Ho Chi Minh City', countryCode: 'vn' })
     expect(displayLabel(hcmc[0])).toBe('Thành phố Hồ Chí Minh')
+  })
+
+  it('settles a name shared by places: home first, the place named as typed, the town before its region', async () => {
+    serveFiles()
+    await as('vi')
+    const first = async (q: string) => (await searchLocal(q, undefined, 6, exonymAlternates(q, countryName), exonymHome()))[0]
+    expect(await first('Thái Nguyên')).toMatchObject({ cc: 'VN' }) // not Taiyuan, which Vietnamese also calls so
+    expect(await first('thai nguyen')).toMatchObject({ cc: 'VN' })
+    expect(await first('Nha Trang')).toMatchObject({ name: 'Nha Trang', cc: 'VN' }) // not Nhà Trắng, the White House
+    expect(await first('Luân Đôn')).toMatchObject({ name: 'London', cc: 'GB' }) // not Tower Bridge, Cầu Tháp Luân Đôn
+    await as('fa', faNames)
+    expect(await first('لندن')).toMatchObject({ name: 'London', cc: 'GB' }) // not Heathrow, فرودگاه هیترو لندن
   })
 
   it('answers a Cyrillic query offline when the table knows the place, and asks the network when it does not', async () => {

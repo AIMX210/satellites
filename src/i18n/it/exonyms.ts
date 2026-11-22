@@ -9,5 +9,5 @@
 import type en from '../en/exonyms'
 import names from './exonyms.gen'
 
-const exonyms: typeof en = { names, countries: true }
+const exonyms: typeof en = { names, countries: true, home: ['IT', 'SM', 'VA'] }
 export default exonyms

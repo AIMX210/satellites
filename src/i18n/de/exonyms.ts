@@ -15,6 +15,7 @@ let loading: Promise<void> | undefined
 const exonyms: typeof en = {
   names: '',
   countries: true,
+  home: ['DE', 'AT', 'CH', 'LI'],
   load: () =>
     (loading ??= import('./exonyms.gen').then(
       (m) => void (exonyms.names = m.default),
