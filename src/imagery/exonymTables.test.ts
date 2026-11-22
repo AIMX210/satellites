@@ -33,6 +33,8 @@ import ruNs from '@/i18n/ru/exonyms'
 import viNs from '@/i18n/vi/exonyms'
 import faNs from '@/i18n/fa/exonyms'
 import hiNs from '@/i18n/hi/exonyms'
+import hiPass from '@/i18n/hi/pass'
+import { plain } from '../../api/_lib/i18n/parts'
 import { parseExonyms } from './exonyms'
 import { placeKey } from './placeKey'
 
@@ -362,6 +364,24 @@ describe('the generated tables', () => {
       expect(crimea(src)).toEqual([krim, krim, krim])
     // BBC Hindi's Gaza and GeoNames' West Bank find them, and are never shown.
     expect([hi.includes('~Gaza=गज़ा'), hi.includes('~*West Bank=पश्चिमी तट')]).toEqual([true, true])
+  })
+
+  it('never puts the Hindi swath beside the place’s name, which may be the Gaza Strip, गाज़ा पट्टी (hi.md §8)', () => {
+    const gaza = parseExonyms(hi).regions.get(`PS|${placeKey('Gaza Strip')}`) ?? ''
+    expect(gaza).toContain('पट्टी')
+    // Every pass sentence that is given the place, as the pass paragraph would say it for a Gaza Strip search.
+    const o = { place: gaza, sat: 'Flock 4', sensor: 'VIIRS', swathKm: 32, deg: 12.5, gsdM: 3, dark: false }
+    const at = { ...o, openArchive: false, time: '10:52', zone: 'IST', heading: 'n' as const }
+    const said = [
+      hiPass.could.insideSwath(at),
+      hiPass.could.radar(at),
+      hiPass.could.camera(at),
+      hiPass.mosaic(at),
+      hiPass.radarImaged(at),
+      hiPass.geo.reached(at),
+    ]
+    const twice = said.flatMap((r) => plain(r).split('।')).filter((s) => s.split('पट्टी').length > 2)
+    expect(twice).toEqual([])
   })
 
   it('name Vietnam’s provinces under the geocoders’ spellings, so a where line says a city once (pre-ship)', () => {

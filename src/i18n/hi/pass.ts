@@ -8,8 +8,9 @@
  *    and «वह» points back to it. Wherever the English says "watched" or "imaged", the verb takes «ने» and a «को» object,
  *    so it agrees with nothing.
  *  - The place never governs a verb: it is followed by «को», «का», «तक», «के ऊपर से», and «यहाँ», «इस जगह» point
- *    back to it. "The place was inside its swath" becomes «उसकी पट्टी [PLACE] के ऊपर से गुज़री» (the swath, our own
- *    noun, is the subject, as in the likely verdict), or «यह जगह … थी».
+ *    back to it. "The place was inside its swath" becomes «उसके कैमरे की पट्टी इस जगह के ऊपर से गुज़री» (the swath,
+ *    our own noun, is the subject, in the likely verdict's words), or «यह जगह … थी». Never the place's own name beside
+ *    the swath: the Gaza Strip is «गाज़ा पट्टी» (hi.md §8).
  *  - The English one-sentence "crossed …, moving south at 7.46 km/s" is two Hindi sentences, as a Hindi report would
  *    write it. The clock opens the sentence («16:14:21 UTC पर Sentinel-2C …»): after the name it would run into a
  *    name that ends in a number («Landsat 9 16:14»). A clock takes «पर»; directions use one word table with three
@@ -151,9 +152,9 @@ const pass: typeof en = {
       ...(o.offset ? [' वह यहाँ से ', km(o.offset.km), ` ${WORD[o.offset.dir]} में था।`] : [' वह ठीक ऊपर था।']),
     ],
     insideSwath: (o: { place: string; swathKm: number }): Rich => [
-      'उसकी ',
+      'उसके कैमरे की ',
       km(o.swathKm),
-      ` चौड़ी पट्टी ${o.place} के ऊपर से गुज़री। उसका संचालक यह नहीं बताता कि उपग्रह ने कहाँ की तस्वीरें लीं, इसलिए हम नहीं जान सकते कि उसने यहाँ की तस्वीर ली या नहीं।`,
+      ' चौड़ी पट्टी इस जगह के ऊपर से गुज़री। उसका संचालक यह नहीं बताता कि उपग्रह ने कहाँ की तस्वीरें लीं, इसलिए हम नहीं जान सकते कि उसने यहाँ की तस्वीर ली या नहीं।',
     ],
     radar: (o: { place: string; deg?: number; openArchive: boolean }): Rich => [
       'रडार बादलों और अंधेरे के पार देखता है। वह ',

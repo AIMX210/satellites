@@ -315,7 +315,7 @@ The other sentences:
 | `likely.crossed` | `16:14 EST पर Landsat 9 ठीक ऊपर से गुज़रा। वह 705 किमी की ऊँचाई पर था, और यह जगह उसकी 185 किमी चौड़ी पट्टी के भीतर थी।` |
 | `likely.dark` | `यहाँ अंधेरा था। मौसम इमेजर रात में भी इन्फ्रारेड में स्कैन करते रहते हैं, इसलिए उसने आपके बादल देखे, आपकी सड़कें नहीं।` |
 | `could.withinView` | `10:52 EST पर WorldView Legion 4 पहुँच के दायरे में आया। वह यहाँ से 140 किमी पूर्व में था।` / overhead: `… पहुँच के दायरे में आया। वह ठीक ऊपर था।` (the verdict's verb, then where it was; `वह ठीक ऊपर था`, not a second `गुज़रा`, which the swath's `गुज़री` follows) |
-| `could.insideSwath` | `उसकी 32 किमी चौड़ी पट्टी Waterloo के ऊपर से गुज़री। उसका संचालक यह नहीं बताता कि उपग्रह ने कहाँ की तस्वीरें लीं, इसलिए हम नहीं जान सकते कि उसने यहाँ की तस्वीर ली या नहीं।` |
+| `could.insideSwath` | `उसके कैमरे की 32 किमी चौड़ी पट्टी इस जगह के ऊपर से गुज़री। उसका संचालक यह नहीं बताता कि उपग्रह ने कहाँ की तस्वीरें लीं, इसलिए हम नहीं जान सकते कि उसने यहाँ की तस्वीर ली या नहीं।` |
 | `could.radar` | `रडार बादलों और अंधेरे के पार देखता है। वह एक तरफ़ 38.2° मुड़कर Waterloo की रडार तस्वीर ले सकता था। हमें इस उड़ान में ली गई इस जगह की कोई प्रकाशित तस्वीर नहीं मिली।` ("pointing": a steerable radar turns, as a steerable camera does; "mapped" is `रडार तस्वीर ले सकता था`, never `नक्शा बना सकता था`, which is drawing a map) |
 | `could.camera` | `वह सीधे नीचे से 24.1° मुड़कर Waterloo को देख सकता था। हम नहीं जान सकते कि उसने देखा या नहीं।` / straight down: `वह बिना मुड़े ही Waterloo को देख सकता था। …` |
 | `geo.sits` | `Meteosat-12 ऊपर से गुज़रता नहीं। वह 0.2°W पर भूमध्य रेखा से 35,786 किमी ऊपर टिका रहता है और हर 10 मिनट में अपने नीचे की धरती का पूरा चेहरा स्कैन करता है।` |
@@ -327,9 +327,10 @@ The other sentences:
 
 `likely.crossed`'s "inside its swath" makes our own noun the subject of `थी`, which agrees with `जगह` (f): the frame
 says `यह जगह`, never `Waterloo थी`. `could.insideSwath`, whose English starts with the place, makes the swath the subject
-and says what the likely verdict says, `पट्टी … के ऊपर से गुज़री`. Never `पट्टी ने … को ढका`: `ढकना` is to cover with a
-lid or a cloth, and no Hindi writer says a strip of ground covered a town (clouds do cover: `इस जगह को बादलों ने ढक लिया`
-stays).
+and says what the likely verdict's definition says, `कैमरे की पट्टी इस जगह के ऊपर से गुज़री`: `इस जगह`, not the place's
+name, which may be `गाज़ा पट्टी` beside our `पट्टी` (§8; the paragraph's first sentence already says `यहाँ`). Never
+`पट्टी ने … को ढका`: `ढकना` is to cover with a lid or a cloth, and no Hindi writer says a strip of ground covered a town
+(clouds do cover: `इस जगह को बादलों ने ढक लिया` stays).
 
 After `उसका संचालक`, name the camera or the satellite again (`कि कैमरे ने इधर देखा`, `कि उपग्रह ने कहाँ की तस्वीरें
 लीं`): a bare `उसने` or `वह` there is read as the operator.
@@ -856,10 +857,12 @@ Strategies, in order:
   find them in a search, and are never shown. Ukraine and Lebanon are countries: the browser names them.
 - **`पट्टी` is also the Gaza Strip.** Our swath is `पट्टी`, and Hindi calls the Gaza Strip `गाज़ा पट्टी`. Never put both
   in one authored sentence. The share card prints the place's English label (the owner's call), so a Gaza search's
-  likely card reads `Gaza Strip के ऊपर से · Sentinel-2C की पट्टी गुज़री।`; the app names the place in Hindi, so a
-  string with [PLACE] beside the swath reads both for a Gaza Strip search: `pass.could.insideSwath` (`उसकी … चौड़ी
-  पट्टी गाज़ा पट्टी के ऊपर से गुज़री।`) is to say `कैमरे की पट्टी` (open). A new string that names Gaza and a swath
-  together says `कैमरे की पट्टी`, or rewrites the swath away.
+  likely card reads `Gaza Strip के ऊपर से · Sentinel-2C की पट्टी गुज़री।`. The app names the place in Hindi (the
+  table's `गाज़ा पट्टी`), so a string with [PLACE] beside the swath would read both for a Gaza Strip search:
+  `pass.could.insideSwath` said `उसकी … चौड़ी पट्टी गाज़ा पट्टी के ऊपर से गुज़री।` until the pre-ship review
+  (2026-11-22), and now says `उसके कैमरे की … चौड़ी पट्टी इस जगह के ऊपर से गुज़री।`. A new string that has the swath
+  points to the place with `इस जगह` or `यहाँ`, never [PLACE], and calls the swath `कैमरे की पट्टी` (a test holds the
+  pass catalog to this: src/imagery/exonymTables.test.ts).
 
 ## 9. Pitfalls and the reviewer's checklist
 
