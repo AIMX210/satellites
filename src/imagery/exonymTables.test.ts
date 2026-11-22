@@ -317,6 +317,10 @@ describe('the generated tables', () => {
       ['गाज़ा', 'गाज़ा पट्टी', 'वेस्ट बैंक'],
       ['क्रीमिया', 'क्रीमिया', 'क्रीमिया'],
     ])
+    expect([zones(vi), crimea(vi)]).toEqual([
+      ['Gaza', 'Dải Gaza', 'Bờ Tây'],
+      ['Crimea', 'Crimea', 'Crimea'],
+    ])
     // BBC Hindi's Gaza and GeoNames' West Bank find them, and are never shown.
     expect([hi.includes('~Gaza=गज़ा'), hi.includes('~*West Bank=पश्चिमी तट')]).toEqual([true, true])
   })

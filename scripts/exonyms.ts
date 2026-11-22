@@ -226,7 +226,7 @@ export const RULES: Record<Lang, Rules> = {
     abroad: LATIN_ABROAD,
     homeMinPop: 5_000,
     near: { countries: ['CN', 'LA', 'KH', 'TH'], minPop: 100_000 },
-    regionsAbroad: ['CN', 'LA', 'KH', 'US', 'GB', 'TW'],
+    regionsAbroad: ['CN', 'LA', 'KH', 'US', 'GB', 'TW', 'PS'],
     waters: 50,
     ownNamesakes: ['CN', 'TW'],
     homeFeatures: 2_000,
@@ -1979,6 +1979,17 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'KH:*Phnom Penh': '',
     1815577: 'Trường Sa',
     ':Tyrrhenian Sea': 'Biển Tyrrhenian',
+    /**
+     * Pre-ship review (2026-11-22). The time-lapse's war zones as vi.md §8 names them: the Gaza Strip and the West Bank
+     * (Gaza, Kyiv, Kharkiv and Odesa keep their own names, and Ukraine and Lebanon are countries, which the browser
+     * names), and Crimea as Crimea under each of the geocoders' names for it (Photon's "Republic of Crimea" most often;
+     * GeoNames' Cộng hòa Tự trị Krym is the qualifier vi.md rules out).
+     */
+    'PS.GZ': 'Dải Gaza',
+    'PS.WE': 'Bờ Tây',
+    'UA.11': 'Crimea',
+    'UA:*Autonomous Republic of Crimea': 'Crimea',
+    'UA:*Republic of Crimea': 'Crimea',
   },
   /**
    * Persian: Delhi is دهلی (GeoNames' first Persian name for it is Old Delhi), Gorgan گرگان; the Persian Gulf is
