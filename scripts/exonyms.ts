@@ -236,13 +236,15 @@ export function persianForm(s: string): string {
 const ukApostrophe = (s: string) => s.replace(/['ʼ]/g, '’')
 
 /**
- * A name as the language's table writes it: Unicode normalization, Persian letter forms, the Cyrillic apostrophe, no
- * stress marks (GeoNames marks the stress on a few names), and a region's class word in lower case as Russian and
- * Ukrainian write it (GeoNames writes «Свердловская Область»).
+ * A name as the language's table writes it: Unicode normalization, Persian letter forms, Hindi without joiners, the
+ * Cyrillic apostrophe, no stress marks (GeoNames marks the stress on a few names), and a region's class word in lower
+ * case as Russian and Ukrainian write it (GeoNames writes «Свердловская Область»).
  */
 export function cleanName(name: string, lang: Lang): string {
   const s = name.normalize('NFC').trim()
   if (lang === 'fa') return persianForm(s)
+  // GeoNames spells a few Hindi names with zero-width joiners that force half forms (Minsk): the plain spelling.
+  if (lang === 'hi') return s.replace(/\u200d/g, '')
   if (lang === 'uk' || lang === 'ru')
     return ukApostrophe(s)
       .replace(/[\u0300\u0301]/g, '')

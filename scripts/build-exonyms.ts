@@ -72,6 +72,13 @@ interface Town {
   names: number
 }
 
+/**
+ * A table as a single-quoted string literal, its invisible characters (Persian's zero-width non-joiner, a direction
+ * mark) written as escapes, so the file shows them and an editor cannot drop them unseen.
+ */
+const literal = (s: string) =>
+  `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[\u00ad\u200b-\u200f\u2028\u2029\u2060\ufeff]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`)}'`
+
 async function* unzipLines(zip: string, member?: string): AsyncGenerator<string> {
   const p = spawn('unzip', ['-p', zip, ...(member ? [member] : [])], { stdio: ['ignore', 'pipe', 'inherit'] })
   yield* createInterface({ input: p.stdout, crlfDelay: Infinity })
@@ -257,7 +264,7 @@ async function main() {
  * scripts/exonyms.ts (OVERRIDES), then the table is generated again. Format: src/i18n/en/exonyms.ts.
  * ${entries} names, ${bytes} bytes, ${gz} compressed.
  */
-export default ${JSON.stringify(names).replace(/'/g, "\\'").replace(/^"|"$/g, "'").replace(/\\"/g, '"')}
+export default ${literal(names)}
 `,
     )
     report.push(`${lang}: ${entries} names, ${bytes} bytes, ${gz} gzip`)
