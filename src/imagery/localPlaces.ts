@@ -185,8 +185,8 @@ export function shownCountryName(cc: string, locale: Locale): string {
  * place itself would be (its people, the exact bonus if the query is its whole name), so the capital Hà Nội leads the
  * hamlet of that name. Three rules settle the names a language shares between places: a place named exactly so in
  * the language's `home` countries leads one abroad (HOME_BONUS: Thái Nguyên is the Vietnamese city, not Taiyuan), and
- * every place the query only starts; a town leads the region the visitor reads by the same name (`shownOf`, the
- * name shown: Qom the city, then the province; Huế, then the province), however either was found; and a place whose
+ * every place the query only starts; a town leads the region the visitor reads by the same name (`namesOf`, the
+ * names shown: Qom the city, then the province; Huế, then the province), however either was found; and a place whose
  * name is the query as typed, accents and all, leads one whose name only folds to it (Nha Trang the city, not Nhà
  * Trắng, the White House). An old name's landmark
  * row (Kiev, Peking: how the list finds the city by it in English) gives way to the city an alternate names at its spot
@@ -201,7 +201,7 @@ export async function searchLocal(
   alternates: readonly Alternate[] = [],
   home: readonly string[] = [],
   variants: readonly string[] = [],
-  shownOf?: (r: LocalPlace) => string,
+  namesOf?: (r: LocalPlace) => string[],
 ): Promise<LocalPlace[]> {
   throwIfAborted(signal)
   const q = placeKey(query)
@@ -228,7 +228,7 @@ export async function searchLocal(
   const all = [towns, marks, ...rest]
   if (all.every((x) => x.status === 'rejected')) throw (towns as PromiseRejectedResult).reason
   const rowsOf = (x: PromiseSettledResult<LocalPlace[] | null>) => (x.status === 'fulfilled' && x.value) || []
-  const hits: { r: LocalPlace; score: number; exact?: boolean; named?: boolean; shown: string }[] = []
+  const hits: { r: LocalPlace; score: number; exact?: boolean; named?: boolean; shown: string; also?: string[] }[] = []
   const homeBonus = (r: LocalPlace) => (home.includes(r.cc) && r.p >= HOME_MIN_P ? HOME_BONUS : 0)
   for (const [k, rows] of [[q, towns], ...spelled.map((s, i) => [s, rest[i]] as const)] as const)
     for (const r of rowsOf(rows)) {
@@ -258,17 +258,19 @@ export async function searchLocal(
       for (const r of rowsOf(marks))
         if (r.key === a.key && r.cc === a.cc) hits.push({ r, score: exact ? LANDMARK_SCORE + EXACT_BONUS : LANDMARK_WORD_SCORE, exact, shown: a.shown })
   })
-  if (alternates.length || shownOf) {
-    // As the visitor reads them (`shownOf`: the name the page shows, else the alternate's or the list's own).
-    for (const h of hits) if (shownOf) h.shown = shownOf(h.r)
+  if (alternates.length || namesOf) {
+    // As the visitor reads them (`namesOf`: the name the page shows, then any other it reads it by, as a region in a
+    // where line; else the alternate's or the list's own).
+    for (const h of hits) if (namesOf) [h.shown, ...h.also] = [...namesOf(h.r), h.shown]
     // A region named like a town of its country follows the town, however either was found (Huế the city, then the
-    // province the table also calls Huế).
+    // province the table calls Huế in a where line and Thành phố Huế on its own).
     const townScore = new Map<string, number>()
-    const sameName = (h: (typeof hits)[number]) => `${h.r.cc}|${verbatim(h.shown)}`
-    for (const h of hits) if (h.r.kind === '') townScore.set(sameName(h), Math.max(townScore.get(sameName(h)) ?? -Infinity, h.score))
+    const sameName = (h: (typeof hits)[number], name: string) => `${h.r.cc}|${verbatim(name)}`
+    for (const h of hits) if (h.r.kind === '') townScore.set(sameName(h, h.shown), Math.max(townScore.get(sameName(h, h.shown)) ?? -Infinity, h.score))
     for (const h of hits) {
-      const town = h.r.kind === 'r' ? townScore.get(sameName(h)) : undefined
-      if (town !== undefined) h.score = Math.min(h.score, town - 1)
+      if (h.r.kind !== 'r') continue
+      const towns = [h.shown, ...(h.also ?? [])].map((n) => townScore.get(sameName(h, n))).filter((t) => t !== undefined)
+      if (towns.length) h.score = Math.min(h.score, Math.max(...towns) - 1)
     }
   }
   if (home.length) {

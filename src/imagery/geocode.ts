@@ -684,8 +684,11 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
 
   let exact = false
   const alternates = exonymAlternates(query, countryName)
-  const shownOf = exonymsActive() ? (r: LocalPlace) => displayLabel(localToPlace(r, 'search')) : undefined
-  const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query), shownOf).then(
+  // The names the visitor reads each place by: its label, and a region's name in a where line (قم for استان قم).
+  const namesOf = exonymsActive()
+    ? (r: LocalPlace) => [displayLabel(localToPlace(r, 'search')), ...(r.kind === 'r' ? [exonym(r.name, r.cc, 'where')] : [])]
+    : undefined
+  const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query), namesOf).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
       return distinctAsShown(rows.map((r) => localToPlace(r, 'search')))
