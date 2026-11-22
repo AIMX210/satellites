@@ -192,7 +192,10 @@ export function shownCountryName(cc: string, locale: Locale): string {
  * row (Kiev, Peking: how the list finds the city by it in English) gives way to the city an alternate names at its spot
  * (Kyiv for an Italian's Kiev, Peking for a German's). A query with no Latin key (Cyrillic, Persian, Devanagari) is
  * answered by the alternates alone; with none, []. `variants` are the query as the language also types it, matched as
- * the query is (Muenster for Münster: ./exonyms.ts exonymVariants).
+ * the query is (Muenster for Münster: ./exonyms.ts exonymVariants). `ownArea` says where the language's readers hold
+ * the land to be their own though the data files it elsewhere or nowhere (./exonyms.ts exonymContested: the Paracels
+ * and Spratlys for Vietnamese): a place there named exactly so leads every place of that name abroad, as one at home
+ * does («Trường Sa» is the Spratlys first, then Changsha, which Vietnamese also calls Trường Sa).
  */
 export async function searchLocal(
   query: string,
@@ -202,6 +205,7 @@ export async function searchLocal(
   home: readonly string[] = [],
   variants: readonly string[] = [],
   namesOf?: (r: LocalPlace) => string[],
+  ownArea?: (lat: number, lon: number) => boolean,
 ): Promise<LocalPlace[]> {
   throwIfAborted(signal)
   const q = placeKey(query)
@@ -278,6 +282,11 @@ export async function searchLocal(
     // know, before Quận 10); among the exact ones the people still decide (Moskau the city, not a hamlet of that name).
     const best = Math.max(-Infinity, ...hits.filter((h) => !h.exact).map((h) => h.score))
     for (const h of hits) if (h.exact && home.includes(h.r.cc)) h.score = Math.max(h.score, best + 0.5)
+  }
+  if (ownArea) {
+    const top = Math.max(-Infinity, ...hits.filter((h) => h.exact && !home.includes(h.r.cc)).map((h) => h.score))
+    for (const h of hits)
+      if (h.exact && !home.includes(h.r.cc) && ownArea(h.r.lat, h.r.lon)) h.score = Math.max(h.score, top + 0.5)
   }
   // An old name's landmark row yields to the town the visitor's own name finds at its spot under another name (Kiev to
   // Kyiv, in Italian); a landmark under its own name stays (Torre di Pisa).

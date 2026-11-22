@@ -692,7 +692,10 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   const namesOf = exonymsActive()
     ? (r: LocalPlace) => [displayLabel(localToPlace(r, 'search')), ...(r.kind === 'r' ? [exonym(r.name, r.cc, 'where')] : [])]
     : undefined
-  const local = await searchLocal(query, signal, undefined, alternates, exonymHome(), exonymVariants(query), namesOf).then(
+  // Where the visitor's language holds the land its own (the Spratlys, for Vietnamese): named so, it leads abroad.
+  const ownArea = (lat: number, lon: number) => exonymContested(lat, lon, '')
+  const [home, variants] = [exonymHome(), exonymVariants(query)]
+  const local = await searchLocal(query, signal, undefined, alternates, home, variants, namesOf, ownArea).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
       return distinctAsShown(rows.map((r) => localToPlace(r, 'search')))

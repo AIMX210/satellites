@@ -277,6 +277,13 @@ describe('searching in the visitor’s own names (real data)', () => {
     await as('vi')
     expect(await first('Quần đảo Hoàng Sa')).toMatchObject({ lat: 16.5, lon: 112 })
     expect(await first('Sapa')).toMatchObject({ label: 'Sa Pa', countryCode: 'vn' })
+    // The bare names find the archipelagos first: «Trường Sa» is also Changsha (Trường Sa, Hồ Nam) and three namesakes.
+    expect(await first('Trường Sa')).toMatchObject({ lat: 10, lon: 114 })
+    expect(await first('Truong Sa')).toMatchObject({ lat: 10, lon: 114 })
+    // «Hoàng Sa» is Vietnam's own district for the Paracels first (Đà Nẵng), then the archipelago.
+    const paracels = await searchPlaces('Hoàng Sa')
+    expect(paracels[0]).toMatchObject({ countryCode: 'vn' })
+    expect(paracels.slice(0, 4).some((p) => p.lat === 16.5 && p.lon === 112)).toBe(true)
     await as('fa', faNames)
     for (const [q, name] of [['غزه', 'غزه'], ['تخت جمشید', 'تخت جمشید'], ['آلماتی', 'آلماتی'], ['کیش', 'کیش']]) expect([q, await shown(q)]).toEqual([q, name])
     await as('hi', hiNames)

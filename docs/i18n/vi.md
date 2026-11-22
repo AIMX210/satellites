@@ -1149,7 +1149,9 @@ variants: *Xisha Islands*, *Nansha Islands*), countryless and where GeoNames fil
 line on a Vietnamese page (`contested` in `src/i18n/vi/exonyms.ts`: the two archipelagos' areas), as the countryless
 ones there already do; one filed under Vietnam keeps its *Đà Nẵng, Việt Nam*. Usage stats and links keep the English
 label and the data's country, as for Korean, so nothing splits. The where-line rule (`contested`) is still the owner's
-to confirm.
+to confirm. A search by the bare names finds the archipelagos: *Trường Sa* lists the Spratlys before Changsha, which
+Vietnamese also calls *Trường Sa* (a place in a `contested` area named exactly so leads its namesakes abroad,
+`localPlaces.ts searchLocal`), and *Hoàng Sa* lists Đà Nẵng's district of that name, then the Paracels.
 
 **Country names.** They come from `Intl.DisplayNames('vi')` (CLDR): *Trung Quốc*, *Đài Loan*, *Ukraina*, *Israel*,
 *Jordan*, *Li-băng*, *Ai Cập*, *Timor-Leste*. Translators never override them. Two CLDR long names misread for

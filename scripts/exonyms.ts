@@ -2467,6 +2467,10 @@ export const ALIASES: Record<Lang, Record<string, readonly string[]>> = {
     1568043: ['Sapa'],
     'VN:Đỉnh Phan Xi Phăng': ['Phan Xi Păng', 'Fansipan'],
     1822214: ['Xiêm Riệp'],
+    // The archipelagos by their bare names, which Vietnamese readers type for them: «Trường Sa» found Changsha's four
+    // towns (Trường Sa, Hồ Nam) before the Spratlys.
+    ':Spratly Islands': ['Trường Sa'],
+    ':Xisha Islands(Paracel Islands)': ['Hoàng Sa'],
   },
   fa: {
     703448: ['کیف'],
