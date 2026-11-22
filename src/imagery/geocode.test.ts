@@ -191,6 +191,10 @@ describe('coordinates', () => {
   })
   it('parses typed coordinates', () => {
     expect(parseCoordinates('43.4723, -80.5449')).toEqual({ lat: 43.4723, lon: -80.5449 })
+    // Arabic, Persian and Devanagari digits, with the Arabic decimal sign and comma
+    expect(parseCoordinates('۴۳٫۴۷۲۳، −۸۰٫۵۴۴۹')).toEqual({ lat: 43.4723, lon: -80.5449 })
+    expect(parseCoordinates('٤٣٫٤٧ -٨٠٫٥٤')).toEqual({ lat: 43.47, lon: -80.54 })
+    expect(parseCoordinates('२८.६१, ७७.२०')).toEqual({ lat: 28.61, lon: 77.2 })
     expect(parseCoordinates('43.4723 -80.5449')).toEqual({ lat: 43.4723, lon: -80.5449 })
     expect(parseCoordinates('43.4723°N 80.5449°W')).toEqual({ lat: 43.4723, lon: -80.5449 })
     expect(parseCoordinates('33.8688S,151.2093E')).toEqual({ lat: -33.8688, lon: 151.2093 })

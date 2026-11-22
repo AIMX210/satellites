@@ -382,10 +382,17 @@ const COMMA_PAIR = /^([+-]?\d{1,2}(?:[.,]\d+)?)\s*(?:([NS])\s*[,;\s]|[;\s])\s*([
  * French, Spanish and Italian, east in German).
  * Bidirectional marks are dropped, so coordinates copied out of right-to-left text still read, and full-width digits
  * and punctuation (a Chinese, Japanese or Korean input method's "４３．４７，−８０．５４") read as their ASCII forms
- * (NFKC, after the degree signs go: it would turn "º" into the letter o).
+ * (NFKC, after the degree signs go: it would turn "º" into the letter o). So do the digits an Arabic, Persian or Hindi
+ * keyboard types ("۴۳٫۴۷، −۸۰٫۵۴", "٤٣٫٤٧"), with the Arabic decimal sign and comma.
  */
 export function parseCoordinates(q: string): LatLon | null {
   const s = q
+    .replace(/[\u0660-\u0669\u06f0-\u06f9\u0966-\u096f]/g, (d) => {
+      const c = d.codePointAt(0)!
+      return String(c - (c >= 0x0966 ? 0x0966 : c >= 0x06f0 ? 0x06f0 : 0x0660))
+    })
+    .replace(/\u066b/g, '.')
+    .replace(/\u060c/g, ',')
     .replace(/[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '')
     .replace(/[°º]/g, ' ')
     .normalize('NFKC')
