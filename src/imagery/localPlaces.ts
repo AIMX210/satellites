@@ -252,7 +252,7 @@ export async function searchLocal(
     for (const r of rowsOf(named[n]))
       if (r.key === key && r.cc === a.cc && KINDS[a.kind].includes(r.kind))
         hits.push({ r, score: r.p + (exact ? EXACT_BONUS + homeBonus(r) : 0), exact, named: a.kind === 'town', shown: a.shown })
-    if (a.kind === 'town' && key === a.key)
+    if ((a.kind === 'town' || a.kind === 'feature') && key === a.key)
       // A landmark by the visitor's name for it ranks as by another of its names: in full as a large city, else as a
       // word of it (Моск finds Москва before Московский Кремль, as "mosc" finds Moscow before the Kremlin).
       for (const r of rowsOf(marks))
@@ -300,7 +300,7 @@ export async function searchLocal(
 }
 
 /** The offline list's kinds of row an alternate of each kind may be. */
-const KINDS: Record<Alternate['kind'], readonly LocalPlace['kind'][]> = { town: ['', 'f'], region: ['r'], country: ['c'] }
+const KINDS: Record<Alternate['kind'], readonly LocalPlace['kind'][]> = { town: ['', 'f'], region: ['r'], country: ['c'], feature: ['f'] }
 
 /** An exact name's head start, on the log scale of `p` (20 per factor of ten): a hundred times the people. */
 const EXACT_BONUS = 40

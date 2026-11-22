@@ -27,6 +27,8 @@ export interface TypedName {
   /** ISO country code, upper case ('' for no country) */
   cc: string
   region: boolean
+  /** A landmark's or feature's name (`^`): it stands for no town (Nhà Trắng is the White House, not White House, Tennessee) */
+  feature?: boolean
   /** Position in its country's names (largest first), then its country's position: lower is larger */
   rank: number
 }
@@ -42,7 +44,7 @@ export interface Alternate {
   also?: string[]
   /** ISO country code, upper case */
   cc: string
-  kind: 'town' | 'region' | 'country'
+  kind: 'town' | 'region' | 'country' | 'feature'
   /** The query is this place's whole name */
   exact: boolean
   /** The name the query matched, as the table writes it (or the browser names the country) */
@@ -118,13 +120,14 @@ export function typedNames(src: string): TypedName[] {
       .forEach((entry, i) => {
         const body = entry.startsWith('~') ? entry.slice(1) : entry
         const region = body.startsWith('*') || body.startsWith('#')
-        const mark = region || body.startsWith('^') ? 1 : 0
+        const feature = body.startsWith('^')
+        const mark = region || feature ? 1 : 0
         const eq = body.indexOf('=')
         const english = body.slice(mark, eq)
         const shown = eq < 0 ? '' : body.slice(eq + 1)
         const words = typedKey(shown)
         if (words && placeKey(english))
-          typed.push({ shown, words, compact: words.replace(/ /g, ''), spelled: spelledOut(shown), english, cc, region, rank: i + g * 1e4 })
+          typed.push({ shown, words, compact: words.replace(/ /g, ''), spelled: spelledOut(shown), english, cc, region, ...(feature ? { feature } : {}), rank: i + g * 1e4 })
       })
   })
   return typed
@@ -201,7 +204,7 @@ export function exonymSearch(
     }
     if (tier >= 0)
       hits.push({
-        a: { key: placeKey(n.english), cc: n.cc, kind: n.region ? 'region' : 'town', exact: tier === 0, shown: n.shown },
+        a: { key: placeKey(n.english), cc: n.cc, kind: n.region ? 'region' : n.feature ? 'feature' : 'town', exact: tier === 0, shown: n.shown },
         tier,
         rank: n.rank,
         name: n.compact,

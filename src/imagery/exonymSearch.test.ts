@@ -151,6 +151,9 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(await first('Thái Nguyên')).toMatchObject({ cc: 'VN' }) // not Taiyuan, which Vietnamese also calls so
     expect(await first('thai nguyen')).toMatchObject({ cc: 'VN' })
     expect(await first('Nha Trang')).toMatchObject({ name: 'Nha Trang', cc: 'VN' }) // not Nhà Trắng, the White House
+    // A landmark's name stands for the landmark only: White House, Tennessee is not Nhà Trắng.
+    const nhaTrang = await searchLocal('Nhà Trắng', undefined, 6, exonymAlternates('Nhà Trắng', countryName), exonymHome())
+    expect(nhaTrang.filter((r) => r.name === 'White House').map((r) => r.kind)).toEqual(['l'])
     expect(await first('Luân Đôn')).toMatchObject({ name: 'London', cc: 'GB' }) // not Tower Bridge, Cầu Tháp Luân Đôn
     await as('fa', faNames)
     expect(await first('لندن')).toMatchObject({ name: 'London', cc: 'GB' }) // not Heathrow, فرودگاه هیترو لندن
