@@ -47,6 +47,7 @@ const share: typeof en = {
   preparingImage: 'آماده‌سازی تصویر…',
   share: 'اشتراک‌گذاری',
   copyLink: 'کپی پیوند',
+  copyLinkDesktop: 'کپی پیوند',
   copied: 'کپی شد',
   postToX: 'ارسال در X',
   copyImage: 'کپی تصویر',

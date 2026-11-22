@@ -57,6 +57,9 @@ export default ns('share', {
   share: 'Share',
   /** Copy the link (one of three equal buttons on a phone) */
   copyLink: 'Copy link',
+  /** Laptops: the same button beside "Copy image", where there is room to name what it copies (a language whose phone
+   *  row only fits the verb, "Kopieren", says it in full here) */
+  copyLinkDesktop: 'Copy link',
   /** Replaces "Copy link" / "Copy image" for 2 s once it worked */
   copied: 'Copied',
   /** Opens X's post composer with the text and link ("X" is the network's name) */

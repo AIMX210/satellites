@@ -44,6 +44,7 @@ const share: typeof en = {
   preparingImage: 'Готовим карточку…',
   share: 'Поделиться',
   copyLink: 'Копировать',
+  copyLinkDesktop: 'Копировать ссылку',
   copied: 'Скопировано',
   postToX: 'Пост в X',
   copyImage: 'Копировать карточку',

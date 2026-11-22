@@ -686,7 +686,7 @@ export function ShareSheet({ pass, report, onClose, clouded, kind = 'pass', from
       </Button>
       <Button onClick={copy} onPointerDown={warm} aria-live="polite">
         {flash === 'link' ? <Glyph name="imaged" size={10} color="var(--signal)" /> : null}
-        {flash === 'link' ? m.copied : m.copyLink}
+        {flash === 'link' ? m.copied : m.copyLinkDesktop}
       </Button>
       {copyImageOk ? (
         <Button onClick={copyImage} onPointerDown={() => void startPng()} aria-live="polite">

@@ -42,6 +42,7 @@ const share: typeof en = {
   preparingImage: 'Đang tạo ảnh…',
   share: 'Chia sẻ',
   copyLink: 'Sao chép liên kết',
+  copyLinkDesktop: 'Sao chép liên kết',
   copied: 'Đã sao chép',
   postToX: 'Đăng lên X',
   copyImage: 'Sao chép ảnh',
