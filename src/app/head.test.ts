@@ -111,4 +111,15 @@ describe('the tab title of a place page', () => {
     runtime.setBundleForTests('de', (await import('@/i18n/de/index')).default)
     expect(titles).toEqual(['Pyramides de Gizeh · Watched', 'Pyramiden von Gizeh · Watched'])
   })
+
+  it('names a curated place in English by its English name after a switch to English', async () => {
+    const fr = async () => (await import('@/i18n/fr/index')).default
+    const { titles, openReport, runtime } = await bootPage(GIZA, 'fr', fr)
+    openReport()
+    runtime.setBundleForTests('en', null)
+    expect(titles).toEqual([
+      'Pyramides de Gizeh · Watched',
+      'Pyramids of Giza: this week’s satellite images and passes · Watched',
+    ])
+  })
 })

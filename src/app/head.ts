@@ -72,8 +72,10 @@ export function headFor(
   const shown = SHOWS_PLACE.includes(phase) ? place : phase === 'boot' ? opening : undefined
   if (!shown) return { title: words.home, canonical: '/' }
   // Any other place is a search, not a page: search engines keep the landing for it.
-  const name = words.english ? shown.label : words.name ? words.name(shown) : shown.label
-  const title = words.english ? pageTitle(shown.label) : name === undefined ? undefined : plainPlaceTitle(name)
+  // English names a curated place by its English name (canonicalLabel), as its results do, after a switch too.
+  const english = shown.canonicalLabel ?? shown.label
+  const name = words.english ? english : words.name ? words.name(shown) : shown.label
+  const title = words.english ? pageTitle(english) : name === undefined ? undefined : plainPlaceTitle(name)
   return { title, canonical: isPagePlace(shown, page) ? page.path : '/' }
 }
 
