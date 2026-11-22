@@ -13,12 +13,12 @@
  */
 import { Fragment, type CSSProperties } from 'react'
 import { LOCALE_INFO } from '../../../api/_lib/i18n/locales'
-import { isNum, isStrong, plain } from '../../../api/_lib/i18n/parts'
+import { isNum, isStrong, plain, type Part } from '../../../api/_lib/i18n/parts'
 import enEngine from '@/i18n/en/engine'
 import enResults, { type WindowWhen } from '@/i18n/en/results'
 import enVerdicts from '@/i18n/en/verdicts'
 import { refText } from '@/i18n/messageRef'
-import { Rich } from '@/i18n/Rich'
+import { holdNum, Rich } from '@/i18n/Rich'
 import { currentLocale, msgs, useMsgs } from '@/i18n/runtime'
 import { Button, Glyph, cx, prefersReducedMotion } from '@/ui/system'
 import { Count } from './Count'
@@ -156,22 +156,31 @@ export function MoreLine({
 /**
  * "27 images were made public." with the number set in the display face; partial → final settles in place. The
  * message's strong part is the "at least" words: always in the DOM, hidden once the count is final.
+ *
+ * <Count> is a box of its own (its crossfade lays the old digits over the new), and a line may break on either side of
+ * such a box even against a no-break space: Russian's «Опубликовано 1 037 / снимков.» at 360 px. So the count and the
+ * words a catalog ties to it share one nowrap span (holdNum); English ties nothing and renders as it always did.
  */
 function PhotosCount({ k, partial }: { k: number; partial: boolean }) {
   const parts = useMsgs(enResults).imagesPublic(k)
+  const piece = (p: Part, key: number) =>
+    typeof p === 'string' ? (
+      <Fragment key={key}>{p}</Fragment>
+    ) : isStrong(p) ? (
+      <span key={key} className={cx(s.atLeast, !partial && s.atLeastOff)} aria-hidden={!partial}>
+        {plain(p.strong)}
+      </span>
+    ) : isNum(p) ? (
+      <Count key={key} value={k} className={s.numDisplay} />
+    ) : null
+  const at = parts.findIndex(isNum)
+  if (at < 0) return <>{parts.map(piece)}</>
+  const { before, held, after } = holdNum(parts, at)
   return (
     <>
-      {parts.map((p, i) =>
-        typeof p === 'string' ? (
-          <Fragment key={i}>{p}</Fragment>
-        ) : isStrong(p) ? (
-          <span key={i} className={cx(s.atLeast, !partial && s.atLeastOff)} aria-hidden={!partial}>
-            {plain(p.strong)}
-          </span>
-        ) : isNum(p) ? (
-          <Count key={i} value={k} className={s.numDisplay} />
-        ) : null,
-      )}
+      {before.map(piece)}
+      {held.length > 1 ? <span className={s.held}>{held.map(piece)}</span> : piece(held[0], at)}
+      {after.map((p, i) => piece(p, at + 1 + i))}
     </>
   )
 }
