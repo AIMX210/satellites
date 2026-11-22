@@ -965,6 +965,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'EG:*Giza Governorate': 'Gizeh',
     'EG:*Luxor Governorate': 'Luxor',
     'EG:*Aswan Governorate': 'Assuan',
+    // Pre-ship review (2026-11-22): Photon's usual name for Crimea's region (de.md §8: die Krim, assigned to no one).
+    'UA:*Republic of Crimea': 'Krim',
   },
   /**
    * Italian: France's new regions by their Italian names (GeoNames has the provisional ones: Nord-Passo di
@@ -1258,6 +1260,8 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
     'YT:Mamoudzou': '',
     'IT:Ischia Porto': '',
     'DK.17': 'Hovedstaden',
+    // Pre-ship review (2026-11-22): Photon's usual name for Crimea's region (it.md §8: Crimea, attributed to no state).
+    'UA:*Republic of Crimea': 'Crimea',
   },
   /**
    * Ukraine's first-level names as its Constitution lists them (docs/i18n/uk.md §4.3: official names are never
@@ -2213,6 +2217,9 @@ export const OVERRIDES: Record<Lang, Record<string, string>> = {
      */
     'AF:Kandahar Airport': 'فرودگاه قندهار',
     'AF:Hamid Karzai International Airport': 'فرودگاه بین‌المللی کابل',
+    // And the geocoders' names for Crimea's region (fa.md §8.9: کریمه, with no qualifier; Photon's is the second).
+    'UA:*Autonomous Republic of Crimea': 'کریمه',
+    'UA:*Republic of Crimea': 'کریمه',
   },
   /**
    * Hindi: the modern official names where GeoNames' first Hindi name is the old one (मुंबई, not बम्बई; बेंगलुरु, not

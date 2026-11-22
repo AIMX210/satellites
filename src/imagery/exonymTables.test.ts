@@ -321,6 +321,21 @@ describe('the generated tables', () => {
       ['Gaza', 'Dải Gaza', 'Bờ Tây'],
       ['Crimea', 'Crimea', 'Crimea'],
     ])
+    expect([zones(de), zones(it_), zones(uk), zones(ru), zones(fa)]).toEqual([
+      ['Gaza', 'Gazastreifen', 'Westjordanland'],
+      ['Gaza', 'Striscia di Gaza', 'Cisgiordania'],
+      ['Газа', 'Сектор Гази', 'Західний берег'],
+      ['Газа', 'Сектор Газа', 'Западный берег реки Иордан'],
+      ['غزه', 'نوار غزه', 'کرانه باختری'],
+    ])
+    for (const [src, krim] of [
+      [de, 'Krim'],
+      [it_, 'Crimea'],
+      [uk, 'Автономна Республіка Крим'],
+      [ru, 'Крым'],
+      [fa, 'کریمه'],
+    ])
+      expect(crimea(src)).toEqual([krim, krim, krim])
     // BBC Hindi's Gaza and GeoNames' West Bank find them, and are never shown.
     expect([hi.includes('~Gaza=गज़ा'), hi.includes('~*West Bank=पश्चिमी तट')]).toEqual([true, true])
   })
