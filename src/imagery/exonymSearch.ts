@@ -161,6 +161,12 @@ export function countriesTyped(): { compact: string; cc: string; shown: string }
   return list
 }
 
+/** A language's search-only country names (its namespace's `countryAliases`), typed as the visitor types them. */
+export function countryAliasesTyped(aliases: Readonly<Record<string, readonly string[]>> | undefined): { compact: string; cc: string; shown: string }[] {
+  const shown = (cc: string) => countriesTyped().find((c) => c.cc === cc)?.shown ?? cc
+  return Object.entries(aliases ?? {}).flatMap(([cc, names]) => names.map((n) => ({ compact: typedKey(n).replace(/ /g, ''), cc, shown: shown(cc) })))
+}
+
 /**
  * The places `query` stands for in the table `src`, best first, at most MAX_ALTERNATES: the names that are the query
  * (exact), whose later words are all of it (Hồ Chí Minh for Thành phố Hồ Chí Minh, but not exact: London's airports

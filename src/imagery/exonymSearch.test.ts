@@ -114,6 +114,11 @@ describe('exonymSearch', () => {
     expect(r).toEqual([{ key: 'cologne', cc: 'DE', kind: 'town', exact: true, shown: 'Köln' }])
   })
 
+  it('finds a country by a name the language types for it, shown as the browser names it', () => {
+    const r = exonymSearch(T, 'Белоруссия', key, [{ compact: typedKey('Белоруссия').replace(/ /g, ''), cc: 'BY', shown: 'Беларусь' }])
+    expect(r).toEqual([{ key: 'by', cc: 'BY', kind: 'country', exact: true, shown: 'Беларусь' }])
+  })
+
   it('finds the countries the browser names in the language', () => {
     const r = exonymSearch(T, 'Đức', key, [{ compact: typedKey('Đức'), cc: 'DE', shown: 'Đức' }])
     expect(r).toEqual([{ key: 'de', cc: 'DE', kind: 'country', exact: true, shown: 'Đức' }])
@@ -234,6 +239,9 @@ describe('searching in the visitor’s own names (real data)', () => {
     expect(await first('харкив')).toMatchObject({ label: 'Kharkiv' }) // и for і, from a Russian layout
     expect(await first('Киев')).toMatchObject({ label: 'Kyiv' }) // a search name, never shown
     expect(displayLabel(await first('Бунге'))).toBe('Бунге')
+    setBundleForTests('ru', { exonyms: { ...ruExonyms, names: ruNames } })
+    await ensureExonyms()
+    expect(await first('Белоруссия')).toMatchObject({ label: 'Belarus', countryCode: 'by' }) // a search name for it
     await as('ru', ruNames)
     const murmansk = await first('Мурманск')
     expect([murmansk.label, murmansk.kind, displayLabel(murmansk)]).toEqual(['Murmansk', undefined, 'Мурманск'])

@@ -18,6 +18,17 @@ const exonyms: typeof en = {
   countries: true,
   ownScript: true,
   home: ['RU', 'BY', 'KZ', 'KG'],
+  // The names Russian speakers usually type for countries the browser names otherwise (search only; shown as CLDR
+  // names them, ru.md §8).
+  countryAliases: {
+    KR: ['Южная Корея'],
+    KP: ['Северная Корея', 'КНДР'],
+    BY: ['Белоруссия'],
+    MD: ['Молдавия'],
+    NL: ['Голландия'],
+    TM: ['Туркмения'],
+    SC: ['Сейшелы'],
+  },
   load: () =>
     (loading ??= import('./exonyms.gen').then(
       (m) => void (exonyms.names = m.default),

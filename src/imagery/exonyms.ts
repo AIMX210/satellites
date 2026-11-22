@@ -203,5 +203,6 @@ export function exonymAlternates(query: string, countryName: (cc: string) => str
   const src = activeSource(false)
   if (!src || !search) return []
   const m = msgs(enExonyms)
-  return search.exonymSearch(src, query, (cc) => englishCountryKey(countryName(cc)), m.countries ? search.countriesTyped() : [], m.home ?? [])
+  const countries = m.countries ? [...search.countriesTyped(), ...search.countryAliasesTyped(m.countryAliases)] : []
+  return search.exonymSearch(src, query, (cc) => englishCountryKey(countryName(cc)), countries, m.home ?? [])
 }

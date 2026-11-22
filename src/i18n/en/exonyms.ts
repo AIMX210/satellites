@@ -41,6 +41,11 @@ export interface ExonymsNamespace {
    */
   countries?: boolean
   /**
+   * Other names a search finds a country by, never shown (the language's everyday names beside the browser's: Южная
+   * Корея for Республика Корея, Белоруссия for Беларусь), by ISO code.
+   */
+  countryAliases?: Readonly<Record<string, readonly string[]>>
+  /**
    * The language's own countries (ISO codes): where a name it gives a place there is also its name for a place abroad,
    * a search finds the one at home first (Thái Nguyên, the Vietnamese city, before Taiyuan, Thái Nguyên in China).
    * The generator's RULES name them (scripts/exonyms.ts), and src/imagery/exonymTables.test.ts holds the two equal.
