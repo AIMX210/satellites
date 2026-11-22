@@ -59,3 +59,5 @@ export default {
   exonyms,
   card,
 } satisfies Bundle
+/** Before a switch to this language shows it: its place names (./exonyms.ts, a chunk of its own). */
+export const ready = (): Promise<void> => exonyms.load?.() ?? Promise.resolve()

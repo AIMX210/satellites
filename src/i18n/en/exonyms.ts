@@ -39,7 +39,7 @@ export interface ExonymsNamespace {
   countries?: boolean
   /**
    * The language's own countries (ISO codes): where a name it gives a place there is also its name for a place abroad,
-   * a search finds the one at home first (Thái Nguyên, the Vietnamese province, before Taiyuan, Thái Nguyên in China).
+   * a search finds the one at home first (Thái Nguyên, the Vietnamese city, before Taiyuan, Thái Nguyên in China).
    * The generator's RULES name them (scripts/exonyms.ts), and src/imagery/exonymTables.test.ts holds the two equal.
    */
   home?: readonly string[]

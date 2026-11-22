@@ -9,7 +9,7 @@
  * server (api/_lib/i18n/card/vi.ts), because the Open Graph card and the share page print the same words as the share
  * sheet's preview, and this bundle lists that very module as `card`, so the card is translated once. Every namespace is
  * typed against its English file, so a missing or changed message fails the typecheck here. `exonyms` names places in
- * Vietnamese (Hà Nội, Luân Đôn, Biển Đông: docs/i18n/vi.md §8), small enough to ride in this chunk (./exonyms.ts).
+ * Vietnamese (Hà Nội, Luân Đôn, Biển Đông: docs/i18n/vi.md §8), a chunk of its own (./exonyms.ts, `ready`).
  * docs/i18n/vi.md is the authority on the words.
  */
 import type { Bundle } from '../runtime'
@@ -60,3 +60,5 @@ export default {
   exonyms,
   card,
 } satisfies Bundle
+/** Before a switch to this language shows it: its place names (./exonyms.ts, a chunk of its own). */
+export const ready = (): Promise<void> => exonyms.load?.() ?? Promise.resolve()

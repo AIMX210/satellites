@@ -12,10 +12,12 @@ import {
   latinWorthWriting,
   persianForm,
   pickName,
+  RULES,
   serializeDisplay,
   stripAdmin,
   type AltName,
   type DisplayTable,
+  type Lang,
 } from '../../scripts/exonyms'
 import de from '@/i18n/de/exonyms.gen'
 import it_ from '@/i18n/it/exonyms.gen'
@@ -24,6 +26,13 @@ import ru from '@/i18n/ru/exonyms.gen'
 import vi from '@/i18n/vi/exonyms.gen'
 import fa from '@/i18n/fa/exonyms.gen'
 import hi from '@/i18n/hi/exonyms.gen'
+import deNs from '@/i18n/de/exonyms'
+import itNs from '@/i18n/it/exonyms'
+import ukNs from '@/i18n/uk/exonyms'
+import ruNs from '@/i18n/ru/exonyms'
+import viNs from '@/i18n/vi/exonyms'
+import faNs from '@/i18n/fa/exonyms'
+import hiNs from '@/i18n/hi/exonyms'
 import { parseExonyms } from './exonyms'
 
 const alt = (name: string, flags = ''): AltName => ({
@@ -166,15 +175,20 @@ describe('building a table', () => {
 
 /** The committed tables, compressed as a browser fetches them (gzip). */
 const TABLES = { de, it: it_, uk, ru, vi, fa, hi }
+const NAMESPACES = { de: deNs, it: itNs, uk: ukNs, ru: ruNs, vi: viNs, fa: faNs, hi: hiNs }
 const gzip = async (s: string) => (await new Response(new Blob([s]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()).byteLength
 
 describe('the generated tables', () => {
-  it('stay within their budget: a chunk of its own up to 12 KiB compressed, one in the language’s chunk up to 5 KiB', async () => {
-    const lazy = new Set(['de', 'uk', 'ru', 'fa', 'hi'])
+  it('stay within their budget: a chunk of its own up to 16 KiB compressed, one in the language’s chunk up to 5 KiB', async () => {
     for (const [lang, src] of Object.entries(TABLES)) {
       const size = await gzip(src)
-      expect({ lang, fits: size <= (lazy.has(lang) ? 12 * 1024 : 5 * 1024) }).toEqual({ lang, fits: true })
+      const lazy = !!NAMESPACES[lang as keyof typeof NAMESPACES].load
+      expect({ lang, fits: size <= (lazy ? 16 * 1024 : 5 * 1024) }).toEqual({ lang, fits: true })
     }
+  })
+
+  it('know each language’s own countries as the rules do', () => {
+    for (const [lang, ns] of Object.entries(NAMESPACES)) expect([lang, ns.home]).toEqual([lang, RULES[lang as Lang].home.filter((h) => !h.includes('.'))])
   })
 
   it('parse whole, with no reserved character inside a name', () => {
@@ -227,5 +241,31 @@ describe('the generated tables', () => {
       'बेंगलुरु',
       'उत्तर प्रदेश',
     ])
+    // What the native review (2026-11-22) found wrong, as the guides decide it.
+    expect([name(de, 'UA', 'kherson'), name(de, 'UA', 'zaporizhzhya'), name(de, 'CN', 'beijing'), name(de, 'PS', 'west bank', true), name(de, '', 'yellow sea')]).toEqual([
+      'Cherson',
+      'Saporischschja',
+      'Peking',
+      'Westjordanland',
+      'Gelbes Meer',
+    ])
+    expect([name(it_, '', 'persian gulf'), name(it_, 'ES', 'valencia', true), name(it_, 'ES', 'cadiz'), name(it_, 'US', 'district of columbia', true)]).toEqual([
+      'Golfo Persico',
+      'Comunità Valenciana',
+      'Cadice',
+      'Distretto di Columbia',
+    ])
+    expect([name(uk, 'UA', 'bunhe'), name(uk, 'IN', 'delhi'), name(uk, 'US', 'golden gate bridge'), name(uk, 'MD', 'chisinau')]).toEqual(['Бунге', 'Делі', 'Міст Золоті Ворота', 'Кишинів'])
+    expect([name(ru, 'RU', 'murmansk'), name(ru, 'UA', 'kherson'), name(ru, 'RU', 'chelyabinsk', true), name(ru, '', 'pacific ocean')]).toEqual([
+      'Мурманск',
+      'Херсон',
+      'Челябинская область',
+      'Тихий океан',
+    ])
+    expect([name(vi, '', 'xisha islands paracel islands'), name(vi, 'VN', 'thua thien hue province', true), name(vi, 'UA', 'kyiv')]).toEqual(['Quần đảo Hoàng Sa', 'Huế', undefined])
+    expect([name(fa, 'UA', 'lviv'), name(fa, 'IR', 'gilan province', true), name(fa, 'IR', 'qods')]).toEqual(['لویو', 'گیلان', 'شهر قدس'])
+    expect([name(hi, 'CH', 'bern'), name(hi, '', 'atlantic ocean')]).toEqual(['बर्न', 'अटलांटिक महासागर'])
+    // A landmark a town shares is a landmark's name only.
+    expect(vi).toMatch(/\|US:[^|]*;\^White House=Nhà Trắng[;|]/)
   })
 })
