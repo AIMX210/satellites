@@ -1087,7 +1087,8 @@ neve stagionale si è sciolta*. No alarmism (✗ *catastrofe*, ✗ *agonia del g
 
 **Place-name politics.**
 - Country names come from `Intl.DisplayNames('it')`. Accept its output and don't override it: *Taiwan*, *Territori
-  Palestinesi*, *Kosovo*, *Macedonia del Nord*, *Cechia*, *Myanmar (Birmania)*, *RAS di Hong Kong*.
+  Palestinesi*, *Kosovo*, *Macedonia del Nord*, *Cechia*, *Myanmar (Birmania)*, *RAS di Hong Kong*. A search finds a
+  country by any of the names Intl gives it (*Palestina* is the territories first, then the villages of that name).
 - Our own copy uses the name the gazetteer shows, so one place has one name: **Kyiv**, *Kharkiv*, *Odesa* (the generated
   Italian table keeps them so, and names only Italian's own exonyms elsewhere: *Leopoli*, *Monaco di Baviera*, *Londra*;
   docs/I18N.md, Place names). *Kiev* and

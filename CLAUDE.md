@@ -137,7 +137,10 @@
   in the data; on screen they are named in the visitor's language by generated tables (`npm run data:exonyms <GeoNames
   dir>`, `scripts/build-exonyms.ts`; rules and hand fixes in `scripts/exonyms.ts`; never edit `exonyms.gen.ts`), which
   also let a search typed in that language (Москва, Hà Nội) be answered offline. A table over 5 kB is a chunk of its
-  own, fetched at idle and awaited before any name shows: a name never changes once shown (docs/I18N.md, Place names).
+  own, fetched at idle and awaited before any name shows (a search reads its own offline file meanwhile): a name never
+  changes once shown (docs/I18N.md, Place names). A country is its code's row of the list (kind `c`), whatever the list
+  calls it (Palestinian Territory, The Netherlands), and in a language with names, rows of one country that read alike
+  (name and where line) are one row.
 - Time-lapse (`src/imagery/timelapse.ts`, `src/ui/timelapse/`): the place's clear Sentinel-2 looks, one a year, as a
   loop. Nothing of it loads or is asked until someone opens it (its own chunk; the row under the photos, the viewer's
   button, or a `?tl=1` link), and every request goes from the browser to Planetary Computer: keep both true. Frames

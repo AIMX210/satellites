@@ -1208,7 +1208,8 @@ The owner's condition is that German costs nothing more to serve and stays as fa
 7. **Country names:** `Intl.DisplayNames(['de'], { type: 'region' })`, long style, except three regions that take the
    short style: **US** (*USA*: what every German writes; *Vereinigte Staaten* is stiff in a where line), **HK**
    (*Hongkong*) and **MO** (*Macau*). Everything else long: GB stays *Vereinigtes Königreich* (short is *UK*), PS stays
-   *Palästinensische Autonomiegebiete* (short is *Palästina*, politically loaded).
+   *Palästinensische Autonomiegebiete* (short is *Palästina*, politically loaded). A search for either name, or for the
+   English *Palestinian*, finds the country and shows it so; *USA* finds the US.
 8. **X post length.** `xLength` counts every German letter and „ “ as 1, so German costs no extra weight, but its text
    runs longer. Both hooks are under 45 characters, so the invitation is dropped only for long place names.
 

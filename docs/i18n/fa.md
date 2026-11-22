@@ -875,7 +875,8 @@ Where a label overflows, choose a better word; never an abbreviation Persian rea
 ### 9.3 Test values
 
 Places: `Waterloo`، `تهران`، `Bus stop, Ushuaia, Tierra del Fuego`، `Washington, D.C.`، `東京`. Satellites:
-`Sentinel-2C`، `ISS (ZARYA)`، `NORAD 60989`، none. Counts: 0, 1, 2, 5, 21, 1,715.
+`Sentinel-2C`، `ISS (ZARYA)`، `NORAD 60989`، none. Counts: 0, 1, 2, 5, 21, 1,715. A search for `فلسطین` finds the
+country first, offline, named as its where line names it (not Iran's streets of that name).
 
 ## Decisions log
 

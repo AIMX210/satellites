@@ -921,7 +921,8 @@ Strategies, in order:
 
 Places: `Waterloo`, `Pacific Ocean`, `Bus stop, Ushuaia, Tierra del Fuego`, `Ganga` (feminine to a Hindi reader),
 `Washington, D.C.` (ends on a full stop), a 120-character name, `東京`. Satellites: `Sentinel-2C`, `ISS (ZARYA)`,
-`NORAD 60989`, undefined. Counts: 0, 1, 2, 5, 21, 1,715, 1,23,456.
+`NORAD 60989`, undefined. Counts: 0, 1, 2, 5, 21, 1,715, 1,23,456. A search for `फ़िलिस्तीन` (or `फिलिस्तीन`, typed
+without the nukta) finds the country first, offline, named as its where line names it; `अमेरिका` finds the US.
 
 ## Decisions log
 

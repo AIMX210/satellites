@@ -1460,7 +1460,9 @@ results. Every letter is set in the Vietnamese faces (no fallback, no tofu), and
   two-line labels at 360 px (English wraps OFF- / NADIR there too): clean breaks between words, values aligned.
 
 **Reported, not fixable here:** (Vietnamese place names, *Hanoi* and *Da Nang City*, and a search for *Hà Nội* that found
-a hamlet in Ninh Bình: fixed 2026-11-22 by the generated table, docs/I18N.md, Place names); the geostationary frame
+a hamlet in Ninh Bình: fixed 2026-11-22 by the generated table, docs/I18N.md, Place names; the hamlet, which reads *Hà
+Nội · Việt Nam* too, is no longer listed beside the capital, nor *Đài Loan*'s region beside the country, and *Hà Lan*
+finds the Netherlands); the geostationary frame
 time's live dot shrinking to 0 px when
 the relative time (*1 GIỜ TRƯỚC*) is wider than the thumbnail; *Asia/Bangkok* as Hanoi's zone in the computing readout;
 slash counters (*03 / 12*) that read as dates beside *20/12/2017* (since fixed: *3 trên 12*, decision 20); the
