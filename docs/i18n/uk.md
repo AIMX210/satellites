@@ -792,8 +792,9 @@ The alternation rules (§6.2) depend on the sounds on both sides, and code canno
 
 - **Quotation marks:** «ялинки», „лапки“ inside them. Never straight or “English” quotes. A typed query is quoted
   with «ялинки»: «Нічого не знайдено за запитом «Kyiv».»; „лапки“ only for a quote inside a quote.
-- **Apostrophe:** **’ U+02BC** everywhere («з’єднання», «об’єкт», «п’ятниця», «Прип’ять»). It is what Intl prints, and
-  it is in Instrument Sans's Latin subset, so it never falls back to another face. Never U+0027, U+2019 or a backtick.
+- **Apostrophe:** **’ U+2019** everywhere («з’єднання», «об’єкт», «п’ятниця», «Прип’ять»), as §0 says: the design's
+  faces have no U+02BC glyph, so it would fall to a system face, and `src/i18n/i18n.test.ts` keeps it out of every
+  catalog (the place-name table writes ’ too). Never U+0027, U+02BC or a backtick.
 - **Ellipsis:** one character … (U+2026), no space before: «Пошук…».
 - **Dashes:** em dash — with spaces only where grammar needs it (a missing link verb: «Автомобіль — це один піксель»,
   «Автор — @armaangupt0», «Кожен кадр — той самий квадрат»), never as decoration. En dash – without spaces for ranges
@@ -1093,7 +1094,7 @@ browser to English, not Ukrainian).
 6. **Euphony:** у/в, і/й, з/із/зі by §6.2; «та» next to a slot.
 7. **Numbers:** decimal comma, NBSP grouping and units (as ` ` in source), «25%» and «98,6°» tight; coordinates
    and compass points in readouts untouched.
-8. **Punctuation:** «ялинки», ’ (U+02BC), …, em dash only where grammar needs it, no exclamation marks.
+8. **Punctuation:** «ялинки», ’ (U+2019), …, em dash only where grammar needs it, no exclamation marks.
 9. **Dates and times:** genitive months from Intl; no weekday after a preposition; «о / об» by the hour; «за місцевим
    часом»; numeric relative times; no «р.» in stamps.
 10. **Length:** within §7's budgets; mono labels counted in characters.
