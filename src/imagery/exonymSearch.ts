@@ -40,7 +40,7 @@ export interface Alternate {
   /**
    * The keys of the place's other English names that the table gives the same name to, in the same country (Photon's
    * Zaporizhzhia beside the list's Zaporizhzhya, the Paracels' three): whichever the list has a row for finds it. A
-   * country's: the list's own name for it, where that is not the browser's (LIST_COUNTRY_NAMES).
+   * country's: the list's own name for it, where that is not the browser's (./localPlaces.ts LIST_COUNTRY_NAMES).
    */
   also?: string[]
   /** ISO country code, upper case */
@@ -136,34 +136,6 @@ export function typedNames(src: string): TypedName[] {
 
 let indexed: { src: string; typed: TypedName[] } | undefined
 
-/**
- * The offline list's English name for each country it names otherwise than the browser does in English (GeoNames':
- * Ivory Coast, The Netherlands, Palestinian Territory, for CLDR's Côte d’Ivoire, Netherlands, Palestine): a country
- * found by its name in the language is its code's row (./localPlaces.ts searchLocal), but that row is in the file of
- * the list's name, which may not be the browser's name's file (Alternate.also). src/imagery/exonymSearch.test.ts holds
- * it equal to the committed list.
- */
-export const LIST_COUNTRY_NAMES: Readonly<Record<string, string>> = {
-  BQ: 'Bonaire, Saint Eustatius and Saba',
-  CC: 'Cocos Islands',
-  CD: 'Democratic Republic of the Congo',
-  CG: 'Republic of the Congo',
-  CI: 'Ivory Coast',
-  CV: 'Cabo Verde',
-  GS: 'South Georgia and the South Sandwich Islands',
-  HK: 'Hong Kong',
-  HM: 'Heard Island and McDonald Islands',
-  MM: 'Myanmar',
-  MO: 'Macao',
-  NL: 'The Netherlands',
-  PN: 'Pitcairn',
-  PS: 'Palestinian Territory',
-  TR: 'Turkey',
-  UM: 'United States Minor Outlying Islands',
-  VA: 'Vatican',
-  VC: 'Saint Vincent and the Grenadines',
-}
-
 /** The browser's country names in the active language, typed as the visitor types them (built once a language). */
 let countryNames: { locale: string; list: { compact: string; cc: string; shown: string }[] } | undefined
 const NOT_COUNTRIES = /^(European Union|United Nations|Unknown Region|Eurozone|Outlying Oceania|Pseudo)/
@@ -188,6 +160,11 @@ function ownCode(cc: string): boolean {
 const SHOWN_NAME = Symbol.for('watched.shownCountryName')
 const shownCountryName = (cc: string, locale: Locale): string | undefined =>
   (globalThis as { [k: symbol]: ((cc: string, locale: Locale) => string) | undefined })[SHOWN_NAME]?.(cc, locale)
+
+/** The offline list's name for country `cc`, where it is not the browser's (./localPlaces.ts LIST_COUNTRY_NAMES). */
+const LIST_NAMES = Symbol.for('watched.listCountryNames')
+const listCountryName = (cc: string): string | undefined =>
+  (globalThis as { [k: symbol]: Readonly<Record<string, string>> | undefined })[LIST_NAMES]?.[cc]
 
 /**
  * Every country by each name the browser gives it in the active language (by its own code only: ownCode), and by the
@@ -232,7 +209,7 @@ export function countryAliasesTyped(aliases: Readonly<Record<string, readonly st
  * (exact), whose later words are all of it (Hồ Chí Minh for Thành phố Hồ Chí Minh, but not exact: London's airports end
  * with London in Persian, and Shahr-e Qods is not Jerusalem), that start with it, or whose later words start with it
  * (3+ letters), and the `countries` named so (each country's offline key from `countryKey`, and its name in the list
- * where that is another, LIST_COUNTRY_NAMES). The exact ones come first,
+ * where that is another, listCountryName). The exact ones come first,
  * in the table's order (largest first); then the rest, the language's `home` countries' first (Hà N is Hà Nội before Hà
  * Nam in China, Ки is Київ before Китай), each group in the table's order: the cap must not leave out the capital at
  * home for the first names the table writes abroad. A name two English names share in one country (the city Kyiv and
@@ -272,8 +249,8 @@ export function exonymSearch(
     const tier = c.compact === q ? 0 : c.compact.startsWith(q) ? 2 : -1
     if (tier < 0) continue
     const key = countryKey(c.cc)
-    // Looked up under the list's own name too, which may be in another file (LIST_COUNTRY_NAMES).
-    const listed = placeKey(LIST_COUNTRY_NAMES[c.cc] ?? '')
+    // Looked up under the list's own name too, which may be in another file (listCountryName).
+    const listed = placeKey(listCountryName(c.cc) ?? '')
     const also = listed && listed !== key ? { also: [listed] } : {}
     const a: Alternate = { key, cc: c.cc, kind: 'country', exact: tier === 0, shown: c.shown ?? c.compact, ...also }
     hits.push({ a, tier, rank: -1, name: c.compact })

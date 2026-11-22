@@ -49,9 +49,6 @@ const hasTile = (i: number) => {
   return ((tileBits[i >> 3] >> (i & 7)) & 1) === 1
 }
 
-/** The country rows (kind 'c') of the files read in this page: their name's placeKey, by ISO code (isListCountry). */
-const countryRows = new Map<string, string>()
-
 export function parsePlaces(text: string): LocalPlace[] {
   const out: LocalPlace[] = []
   for (const l of text.split('\n')) {
@@ -61,21 +58,45 @@ export function parsePlaces(text: string): LocalPlace[] {
     const lon = Number(f[2])
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue
     const kind = f[6] === 'r' || f[6] === 'c' || f[6] === 'f' ? f[6] : ''
-    const key = placeKey(f[7] || f[0])
-    if (kind === 'c') countryRows.set(f[3].toUpperCase(), key)
-    out.push({ name: f[0], lat, lon, cc: f[3], admin1: f[4], p: Number(f[5]) || 0, kind, key })
+    out.push({ name: f[0], lat, lon, cc: f[3], admin1: f[4], p: Number(f[5]) || 0, kind, key: placeKey(f[7] || f[0]) })
   }
   return out
 }
 
 /**
- * Is `name` the offline list's own name for country `cc`: its country row's (GeoNames': Palestinian Territory, Ivory
- * Coast, The Netherlands, where the browser says Palestine, Côte d’Ivoire, Netherlands)? So a country row is named as
- * a country, by its kind and code, not by an English name the browser may give otherwise (geocode.ts displayLabel).
- * Known once a file holding that row has been read in the page, as every row a search shows from the list has been.
+ * The offline list's English name for each country it names otherwise than the browser does in English (GeoNames':
+ * Ivory Coast, The Netherlands, Palestinian Territory, for CLDR's Côte d’Ivoire, Netherlands, Palestine). Written
+ * here, not gathered from the files a page has read: a row so named, the list's or Open-Meteo's (which names places as
+ * GeoNames does), is named as its country from the first time it is shown, so its name never changes once shown
+ * (geocode.ts displayLabel); and a country found by its name in the language is looked up in the file of this name,
+ * which may not be the browser's name's file (./exonymSearch.ts, Alternate.also). src/imagery/exonymSearch.test.ts
+ * holds it equal to the committed list.
  */
+export const LIST_COUNTRY_NAMES: Readonly<Record<string, string>> = {
+  BQ: 'Bonaire, Saint Eustatius and Saba',
+  CC: 'Cocos Islands',
+  CD: 'Democratic Republic of the Congo',
+  CG: 'Republic of the Congo',
+  CI: 'Ivory Coast',
+  CV: 'Cabo Verde',
+  GS: 'South Georgia and the South Sandwich Islands',
+  HK: 'Hong Kong',
+  HM: 'Heard Island and McDonald Islands',
+  MM: 'Myanmar',
+  MO: 'Macao',
+  NL: 'The Netherlands',
+  PN: 'Pitcairn',
+  PS: 'Palestinian Territory',
+  TR: 'Turkey',
+  UM: 'United States Minor Outlying Islands',
+  VA: 'Vatican',
+  VC: 'Saint Vincent and the Grenadines',
+}
+
+/** Is `name` the offline list's own name for country `cc`, where that is not the browser's (LIST_COUNTRY_NAMES)? */
 export function isListCountry(name: string, cc: string): boolean {
-  return countryRows.get(cc.toUpperCase()) === placeKey(name)
+  const listed = LIST_COUNTRY_NAMES[cc.toUpperCase()]
+  return !!listed && placeKey(listed) === placeKey(name)
 }
 
 /** The landmark file: `name|lat|lon|cc|where|alias;alias` (scripts/build-places.ts). */
@@ -187,11 +208,12 @@ export function shownCountryName(cc: string, locale: Locale): string {
 }
 
 /**
- * shownCountryName, shared with ./exonymSearch.ts by Symbol.for, as src/lib/staleBuild.ts shares its quiet chunks: the
- * search's chunk must not import this module, which would then be split into files of its own (with ./lru.ts), two
- * more requests on every page, English's too.
+ * shownCountryName and LIST_COUNTRY_NAMES, shared with ./exonymSearch.ts by Symbol.for, as src/lib/staleBuild.ts
+ * shares its quiet chunks: the search's chunk must not import this module, which would then be split into files of its
+ * own (with ./lru.ts), two more requests on every page, English's too.
  */
 ;(globalThis as { [k: symbol]: unknown })[Symbol.for('watched.shownCountryName')] = shownCountryName
+;(globalThis as { [k: symbol]: unknown })[Symbol.for('watched.listCountryNames')] = LIST_COUNTRY_NAMES
 
 /**
  * Up to `limit` places matching `query`, best first, from the search file for its first letters and the landmark

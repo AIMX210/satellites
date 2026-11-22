@@ -18,12 +18,12 @@ import ukNames from '@/i18n/uk/exonyms.gen'
 import ruNames from '@/i18n/ru/exonyms.gen'
 import faNames from '@/i18n/fa/exonyms.gen'
 import hiNames from '@/i18n/hi/exonyms.gen'
-import { exonymSearch, LIST_COUNTRY_NAMES, typedKey } from './exonymSearch'
+import { exonymSearch, typedKey } from './exonymSearch'
 import type { Place } from '@/types'
 import { displayLabel, displaySublabel, reversePlace, searchPlaces } from './geocode'
 import { OPEN_METEO_GEOCODE } from './endpoints'
 import { englishCountryKey, ensureExonyms, exonymAlternates, exonymHome } from './exonyms'
-import { countryName, parsePlaces, searchLocal, shownCountryName } from './localPlaces'
+import { countryName, LIST_COUNTRY_NAMES, parsePlaces, searchLocal, shownCountryName } from './localPlaces'
 import { PLACES_VERSION } from './localPlaces.gen'
 import { placeKey } from './placeKey'
 
@@ -473,6 +473,27 @@ describe('searching in the visitor’s own names (real data)', () => {
     for (const q of ['Hà Lan', 'Thổ Nhĩ Kỳ']) expect(displayLabel(await first(q))).toBe(q)
     setBundleForTests('en', null)
     expect(displayLabel(await first('Palestin'))).toBe('Palestinian Territory')
+  })
+
+  it('names a country as the list does before its file is read, and the same after', async () => {
+    // Open-Meteo names a country as GeoNames does, so as the list does (Ivory Coast), whatever list files were read.
+    vi.stubGlobal('fetch', async (input: string) => {
+      const file = FILES[`/public${String(input)}`]
+      return file ? new Response(await file()) : Response.json({ results: [], features: [] })
+    })
+    // Fresh modules: the files earlier tests read stay in memory.
+    vi.resetModules()
+    const runtime = await import('@/i18n/runtime')
+    const geocode = await import('./geocode')
+    const { shownCountryName } = await import('./localPlaces')
+    runtime.setBundleForTests('ru', { exonyms: { names: ruNames, countries: true } })
+    await (await import('./exonyms')).ensureExonyms()
+    const geocoded = { label: 'Ivory Coast', countryCode: 'ci' }
+    const shown = geocode.displayLabel(geocoded)
+    // The list's file for it, with its country row.
+    expect((await geocode.searchPlaces('Ivory Coast'))[0]).toMatchObject(geocoded)
+    expect([shown, geocode.displayLabel(geocoded)]).toEqual(Array(2).fill(shownCountryName('CI', 'ru')))
+    runtime.setBundleForTests('en', null)
   })
 
   it('knows the list’s own name for each country it names otherwise than the browser', () => {
