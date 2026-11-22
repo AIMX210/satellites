@@ -144,6 +144,7 @@ describe('choosing a name', () => {
     expect(cleanName('نظر آباد', 'fa')).toBe('نظرآباد') // ر never joins: one word
     expect(cleanName('ناحیه های تابع جمهوری', 'fa')).toBe('ناحیه\u200cهای تابع جمهوری')
     expect(cleanName('خانآباد', 'fa')).toBe('خان\u200cآباد')
+    expect(cleanName('فرودگاه بین المللی بندرعباس', 'fa')).toBe('فرودگاه بین\u200cالمللی بندرعباس')
     expect(displayName([alt('پاروں')], 'fa')).toBeUndefined() // an Urdu letter
     // Hindi: the anusvara for a nasal before its own class, no nukta on क ख ग (ज़ and फ़ keep theirs).
     expect(cleanName('इन्दौर', 'hi')).toBe('इंदौर')
@@ -388,10 +389,11 @@ describe('the generated tables', () => {
     expect([t.labels.get('VN|khanh hoa'), t.labels.get('VN|hanoi')]).toEqual(['Tỉnh Khánh Hòa', 'Thành phố Hà Nội'])
   })
 
-  it('write Persian as fa.md §6.1 does: the ezafe’s hamza only on a final ه, no doubled ئ, no Arabic or Latin letters', () => {
+  it('write Persian as fa.md §6.1 does: the ezafe’s hamza on a final ه only, one ئ, its letters, half-spaces', () => {
     const t = parseExonyms(fa)
     const names = [t.towns, t.regions, t.features, t.labels].flatMap((m) => [...m.values()])
-    expect(names.filter((n) => /[^ه]\u0654|\u0654(?![\s\u200c]|$)|ئئ|[يكىة]|\p{Script=Latin}/u.test(n))).toEqual([])
+    const malformed = /[^ه]\u0654|\u0654(?![\s\u200c]|$)|ئئ|[يكىة]|\p{Script=Latin}|بین الملل/u
+    expect(names.filter((n) => malformed.test(n))).toEqual([])
     // The Afghan airports GeoNames names میدانٔ هوائئ کندهار and میدانٔ هوائیٔ کابل (pre-ship review, 2026-11-22).
     expect([t.towns.get('AF|kandahar airport'), t.towns.get('AF|hamid karzai international airport')]).toEqual([
       'فرودگاه قندهار',

@@ -414,13 +414,15 @@ const ukApostrophe = (s: string) => s.replace(/['ʼ]/g, '’')
 
 /**
  * Persian joins a word's parts with the zero-width non-joiner, never a space (fa.md §6.1): GeoNames writes خرم آباد,
- * خمینی شهر and ناحیه های for خرم‌آباد, خمینی‌شهر and ناحیه‌های, and خانآباد with آ joined on. After a letter that
- * never joins the next, the parts are simply one word (نظرآباد, فولادشهر).
+ * خمینی شهر, ناحیه های and بین المللی (an airport's "international") for خرم‌آباد, خمینی‌شهر, ناحیه‌های and
+ * بین‌المللی, and خانآباد with آ joined on. After a letter that never joins the next, the parts are simply one word
+ * (نظرآباد, فولادشهر).
  */
 const persianJoins = (s: string) =>
   s
     .replace(/([اأدذرزژو]) (آباد|شهر)(?= |$)/gu, '$1$2')
     .replace(/(\S) (آباد|شهر|ها|های)(?= |$)/gu, '$1\u200c$2')
+    .replace(/(^| )بین (?=الملل)/gu, '$1بین\u200c')
     .replace(/([بپتثجچحخسشصضطظعغفقکگلمنهی])آ/gu, '$1\u200cآ')
 
 /**

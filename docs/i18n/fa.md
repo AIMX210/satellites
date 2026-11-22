@@ -632,7 +632,8 @@ letters arrive written. They are left-to-right islands in DOM text (§6.2) and a
   hamza on a final `ه` only (`exonymTables.test.ts`). GeoNames' Dari forms that break them are fixed by hand in
   `scripts/exonyms.ts`: it named Kandahar's and Kabul's airports `میدانٔ هوائئ کندهار` and `میدانٔ هوائیٔ کابل` (the
   hamza on `ن`, a doubled `ئ`, `کندهار` beside the table's `قندهار`); an airport is `فرودگاه`, as Iranian Persian and
-  the table's others name it (`فرودگاه قندهار`، `فرودگاه بین‌المللی کابل`).
+  the table's others name it (`فرودگاه قندهار`، `فرودگاه بین‌المللی کابل`). GeoNames' spaced `بین المللی` takes its
+  half-space (`cleanName`), as `خرم آباد` and `ناحیه های` already did.
 
 ### 6.2 Direction
 
