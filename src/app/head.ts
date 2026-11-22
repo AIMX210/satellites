@@ -14,19 +14,23 @@
  * wrong. A curated place is named as that language shows it (Place.label); any other by the name the page shows it
  * under (imagery displayLabel: Москва for Moscow, as the headline says it), once the language's place names are in.
  * Until then (the boot of a link, a table still on its way) the tab keeps the label: asking for a name before its
- * table is in would keep the table out of the page (src/imagery/exonyms.ts), and no name on screen may change.
+ * table is in would keep the table out of the page (src/imagery/exonyms.ts), and no name on screen may change. A place
+ * page's own place is named, while the app boots under it, as its report will hold it (links.ts pageTarget, then
+ * linkPlaceIn): the name it takes then is the one it keeps (Pyramides de Gizeh from the start, not Pyramids of Giza).
  *
  * The landing's title is never read back from document.title: before the app runs, the boot words
  * (src/i18n/bootText.ts) have already set the boot language's title there, so a German page switched to English, or
  * falling back to it when its chunk failed, would keep the German one.
  */
 import enApp from '@/i18n/en/app'
+import enPlaces from '@/i18n/en/places'
 import { currentLocale, msgs, useLocaleStore } from '@/i18n/runtime'
 import { displayLabel, exonymsReady, linkedForName } from '@/imagery'
 import { bootPlace, isPagePlace, pagePlace, pageTitle, type NamedSpot, type PagePlace } from '@/lib/placePage'
 import { curatedId } from '@/ui/landing/places'
 import { useApp, type Phase } from '@/state/store'
 import type { Place } from '@/types'
+import { linkPlaceIn, pageTarget } from './links'
 
 export interface Head {
   title: string
@@ -50,10 +54,16 @@ const SHOWS_PLACE: readonly Phase[] = ['computing', 'results', 'error']
 export const plainPlaceTitle = (label: string) => `${label} · Watched`
 
 /**
- * The head for `place` in `phase`. `opening` is the place of the place page being loaded: while the app boots, the
- * page already names it, and it is about to be on screen.
+ * The head for `place` in `phase`. `opening` is the place of the place page being loaded, as its report will hold it:
+ * while the app boots, the page already names it, and it is about to be on screen.
  */
-export function headFor(phase: Phase, place: NamedSpot | undefined, page: PagePlace | undefined, words: HeadWords, opening?: PagePlace): Head {
+export function headFor(
+  phase: Phase,
+  place: NamedSpot | undefined,
+  page: PagePlace | undefined,
+  words: HeadWords,
+  opening?: NamedSpot,
+): Head {
   const shown = SHOWS_PLACE.includes(phase) ? place : phase === 'boot' ? opening : undefined
   if (!shown) return { title: words.home, canonical: '/' }
   // Any other place is a search, not a page: search engines keep the landing for it.
@@ -91,7 +101,11 @@ export function installHeadSync(): void {
   const sync = () => {
     const st = useApp.getState()
     const english = currentLocale() === 'en'
-    apply(headFor(st.phase, st.place, page, { home: msgs(enApp).documentTitle, english, name: english ? undefined : shownName }, opening))
+    // The page's place as its report will hold it (controller.ts boot: readUrlTarget, then linkPlaceIn), so the tab
+    // names it under the curtain as the results will (Pyramides de Gizeh from the first frame, not Pyramids of Giza).
+    const boot = st.phase === 'boot' && opening ? linkPlaceIn(pageTarget(opening), msgs(enPlaces)) : undefined
+    const words = { home: msgs(enApp).documentTitle, english, name: english ? undefined : shownName }
+    apply(headFor(st.phase, st.place, page, words, boot))
   }
   sync()
   useApp.subscribe((st, prev) => {
