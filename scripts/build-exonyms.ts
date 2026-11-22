@@ -132,7 +132,7 @@ const FEATURE_HOMES = new Set(LANGS.flatMap((l) => RULES[l].home.filter((h) => !
  * name for a Romansh or Italian peak is often another language's, or a neighbouring summit's.
  */
 const ENGLISH_FEATURE =
-  /\b(Lakes?|Castle|Palace|Islands?|Isle|Airport|Airfield|University|Glacier|Mount|Mountains?|Alps|Forest|Zoo|Cathedral|Church|Abbey|Monastery|Park|Museum|Bridge|Dam|Reservoir|Falls|Waterfall|Gorge|Peninsula|Bay|Valley|Tower|Square|Gardens?|Opera|Cemetery|Camp|Fortress|Canal|Strait|Sea|Gulf|Lagoon|Volcano|Hills?|Peak|Range|Plateau|Cape|Viaduct|Observatory|Monument|Memorial|Ruins|Temple|Basin|Delta|Lighthouse|Caves?|Crater|Reef)\b/i
+  /\b(Lakes?|Castle|Palace|Fountain|Forum|Circus|Aquarium|Basilica|Theatre|Field|Islands?|Isle|Airport|Airfield|University|Glacier|Mount|Mountains?|Alps|Forest|Zoo|Cathedral|Church|Abbey|Monastery|Park|Museum|Bridge|Dam|Reservoir|Falls|Waterfall|Gorge|Peninsula|Bay|Valley|Tower|Square|Gardens?|Opera|Cemetery|Camp|Fortress|Canal|Strait|Sea|Gulf|Lagoon|Volcano|Hills?|Peak|Range|Plateau|Cape|Viaduct|Observatory|Monument|Memorial|Ruins|Temple|Basin|Delta|Lighthouse|Caves?|Crater|Reef)\b/i
 /** Stadiums keep their names: GeoNames' other names for them are often the club's, or a sponsor's (Joggeli, Servette FC). */
 const KEEPS_NAME = new Set(['STDM'])
 
@@ -385,7 +385,11 @@ async function main() {
         continue
       }
       const shown = inTable(t, home) ? nameOf(t.id, t.cc, home) : undefined
-      if (shown) addDisplay(table, { english: spellings(t.id, t.name), cc: t.cc, region: false, pop: t.pop, home }, shown, { forced: over[t.id] !== undefined })
+      // At home, the town's own name where the data writes a census locality's compound (Valmadrera-Caserta) or the
+      // wrong case (Cassano All'Ionio): Rules.compounds.
+      const ownName =
+        !!shown && home && !!rules.compounds && (t.name.split(/\s*[-–]\s*/).includes(shown) || (shown !== t.name && shown.toLowerCase() === t.name.replace(/'/g, '’').toLowerCase()))
+      if (shown) addDisplay(table, { english: spellings(t.id, t.name), cc: t.cc, region: false, pop: t.pop, home }, shown, { forced: over[t.id] !== undefined || ownName })
       else small.push(t)
     }
     // Regions: every one at home, and abroad those of the countries the rules list. A Latin region whose English name
@@ -503,6 +507,18 @@ async function main() {
       for (const alias of names) {
         const a = { cc, english, alias: cleanName(alias, lang) }
         if (!aliases.some((x) => x.cc === a.cc && x.english === a.english && x.alias === a.alias)) aliases.push(a)
+      }
+    }
+    // And the large towns at home in another language's spelling (Rules.searchAs: Russian's for Ukrainian).
+    if (rules.searchAs) {
+      const { lang: other, minPop } = rules.searchAs
+      const fold = (n: string) => n.toLowerCase().replace(/[іїы]/g, 'и').replace(/[єэ]/g, 'е').replace(/ґ/g, 'г').replace(/['’ʼ]/g, '')
+      for (const t of towns) {
+        if (t.section || t.pop < minPop || !atHome(rules, t.cc, t.admin1)) continue
+        const theirs = OVERRIDES[other][t.id] || displayName(alts.get(t.id)?.get(other), other, { cc: t.cc, english: [t.name] })
+        const ours = table.get(t.cc)?.get(placeKey(t.name))?.shown
+        if (theirs && ours && fold(theirs) !== fold(ours) && !aliases.some((a) => a.cc === t.cc && a.english === t.name && a.alias === theirs))
+          aliases.push({ cc: t.cc, english: t.name, alias: cleanName(theirs, lang) })
       }
     }
     const names = serializeDisplay(table, rules.latin, aliases)

@@ -84,6 +84,16 @@ export interface Rules {
    */
   homeFeatures?: number
   /**
+   * At home, a town GeoNames names by one part of the data's compound (Valmadrera for Valmadrera-Caserta, ISTAT's
+   * census localities) or in another case only (Cassano all’Ionio for Cassano All'Ionio) takes that name.
+   */
+  compounds?: boolean
+  /**
+   * Search names in another language's spelling for the large towns at home (Ukrainian: Russian's, Луганск for Луганськ,
+   * as many readers type a town's Russian name): `lang`'s name for each town of `minPop` people, never shown.
+   */
+  searchAs?: { lang: Lang; minPop: number }
+  /**
    * The label of a region named like a town of its country, apart from its where-line name (a search lists both: قم
    * and استان قم, Thanh Hóa and Tỉnh Thanh Hóa); undefined to leave the two alike.
    */
