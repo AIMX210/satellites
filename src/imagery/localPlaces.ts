@@ -175,10 +175,16 @@ export async function searchLocal(
   if (!latin && !alternates.length) return []
   const shardRows = (shard: ReturnType<typeof shardFor>) =>
     shard ? load(`s/${shard.file}.txt`, signal).then((rows) => (rows || !shard.head ? rows : load(`s/${shard.head}.txt`, signal))) : Promise.resolve(null)
+  // Each alternate under its English name's key, and at home under its own name's too: the list files a town named in
+  // its language at home by that name (Köln, not Cologne).
+  const lookups = alternates.flatMap((a, i) => {
+    const own = placeKey(a.shown)
+    return [{ i, key: a.key }, ...(home.includes(a.cc) && own !== a.key && shardOf(own) ? [{ i, key: own }] : [])]
+  })
   const [towns, marks, ...named] = await Promise.allSettled([
     latin ? shardRows(shardFor(q, GROUPS, SPLIT)) : Promise.resolve(null),
     load(LANDMARKS, signal),
-    ...alternates.map((a) => shardRows(shardFor(a.key, GROUPS, SPLIT))),
+    ...lookups.map((l) => shardRows(shardFor(l.key, GROUPS, SPLIT))),
   ])
   throwIfAborted(signal)
   const all = [towns, marks, ...named]
@@ -202,20 +208,21 @@ export async function searchLocal(
   const asTyped = hits.some((h) => h.exact && verbatim(h.r.name) === typed)
   const townScore = new Map<string, number>()
   // Towns first, so a region named like one knows its score.
-  const order = alternates.map((a, i) => [a, i] as const).sort(([a], [b]) => Number(a.kind !== 'town') - Number(b.kind !== 'town'))
-  order.forEach(([a, i]) => {
+  const order = lookups.map((l, n) => ({ ...l, n })).sort((x, y) => Number(alternates[x.i].kind !== 'town') - Number(alternates[y.i].kind !== 'town'))
+  order.forEach(({ i, key, n }) => {
+    const a = alternates[i]
     const exact = a.exact && (!asTyped || verbatim(a.shown) === typed)
     const bonus = exact ? EXACT_BONUS + (home.includes(a.cc) ? HOME_BONUS : 0) : 0
     const same = `${a.cc}|${verbatim(a.shown)}`
-    for (const r of rowsOf(named[i]))
-      if (r.key === a.key && r.cc === a.cc && KINDS[a.kind].includes(r.kind)) {
+    for (const r of rowsOf(named[n]))
+      if (r.key === key && r.cc === a.cc && KINDS[a.kind].includes(r.kind)) {
         let score = r.p + bonus
         // A region named like a town of its country follows the town (both show the same name).
         if (a.kind === 'town') townScore.set(same, Math.max(townScore.get(same) ?? -Infinity, score))
         else if (a.kind === 'region' && townScore.has(same)) score = Math.min(score, townScore.get(same)! - 1)
         hits.push({ r, score, exact })
       }
-    if (a.kind === 'town')
+    if (a.kind === 'town' && key === a.key)
       // A landmark by the visitor's name for it ranks as by another of its names: in full as a large city, else as a
       // word of it (Моск finds Москва before Московский Кремль, as "mosc" finds Moscow before the Kremlin).
       for (const r of rowsOf(marks))

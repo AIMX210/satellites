@@ -6,6 +6,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setBundleForTests } from '@/i18n/runtime'
 import viExonyms from '@/i18n/vi/exonyms'
+import deExonyms from '@/i18n/de/exonyms'
+import ukExonyms from '@/i18n/uk/exonyms'
+import ruExonyms from '@/i18n/ru/exonyms'
+import faExonyms from '@/i18n/fa/exonyms'
+import hiExonyms from '@/i18n/hi/exonyms'
 import deNames from '@/i18n/de/exonyms.gen'
 import ukNames from '@/i18n/uk/exonyms.gen'
 import ruNames from '@/i18n/ru/exonyms.gen'
@@ -32,8 +37,11 @@ function serveFiles() {
   return { network: () => f.mock.calls.map((c) => String(c[0])).filter((u) => !u.startsWith('/places/')) }
 }
 
-const as = async (locale: 'de' | 'uk' | 'ru' | 'vi' | 'fa' | 'hi', names?: string) => {
-  setBundleForTests(locale, { exonyms: names === undefined ? viExonyms : { names, countries: true } })
+/** Each language's own countries, as its namespace gives them (a name at home leads the same name abroad). */
+const HOME = { de: deExonyms.home, uk: ukExonyms.home, ru: ruExonyms.home, vi: viExonyms.home, fa: faExonyms.home, hi: hiExonyms.home }
+
+const as = async (locale: keyof typeof HOME, names?: string) => {
+  setBundleForTests(locale, { exonyms: names === undefined ? viExonyms : { names, countries: true, home: HOME[locale] } })
   await ensureExonyms()
 }
 
@@ -147,6 +155,31 @@ describe('searching in the visitor’s own names (real data)', () => {
     const delhi = (await searchPlaces('नई दिल्ली'))[0]
     expect(delhi).toMatchObject({ label: 'New Delhi', countryCode: 'in' })
     expect(displayLabel(delhi)).toBe('नई दिल्ली')
+  })
+
+  it('finds what the native review typed (2026-11-22), offline and first', async () => {
+    const files = serveFiles()
+    const first = async (q: string) => (await searchPlaces(q))[0]
+    await as('de', deNames)
+    expect(await first('Kiew')).toMatchObject({ label: 'Kyiv', countryCode: 'ua' })
+    expect(await first('Koeln')).toMatchObject({ label: 'Köln', countryCode: 'de' })
+    expect(await first('Bodensee')).toMatchObject({ label: 'Lake Constance', countryCode: 'de' })
+    const kherson = await first('Cherson')
+    expect([kherson.label, displayLabel(kherson)]).toEqual(['Kherson', 'Cherson']) // the city, not its oblast
+    await as('uk', ukNames)
+    expect(await first('харкив')).toMatchObject({ label: 'Kharkiv' }) // и for і, from a Russian layout
+    expect(await first('Киев')).toMatchObject({ label: 'Kyiv' }) // a search name, never shown
+    expect(displayLabel(await first('Бунге'))).toBe('Бунге')
+    await as('ru', ruNames)
+    const murmansk = await first('Мурманск')
+    expect([murmansk.label, murmansk.kind, displayLabel(murmansk)]).toEqual(['Murmansk', undefined, 'Мурманск'])
+    await as('fa', faNames)
+    expect(displayLabel(await first('اسلام اباد'))).toBe('اسلام\u200cآباد') // typed without its madda
+    expect(await first('قدس')).toMatchObject({ label: 'Jerusalem' }) // not Shahr-e Qods, شهر قدس
+    await as('hi', hiNames)
+    expect(await first('मुम्बई')).toMatchObject({ label: 'Mumbai' })
+    expect(displayLabel(await first('बर्न'))).toBe('बर्न')
+    expect(files.network()).toEqual([])
   })
 
   it('finds a German or Italian exonym, and a country by the browser’s name for it', async () => {
