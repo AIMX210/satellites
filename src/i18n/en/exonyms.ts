@@ -50,6 +50,12 @@ export interface ExonymsNamespace {
    */
   umlauts?: boolean
   /**
+   * The language writes another script than Latin and its table names the where line's regions (Ukrainian, Russian,
+   * Persian, Hindi): under a label in its script, a part of the where line it has no name for is left out rather than
+   * shown in Latin letters beside it. Korean's where line stays the data's (owner, ko/exonyms.ts).
+   */
+  ownScript?: boolean
+  /**
    * Areas the language's readers hold to be their own country's where the place data files places under another (the
    * Paracel and Spratly Islands, for Vietnamese readers: docs/i18n/vi.md §8), as [south, west, north, east] in degrees:
    * a place there that the data puts in a country other than the language's `home` shows no where line, as the

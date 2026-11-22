@@ -16,6 +16,7 @@ let loading: Promise<void> | undefined
 const exonyms: typeof en = {
   names: '',
   countries: true,
+  ownScript: true,
   home: ['RU', 'BY', 'KZ', 'KG'],
   load: () =>
     (loading ??= import('./exonyms.gen').then(

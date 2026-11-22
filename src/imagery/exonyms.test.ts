@@ -98,6 +98,8 @@ describe('exonyms', () => {
       'Takeshima',
     ])
     expect(displaySublabel({ sublabel: 'North Gyeongsang, South Korea', countryCode: 'kr' })).toBe('North Gyeongsang, 대한민국')
+    // Korean's where line stays the data's under a Korean name too (its table names no region: no `ownScript`).
+    expect(displaySublabel({ label: 'Liancourt Rocks', sublabel: 'North Gyeongsang, South Korea', countryCode: 'kr' })).toBe('North Gyeongsang, 대한민국')
   })
 
   it('shows the label and the where line in the visitor’s language, and keeps the Place English', () => {
@@ -131,12 +133,12 @@ describe('exonyms', () => {
 
   it('leaves out a part in Latin letters under a label in another script, and keeps it under a Latin one', () => {
     const where = (rest: string | undefined, country: string) => (rest === undefined ? country : `${rest}, ${country}`)
-    setBundleForTests('ru', { exonyms: { names: 'GB:London=Лондон|US:*Illinois=Иллинойс' }, geo: { ...enGeo, where } })
+    setBundleForTests('ru', { exonyms: { names: 'GB:London=Лондон|US:*Illinois=Иллинойс', ownScript: true }, geo: { ...enGeo, where } })
     expect(displaySublabel({ label: 'London', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('Великобритания')
     expect(displaySublabel({ label: 'Chicago', sublabel: 'Illinois, United States', countryCode: 'us' })).toBe('Иллинойс, Соединенные Штаты')
     expect(displaySublabel({ label: 'Leeds', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('England, Великобритания')
     // Washington, D.C. is one part: never the state of Washington (Persian showed the White House in ایالت واشینگتن).
-    setBundleForTests('ru', { exonyms: { names: 'US:^White House=Белый дом;Washington, D.C.=Вашингтон;*Washington=Вашингтон (штат)' }, geo: { ...enGeo, where } })
+    setBundleForTests('ru', { exonyms: { names: 'US:^White House=Белый дом;Washington, D.C.=Вашингтон;*Washington=Вашингтон (штат)', ownScript: true }, geo: { ...enGeo, where } })
     expect(displaySublabel({ label: 'White House', sublabel: 'Washington, D.C., United States', countryCode: 'us', kind: 'feature' })).toBe('Вашингтон, Соединенные Штаты')
     setBundleForTests('en', null)
     expect(displaySublabel({ label: 'White House', sublabel: 'Washington, D.C., United States', countryCode: 'us' })).toBe('Washington, D.C., United States')

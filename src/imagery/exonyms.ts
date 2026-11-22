@@ -162,6 +162,9 @@ export function exonymContested(lat: number, lon: number, cc: string): boolean {
   return m.contested.some(([s, w, n, e]) => lat >= s && lat <= n && lon >= w && lon <= e)
 }
 
+/** Does the active language leave a where line's Latin parts out under a label in its own script (`ownScript`)? */
+export const exonymsOwnScript = (): boolean => !!msgs(enExonyms).ownScript
+
 /** Does the active language name countries by the browser's names on their own label too (its namespace says so)? */
 export const namesCountries = (): boolean => !!msgs(enExonyms).countries && !!activeTable(true)
 

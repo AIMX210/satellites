@@ -30,7 +30,17 @@ import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
 import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
-import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, exonymContested, exonymHome, exonymVariants, namesCountries } from './exonyms'
+import {
+  englishCountryKey,
+  ensureExonyms,
+  exonym,
+  exonymAlternates,
+  exonymContested,
+  exonymHome,
+  exonymsOwnScript,
+  exonymVariants,
+  namesCountries,
+} from './exonyms'
 import { countryCodeOf, countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
@@ -118,10 +128,10 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
  *
  * In another language, three more things. A landmark's where line, written by hand in English, that names two countries
  * (the place's and another: "France and Italy") or two regions the language names ("Nevada and Arizona, United
- * States") lists them in the language (Intl.ListFormat: Francia e Italia, Невада и Аризона). Under a label
- * the language writes in another script (Лондон, لندن, लंदन), a part it has no name for is left out rather than shown
- * in Latin letters beside it (Лондон · Велика Британія, not Лондон · England, Велика Британія), as English leaves out
- * a geocoder's non-Latin parts (sublabelOf). And a place in an area the language's readers hold to be their own, filed
+ * States") lists them in the language (Intl.ListFormat: Francia e Italia, Невада и Аризона). Under a label the
+ * language writes in its own script (Лондон, لندن, लंदन: its namespace's `ownScript`), a part it has no name for is
+ * left out rather than shown in Latin letters beside it (Лондон · Велика Британія, not Лондон · England, Велика
+ * Британія), as English leaves out a geocoder's non-Latin parts (sublabelOf); Korean's where line stays the data's. And a place in an area the language's readers hold to be their own, filed
  * by the data under another country (the Paracels and Spratlys, in Vietnamese: ./exonyms.ts exonymContested), shows
  * no where line at all.
  *
@@ -154,9 +164,10 @@ export function displaySublabel(
   if (country === undefined) return sub
   const rest = sub === country ? undefined : sub.slice(0, -(country.length + 2))
   shown ??= shownCountryName(cc, locale)
-  // Under a label in another script, a part left in Latin letters is left out (unless the language writes Latin).
+  // Under a label in the language's own script, a part left in Latin letters is left out (Ukrainian, Russian, Persian,
+  // Hindi: exonymsOwnScript).
   const label = place.label && displayLabel({ label: place.label, countryCode: cc, kind: place.kind })
-  const script = locale !== 'en' && !!label && !LATIN.test(label)
+  const script = locale !== 'en' && exonymsOwnScript() && !!label && !LATIN.test(label)
   const parts = rest
     ?.split(', ')
     // "Washington, D.C." is one name, not Washington (the state) and D.C.
