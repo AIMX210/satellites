@@ -11,6 +11,7 @@
  */
 import { haversineKm } from '@/lib/geo'
 import { LOCALE_INFO, type Locale } from '../../api/_lib/i18n/locales'
+import type { Alternate } from './exonymSearch'
 import { PLACE_GROUPS, PLACE_SPLIT, PLACE_TILES, PLACE_TILES_SPLIT, PLACES_VERSION } from './localPlaces.gen'
 import { Lru } from './lru'
 import { raceAbort, throwIfAborted } from './net'
@@ -150,26 +151,36 @@ export function shownCountryName(cc: string, locale: Locale): string {
  * called Toro, but "paris" with Paris, not Parisot); "paris france" and "waterloo, ontario" also match, the words
  * after the name starting the place's state or country. Landmarks match from the start of their name or another
  * name typed in full ("Area 51", "Groom Lake"), ranked as a large city, and from a later word or the start of
- * another name, 3+ letters ("pyramids", "giza"), ranked as a small one. [] if the query has no Latin key. Rejects only if neither
- * file can be loaded.
+ * another name, 3+ letters ("pyramids", "giza"), ranked as a small one. Rejects only if no file can be loaded.
+ *
+ * `alternates` are the places the query names in the visitor's language (./exonymSearch.ts: Москва
+ * for Moscow, Hà Nội for Hanoi): each is looked up in its English name's file, by name and country, and ranked as the
+ * place itself would be (its people, the exact bonus if the query is its whole name), so the capital Hà Nội leads the
+ * hamlet of that name. A query with no Latin key (Cyrillic, Persian, Devanagari) is answered by them alone; with
+ * none, [].
  */
-export async function searchLocal(query: string, signal?: AbortSignal, limit = 6): Promise<LocalPlace[]> {
+export async function searchLocal(query: string, signal?: AbortSignal, limit = 6, alternates: readonly Alternate[] = []): Promise<LocalPlace[]> {
   throwIfAborted(signal)
   const q = placeKey(query)
-  if (!shardOf(q)) return []
-  const shard = shardFor(q, GROUPS, SPLIT)
-  const [towns, marks] = await Promise.allSettled([
-    shard ? load(`s/${shard.file}.txt`, signal).then((rows) => (rows || !shard.head ? rows : load(`s/${shard.head}.txt`, signal))) : Promise.resolve(null),
+  const latin = !!shardOf(q)
+  if (!latin && !alternates.length) return []
+  const shardRows = (shard: ReturnType<typeof shardFor>) =>
+    shard ? load(`s/${shard.file}.txt`, signal).then((rows) => (rows || !shard.head ? rows : load(`s/${shard.head}.txt`, signal))) : Promise.resolve(null)
+  const [towns, marks, ...named] = await Promise.allSettled([
+    latin ? shardRows(shardFor(q, GROUPS, SPLIT)) : Promise.resolve(null),
     load(LANDMARKS, signal),
+    ...alternates.map((a) => shardRows(shardFor(a.key, GROUPS, SPLIT))),
   ])
   throwIfAborted(signal)
-  if (towns.status === 'rejected' && marks.status === 'rejected') throw towns.reason
+  const all = [towns, marks, ...named]
+  if (all.every((x) => x.status === 'rejected')) throw (towns as PromiseRejectedResult).reason
+  const rowsOf = (x: PromiseSettledResult<LocalPlace[] | null>) => (x.status === 'fulfilled' && x.value) || []
   const hits: { r: LocalPlace; score: number; exact?: boolean }[] = []
-  for (const r of (towns.status === 'fulfilled' && towns.value) || []) {
+  for (const r of rowsOf(towns)) {
     const exact = r.key === q || (q.startsWith(`${r.key} `) && inContext(q.slice(r.key.length + 1), r))
     if (exact || r.key.startsWith(q)) hits.push({ r, score: r.p + (exact ? EXACT_BONUS : 0), exact })
   }
-  for (const r of (marks.status === 'fulfilled' && marks.value) || []) {
+  for (const r of latin ? rowsOf(marks) : []) {
     const aliases = r.aliases ?? []
     const keys = [r.key, ...aliases]
     if (keys.includes(q)) hits.push({ r, score: LANDMARK_SCORE + EXACT_BONUS, exact: true })
@@ -177,6 +188,16 @@ export async function searchLocal(query: string, signal?: AbortSignal, limit = 6
     else if (q.length >= 3 && (aliases.some((k) => k.startsWith(q)) || keys.some((k) => k.split(' ').slice(1).some((w) => w.startsWith(q)))))
       hits.push({ r, score: LANDMARK_WORD_SCORE })
   }
+  alternates.forEach((a, i) => {
+    const bonus = a.exact ? EXACT_BONUS : 0
+    for (const r of rowsOf(named[i]))
+      if (r.key === a.key && r.cc === a.cc && KINDS[a.kind].includes(r.kind)) hits.push({ r, score: r.p + bonus, exact: a.exact })
+    if (a.kind === 'town')
+      // A landmark by the visitor's name for it ranks as by another of its names: in full as a large city, else as a
+      // word of it (Моск finds Москва before Московский Кремль, as "mosc" finds Moscow before the Kremlin).
+      for (const r of rowsOf(marks))
+        if (r.key === a.key && r.cc === a.cc) hits.push({ r, score: a.exact ? LANDMARK_SCORE + EXACT_BONUS : LANDMARK_WORD_SCORE, exact: a.exact })
+  })
   // Files are largest first and the sort is stable, so equal scores stay largest first.
   const seen = new Set<string>()
   return hits
@@ -190,6 +211,9 @@ export async function searchLocal(query: string, signal?: AbortSignal, limit = 6
     .slice(0, limit)
     .map((h) => (h.exact ? { ...h.r, exact: true } : h.r))
 }
+
+/** The offline list's kinds of row an alternate of each kind may be. */
+const KINDS: Record<Alternate['kind'], readonly LocalPlace['kind'][]> = { town: ['', 'f'], region: ['r'], country: ['c'] }
 
 /** An exact name's head start, on the log scale of `p` (20 per factor of ten): a hundred times the people. */
 const EXACT_BONUS = 40

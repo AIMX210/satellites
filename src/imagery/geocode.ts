@@ -29,7 +29,7 @@ import type { LatLon, Place } from '@/types'
 import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
-import { exonym } from './exonyms'
+import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, namesCountries } from './exonyms'
 import { countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
@@ -90,11 +90,19 @@ export function joinUnique(parts: (string | undefined)[], exclude: (string | und
 
 /**
  * A place's name as shown to the visitor: the name the visitor's language gives that town or region in that country
- * (./exonyms.ts: München, Київ), else its label as it came. In English, the label itself. Read at call time, as
- * displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups send.
+ * (./exonyms.ts: München, Київ), else, for a country in a language whose table says so, the browser's name for it
+ * (Германия for Germany, as the where line names it), else its label as it came. In English, the label itself. Read
+ * at call time, as displaySublabel is; the Place keeps its English label, which is what the usage stats and lookups
+ * send.
  */
 export function displayLabel(place: Pick<Place, 'label' | 'countryCode'>): string {
-  return exonym(place.label, place.countryCode, 'label')
+  const shown = exonym(place.label, place.countryCode, 'label')
+  const cc = place.countryCode
+  if (shown !== place.label || !cc || !namesCountries()) return shown
+  const key = placeKey(place.label)
+  if (key !== englishCountryKey(countryName(cc)) && key !== placeKey(shownCountryName(cc, 'en'))) return shown
+  const local = shownCountryName(cc, currentLocale())
+  return local.toUpperCase() === cc.toUpperCase() ? shown : local
 }
 
 /**
@@ -526,7 +534,8 @@ const appendNew = (first: Place[], more: Place[]) => dedupePlaces([...first, ...
  * under 2 characters or with no letters or digits. Rejects on network failure with nothing found offline (show
  * "search unavailable") and on abort.
  *
- * The offline list answers first (./localPlaces.ts: towns, states, countries and landmarks, in ~50 ms). With at least
+ * The offline list answers first (./localPlaces.ts: towns, states, countries and landmarks, in ~50 ms), by the
+ * names the visitor's language gives them too (./exonyms.ts: Москва, Hà Nội, Mailand). With at least
  * ENOUGH_LOCAL matches, or one named exactly what was typed, that is the answer, and no geocoder is asked: most searches never leave the site, which keeps
  * them fast and Open-Meteo's free quota for the rest. Otherwise Open-Meteo is asked, and Photon too if Open-Meteo is
  * slow or has nothing (it knows streets and points of interest); `onEarly` gets the offline matches meanwhile, and
@@ -537,7 +546,10 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   throwIfAborted(signal)
   const query = q.trim().replace(/\s+/g, ' ')
   if (query.length < 2 || !hasText(query)) return []
-  const key = textKey(query)
+  // The visitor's own names (./exonyms.ts) are part of the answer, and are shown in it: in before either.
+  await ensureExonyms()
+  throwIfAborted(signal)
+  const key = `${currentLocale()}|${textKey(query)}`
   const hit = searchCache.get(key)
   if (hit) return hit
 
@@ -548,7 +560,7 @@ export async function searchPlaces(q: string, signal?: AbortSignal, onEarly?: (p
   }
 
   let exact = false
-  const local = await searchLocal(query, signal).then(
+  const local = await searchLocal(query, signal, undefined, exonymAlternates(query, countryName)).then(
     (rows) => {
       exact = rows.some((r) => r.exact)
       return dedupePlaces(rows.map((r) => localToPlace(r, 'search')))
@@ -658,9 +670,17 @@ async function nominatimReverse(lat: number, lon: number, signal: AbortSignal): 
 /**
  * Name the place at (lat, lon). Never rejects except on abort: if neither geocoder has anything nearby (open
  * ocean, ice sheet) or can be reached, the label is the coordinates themselves.
- * The returned position is exactly (lat, lon), not the matched OSM object's.
+ * The returned position is exactly (lat, lon), not the matched OSM object's. Resolves once the visitor's place names
+ * are in too (./exonyms.ts), since the caller shows the name at once (a pin's label, a report).
  */
 export async function reversePlace(lat: number, lon: number, signal?: AbortSignal): Promise<Place> {
+  const names = ensureExonyms()
+  const place = await reverseUnnamed(lat, lon, signal)
+  await names
+  return place
+}
+
+async function reverseUnnamed(lat: number, lon: number, signal?: AbortSignal): Promise<Place> {
   throwIfAborted(signal)
   const fallback: Place = { lat, lon, label: coordinateLabel(lat, lon), source: 'geolocation' }
   if (!(Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) return fallback
