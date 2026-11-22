@@ -17,6 +17,11 @@ const exonyms: typeof en = {
   names: '',
   countries: true,
   home: ['VN'],
+  // The Paracels (Hoàng Sa) and the Spratlys (Trường Sa), clear of the Philippines' and Malaysia's coasts.
+  contested: [
+    [15.5, 110.8, 17.3, 113.0],
+    [7.0, 111.0, 12.0, 117.0],
+  ],
   load: () =>
     (loading ??= import('./exonyms.gen').then(
       (m) => void (exonyms.names = m.default),

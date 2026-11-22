@@ -30,7 +30,7 @@ import enGeo from '@/i18n/en/geo'
 import { currentLocale, msgs } from '@/i18n/runtime'
 import { NOMINATIM, OPEN_METEO_GEOCODE, PHOTON } from './endpoints'
 import { LOCALE_INFO } from '../../api/_lib/i18n/locales'
-import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, exonymHome, exonymVariants, namesCountries } from './exonyms'
+import { englishCountryKey, ensureExonyms, exonym, exonymAlternates, exonymContested, exonymHome, exonymVariants, namesCountries } from './exonyms'
 import { countryCodeOf, countryName, nearestLocal, searchLocal, shownCountryName, type LocalPlace } from './localPlaces'
 import { Lru } from './lru'
 import { placeKey } from './placeKey'
@@ -116,23 +116,27 @@ export function displayLabel(place: Pick<Place, 'label' | 'countryCode' | 'kind'
  * Macao by their short names. Any other sublabel (no country code, a geocoder's own spelling of the country, a curated
  * place's copy already in the visitor's language) is shown as it came.
  *
- * In another language, two more things. A landmark's where line, written by hand in English, that names two countries
+ * In another language, three more things. A landmark's where line, written by hand in English, that names two countries
  * (the place's and another: "France and Italy") or two regions the language names ("Nevada and Arizona, United
  * States") lists them in the language (Intl.ListFormat: Francia e Italia, Невада и Аризона). Under a label
  * the language writes in another script (Лондон, لندن, लंदन), a part it has no name for is left out rather than shown
  * in Latin letters beside it (Лондон · Велика Британія, not Лондон · England, Велика Британія), as English leaves out
- * a geocoder's non-Latin parts (sublabelOf).
+ * a geocoder's non-Latin parts (sublabelOf). And a place in an area the language's readers hold to be their own, filed
+ * by the data under another country (the Paracels and Spratlys, in Vietnamese: ./exonyms.ts exonymContested), shows
+ * no where line at all.
  *
  * Read at call time: React callers subscribe to the language (useLocale()) so a switch re-renders it. The Place keeps
  * its English sublabel, which is what the usage stats and lookups send.
  */
 export function displaySublabel(
-  place: Pick<Place, 'sublabel' | 'countryCode'> & Partial<Pick<Place, 'label' | 'kind'>>,
+  place: Pick<Place, 'sublabel' | 'countryCode'> & Partial<Pick<Place, 'label' | 'kind' | 'lat' | 'lon'>>,
 ): string | undefined {
   const sub = place.sublabel
   const cc = place.countryCode
   if (!sub || !cc) return sub
   const locale = currentLocale()
+  const { lat, lon } = place
+  if (locale !== 'en' && lat !== undefined && lon !== undefined && exonymContested(lat, lon, cc)) return undefined
   const long = countryName(cc)
   const short = shownCountryName(cc, 'en')
   let country = [long, short].find((c) => sub === c || sub.endsWith(`, ${c}`))

@@ -152,6 +152,16 @@ export function exonymVariants(query: string): string[] {
   return plain === query ? [] : [plain]
 }
 
+/**
+ * Is (lat, lon) in an area the active language's readers hold to be their own, for a place the data files under country
+ * `cc` that is not one of the language's (its namespace's `contested`)? Its where line is then not shown.
+ */
+export function exonymContested(lat: number, lon: number, cc: string): boolean {
+  const m = msgs(enExonyms)
+  if (!m.contested || m.home?.includes(cc.toUpperCase())) return false
+  return m.contested.some(([s, w, n, e]) => lat >= s && lat <= n && lon >= w && lon <= e)
+}
+
 /** Does the active language name countries by the browser's names on their own label too (its namespace says so)? */
 export const namesCountries = (): boolean => !!msgs(enExonyms).countries && !!activeTable(true)
 

@@ -136,4 +136,15 @@ describe('exonyms', () => {
     expect(displaySublabel({ label: 'Chicago', sublabel: 'Illinois, United States', countryCode: 'us' })).toBe('Иллинойс, Соединенные Штаты')
     expect(displaySublabel({ label: 'Leeds', sublabel: 'England, United Kingdom', countryCode: 'gb' })).toBe('England, Великобритания')
   })
+
+  it('shows no where line for a place a Vietnamese reader holds to be Vietnam’s that the data files under another country', async () => {
+    const { default: vi } = await import('@/i18n/vi/exonyms')
+    setBundleForTests('vi', { exonyms: vi })
+    expect(displaySublabel({ label: 'Johnson Reef', sublabel: 'China', countryCode: 'cn', lat: 9.715, lon: 114.287 })).toBeUndefined()
+    expect(displaySublabel({ label: 'Meiji Reef', sublabel: 'Hainan, China', countryCode: 'cn', lat: 9.927, lon: 115.534 })).toBeUndefined()
+    expect(displaySublabel({ label: 'Pattle Island', sublabel: 'Da Nang City, Vietnam', countryCode: 'vn', lat: 16.534, lon: 111.608 })).toBe('Da Nang City, Việt Nam')
+    expect(displaySublabel({ label: 'Haikou', sublabel: 'Hainan, China', countryCode: 'cn', lat: 20.046, lon: 110.342 })).toBe('Hainan, Trung Quốc')
+    setBundleForTests('en', null)
+    expect(displaySublabel({ label: 'Johnson Reef', sublabel: 'China', countryCode: 'cn', lat: 9.715, lon: 114.287 })).toBe('China')
+  })
 })

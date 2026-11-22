@@ -1144,7 +1144,12 @@ have been withdrawn from Vietnam over a map). Our copy names none of them. The p
 Sea*, OpenStreetMap's *Paracel Islands*). **Owner, 2026-11-22: approved** (the principle of Korean's 동해): the
 generated `vi` table (display only) names them *Biển Đông*, *Quần đảo Hoàng Sa*, *Quần đảo Trường Sa* (and the data's
 variants: *Xisha Islands*, *Nansha Islands*), countryless and where GeoNames files the sea under Vietnam or Thailand
-(`scripts/exonyms.ts` OVERRIDES). Usage stats and links keep the English label, as for Korean, so nothing splits.
+(`scripts/exonyms.ts` OVERRIDES). Their reefs and islands take their Vietnamese names too (*Đá Gạc Ma*, *Đá Vành Khăn*,
+*Đảo Sơn Ca*, *Đảo Phú Lâm*, *Đảo Ba Bình*), and one that GeoNames files under China or another country shows no where
+line on a Vietnamese page (`contested` in `src/i18n/vi/exonyms.ts`: the two archipelagos' areas), as the countryless
+ones there already do; one filed under Vietnam keeps its *Đà Nẵng, Việt Nam*. Usage stats and links keep the English
+label and the data's country, as for Korean, so nothing splits. The where-line rule (`contested`) is still the owner's
+to confirm.
 
 **Country names.** They come from `Intl.DisplayNames('vi')` (CLDR): *Trung Quốc*, *Đài Loan*, *Ukraina*, *Israel*,
 *Jordan*, *Li-băng*, *Ai Cập*, *Timor-Leste*. Translators never override them. Two CLDR long names misread for

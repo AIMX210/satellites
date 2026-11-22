@@ -49,6 +49,13 @@ export interface ExonymsNamespace {
    * data's own).
    */
   umlauts?: boolean
+  /**
+   * Areas the language's readers hold to be their own country's where the place data files places under another (the
+   * Paracel and Spratly Islands, for Vietnamese readers: docs/i18n/vi.md §8), as [south, west, north, east] in degrees:
+   * a place there that the data puts in a country other than the language's `home` shows no where line, as the
+   * countryless ones there already do. Display only; the place keeps its country.
+   */
+  contested?: readonly (readonly [number, number, number, number])[]
 }
 
 const exonyms: ExonymsNamespace = { names: '' }
