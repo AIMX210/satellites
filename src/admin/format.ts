@@ -120,6 +120,16 @@ export const ACTION_NAMES: Record<string, string> = {
 export const TIMELAPSE_FROM_NAMES: Record<string, string> = { results: 'Row under the photos', viewer: 'Photo viewer', link: 'A shared link' }
 export const TIMELAPSE_ACTION_NAMES: Record<string, string> = { video: 'Video saved', link: 'Link shared' }
 
+/** Which Buy Me a Coffee link was pressed (0029's support_click.from; src/ui/results/Colophon.tsx). */
+export const SUPPORT_FROM_NAMES: Record<string, string> = {
+  bar: 'Bar on results (3rd search on)',
+  share: 'Share sheet',
+  results: 'End of the results',
+  about: 'About · Support',
+  timelapse: 'Time-lapse video',
+  landing: 'Landing (returning)',
+}
+
 export const DEVICE_NAMES: Record<string, string> = { desktop: 'Desktop', phone: 'Phone', tablet: 'Tablet' }
 
 /** A tab's language (0027) by its English name: 'pt-BR' → 'Portuguese'; an unknown code as it is. */

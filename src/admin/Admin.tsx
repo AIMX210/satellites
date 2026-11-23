@@ -12,7 +12,7 @@ import { RANGES, currentSession, fetchLive, fetchStats, liveFor, sendMagicLink, 
 import { ActivityChart, Funnel, RankList, ReachList, Split } from './charts'
 import { liveSeries } from './live'
 import { WorldMap } from './WorldMap'
-import { ACTION_NAMES, DEVICE_NAMES, SOURCE_NAMES, TIMELAPSE_ACTION_NAMES, TIMELAPSE_FROM_NAMES, VERDICT_NAMES, browserLangReach, browserLanguageName, countryName, fmtAgo, fmtClock, fmtInt, fmtUpdated, fmtPct, fmtSec, fmtStamp, languageName, maintBehind, type FunnelStage, type Reach } from './format'
+import { ACTION_NAMES, DEVICE_NAMES, SOURCE_NAMES, SUPPORT_FROM_NAMES, TIMELAPSE_ACTION_NAMES, TIMELAPSE_FROM_NAMES, VERDICT_NAMES, browserLangReach, browserLanguageName, countryName, fmtAgo, fmtClock, fmtInt, fmtUpdated, fmtPct, fmtSec, fmtStamp, languageName, maintBehind, type FunnelStage, type Reach } from './format'
 import { LOCALE_INFO, LOCALES } from '../../api/_lib/i18n/locales'
 
 type View =
@@ -482,6 +482,9 @@ function Dashboard({ s, live, busy, onRefresh }: { s: AdminStats; live: LiveCoun
         <div className="a-grid3">
           <Panel title="SHARE ACTIONS">
             <Split rows={s.top['share_action.action']} total={t.share_action} names={ACTION_NAMES} />
+          </Panel>
+          <Panel title="BUY ME A COFFEE · PRESSES" note="Presses of the support link, by where it was (0029). A press is not a coffee: the page it opens is Buy Me a Coffee's.">
+            <Split rows={s.top['support_click.from']} total={s.dimTotals['support_click.from'] ?? t.support_click ?? 0} names={SUPPORT_FROM_NAMES} />
           </Panel>
           <Panel title="DEVICES">
             <Split rows={s.top['session.device']} total={rec.session} names={DEVICE_NAMES} />
