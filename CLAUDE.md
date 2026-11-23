@@ -46,7 +46,7 @@
   asked. Never run `supabase/tests/0004_*` against production (its DDL deadlocks against live traffic). Never
   delete real data, and never use a service-role or secret key; only the publishable key, which is public.
 - Analytics props are allow-listed in SQL (`overflight_private.event_props`, latest definition in
-  `supabase/migrations/0022_*`, which adds the time-lapse's events). A new enum value (a search source, an action) is silently stored as null until a
+  `supabase/migrations/0029_*`, which adds `support_click`, the Buy Me a Coffee link's presses by place). A new enum value (a search source, an action) is silently stored as null until a
   migration adds it.
 - Shares keep a capture only from an allow-list of collections in `create_share` (latest definition in
   `supabase/migrations/0012_*`, which adds Sentinel-1 radar); an unknown collection is dropped and the share made
