@@ -171,6 +171,7 @@ const about: typeof en = {
   /** Product, agency, licence and people's names as they are; the prose is §8's, OpenStreetMap's own Portuguese wording */
   credits: {
     madeBy: { who: 'Feito por', text: (handle: string): AboutPart[] => ['Armaan, ', link(handle), ' no X'] },
+    support: { who: 'Apoie', text: ['O Watched é gratuito. ', link('Pague um café para o Armaan'), ' e ajude a mantê-lo no ar.'] as AboutPart[] },
     gibs: 'Imagens do GIBS da NASA, parte do EOSDIS. GOES via NOAA e CIRA, Himawari via JMA.',
     archives: {
       who: 'Arquivos',

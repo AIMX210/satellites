@@ -24,6 +24,7 @@ import enAbout, { type AboutPart, type LinkPart } from '@/i18n/en/about'
 import enVerdicts from '@/i18n/en/verdicts'
 import { useLocale, useMsgs } from '@/i18n/runtime'
 import { useBackLayer } from '@/lib/backStack'
+import { SUPPORT_URL } from '@/lib/maker'
 import { DUR, EASE } from '@/lib/ease'
 import { useApp } from '@/state/store'
 import { Bezel, Glyph, Kbd, Reveal, cx, useExitClone, Wordmark } from '@/ui/system'
@@ -340,6 +341,9 @@ export function AboutPage({ onClose }: { onClose: () => void }) {
               <ul className={s.credits}>
                 <Credit who={m.credits.madeBy.who}>
                   <AboutText parts={m.credits.madeBy.text(MAKER_HANDLE)} href={MAKER_URL} />
+                </Credit>
+                <Credit who={m.credits.support.who}>
+                  <AboutText parts={m.credits.support.text} href={SUPPORT_URL} />
                 </Credit>
                 {/* The data licences' attribution lines, in the wording they prescribe: English in every language, each its
                     own left-to-right island, or a right-to-left page puts the full stop at the line's start. */}
