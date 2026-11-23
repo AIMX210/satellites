@@ -13,6 +13,8 @@
  * clock repaints. Slow archives get an honest note after a few seconds. A shared link shows the
  * shared picture right away (R15), so the recipient sees it while their own report computes.
  *
+ * Under it, the maker's thanks (Colophon.tsx ColophonText): a quiet line, outside the live region.
+ *
  * Words: the 'results' namespace (computing), and the progress lines the engine and the controller write into the
  * store as MessageRefs ('engine.progress.*', 'app.progress.*'). The fold keeps the ref, never its text: each row is
  * worded when it is painted (refText, both namespaces), so a language switch mid-search rewords the rows.
@@ -31,10 +33,11 @@ import { useApp } from '@/state/store'
 import type { MessageRef, ProgressEvent } from '@/types'
 import { shareCropUrl } from '@/ui/share'
 import { cropSpec, displayUrl } from './lib/captures'
-import { cx, fmtUtcTime } from '@/ui/system'
+import { cx, fmtUtcTime, Glyph } from '@/ui/system'
 import { PushbroomReveal } from './PushbroomReveal'
 import { markSeen } from './once'
 import { fmtLocalTime } from './lib/time'
+import { ColophonText } from './Colophon'
 import s from './ComputingReadout.module.css'
 
 type Stage = Exclude<ProgressEvent['stage'], 'done'>
@@ -171,7 +174,8 @@ export function ComputingBody({ t0, tz }: { t0: number; tz?: string }) {
   const c = m.computing
 
   return (
-    <div className={s.body} role="status" aria-live="polite">
+    <>
+      <div className={s.body} role="status" aria-live="polite">
       <p className="sr-only">{announce === 'start' ? m.computingPasses : announce === 'done' ? c.ready : idleLabel(announce)}</p>
       {shared ? <SharedPicture tz={tz} /> : null}
       <div aria-hidden className={s.readout} data-readout>
@@ -210,7 +214,14 @@ export function ComputingBody({ t0, tz }: { t0: number; tz?: string }) {
       {slow ? (
         <p className={s.note}>{verySlow ? c.verySlow : c.slow}</p>
       ) : null}
-    </div>
+      </div>
+      {/* The maker's thanks, while the search runs (owner, 2026-11-23): nearly every visitor waits here a few seconds,
+          and nobody posts this screen. Beside the live region, not in it, so it is never read out as progress. */}
+      <p className={s.thanks}>
+        <Glyph name="cup" size={14} className={s.thanksMark} />
+        <ColophonText from="computing" />
+      </p>
+    </>
   )
 }
 

@@ -157,6 +157,27 @@
   color: var(--warn);
 }
 
+/* ── the maker's thanks under the readout (ComputingBody): one quiet mono line on a hairline, entering with the body ── */
+.thanks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-stretch: 87.5%;
+  font-size: var(--fs-label);
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  color: var(--bone-3);
+  animation: enter var(--d-md) var(--ease-out) 200ms backwards;
+}
+.thanksMark {
+  flex: none;
+  color: var(--bone-3-mark);
+}
+
 /* ── a shared picture, shown while the recipient's report computes ── */
 .shared {
   display: flex;
