@@ -471,21 +471,24 @@
   color: var(--signal);
   transition-duration: 0ms;
 }
-/* The maker's Buy Me a Coffee link after the credit (LandingFoot), on every layout. Where the credit and it do not fit
-   one line, the credit leaves the flow (still measured) and the link stands alone, without its dot. */
+/* The maker's Buy Me a Coffee link after the credit (LandingFoot), on wide screens. The credit always shows (owner):
+   where the two do not fit one line (.footTight, measured) the link is out of the flow, unseen but still laid out (so
+   the measurement never flips); phones and short landscape never show it (owner, 2026-11-23: no room on a phone's ink
+   panel; the computing screen, the results and About carry it there). */
 .coffee {
   flex: none;
   display: inline-flex;
   align-items: baseline;
 }
-.footAlone > .credit:first-child {
+.footTight .coffee {
   position: absolute;
   visibility: hidden;
   pointer-events: none;
 }
-.footAlone .coffee .footSep {
-  position: absolute;
-  visibility: hidden;
+@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px), (orientation: landscape) and (max-height: 540px) {
+  .coffee {
+    display: none;
+  }
 }
 .foot {
   position: relative;

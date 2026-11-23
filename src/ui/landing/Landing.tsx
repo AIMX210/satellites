@@ -407,10 +407,10 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
 
 /**
  * Under the chips: the maker's credit, then the maker's Buy Me a Coffee link, on one mono caps line, for every visitor
- * (owner, 2026-11-23; the link to the code is in the top-left readout now, src/ui/hud/Hud.tsx). The line adds no height
- * to a column that must fit between the corner readouts, and is never wrapped (a second line would push the column into
- * the bottom readouts), so it is measured: where the two do not fit (a narrow phone, a long language), the link stands
- * alone.
+ * on wide screens (owner, 2026-11-23; the link to the code is in the top-left readout now, src/ui/hud/Hud.tsx). The
+ * credit always shows (owner). The line is never wrapped (a second one would push the column into the bottom readouts),
+ * so it is measured: where the two do not fit (a long language in a narrow window), the link is left out. Phones never
+ * show it here: their ink panel has no room for it (owner), and the computing screen, the results and About carry it.
  */
 function LandingFoot() {
   const m = useMsgs(enLanding)
@@ -418,18 +418,18 @@ function LandingFoot() {
   const creditRef = useRef<HTMLAnchorElement>(null)
   const sepRef = useRef<HTMLSpanElement>(null)
   const linkRef = useRef<HTMLAnchorElement>(null)
-  const [alone, setAlone] = useState(false)
+  const [tight, setTight] = useState(false)
   useLayoutEffect(() => {
     const foot = footRef.current
     if (!foot) return
-    // Each part is measured on its own, and none changes size when the credit gives way (it and the dot leave the flow
-    // then, still laid out), so the answer cannot flip back and forth.
+    // Each part is measured on its own, and none changes size with the answer (the dot leaves the flow then, still laid
+    // out), so the answer cannot flip back and forth.
     const outer = (el: HTMLElement | null) => {
       if (!el) return 0
       const cs = getComputedStyle(el)
       return el.offsetWidth + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight)
     }
-    const fit = () => setAlone(outer(creditRef.current) + outer(sepRef.current) + outer(linkRef.current) > foot.clientWidth + 0.5)
+    const fit = () => setTight(outer(creditRef.current) + outer(sepRef.current) + outer(linkRef.current) > foot.clientWidth + 0.5)
     fit()
     if (typeof ResizeObserver === 'undefined') return
     const ro = new ResizeObserver(fit)
@@ -437,8 +437,8 @@ function LandingFoot() {
     return () => ro.disconnect()
   }, [m])
   return (
-    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
-      <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
+    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, tight && s.footTight)} data-hero-copy>
+      <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer">
         {m.builtBy(CREDIT_HANDLE)}
       </a>
       <span className={s.coffee}>
