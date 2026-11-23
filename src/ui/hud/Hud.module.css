@@ -215,6 +215,52 @@
 .mob {
   display: none !important;
 }
+/* The link to the code, ending the About line on wide screens (Hud.tsx useSourceRoom): the About link's type and
+   colours, after the language's own kind of hairline. */
+.source {
+  display: inline-flex;
+  align-items: center;
+}
+.source[data-off] {
+  visibility: hidden;
+}
+.aboutLine[data-lang-below] .source {
+  display: none;
+}
+.sourceRule {
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  margin: 0 12px;
+  background: var(--bone-4);
+}
+.sourceLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  margin: -6px 0;
+  color: var(--bone-3);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--d-hover) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .sourceLink:hover {
+    color: var(--bone);
+  }
+}
+.sourceLink:active {
+  color: var(--bone);
+  transition-duration: 0ms;
+}
+.sourceLink svg {
+  flex: none;
+}
+/* Right to left the arrow points up and out to the left, away from the words, as the landing's links do. */
+:root[dir='rtl'] .sourceLink svg {
+  scale: -1 1;
+}
 /* The About line, which the phone's sun or scene line keeps clear of (Hud.tsx useCrowdedLine reads its box by this
    class). */
 .aboutLine {

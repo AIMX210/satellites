@@ -42,6 +42,8 @@ function age(unit: AgeUnit, n: number): string {
 
 const hud: typeof en = {
   about: 'كيف يعمل',
+  sourceLink: 'مفتوح المصدر',
+  sourceLinkLabel: 'مفتوح المصدر: الشيفرة على GitHub',
   home: 'العودة إلى Watched',
   regionTime: 'الوقت',
   regionCatalog: 'كتالوج المدارات',

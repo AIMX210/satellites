@@ -27,7 +27,7 @@ import { subsolarPoint } from '@/lib/geo'
 import { INSET_CLEAR, PANEL_EXIT_MS, isStacked } from '@/lib/layout'
 import { sceneClock, useSceneFrame } from '@/state/sceneClock'
 import { useApp } from '@/state/store'
-import { Bezel, CornerReadout, Kbd, Reveal, ScrambleOnce, cx, fmtUtcDate, fmtUtcTime, useWallSecondSync, Wordmark } from '@/ui/system'
+import { Bezel, CornerReadout, Glyph, Kbd, Reveal, ScrambleOnce, cx, fmtUtcDate, fmtUtcTime, useWallSecondSync, Wordmark } from '@/ui/system'
 // The pure time module, never the lazy '@/ui/results' index (that would pull the results chunk in).
 import { fmtLocalDay, fmtLocalTime, zoneAbbr } from '@/ui/results/lib/time'
 import { useCatalogStatus } from './catalogStatus'
@@ -52,6 +52,9 @@ const TOP_GAP = 8
  * (English at 396–407 px with a short zone: "SCENE 11:54:08 EST" 8 px from "ENGLISH" at 402).
  */
 const MIN_ROW_GAP = 14
+
+/** The project's code on GitHub (the top-left row's last link, wide screens). */
+const SOURCE_URL = 'https://github.com/dev-Armaan/satellites'
 
 /**
  * Least clear space between the language's name and a panel's edge before the language steps down (useLanguageRoom).
@@ -185,6 +188,7 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
   // measured against it alone, and ran 44–76 px over it for 2 frames).
   useLanguageRoom(topLeft)
   useCrowdedLine(topLeft, topRight)
+  useSourceRoom(topLeft, topRight)
   // The stacked sun line gives way to the scene time during a replay and comes back after it: its
   // wipe plays with the HUD's first entrance only, never again on its return (one entrance per element).
   // Set during the render that unmounts it, so its `skip` never changes while it is mounted.
@@ -230,6 +234,15 @@ function HudImpl({ onAbout, onHome }: { onAbout?: () => void; onHome?: () => voi
             </button>
           ) : null}
           <LanguageSwitcher />
+          {/* The project's code (owner, 2026-11-23: here rather than under the landing's chips): wide screens only, and
+              it gives way where it would come close to a panel or the top-right readout (useSourceRoom). */}
+          <span className={cx(s.source, s.wideOnly)} data-hud-source>
+            <span className={s.sourceRule} aria-hidden />
+            <a className={s.sourceLink} href={SOURCE_URL} target="_blank" rel="noreferrer" aria-label={m.sourceLinkLabel}>
+              {m.sourceLink}
+              <Glyph name="arrow-up-right" size={10} />
+            </a>
+          </span>
         </Reveal>
       </CornerReadout>
 
@@ -484,6 +497,58 @@ function useLanguageRoom(topLeft: RefObject<HTMLDivElement | null>) {
  * runs again in a layout effect when the language changes instead: the DOM already holds the new words, nothing has
  * been painted yet, and it is not an observer's delivery, so the decision is written at once.
  */
+/**
+ * The link to the code ends the top-left row on wide screens, and gives way (data-off: kept in place, unseen) where it
+ * would come closer than PANEL_GAP to a panel's edge (the results beside the row on a narrow laptop or a tablet on its
+ * side; the panels publish what they cover, store.uiInsets, as useLanguageRoom reads them) or closer than MIN_ROW_GAP
+ * to a top-right line beside it (a replay's scene time). Its own box decides, and hiding it changes no box (only its
+ * visibility), so the answer never flips back and forth and no observer sees a resize from it. Where the language has
+ * stepped down to a line of its own, it is not shown at all (the CSS): the row has no room left.
+ */
+function useSourceRoom(topLeft: RefObject<HTMLDivElement | null>, topRight: RefObject<HTMLDivElement | null>) {
+  const recheck = useRelayoutOnLocale()
+  useLayoutEffect(() => {
+    const tl = topLeft.current
+    const tr = topRight.current
+    if (!tl || !tr) return
+    const check = () => {
+      const src = tl.querySelector<HTMLElement>('[data-hud-source]')
+      if (!src) return
+      const r = src.getBoundingClientRect()
+      if (!r.width) return // not laid out: a phone's layout, or the language on its own line
+      const rtl = getComputedStyle(tl).direction === 'rtl'
+      const { left, right } = useApp.getState().uiInsets
+      let fits = rtl ? left <= 0 || r.left - PANEL_GAP >= left - INSET_CLEAR : right <= 0 || r.right + PANEL_GAP <= window.innerWidth - right + INSET_CLEAR
+      for (const line of tr.children) {
+        const b = line.getBoundingClientRect()
+        if (!b.width || b.bottom <= r.top || b.top >= r.bottom) continue
+        if (rtl ? b.right + MIN_ROW_GAP > r.left : r.right + MIN_ROW_GAP > b.left) fits = false
+      }
+      src.toggleAttribute('data-off', !fits)
+    }
+    const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(check)
+    ro?.observe(tl)
+    ro?.observe(tr)
+    const unsub = useApp.subscribe((st, prev) => {
+      if (st.uiInsets.left !== prev.uiInsets.left || st.uiInsets.right !== prev.uiInsets.right) check()
+    })
+    // A remounted line (the boot entrance), a top-right line that comes or goes (a replay's scene time).
+    const mo = new MutationObserver(check)
+    mo.observe(tl, { childList: true, subtree: true })
+    mo.observe(tr, { childList: true, subtree: true })
+    window.addEventListener('resize', check)
+    check()
+    recheck.current = check
+    return () => {
+      recheck.current = undefined
+      ro?.disconnect()
+      mo.disconnect()
+      unsub()
+      window.removeEventListener('resize', check)
+    }
+  }, [topLeft, topRight])
+}
+
 function useRelayoutOnLocale() {
   const recheck = useRef<(() => void) | undefined>(undefined)
   const locale = useLocale()

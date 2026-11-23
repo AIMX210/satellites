@@ -28,6 +28,8 @@ function age(unit: AgeUnit, n: number): string {
 
 const hud: typeof en = {
   about: 'कैसे काम करता है',
+  sourceLink: 'ओपन सोर्स',
+  sourceLinkLabel: 'ओपन सोर्स: GitHub पर प्रोजेक्ट का कोड',
   home: 'Watched, मुख्य पेज',
   regionTime: 'समय',
   regionCatalog: 'कक्षाओं की सूची',

@@ -25,6 +25,8 @@ function ageVi(unit: AgeUnit, n: number): string {
 
 const hud: typeof en = {
   about: 'Cách hoạt động',
+  sourceLink: 'Mã nguồn mở',
+  sourceLinkLabel: 'Mã nguồn mở: dự án trên GitHub',
   home: 'Watched, trang chủ',
   regionTime: 'Thời gian',
   regionCatalog: 'Danh mục quỹ đạo',

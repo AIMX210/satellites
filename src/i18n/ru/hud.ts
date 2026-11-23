@@ -26,6 +26,8 @@ function age(unit: AgeUnit, n: number): string {
 
 const hud: typeof en = {
   about: 'Как это работает',
+  sourceLink: 'Открытый код',
+  sourceLinkLabel: 'Открытый код: проект на GitHub',
   home: 'Watched, на главную',
   regionTime: 'Время',
   regionCatalog: 'Каталог орбит',
