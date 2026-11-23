@@ -471,8 +471,8 @@
   color: var(--signal);
   transition-duration: 0ms;
 }
-/* A returning browser's Buy Me a Coffee link (LandingFoot): in the code's place, on every layout. Where the credit and
-   it do not fit one line, the credit leaves the flow (still measured) and the link stands alone, without its dot. */
+/* The maker's Buy Me a Coffee link after the credit (LandingFoot), on every layout. Where the credit and it do not fit
+   one line, the credit leaves the flow (still measured) and the link stands alone, without its dot. */
 .coffee {
   flex: none;
   display: inline-flex;
@@ -490,23 +490,7 @@
 .foot {
   position: relative;
 }
-/* For a returning browser, the link to the code on a line of its own under the credit's (LandingFoot): wide screens
-   only, as .source (below), and only where the column has the height for it (measured: .sourceRowOff). */
-.sourceRow {
-  display: flex;
-  width: var(--search-w);
-  margin-top: 8px; /* SOURCE_ROW_GAP */
-}
-.sourceRowOff {
-  display: none;
-}
-/* The link to the code: the credit's own type and colours, and the external-link arrow after the words. Hidden on
-   stacked and short landscape layouts (below). */
-.source {
-  flex: none;
-  display: inline-flex;
-  align-items: baseline;
-}
+/* The coffee link: the credit's own type and colours, and the external-link arrow after the words. */
 .footSep {
   margin: 0 0.7em;
   font-family: var(--font-mono);
@@ -514,17 +498,17 @@
   line-height: 1.4;
   color: var(--bone-4);
 }
-.sourceLink {
+.coffeeLink {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.sourceLink svg {
+.coffeeLink svg {
   flex: none;
 }
 /* Right to left the arrow ends the line on the left, so it points up and out to the left, away from the words, as it
    points away from them here (PassDetail's arrows lead their words, so they keep pointing right). */
-:root[dir='rtl'] .sourceLink svg {
+:root[dir='rtl'] .coffeeLink svg {
   scale: -1 1;
 }
 /* Touch (U-6): a 44 px tall target for the 15 px line, reaching mostly downward: the chips' own 44 px targets end
@@ -1137,23 +1121,5 @@
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px), (orientation: landscape) and (max-height: 540px) {
   :root:is([data-script='cjk'], [data-script='devanagari']) .hl {
     font-size: calc(1em * var(--display-k));
-  }
-}
-
-/* The link to the code is for wide screens only: on phones and portrait tablets the credit is the ink panel's last line
-   on a full screen, and short landscape has no room beside it. */
-/* ...and only where the line holds it in every language: the longest pair, Indonesian's "Dibuat oleh @armaangupt0 ·
-   Sumber terbuka ↗", is 329 px (Spanish and Italian 322); the line is 321 px at a 761 px window, 340 at 800. Hidden
-   below that, never wrapped (a second line would push the column into the bottom readouts) or let past the search
-   line's edge. */
-@container (max-width: 339px) {
-  .source {
-    display: none;
-  }
-}
-@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px), (orientation: landscape) and (max-height: 540px) {
-  .source,
-  .sourceRow {
-    display: none;
   }
 }

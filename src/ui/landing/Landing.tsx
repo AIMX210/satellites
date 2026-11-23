@@ -1,6 +1,6 @@
 /**
  * <Landing onSubmit enterDelay/>: phases 'idle' and 'locating'. The hero, the place search, "Use my
- * location", curated example places and the maker's credit (on wide screens, a link to the code beside it), laid
+ * location", curated example places and the maker's credit and Buy Me a Coffee link, laid
  * out so the globe stays the hero:
  *
  *   wide            a text column on the left of the 12-column grid; the globe frames to its right.
@@ -31,7 +31,7 @@ import { useMsgs } from '@/i18n/runtime'
 import { DUR, EASE } from '@/lib/ease'
 import { INSET_CLEAR, SHORT_LANDSCAPE_QUERY, isStacked } from '@/lib/layout'
 import { useBackLayer } from '@/lib/backStack'
-import { SUPPORT_URL, readAsk } from '@/lib/maker'
+import { SUPPORT_URL } from '@/lib/maker'
 import { track } from '@/lib/telemetry'
 import { useApp, type Phase } from '@/state/store'
 import type { Place } from '@/types'
@@ -83,12 +83,6 @@ const FADE_REACH = 64
 /** The maker's credit under the example chips. */
 const CREDIT_HANDLE = '@armaangupt0'
 const CREDIT_URL = 'https://x.com/armaangupt0'
-/** Beside the credit on wide screens: the project's code, MIT licensed (README.md). */
-const SOURCE_URL = 'https://github.com/dev-Armaan/satellites'
-/** The code's own line sits this far under the credit's (Landing.module.css .sourceRow margin-top) */
-const SOURCE_ROW_GAP = 8
-/** …and shows only where, judged at most (see LandingFoot), it ends at least this far above the bottom-left readout */
-const SOURCE_ROW_CLEAR = 8
 
 interface LandingProps {
   onSubmit: (place: Place) => void
@@ -412,22 +406,14 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
 }
 
 /**
- * Under the chips: the maker's credit, then (wide screens only, Landing.module.css .source) the link to the code. It
- * shares the credit's line, so it adds no height to a column that must fit between the corner readouts, and phones,
- * where that line is the panel's last and the screen is full, never get it.
- *
- * A browser that has had results before, and has not closed the results' thanks bar or pressed its link
- * (src/lib/maker.ts), gets the maker's Buy Me a Coffee link in the code's place instead, phones too: the credit, then
- * the link, on the same line. The line is never wrapped (a second one would push the column into the bottom readouts),
- * so it is measured: where the two do not fit (a narrow phone, a long language), the link stands alone. The link to the
- * code then has a line of its own under it, on wide screens tall enough for it. Decided once, when the landing mounts.
+ * Under the chips: the maker's credit, then the maker's Buy Me a Coffee link, on one mono caps line, for every visitor
+ * (owner, 2026-11-23; the link to the code is in the top-left readout now, src/ui/hud/Hud.tsx). The line adds no height
+ * to a column that must fit between the corner readouts, and is never wrapped (a second line would push the column into
+ * the bottom readouts), so it is measured: where the two do not fit (a narrow phone, a long language), the link stands
+ * alone.
  */
 function LandingFoot() {
   const m = useMsgs(enLanding)
-  const [returning] = useState(() => {
-    const a = readAsk()
-    return a.results >= 1 && !a.done
-  })
   const footRef = useRef<HTMLDivElement>(null)
   const creditRef = useRef<HTMLAnchorElement>(null)
   const sepRef = useRef<HTMLSpanElement>(null)
@@ -435,7 +421,7 @@ function LandingFoot() {
   const [alone, setAlone] = useState(false)
   useLayoutEffect(() => {
     const foot = footRef.current
-    if (!returning || !foot) return
+    if (!foot) return
     // Each part is measured on its own, and none changes size when the credit gives way (it and the dot leave the flow
     // then, still laid out), so the answer cannot flip back and forth.
     const outer = (el: HTMLElement | null) => {
@@ -449,83 +435,22 @@ function LandingFoot() {
     const ro = new ResizeObserver(fit)
     for (const el of [foot, creditRef.current, linkRef.current]) if (el) ro.observe(el)
     return () => ro.disconnect()
-  }, [returning, m])
-  // Counted only: the results' bar ends with its own × or link, not with a press here.
-  // The code's own line (returning browsers, wide screens): only where it ends SOURCE_ROW_CLEAR above the bottom-left
-  // readout. The column centres its content between the corner readouts, and on a short laptop (1366 × 768, 1280 ×
-  // 720) one more line ran into that readout. Hidden, it is judged by where it could end at most (under the credit's
-  // line, nothing moved up); shown, by where it ends, which is never lower: the answer never flips back and forth.
-  const [roomForSource, setRoomForSource] = useState(false)
-  const sourceRowRef = useRef<HTMLDivElement>(null)
-  useLayoutEffect(() => {
-    const foot = footRef.current
-    const column = foot?.closest('section')
-    if (!returning || !foot || !column) return
-    const fit = () => {
-      const readout = document.querySelector('[data-corner="bl"]')
-      if (!readout) return setRoomForSource(false)
-      const limit = readout.getBoundingClientRect().top - SOURCE_ROW_CLEAR
-      const row = sourceRowRef.current
-      const end = row && row.offsetHeight > 0 ? row.getBoundingClientRect().bottom : foot.getBoundingClientRect().bottom + SOURCE_ROW_GAP + foot.offsetHeight
-      setRoomForSource(end <= limit)
-    }
-    // Judged again once the entrance has played (its rises move the lines with transforms, which a ResizeObserver does
-    // not see; measured mid-rise, the line looked lower than it ends up), and on every resize.
-    fit()
-    column.addEventListener('animationend', fit)
-    window.addEventListener('resize', fit)
-    const late = window.setTimeout(fit, 2500)
-    const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(fit)
-    ro?.observe(column)
-    const content = column.firstElementChild
-    if (content) ro?.observe(content)
-    return () => {
-      column.removeEventListener('animationend', fit)
-      window.removeEventListener('resize', fit)
-      window.clearTimeout(late)
-      ro?.disconnect()
-    }
-  }, [returning, m])
-  const pressed = () => track('support_click', { from: 'landing' })
-  const source = (
-    <a className={cx(s.credit, s.sourceLink)} href={SOURCE_URL} target="_blank" rel="noreferrer" aria-label={m.sourceLinkLabel}>
-      {m.sourceLink}
-      <Glyph name="arrow-up-right" size={10} />
-    </a>
-  )
+  }, [m])
   return (
-    <>
-      <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
-        <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
-          {m.builtBy(CREDIT_HANDLE)}
+    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
+      <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
+        {m.builtBy(CREDIT_HANDLE)}
+      </a>
+      <span className={s.coffee}>
+        <span ref={sepRef} className={s.footSep} aria-hidden>
+          ·
+        </span>
+        <a ref={linkRef} className={cx(s.credit, s.coffeeLink)} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={() => track('support_click', { from: 'landing' })}>
+          {m.support}
+          <Glyph name="arrow-up-right" size={10} />
         </a>
-        {returning ? (
-          <span className={s.coffee}>
-            <span ref={sepRef} className={s.footSep} aria-hidden>
-              ·
-            </span>
-            <a ref={linkRef} className={cx(s.credit, s.sourceLink)} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={pressed}>
-              {m.support}
-              <Glyph name="arrow-up-right" size={10} />
-            </a>
-          </span>
-        ) : (
-          <span className={s.source}>
-            <span className={s.footSep} aria-hidden>
-              ·
-            </span>
-            {source}
-          </span>
-        )}
-      </div>
-      {/* A returning browser's line gave the code's place to the coffee link: the code gets a line of its own under it
-          (owner, 2026-11-23), on wide screens only, where the column has room for it (Landing.module.css .sourceRow). */}
-      {returning ? (
-        <div ref={sourceRowRef} className={cx(s.sourceRow, s.rise, s.riseExamples, !roomForSource && s.sourceRowOff)} data-hero-copy>
-          {source}
-        </div>
-      ) : null}
-    </>
+      </span>
+    </div>
   )
 }
 

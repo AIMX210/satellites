@@ -40,8 +40,6 @@ const landing: typeof en = {
     '日間にその上空を通ったすべての衛星と、実際に撮られた画像が見られる。',
   ],
   builtBy: (handle: string) => `制作 ${handle}`,
-  sourceLink: 'オープンソース',
-  sourceLinkLabel: 'オープンソース：GitHubのコード',
   support: 'コーヒーを一杯おごる :)',
 
   // ── The place search ──

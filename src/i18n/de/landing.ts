@@ -44,8 +44,6 @@ const landing: typeof en = {
     })} überflogen haben, und ihre echten Bilder.`,
   ],
   builtBy: (handle: string) => `Von ${handle}`,
-  sourceLink: 'Open Source',
-  sourceLinkLabel: 'Open Source: der Code auf GitHub',
   support: 'Spendier mir einen Kaffee :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────

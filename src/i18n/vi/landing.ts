@@ -38,8 +38,6 @@ const landing: typeof en = {
   ],
   /** "Do … thực hiện", never the calque *Được xây dựng bởi* */
   builtBy: (handle: string) => `Do ${handle} thực hiện`,
-  sourceLink: 'Mã nguồn mở',
-  sourceLinkLabel: 'Mã nguồn mở: dự án trên GitHub',
   support: 'Mời tôi một ly cà phê :)',
 
   // ── The place search ──

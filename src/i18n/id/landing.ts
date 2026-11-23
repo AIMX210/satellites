@@ -44,8 +44,6 @@ const landing: typeof en = {
     `Pilih tempat mana pun di Bumi. Lihat setiap satelit yang melintas di atasnya dalam ${f.int(days)} hari terakhir, beserta citra aslinya.`,
   ],
   builtBy: (handle: string) => `Dibuat oleh ${handle}`,
-  sourceLink: 'Sumber terbuka',
-  sourceLinkLabel: 'Sumber terbuka: kodenya di GitHub',
   support: 'Traktir saya kopi :)',
 
   // ── The place search ──

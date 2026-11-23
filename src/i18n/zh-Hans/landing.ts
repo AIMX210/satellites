@@ -34,8 +34,6 @@ const landing: typeof en = {
     '\u00a0天里飞过那里的每一颗卫星，以及它们拍下的真实图像。',
   ],
   builtBy: (handle: string) => `由 ${handle} 制作`,
-  sourceLink: '开源',
-  sourceLinkLabel: '开源：GitHub 上的源代码',
   support: '请我喝杯咖啡 :)',
 
   // ── The place search ──

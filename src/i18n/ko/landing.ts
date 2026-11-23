@@ -38,8 +38,6 @@ const landing: typeof en = {
     `지구 어디든 입력하면, 최근 ${f.int(days)}일 동안 그 상공을 지나간 모든 위성과 실제로 찍힌 이미지가 보인다.`,
   ],
   builtBy: (handle: string) => `만든 사람 ${handle}`,
-  sourceLink: '오픈 소스',
-  sourceLinkLabel: '오픈 소스: GitHub의 코드',
   support: '커피 한 잔 사 주기 :)',
 
   // ── The place search ──

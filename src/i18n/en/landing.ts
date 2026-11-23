@@ -56,18 +56,9 @@ export default ns('landing', {
   /** The maker's credit under the chips; `handle` is "@armaangupt0" (a link) */
   builtBy: (handle: string) => `Built by ${handle}`,
   /**
-   * After the credit, on the same mono caps line (laptops and wide tablets only): a link to the project's code on
-   * GitHub, with a ↗ after it. Say that the project is open source, in the words your readers use for it; keep it
-   * about as short as the English: the credit and this share one line, and the link is hidden where that line is
-   * under 340 px, sized for the longest pair (Indonesian, 329 px; Landing.module.css `@container`)
-   */
-  sourceLink: 'Open source',
-  /** Its accessible name: the words above, first and unchanged, then where the link goes ("GitHub" as it is) */
-  sourceLinkLabel: 'Open source: the code on GitHub',
-  /**
-   * For a browser that has had results before, in the link to the code's place (the same line, never wrapped): the
-   * maker's Buy Me a Coffee page, with a ↗ after it. The results' link words (results.colophon.link). Where the line
-   * cannot hold the credit and this, this stands alone (Landing.tsx measures it)
+   * After the credit, on the same mono caps line, for every visitor: the maker's Buy Me a Coffee page, with a ↗ after
+   * it. The results' link words (results.colophon.link). Where the line cannot hold the credit and this, this stands
+   * alone (Landing.tsx measures it)
    */
   support: 'Buy me a coffee :)',
 
