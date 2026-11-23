@@ -816,7 +816,7 @@ function SheetBody({ pass, report, onClose, clouded, kind = 'pass', from }: Shar
       ) : null}
       {/* Last, the maker's thanks: whoever is here just chose to show the site to someone, and what they post is the
           card, never this sheet (src/ui/results/Colophon.tsx). */}
-      <ColophonLine />
+      <ColophonLine from="share" />
     </div>
   )
 

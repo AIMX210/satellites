@@ -177,3 +177,10 @@
     height: 44px;
   }
 }
+
+/* Right to left the external arrow points up and out to the left, away from the words, as the landing's does. */
+:root[dir='rtl'] .arrow,
+:root[dir='rtl'] .lineArrow,
+:root[dir='rtl'] .barArrow {
+  scale: -1 1;
+}

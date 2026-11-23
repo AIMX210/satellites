@@ -34,9 +34,15 @@ export type EventType =
   | 'share_action'
   | 'timelapse_open'
   | 'timelapse_share'
+  | 'support_click'
   | 'error'
   | 'vitals'
 
+/**
+ * Which place's Buy Me a Coffee link was pressed (src/ui/results/Colophon.tsx): the results' bar, the share sheet's
+ * foot, the row closing the results, About's credit, the time-lapse's video, the landing. Allow-listed in 0029.
+ */
+export type SupportFrom = 'bar' | 'share' | 'results' | 'about' | 'timelapse' | 'landing'
 export type ShareAction = 'x' | 'copy_link' | 'copy_image' | 'save_png' | 'native'
 /** Where a share sheet was opened from: the headline's Share, the lead photo's caption, the photo viewer, the pass view. */
 export type ShareFrom = 'headline' | 'hero' | 'viewer' | 'pass'

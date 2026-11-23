@@ -25,6 +25,7 @@ import enVerdicts from '@/i18n/en/verdicts'
 import { useLocale, useMsgs } from '@/i18n/runtime'
 import { useBackLayer } from '@/lib/backStack'
 import { SUPPORT_URL } from '@/lib/maker'
+import { track } from '@/lib/telemetry'
 import { DUR, EASE } from '@/lib/ease'
 import { useApp } from '@/state/store'
 import { Bezel, Glyph, Kbd, Reveal, cx, useExitClone, Wordmark } from '@/ui/system'
@@ -343,7 +344,7 @@ export function AboutPage({ onClose }: { onClose: () => void }) {
                   <AboutText parts={m.credits.madeBy.text(MAKER_HANDLE)} href={MAKER_URL} />
                 </Credit>
                 <Credit who={m.credits.support.who}>
-                  <AboutText parts={m.credits.support.text} href={SUPPORT_URL} />
+                  <AboutText parts={m.credits.support.text} href={SUPPORT_URL} onLink={() => track('support_click', { from: 'about' })} />
                 </Credit>
                 {/* The data licences' attribution lines, in the wording they prescribe: English in every language, each its
                     own left-to-right island, or a right-to-left page puts the full stop at the line's start. */}
@@ -432,19 +433,19 @@ function Facts({ rows }: { rows: Record<string, { term: string; text: string }> 
 
 /**
  * An About paragraph's rich parts as the page's own elements: text, mono numbers (s.num), and the paragraph's one
- * link (`href`, opened in a new tab).
+ * link (`href`, opened in a new tab; `onLink` when it is pressed).
  */
-function AboutText({ parts, href }: { parts: readonly AboutPart[]; href?: string }): ReactNode {
-  return parts.map((p, i) => <Fragment key={i}>{aboutPart(p, href)}</Fragment>)
+function AboutText({ parts, href, onLink }: { parts: readonly AboutPart[]; href?: string; onLink?: () => void }): ReactNode {
+  return parts.map((p, i) => <Fragment key={i}>{aboutPart(p, href, onLink)}</Fragment>)
 }
 
 const isLink = (p: AboutPart): p is LinkPart => typeof p === 'object' && 'link' in p
 
-function aboutPart(p: AboutPart, href: string | undefined): ReactNode {
+function aboutPart(p: AboutPart, href: string | undefined, onLink?: () => void): ReactNode {
   if (typeof p === 'string') return p
   if (isLink(p))
     return (
-      <a href={href} target="_blank" rel="noreferrer">
+      <a href={href} target="_blank" rel="noreferrer" onClick={onLink}>
         <AboutText parts={p.link} />
       </a>
     )

@@ -4,10 +4,14 @@
  * localStorage, so this is the tab-memory path, which follows the same rules.
  */
 import { beforeEach, describe, expect, it } from 'vitest'
+import { resetAskForTests } from '@/lib/maker'
 import { decideBar, finishBar, resetBarForTests } from './Colophon'
 
 describe('decideBar', () => {
-  beforeEach(() => resetBarForTests())
+  beforeEach(() => {
+    resetBarForTests()
+    resetAskForTests()
+  })
 
   it('waits for the third result, then shows on every one until closed', () => {
     expect(decideBar('a', false)).toBe(false)
