@@ -341,7 +341,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'به رایگان ماندن Watched کمک کنید!',
-    link: 'یک قهوه مهمانم کنید',
+    link: 'یک قهوه مهمانم کنید :)',
   },
 }
 export default results

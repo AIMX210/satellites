@@ -528,6 +528,6 @@ export default ns('results', {
     /** The ask: the row's mono caps title, and the share sheet's line */
     title: 'Help keep Watched free!',
     /** The link to the maker's Buy Me a Coffee page ("me" is the maker) */
-    link: 'Buy me a coffee',
+    link: 'Buy me a coffee :)',
   },
 })

@@ -317,7 +317,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Bantu Watched tetap gratis!',
-    link: 'Traktir saya kopi',
+    link: 'Traktir saya kopi :)',
   },
 }
 export default results

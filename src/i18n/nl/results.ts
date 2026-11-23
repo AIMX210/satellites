@@ -321,7 +321,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Help Watched gratis te houden!',
-    link: 'Trakteer me op koffie',
+    link: 'Trakteer me op koffie :)',
   },
 }
 export default results

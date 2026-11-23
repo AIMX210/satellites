@@ -328,7 +328,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Watchedを無料で続けるために',
-    link: 'コーヒーを一杯おごる',
+    link: 'コーヒーを一杯おごる :)',
   },
 }
 export default results

@@ -369,7 +369,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Помогите Watched остаться бесплатным!',
-    link: 'Угостить меня кофе',
+    link: 'Угостить меня кофе :)',
   },
 }
 export default results

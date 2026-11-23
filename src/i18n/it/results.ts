@@ -388,7 +388,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Aiuta Watched a restare gratuito!',
-    link: 'Offrimi un caffè',
+    link: 'Offrimi un caffè :)',
   },
 }
 export default results

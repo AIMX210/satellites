@@ -332,7 +332,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Watched가 계속 무료일 수 있게 도와주세요!',
-    link: '커피 한 잔 사 주기',
+    link: '커피 한 잔 사 주기 :)',
   },
 }
 export default results

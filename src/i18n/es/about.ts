@@ -155,7 +155,7 @@ const about: typeof en = {
   /** Product, agency, licence and people's names as they are; the prose is es.md §8's, OpenStreetMap's own Spanish wording */
   credits: {
     madeBy: { who: 'Hecho por', text: (handle: string): AboutPart[] => ['Armaan, ', link(handle), ' en X'] },
-    support: { who: 'Apoyo', text: ['¡Ayuda a que Watched siga siendo gratis! ', link('Invítame a un café')] as AboutPart[] },
+    support: { who: 'Apoyo', text: ['¡Ayuda a que Watched siga siendo gratis! ', link('Invítame a un café :)')] as AboutPart[] },
     gibs: 'Imágenes de GIBS de la NASA, parte de EOSDIS. GOES a través de la NOAA y CIRA; Himawari, de la JMA.',
     archives: {
       who: 'Archivos',

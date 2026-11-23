@@ -331,7 +331,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Watched’ın ücretsiz kalmasına destek ol!',
-    link: 'Bana bir kahve ısmarla',
+    link: 'Bana bir kahve ısmarla :)',
   },
 }
 export default results

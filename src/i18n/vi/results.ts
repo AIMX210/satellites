@@ -337,7 +337,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Hãy giúp Watched luôn miễn phí!',
-    link: 'Mời tôi một ly cà phê',
+    link: 'Mời tôi một ly cà phê :)',
   },
 }
 export default results

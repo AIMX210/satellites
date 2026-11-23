@@ -391,7 +391,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Hilf mit, dass Watched kostenlos bleibt!',
-    link: 'Spendier mir einen Kaffee',
+    link: 'Spendier mir einen Kaffee :)',
   },
 }
 

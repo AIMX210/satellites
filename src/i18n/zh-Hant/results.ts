@@ -378,7 +378,7 @@ const results: typeof en = {
   },
   colophon: {
     title: '幫 Watched 保持免費！',
-    link: '請我喝杯咖啡',
+    link: '請我喝杯咖啡 :)',
   },
 }
 

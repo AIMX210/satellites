@@ -382,7 +382,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Pomóż utrzymać Watched za darmo!',
-    link: 'Postaw mi kawę',
+    link: 'Postaw mi kawę :)',
   },
 }
 export default results

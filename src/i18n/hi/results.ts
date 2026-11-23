@@ -298,7 +298,7 @@ const results: typeof en = {
   },
   colophon: {
     title: 'Watched को मुफ़्त रखने में मदद करें!',
-    link: 'मुझे एक कॉफ़ी पिलाएँ',
+    link: 'मुझे एक कॉफ़ी पिलाएँ :)',
   },
 }
 export default results
