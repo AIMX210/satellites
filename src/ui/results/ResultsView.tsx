@@ -44,7 +44,7 @@ import { PassList } from './PassList'
 import { Headline, MoreLine, Notes, Verdicts, countPending, enterStyle } from './Summary'
 import { Timeline } from './Timeline'
 import { TimelapseLayer, TimelapseRow } from './TimelapseEntry'
-import { Colophon } from './Colophon'
+import { Colophon, ColophonBar } from './Colophon'
 import { clearPass, focusPass, quiet, startReplay, togglePlay } from './actions'
 import { crossed, onSceneFrame } from './capture'
 import { useGallery } from './gallery'
@@ -908,11 +908,16 @@ function Overview({ model, mobile, compactTimeline, noSummaryRule = false, wide 
     </div>
   ) : null
 
+  // From a browser's second result on, a few times at most: the maker's thanks, where it is seen (Colophon.tsx). Phones:
+  // the first thing under the headline; laptops: after the photos, never ahead of the headline.
+  const thanks = <ColophonBar placeKey={openKey} blocked={invite} />
+
   return (
     <>
       {inviteBar}
       {mobile ? (
         <section className={s.section} aria-label={m.sections.summary}>
+          {thanks}
           {hero}
           {timelapse}
           <div data-peek-end={hero ? undefined : ''}>
@@ -939,6 +944,7 @@ function Overview({ model, mobile, compactTimeline, noSummaryRule = false, wide 
           </div>
           {hero}
           {timelapse}
+          {thanks}
           <Verdicts model={model} enter={enter} />
           {compactTimeline ? (
             <div className={s.mTimeline}>{full ? <Timeline model={model} selectedId={selectedId} onSelect={onSelect} compact /> : null}</div>
