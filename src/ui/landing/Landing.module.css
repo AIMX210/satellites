@@ -490,6 +490,16 @@
 .foot {
   position: relative;
 }
+/* For a returning browser, the link to the code on a line of its own under the credit's (LandingFoot): wide screens
+   only, as .source (below), and only where the column has the height for it (measured: .sourceRowOff). */
+.sourceRow {
+  display: flex;
+  width: var(--search-w);
+  margin-top: 8px; /* SOURCE_ROW_GAP */
+}
+.sourceRowOff {
+  display: none;
+}
 /* The link to the code: the credit's own type and colours, and the external-link arrow after the words. Hidden on
    stacked and short landscape layouts (below). */
 .source {
@@ -1142,7 +1152,8 @@
   }
 }
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px), (orientation: landscape) and (max-height: 540px) {
-  .source {
+  .source,
+  .sourceRow {
     display: none;
   }
 }

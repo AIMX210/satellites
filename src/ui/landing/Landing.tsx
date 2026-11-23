@@ -85,6 +85,10 @@ const CREDIT_HANDLE = '@armaangupt0'
 const CREDIT_URL = 'https://x.com/armaangupt0'
 /** Beside the credit on wide screens: the project's code, MIT licensed (README.md). */
 const SOURCE_URL = 'https://github.com/dev-Armaan/satellites'
+/** The code's own line sits this far under the credit's (Landing.module.css .sourceRow margin-top) */
+const SOURCE_ROW_GAP = 8
+/** …and shows only where, judged at most (see LandingFoot), it ends at least this far above the bottom-left readout */
+const SOURCE_ROW_CLEAR = 8
 
 interface LandingProps {
   onSubmit: (place: Place) => void
@@ -415,8 +419,8 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
  * A browser that has had results before, and has not closed the results' thanks bar or pressed its link
  * (src/lib/maker.ts), gets the maker's Buy Me a Coffee link in the code's place instead, phones too: the credit, then
  * the link, on the same line. The line is never wrapped (a second one would push the column into the bottom readouts),
- * so it is measured: where the two do not fit (a narrow phone, a long language), the link stands alone. Decided once,
- * when the landing mounts.
+ * so it is measured: where the two do not fit (a narrow phone, a long language), the link stands alone. The link to the
+ * code then has a line of its own under it, on wide screens tall enough for it. Decided once, when the landing mounts.
  */
 function LandingFoot() {
   const m = useMsgs(enLanding)
@@ -447,34 +451,81 @@ function LandingFoot() {
     return () => ro.disconnect()
   }, [returning, m])
   // Counted only: the results' bar ends with its own × or link, not with a press here.
+  // The code's own line (returning browsers, wide screens): only where it ends SOURCE_ROW_CLEAR above the bottom-left
+  // readout. The column centres its content between the corner readouts, and on a short laptop (1366 × 768, 1280 ×
+  // 720) one more line ran into that readout. Hidden, it is judged by where it could end at most (under the credit's
+  // line, nothing moved up); shown, by where it ends, which is never lower: the answer never flips back and forth.
+  const [roomForSource, setRoomForSource] = useState(false)
+  const sourceRowRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const foot = footRef.current
+    const column = foot?.closest('section')
+    if (!returning || !foot || !column) return
+    const fit = () => {
+      const readout = document.querySelector('[data-corner="bl"]')
+      if (!readout) return setRoomForSource(false)
+      const limit = readout.getBoundingClientRect().top - SOURCE_ROW_CLEAR
+      const row = sourceRowRef.current
+      const end = row && row.offsetHeight > 0 ? row.getBoundingClientRect().bottom : foot.getBoundingClientRect().bottom + SOURCE_ROW_GAP + foot.offsetHeight
+      setRoomForSource(end <= limit)
+    }
+    // Judged again once the entrance has played (its rises move the lines with transforms, which a ResizeObserver does
+    // not see; measured mid-rise, the line looked lower than it ends up), and on every resize.
+    fit()
+    column.addEventListener('animationend', fit)
+    window.addEventListener('resize', fit)
+    const late = window.setTimeout(fit, 2500)
+    const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(fit)
+    ro?.observe(column)
+    const content = column.firstElementChild
+    if (content) ro?.observe(content)
+    return () => {
+      column.removeEventListener('animationend', fit)
+      window.removeEventListener('resize', fit)
+      window.clearTimeout(late)
+      ro?.disconnect()
+    }
+  }, [returning, m])
   const pressed = () => track('support_click', { from: 'landing' })
+  const source = (
+    <a className={cx(s.credit, s.sourceLink)} href={SOURCE_URL} target="_blank" rel="noreferrer" aria-label={m.sourceLinkLabel}>
+      {m.sourceLink}
+      <Glyph name="arrow-up-right" size={10} />
+    </a>
+  )
   return (
-    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
-      <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
-        {m.builtBy(CREDIT_HANDLE)}
-      </a>
+    <>
+      <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
+        <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
+          {m.builtBy(CREDIT_HANDLE)}
+        </a>
+        {returning ? (
+          <span className={s.coffee}>
+            <span ref={sepRef} className={s.footSep} aria-hidden>
+              ·
+            </span>
+            <a ref={linkRef} className={cx(s.credit, s.sourceLink)} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={pressed}>
+              {m.support}
+              <Glyph name="arrow-up-right" size={10} />
+            </a>
+          </span>
+        ) : (
+          <span className={s.source}>
+            <span className={s.footSep} aria-hidden>
+              ·
+            </span>
+            {source}
+          </span>
+        )}
+      </div>
+      {/* A returning browser's line gave the code's place to the coffee link: the code gets a line of its own under it
+          (owner, 2026-11-23), on wide screens only, where the column has room for it (Landing.module.css .sourceRow). */}
       {returning ? (
-        <span className={s.coffee}>
-          <span ref={sepRef} className={s.footSep} aria-hidden>
-            ·
-          </span>
-          <a ref={linkRef} className={cx(s.credit, s.sourceLink)} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={pressed}>
-            {m.support}
-            <Glyph name="arrow-up-right" size={10} />
-          </a>
-        </span>
-      ) : (
-        <span className={s.source}>
-          <span className={s.footSep} aria-hidden>
-            ·
-          </span>
-          <a className={cx(s.credit, s.sourceLink)} href={SOURCE_URL} target="_blank" rel="noreferrer" aria-label={m.sourceLinkLabel}>
-            {m.sourceLink}
-            <Glyph name="arrow-up-right" size={10} />
-          </a>
-        </span>
-      )}
-    </div>
+        <div ref={sourceRowRef} className={cx(s.sourceRow, s.rise, s.riseExamples, !roomForSource && s.sourceRowOff)} data-hero-copy>
+          {source}
+        </div>
+      ) : null}
+    </>
   )
 }
 
