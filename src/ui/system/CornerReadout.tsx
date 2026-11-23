@@ -22,7 +22,8 @@ export const CornerReadout = forwardRef<
   }
 >(function CornerReadout({ corner, children, className, label, live }, ref) {
   return (
-    <div ref={ref} className={cx(s.corner, s[corner], className)} role={label ? 'group' : undefined} aria-label={label} aria-live={live}>
+    // data-corner: so a view that must keep clear of a corner can find it (the landing's code line, Landing.tsx)
+    <div ref={ref} className={cx(s.corner, s[corner], className)} data-corner={corner} role={label ? 'group' : undefined} aria-label={label} aria-live={live}>
       {children}
     </div>
   )
