@@ -27,10 +27,14 @@ import { track, type SupportFrom } from '@/lib/telemetry'
 import { Glyph, cx } from '@/ui/system'
 import s from './Colophon.module.css'
 
-/** A press of the link from `from`: counted, and the louder places (the bar, the landing) stop asking. */
+/**
+ * A press of the link from `from`, counted. Only the bar's own press (or its ×) ends the bar: a press anywhere else
+ * leaves it to come (owner, 2026-11-23; a press of the closing row on a browser's first result had kept the bar from
+ * ever showing).
+ */
 export function pressedSupport(from: SupportFrom) {
   track('support_click', { from })
-  finishBar()
+  if (from === 'bar') finishBar()
 }
 
 /** The row that closes the results overview: the ask as its title, the link's words under it. */
@@ -82,7 +86,8 @@ export function ColophonLine({ from, className }: { from: SupportFrom; className
  *  - from a browser's third result on (places and windows; a first search's screenshots, the ones most often posted,
  *    never have it), on phones the first thing under the headline (the half-open sheet shows it), on laptops after the
  *    photos and the time-lapse row (still the first screen, never ahead of the headline);
- *  - gone for good once its × or any of the links is pressed, in every later visit too;
+ *  - gone for good once its × or its own link is pressed, in every later visit too (a press of the link anywhere else is
+ *    counted, and leaves the bar to come);
  *  - never beside the shared-link invite (one bar at a time);
  *  - decided once per place and window, when its overview first shows (Back from a pass, a partial report turning
  *    final: the same answer), so it never appears under a reader.

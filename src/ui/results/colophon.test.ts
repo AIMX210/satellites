@@ -5,7 +5,7 @@
  */
 import { beforeEach, describe, expect, it } from 'vitest'
 import { resetAskForTests } from '@/lib/maker'
-import { decideBar, finishBar, resetBarForTests } from './Colophon'
+import { decideBar, finishBar, pressedSupport, resetBarForTests } from './Colophon'
 
 describe('decideBar', () => {
   beforeEach(() => {
@@ -43,5 +43,16 @@ describe('decideBar', () => {
     expect(decideBar('b', true)).toBe(false)
     expect(decideBar('c', true)).toBe(false)
     expect(decideBar('d', false)).toBe(true)
+  })
+
+  it('keeps coming after a press of the link elsewhere, and ends with a press of its own', () => {
+    decideBar('a', false)
+    pressedSupport('results') // the closing row, on the first result
+    pressedSupport('share')
+    decideBar('b', false)
+    expect(decideBar('c', false)).toBe(true)
+    pressedSupport('bar')
+    expect(decideBar('c', false)).toBe(false)
+    expect(decideBar('d', false)).toBe(false)
   })
 })

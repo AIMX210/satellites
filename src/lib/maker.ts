@@ -6,9 +6,9 @@
  * need, and a blocker list that hides the widget leaves a link alone).
  *
  * The memory is here, not with the results, because the landing reads it too (a first-screen chunk that must not
- * pull in the results): how many results this browser has seen, and whether the ask is done (its bar closed, or any
- * of the louder links pressed). localStorage `watched.colophon`; where storage throws (a private window), this tab's
- * memory only. The rules that read it are in src/ui/results/Colophon.tsx (the bar) and src/ui/landing/Landing.tsx.
+ * pull in the results): how many results this browser has seen, and whether the ask is done (the results' bar closed,
+ * or its own link pressed; a press of the link anywhere else does not end it). localStorage `watched.colophon`; where
+ * storage throws (a private window), this tab's memory only. The rules that read it are in src/ui/results/Colophon.tsx (the bar) and src/ui/landing/Landing.tsx.
  */
 export const SUPPORT_URL = 'https://buymeacoffee.com/armaangupt0'
 
@@ -17,7 +17,7 @@ const STORE_KEY = 'watched.colophon'
 export interface AskState {
   /** Overviews this browser has shown (places and windows) */
   results: number
-  /** The bar closed, or a link pressed: the louder places stop asking */
+  /** The results' bar closed, or its own link pressed: the bar and the landing's link stop asking */
   done: boolean
 }
 

@@ -31,7 +31,7 @@ import { useMsgs } from '@/i18n/runtime'
 import { DUR, EASE } from '@/lib/ease'
 import { INSET_CLEAR, SHORT_LANDSCAPE_QUERY, isStacked } from '@/lib/layout'
 import { useBackLayer } from '@/lib/backStack'
-import { SUPPORT_URL, readAsk, writeAsk } from '@/lib/maker'
+import { SUPPORT_URL, readAsk } from '@/lib/maker'
 import { track } from '@/lib/telemetry'
 import { useApp, type Phase } from '@/state/store'
 import type { Place } from '@/types'
@@ -412,7 +412,7 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
  * shares the credit's line, so it adds no height to a column that must fit between the corner readouts, and phones,
  * where that line is the panel's last and the screen is full, never get it.
  *
- * A browser that has had results before, and has not closed the results' thanks bar or pressed one of the links
+ * A browser that has had results before, and has not closed the results' thanks bar or pressed its link
  * (src/lib/maker.ts), gets the maker's Buy Me a Coffee link in the code's place instead, phones too: the credit, then
  * the link, on the same line. The line is never wrapped (a second one would push the column into the bottom readouts),
  * so it is measured: where the two do not fit (a narrow phone, a long language), the link stands alone. Decided once,
@@ -446,10 +446,8 @@ function LandingFoot() {
     for (const el of [foot, creditRef.current, linkRef.current]) if (el) ro.observe(el)
     return () => ro.disconnect()
   }, [returning, m])
-  const pressed = () => {
-    track('support_click', { from: 'landing' })
-    writeAsk({ ...readAsk(), done: true })
-  }
+  // Counted only: the results' bar ends with its own × or link, not with a press here.
+  const pressed = () => track('support_click', { from: 'landing' })
   return (
     <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
       <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
