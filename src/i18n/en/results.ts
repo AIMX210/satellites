@@ -525,9 +525,13 @@ export default ns('results', {
    * share sheet. Two short phrases, nothing more (owner); keep the brand "Watched" as it is
    */
   colophon: {
-    /** The ask: the row's mono caps title, and the share sheet's line */
-    title: 'Help keep Watched free!',
-    /** The link to the maker's Buy Me a Coffee page ("me" is the maker) */
-    link: 'Buy me a coffee :)',
+    /**
+     * The ask, and the link itself, to the maker's Buy Me a Coffee page (owner, 2026-11-23: the ask is the link; no
+     * "buy me a coffee"): the computing screen, the results' bar, the share sheet, the time-lapse, About. Keep the
+     * brand "Watched" as it is
+     */
+    ask: 'Help keep Watched free :)',
+    /** Under it in the row that closes the results (mono caps title above): where the link goes, so it is no surprise */
+    via: 'A small tip, on Buy Me a Coffee',
   },
 })

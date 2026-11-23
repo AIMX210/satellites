@@ -336,8 +336,8 @@ const results: typeof en = {
     sub: 'Nơi này, qua từng năm',
   },
   colophon: {
-    title: 'Hãy giúp Watched luôn miễn phí!',
-    link: 'Mời tôi một ly cà phê :)',
+    ask: 'Hãy giúp Watched luôn miễn phí :)',
+    via: 'Một chút tiền tip, qua Buy Me a Coffee',
   },
 }
 export default results

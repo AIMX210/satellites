@@ -52,7 +52,7 @@ const landing: typeof en = {
     `Kies een plek op aarde. Je ziet welke satellieten er de afgelopen ${span(days)} overheen vlogen, en de echte beelden die ze maakten.`,
   ],
   builtBy: (handle: string) => `Gemaakt door ${handle}`,
-  support: 'Trakteer me op koffie :)',
+  support: 'Help het gratis te houden :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Zoek een plek',

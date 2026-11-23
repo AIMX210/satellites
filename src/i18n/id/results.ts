@@ -316,8 +316,8 @@ const results: typeof en = {
     sub: 'Tempat ini, dari tahun ke tahun',
   },
   colophon: {
-    title: 'Bantu Watched tetap gratis!',
-    link: 'Traktir saya kopi :)',
+    ask: 'Bantu Watched tetap gratis :)',
+    via: 'Tip kecil, lewat Buy Me a Coffee',
   },
 }
 export default results

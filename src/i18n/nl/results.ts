@@ -320,8 +320,8 @@ const results: typeof en = {
     sub: 'Deze plek, jaar na jaar',
   },
   colophon: {
-    title: 'Help Watched gratis te houden!',
-    link: 'Trakteer me op koffie :)',
+    ask: 'Help Watched gratis te houden :)',
+    via: 'Een kleine fooi, via Buy Me a Coffee',
   },
 }
 export default results

@@ -447,8 +447,8 @@ const results: typeof en = {
     sub: 'هذا المكان، عامًا بعد عام',
   },
   colophon: {
-    title: 'ساعد في إبقاء Watched مجانيًا!',
-    link: 'ادعمني بفنجان قهوة :)',
+    ask: 'ساعد في إبقاء Watched مجانيًا :)',
+    via: 'إكرامية صغيرة عبر Buy Me a Coffee',
   },
 }
 export default results

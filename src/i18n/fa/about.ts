@@ -156,7 +156,7 @@ const about: typeof en = {
     // the next, mid-name.
     // A label on its own, so a noun («سازنده»), never «ساختهٔ», which ends on an ezafe with nothing after it
     madeBy: { who: 'سازنده', text: (handle: string): AboutPart[] => ['Armaan، ', handleLink(handle), ' در X'] },
-    support: { who: 'حمایت', text: ['به رایگان ماندن Watched کمک کنید! ', link('یک قهوه مهمانم کنید :)')] as AboutPart[] },
+    support: { who: 'حمایت', text: [link('به رایگان ماندن Watched کمک کنید :)')] as AboutPart[] },
     gibs: 'تصویرها از GIBS ناسا، که بخشی از EOSDIS است. تصویرهای GOES از طریق NOAA و CIRA و تصویرهای Himawari از طریق JMA.',
     archives: {
       who: 'آرشیوها',

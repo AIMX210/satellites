@@ -56,11 +56,11 @@ export default ns('landing', {
   /** The maker's credit under the chips; `handle` is "@armaangupt0" (a link) */
   builtBy: (handle: string) => `Built by ${handle}`,
   /**
-   * After the credit, on the same mono caps line (wide screens only), for every visitor: the maker's Buy Me a Coffee
-   * page, with a ↗ after it. The results' link words (results.colophon.link). Where the line cannot hold the credit and
-   * this, this is left out (Landing.tsx measures it)
+   * After the credit, on the same mono caps line (wide screens only), for every visitor: the link to the maker's Buy Me
+   * a Coffee page, with a ↗ after it. The results' ask (results.colophon.ask), shortened to fit beside the credit. Where
+   * the line cannot hold the credit and this, this is left out (Landing.tsx measures it)
    */
-  support: 'Buy me a coffee :)',
+  support: 'Help keep it free :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   /** The empty field's prompt. Must fit beside the field's buttons on a 390 px phone (it ellipsises) */

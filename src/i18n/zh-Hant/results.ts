@@ -377,8 +377,8 @@ const results: typeof en = {
     sub: '這個地點，逐年變化',
   },
   colophon: {
-    title: '幫 Watched 保持免費！',
-    link: '請我喝杯咖啡 :)',
+    ask: '幫 Watched 保持免費 :)',
+    via: '在 Buy Me a Coffee 上小額打賞',
   },
 }
 

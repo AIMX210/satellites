@@ -38,7 +38,7 @@ const landing: typeof en = {
     `지구 어디든 입력하면, 최근 ${f.int(days)}일 동안 그 상공을 지나간 모든 위성과 실제로 찍힌 이미지가 보인다.`,
   ],
   builtBy: (handle: string) => `만든 사람 ${handle}`,
-  support: '커피 한 잔 사 주기 :)',
+  support: '계속 무료일 수 있게 도와주세요 :)',
 
   // ── The place search ──
   searchPlaceholder: '장소 검색',

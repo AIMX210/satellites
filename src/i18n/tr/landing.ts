@@ -73,7 +73,7 @@ const landing: typeof en = {
       other: [SUB_HEAD, count(days), ` günde${SUB_TAIL}`],
     }),
   builtBy: (handle: string) => `Yapan: ${handle}`,
-  support: 'Bana bir kahve ısmarla :)',
+  support: 'Ücretsiz kalmasına destek ol :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Bir yer ara',

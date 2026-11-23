@@ -297,8 +297,8 @@ const results: typeof en = {
     sub: 'यह जगह, साल दर साल',
   },
   colophon: {
-    title: 'Watched को मुफ़्त रखने में मदद करें!',
-    link: 'मुझे एक कॉफ़ी पिलाएँ :)',
+    ask: 'Watched को मुफ़्त रखने में मदद करें :)',
+    via: 'Buy Me a Coffee पर एक छोटी-सी टिप',
   },
 }
 export default results

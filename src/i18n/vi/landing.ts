@@ -38,7 +38,7 @@ const landing: typeof en = {
   ],
   /** "Do … thực hiện", never the calque *Được xây dựng bởi* */
   builtBy: (handle: string) => `Do ${handle} thực hiện`,
-  support: 'Mời tôi một ly cà phê :)',
+  support: 'Giúp nó luôn miễn phí :)',
 
   // ── The place search ──
   searchPlaceholder: 'Tìm địa điểm',

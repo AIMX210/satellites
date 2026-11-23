@@ -381,8 +381,8 @@ const results: typeof en = {
     sub: 'To miejsce w\u00a0kolejnych latach',
   },
   colophon: {
-    title: 'Pomóż utrzymać Watched za darmo!',
-    link: 'Postaw mi kawę :)',
+    ask: 'Pomóż utrzymać Watched za darmo :)',
+    via: 'Drobny napiwek przez Buy Me a Coffee',
   },
 }
 export default results

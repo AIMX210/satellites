@@ -331,8 +331,8 @@ const results: typeof en = {
     sub: '해마다 본 이곳',
   },
   colophon: {
-    title: 'Watched가 계속 무료일 수 있게 도와주세요!',
-    link: '커피 한 잔 사 주기 :)',
+    ask: 'Watched가 계속 무료일 수 있게 도와주세요 :)',
+    via: 'Buy Me a Coffee로 작은 팁을',
   },
 }
 export default results

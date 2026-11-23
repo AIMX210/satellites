@@ -324,8 +324,8 @@ const results: typeof en = {
     sub: '这个地方，一年一帧',
   },
   colophon: {
-    title: '帮 Watched 保持免费！',
-    link: '请我喝杯咖啡 :)',
+    ask: '帮 Watched 保持免费 :)',
+    via: '在 Buy Me a Coffee 上小额打赏',
   },
 }
 

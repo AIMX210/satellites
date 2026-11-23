@@ -330,8 +330,8 @@ const results: typeof en = {
     sub: 'Bu yer, yıl yıl',
   },
   colophon: {
-    title: 'Watched’ın ücretsiz kalmasına destek ol!',
-    link: 'Bana bir kahve ısmarla :)',
+    ask: 'Watched’ın ücretsiz kalmasına destek ol :)',
+    via: 'Buy Me a Coffee’de küçük bir bahşiş',
   },
 }
 export default results

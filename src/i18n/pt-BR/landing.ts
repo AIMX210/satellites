@@ -52,7 +52,7 @@ const landing: typeof en = {
     }, e as imagens reais que captaram.`,
   ],
   builtBy: (handle: string) => `Feito por ${handle}`,
-  support: 'Me pague um café :)',
+  support: 'Ajude a mantê-lo grátis :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Buscar um lugar',

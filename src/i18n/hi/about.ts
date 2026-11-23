@@ -136,7 +136,7 @@ const about: typeof en = {
 
   credits: {
     madeBy: { who: 'निर्माता', text: (handle: string): AboutPart[] => ['Armaan, X पर ', link(handle)] },
-    support: { who: 'सहयोग', text: ['Watched को मुफ़्त रखने में मदद करें! ', link('मुझे एक कॉफ़ी पिलाएँ :)')] as AboutPart[] },
+    support: { who: 'सहयोग', text: [link('Watched को मुफ़्त रखने में मदद करें :)')] as AboutPart[] },
     gibs: 'तस्वीरें NASA के GIBS से, जो EOSDIS का हिस्सा है। GOES की तस्वीरें NOAA और CIRA के ज़रिए, Himawari की JMA के ज़रिए।',
     archives: {
       who: 'संग्रह',

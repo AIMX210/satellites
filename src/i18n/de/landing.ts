@@ -44,7 +44,7 @@ const landing: typeof en = {
     })} überflogen haben, und ihre echten Bilder.`,
   ],
   builtBy: (handle: string) => `Von ${handle}`,
-  support: 'Spendier mir einen Kaffee :)',
+  support: 'Hilf, es kostenlos zu halten :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Ort suchen',

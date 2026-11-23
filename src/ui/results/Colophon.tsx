@@ -1,6 +1,7 @@
 /**
- * The maker's thanks: "Help keep Watched free!" and a link to the maker's Buy Me a Coffee page (src/lib/maker.ts, a
- * new tab). Every press is counted by where it was (`support_click`, its `from`; migration 0029), so the owner can see
+ * The maker's thanks: "Help keep Watched free :)", itself the link to the maker's Buy Me a Coffee page (src/lib/maker.ts,
+ * a new tab; owner, 2026-11-23: the ask is the link, no "buy me a coffee"). The row that closes the results has room to
+ * say where it goes ("A small tip, on Buy Me a Coffee"), so the page is no surprise. Every press is counted by where it was (`support_click`, its `from`; migration 0029), so the owner can see
  * which place brings people to it.
  *
  * Where it is, and where it is not (owner, 2026-11-23):
@@ -11,17 +12,16 @@
  *    showing someone, and what they post is the card, drawn on its own, never the sheet.
  *  - <ColophonText/> stands in for the time-lapse's note while its video is made and saved (src/ui/timelapse): a file
  *    is being exported, not the screen recorded.
- *  - <Colophon/> closes the results overview, after the caveats, for whoever reads to the end; About's credits and,
- *    for a browser that has had results before, the landing's foot have the same link.
+ *  - <Colophon/> closes the results overview, after the caveats, for whoever reads to the end; About's intro and
+ *    credits, and the landing's foot on wide screens, have the same link.
  *
  * How it looks: the instrument's own parts (a 1px mark, mono caps, a hairline, the external arrow), quieter than the
  * rows around it; the arrow takes the signal colour only on hover (DESIGN §1). The class names say nothing about
  * donating or sponsors, which generic cosmetic filters in blocker lists hide.
  */
 import { useState } from 'react'
-import { LOCALE_INFO } from '../../../api/_lib/i18n/locales'
 import enResults from '@/i18n/en/results'
-import { useLocale, useMsgs } from '@/i18n/runtime'
+import { useMsgs } from '@/i18n/runtime'
 import { SUPPORT_URL, readAsk, writeAsk } from '@/lib/maker'
 import { track, type SupportFrom } from '@/lib/telemetry'
 import { Glyph, cx } from '@/ui/system'
@@ -37,32 +37,28 @@ export function pressedSupport(from: SupportFrom) {
   if (from === 'bar') finishBar()
 }
 
-/** The row that closes the results overview: the ask as its title, the link's words under it. */
+/** The row that closes the results overview: the ask as its title, where it goes under it. */
 export function Colophon() {
   const m = useMsgs(enResults).colophon
   return (
     <a className={s.row} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={() => pressedSupport('results')}>
       <Glyph name="cup" size={16} className={s.mark} />
       <span className={s.text}>
-        <span className={s.title}>{m.title}</span>
-        <span className={s.sub}>{m.link}</span>
+        <span className={s.title}>{m.ask}</span>
+        <span className={s.sub}>{m.via}</span>
       </span>
       <Glyph name="arrow-up-right" size={12} className={s.arrow} />
     </a>
   )
 }
 
-/** The ask, then its link, as running text in its parent's type (the time-lapse's note, the share sheet's line). */
+/** The ask as a link, in its parent's type (the computing screen, the time-lapse's note, the share sheet's line). */
 export function ColophonText({ from }: { from: SupportFrom }) {
   const m = useMsgs(enResults).colophon
-  // What separates the two phrases: a space, or nothing in Chinese and Japanese.
-  const gap = LOCALE_INFO[useLocale()].sentenceGap
   return (
     <span>
-      {m.title}
-      {gap}
       <a className={s.lineLink} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={() => pressedSupport(from)}>
-        {m.link}
+        {m.ask}
         <Glyph name="arrow-up-right" size={10} className={s.lineArrow} />
       </a>
     </span>
@@ -123,17 +119,14 @@ export function resetBarForTests() {
 export function ColophonBar({ placeKey, blocked }: { placeKey: string; blocked: boolean }) {
   const all = useMsgs(enResults)
   const m = all.colophon
-  const gap = LOCALE_INFO[useLocale()].sentenceGap
   const [closed, setClosed] = useState(false)
   if (closed || !decideBar(placeKey, blocked)) return null
   return (
     <div className={s.bar}>
       <Glyph name="cup" size={16} className={s.mark} />
       <p className={s.barText}>
-        {m.title}
-        {gap}
         <a className={s.barLink} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={() => pressedSupport('bar')}>
-          {m.link}
+          {m.ask}
           <Glyph name="arrow-up-right" size={10} className={s.barArrow} />
         </a>
       </p>

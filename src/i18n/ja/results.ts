@@ -327,8 +327,8 @@ const results: typeof en = {
     sub: 'この場所の年ごとの変化',
   },
   colophon: {
-    title: 'Watchedを無料で続けるために',
-    link: 'コーヒーを一杯おごる :)',
+    ask: 'Watchedの無料運営を応援する :)',
+    via: 'Buy Me a Coffeeでちょっとしたチップを',
   },
 }
 export default results

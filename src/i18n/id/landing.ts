@@ -44,7 +44,7 @@ const landing: typeof en = {
     `Pilih tempat mana pun di Bumi. Lihat setiap satelit yang melintas di atasnya dalam ${f.int(days)} hari terakhir, beserta citra aslinya.`,
   ],
   builtBy: (handle: string) => `Dibuat oleh ${handle}`,
-  support: 'Traktir saya kopi :)',
+  support: 'Bantu tetap gratis :)',
 
   // ── The place search ──
   searchPlaceholder: 'Cari tempat',

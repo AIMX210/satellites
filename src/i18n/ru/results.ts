@@ -368,8 +368,8 @@ const results: typeof en = {
     sub: 'Это место год за годом',
   },
   colophon: {
-    title: 'Помогите Watched остаться бесплатным!',
-    link: 'Угостить меня кофе :)',
+    ask: 'Помогите Watched остаться бесплатным :)',
+    via: 'Небольшие чаевые через Buy Me a Coffee',
   },
 }
 export default results

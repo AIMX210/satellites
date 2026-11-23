@@ -340,8 +340,8 @@ const results: typeof en = {
     sub: 'این مکان، سال به سال',
   },
   colophon: {
-    title: 'به رایگان ماندن Watched کمک کنید!',
-    link: 'یک قهوه مهمانم کنید :)',
+    ask: 'به رایگان ماندن Watched کمک کنید :)',
+    via: 'یک انعام کوچک از طریق Buy Me a Coffee',
   },
 }
 export default results
