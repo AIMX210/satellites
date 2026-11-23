@@ -128,6 +128,8 @@ export const SUPPORT_FROM_NAMES: Record<string, string> = {
   about: 'About · Support',
   timelapse: 'Time-lapse video',
   landing: 'Landing (returning)',
+  computing: 'Computing screen',
+  about_top: 'About · under the intro',
 }
 
 export const DEVICE_NAMES: Record<string, string> = { desktop: 'Desktop', phone: 'Phone', tablet: 'Tablet' }

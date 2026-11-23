@@ -126,7 +126,7 @@ describe('the time-lapse in the stats (0024)', () => {
     for (const from of ['results', 'viewer', 'link']) expect(TIMELAPSE_FROM_NAMES[from]).toBeTruthy()
     for (const action of ['video', 'link']) expect(TIMELAPSE_ACTION_NAMES[action]).toBeTruthy()
     const { SUPPORT_FROM_NAMES } = await import('./format')
-    for (const from of ['bar', 'share', 'results', 'about', 'timelapse', 'landing']) expect(SUPPORT_FROM_NAMES[from]).toBeTruthy()
+    for (const from of ['bar', 'share', 'results', 'about', 'timelapse', 'landing', 'computing', 'about_top']) expect(SUPPORT_FROM_NAMES[from]).toBeTruthy()
   })
   it('is in the fixture, so the page can be looked at without a database', () => {
     const m = mockStats('7d', Date.UTC(2026, 10, 13, 12))
