@@ -75,6 +75,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Yapan: ${handle}`,
   sourceLink: 'Açık kaynak',
   sourceLinkLabel: 'Açık kaynak: kodu GitHub’da',
+  support: 'Bana bir kahve ısmarla :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Bir yer ara',

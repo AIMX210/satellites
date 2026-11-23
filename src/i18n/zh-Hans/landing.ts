@@ -36,6 +36,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `由 ${handle} 制作`,
   sourceLink: '开源',
   sourceLinkLabel: '开源：GitHub 上的源代码',
+  support: '请我喝杯咖啡 :)',
 
   // ── The place search ──
   searchPlaceholder: '搜索地点',

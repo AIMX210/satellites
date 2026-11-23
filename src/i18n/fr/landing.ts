@@ -62,6 +62,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Créé par ${handle}`,
   sourceLink: 'Code source',
   sourceLinkLabel: 'Code source\u00a0: le projet sur GitHub',
+  support: 'Offrez-moi un café :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   // *Chercher*: *Rechercher un lieu* ellipsised at 1024 px, beside the locate button.

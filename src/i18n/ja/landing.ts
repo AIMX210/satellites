@@ -42,6 +42,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `制作 ${handle}`,
   sourceLink: 'オープンソース',
   sourceLinkLabel: 'オープンソース：GitHubのコード',
+  support: 'コーヒーを一杯おごる :)',
 
   // ── The place search ──
   searchPlaceholder: '場所を検索',

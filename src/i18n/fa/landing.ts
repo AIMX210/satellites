@@ -38,6 +38,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `ساختهٔ \u2066${handle}\u2069`,
   sourceLink: 'متن‌باز',
   sourceLinkLabel: 'متن‌باز: کد پروژه در GitHub',
+  support: 'یک قهوه مهمانم کنید :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'جستجوی مکان',

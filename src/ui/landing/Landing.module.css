@@ -471,6 +471,25 @@
   color: var(--signal);
   transition-duration: 0ms;
 }
+/* A returning browser's Buy Me a Coffee link (LandingFoot): in the code's place, on every layout. Where the credit and
+   it do not fit one line, the credit leaves the flow (still measured) and the link stands alone, without its dot. */
+.coffee {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+}
+.footAlone > .credit:first-child {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+.footAlone .coffee .footSep {
+  position: absolute;
+  visibility: hidden;
+}
+.foot {
+  position: relative;
+}
 /* The link to the code: the credit's own type and colours, and the external-link arrow after the words. Hidden on
    stacked and short landscape layouts (below). */
 .source {

@@ -50,6 +50,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `${handle} ने बनाया`,
   sourceLink: 'ओपन सोर्स',
   sourceLinkLabel: 'ओपन सोर्स: GitHub पर प्रोजेक्ट का कोड',
+  support: 'मुझे एक कॉफ़ी पिलाएँ :)',
 
   // ── The place search ──
   searchPlaceholder: 'कोई जगह खोजें',

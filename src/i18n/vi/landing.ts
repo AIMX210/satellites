@@ -40,6 +40,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Do ${handle} thực hiện`,
   sourceLink: 'Mã nguồn mở',
   sourceLinkLabel: 'Mã nguồn mở: dự án trên GitHub',
+  support: 'Mời tôi một ly cà phê :)',
 
   // ── The place search ──
   searchPlaceholder: 'Tìm địa điểm',

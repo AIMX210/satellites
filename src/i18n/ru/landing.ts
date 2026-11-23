@@ -50,6 +50,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Автор: ${handle}`,
   sourceLink: 'Открытый код',
   sourceLinkLabel: 'Открытый код: проект на GitHub',
+  support: 'Угостить меня кофе :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Поиск места',

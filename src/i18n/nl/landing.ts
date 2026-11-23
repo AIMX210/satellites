@@ -54,6 +54,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Gemaakt door ${handle}`,
   sourceLink: 'Open source',
   sourceLinkLabel: 'Open source: de code op GitHub',
+  support: 'Trakteer me op koffie :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Zoek een plek',

@@ -46,6 +46,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `Dibuat oleh ${handle}`,
   sourceLink: 'Sumber terbuka',
   sourceLinkLabel: 'Sumber terbuka: kodenya di GitHub',
+  support: 'Traktir saya kopi :)',
 
   // ── The place search ──
   searchPlaceholder: 'Cari tempat',

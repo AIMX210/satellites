@@ -55,6 +55,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `من صنع \u2066${handle}\u2069`,
   sourceLink: 'مفتوح المصدر',
   sourceLinkLabel: 'مفتوح المصدر: الشيفرة على GitHub',
+  support: 'ادعمني بفنجان قهوة :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'البحث عن مكان',

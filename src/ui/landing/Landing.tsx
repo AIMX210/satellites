@@ -31,6 +31,8 @@ import { useMsgs } from '@/i18n/runtime'
 import { DUR, EASE } from '@/lib/ease'
 import { INSET_CLEAR, SHORT_LANDSCAPE_QUERY, isStacked } from '@/lib/layout'
 import { useBackLayer } from '@/lib/backStack'
+import { SUPPORT_URL, readAsk, writeAsk } from '@/lib/maker'
+import { track } from '@/lib/telemetry'
 import { useApp, type Phase } from '@/state/store'
 import type { Place } from '@/types'
 import {
@@ -398,25 +400,82 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
           </div>
 
           <Examples onPick={submit} disabled={locating} locate={locate} />
-          {/* Under the chips: the maker's credit, then (wide screens only, Landing.module.css .source) the link to
-              the code. It shares the credit's line, so it adds no height to a column that must fit between the
-              corner readouts, and phones, where that line is the panel's last and the screen is full, never get it. */}
-          <div className={cx(s.foot, s.rise, s.riseExamples)} data-hero-copy>
-            <a className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer">
-              {m.builtBy(CREDIT_HANDLE)}
-            </a>
-            <span className={s.source}>
-              <span className={s.footSep} aria-hidden>
-                ·
-              </span>
-              <a className={cx(s.credit, s.sourceLink)} href={SOURCE_URL} target="_blank" rel="noreferrer" aria-label={m.sourceLinkLabel}>
-                {m.sourceLink}
-                <Glyph name="arrow-up-right" size={10} />
-              </a>
-            </span>
-          </div>
+          <LandingFoot />
         </div>
       </section>
+    </div>
+  )
+}
+
+/**
+ * Under the chips: the maker's credit, then (wide screens only, Landing.module.css .source) the link to the code. It
+ * shares the credit's line, so it adds no height to a column that must fit between the corner readouts, and phones,
+ * where that line is the panel's last and the screen is full, never get it.
+ *
+ * A browser that has had results before, and has not closed the results' thanks bar or pressed one of the links
+ * (src/lib/maker.ts), gets the maker's Buy Me a Coffee link in the code's place instead, phones too: the credit, then
+ * the link, on the same line. The line is never wrapped (a second one would push the column into the bottom readouts),
+ * so it is measured: where the two do not fit (a narrow phone, a long language), the link stands alone. Decided once,
+ * when the landing mounts.
+ */
+function LandingFoot() {
+  const m = useMsgs(enLanding)
+  const [returning] = useState(() => {
+    const a = readAsk()
+    return a.results >= 1 && !a.done
+  })
+  const footRef = useRef<HTMLDivElement>(null)
+  const creditRef = useRef<HTMLAnchorElement>(null)
+  const sepRef = useRef<HTMLSpanElement>(null)
+  const linkRef = useRef<HTMLAnchorElement>(null)
+  const [alone, setAlone] = useState(false)
+  useLayoutEffect(() => {
+    const foot = footRef.current
+    if (!returning || !foot) return
+    // Each part is measured on its own, and none changes size when the credit gives way (it and the dot leave the flow
+    // then, still laid out), so the answer cannot flip back and forth.
+    const outer = (el: HTMLElement | null) => {
+      if (!el) return 0
+      const cs = getComputedStyle(el)
+      return el.offsetWidth + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight)
+    }
+    const fit = () => setAlone(outer(creditRef.current) + outer(sepRef.current) + outer(linkRef.current) > foot.clientWidth + 0.5)
+    fit()
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(fit)
+    for (const el of [foot, creditRef.current, linkRef.current]) if (el) ro.observe(el)
+    return () => ro.disconnect()
+  }, [returning, m])
+  const pressed = () => {
+    track('support_click', { from: 'landing' })
+    writeAsk({ ...readAsk(), done: true })
+  }
+  return (
+    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, alone && s.footAlone)} data-hero-copy>
+      <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer" aria-hidden={alone || undefined} tabIndex={alone ? -1 : undefined}>
+        {m.builtBy(CREDIT_HANDLE)}
+      </a>
+      {returning ? (
+        <span className={s.coffee}>
+          <span ref={sepRef} className={s.footSep} aria-hidden>
+            ·
+          </span>
+          <a ref={linkRef} className={cx(s.credit, s.sourceLink)} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={pressed}>
+            {m.support}
+            <Glyph name="arrow-up-right" size={10} />
+          </a>
+        </span>
+      ) : (
+        <span className={s.source}>
+          <span className={s.footSep} aria-hidden>
+            ·
+          </span>
+          <a className={cx(s.credit, s.sourceLink)} href={SOURCE_URL} target="_blank" rel="noreferrer" aria-label={m.sourceLinkLabel}>
+            {m.sourceLink}
+            <Glyph name="arrow-up-right" size={10} />
+          </a>
+        </span>
+      )}
     </div>
   )
 }

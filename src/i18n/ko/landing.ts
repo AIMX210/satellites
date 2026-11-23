@@ -40,6 +40,7 @@ const landing: typeof en = {
   builtBy: (handle: string) => `만든 사람 ${handle}`,
   sourceLink: '오픈 소스',
   sourceLinkLabel: '오픈 소스: GitHub의 코드',
+  support: '커피 한 잔 사 주기 :)',
 
   // ── The place search ──
   searchPlaceholder: '장소 검색',
