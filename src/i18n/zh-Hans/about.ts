@@ -135,7 +135,7 @@ const about: typeof en = {
 
   credits: {
     madeBy: { who: '制作', text: (handle: string): AboutPart[] => ['Armaan，X 上的 ', link(handle)] },
-    support: { who: '支持', text: ['Watched 免费。', link('请 Armaan 喝杯咖啡'), '，让它继续运行。'] as AboutPart[] },
+    support: { who: '支持', text: ['帮 Watched 保持免费：', link('请我喝杯咖啡'), '。'] as AboutPart[] },
     gibs: '图像来自 NASA 的 GIBS（EOSDIS 的一部分）。GOES 图像来自 NOAA 和 CIRA，Himawari 图像来自 JMA。',
     archives: {
       who: '图像库',

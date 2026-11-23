@@ -323,8 +323,10 @@ const results: typeof en = {
     sub: 'Este lugar, año a año',
   },
   colophon: {
-    title: 'Invita a Armaan a un café',
-    sub: 'Watched es gratis, sin anuncios ni registro. Lo hace y lo mantiene una sola persona.',
+    title: 'Ayuda a que Watched siga gratis',
+    sub: 'Sin anuncios, sin registro, solo una persona. Un café ayuda a que siga así.',
+    bar: 'Hago Watched yo solo y quiero que siga siendo gratis.',
+    link: 'Invítame a un café',
   },
 }
 

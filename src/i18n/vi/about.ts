@@ -131,7 +131,7 @@ const about: typeof en = {
 
   credits: {
     madeBy: { who: 'Thực hiện', text: (handle: string): AboutPart[] => ['Armaan, ', link(handle), ' trên X'] },
-    support: { who: 'Ủng hộ', text: ['Watched miễn phí. ', link('Mời Armaan một ly cà phê'), ' để giúp trang tiếp tục chạy.'] as AboutPart[] },
+    support: { who: 'Ủng hộ', text: ['Giúp Watched luôn miễn phí. ', link('Mời tôi một ly cà phê'), '.'] as AboutPart[] },
     gibs: 'Ảnh từ GIBS của NASA, thuộc EOSDIS. GOES qua NOAA và CIRA, Himawari qua JMA.',
     archives: {
       who: 'Kho lưu trữ',

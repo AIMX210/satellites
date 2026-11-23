@@ -316,8 +316,10 @@ const results: typeof en = {
     sub: 'Tempat ini, dari tahun ke tahun',
   },
   colophon: {
-    title: 'Traktir Armaan kopi',
-    sub: 'Watched gratis, tanpa iklan dan tanpa daftar. Satu orang yang membuat dan menjalankannya.',
+    title: 'Bantu Watched tetap gratis',
+    sub: 'Tanpa iklan, tanpa daftar, hanya satu orang. Secangkir kopi membantu agar tetap begitu.',
+    bar: 'Saya membuat Watched sendirian dan ingin tetap gratis.',
+    link: 'Traktir saya kopi',
   },
 }
 export default results

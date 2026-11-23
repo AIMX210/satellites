@@ -336,8 +336,10 @@ const results: typeof en = {
     sub: 'Nơi này, qua từng năm',
   },
   colophon: {
-    title: 'Mời Armaan một ly cà phê',
-    sub: 'Watched miễn phí, không quảng cáo, không cần đăng ký. Một người làm ra và duy trì nó.',
+    title: 'Giúp Watched luôn miễn phí',
+    sub: 'Không quảng cáo, không cần đăng ký, chỉ một người làm. Một ly cà phê giúp giữ được như vậy.',
+    bar: 'Tôi tự làm Watched và muốn nó luôn miễn phí.',
+    link: 'Mời tôi một ly cà phê',
   },
 }
 export default results

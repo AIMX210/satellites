@@ -327,8 +327,10 @@ const results: typeof en = {
     sub: 'この場所の年ごとの変化',
   },
   colophon: {
-    title: 'Armaanにコーヒーを一杯',
-    sub: 'Watchedは無料で、広告も登録もありません。ひとりで作り、運営しています。',
+    title: 'Watchedを無料で続けるために',
+    sub: '広告なし、登録なし、作っているのはひとりです。コーヒー一杯が支えになります。',
+    bar: 'Watchedはひとりで作っています。これからも無料で続けたいと思っています。',
+    link: 'コーヒーを一杯おごる',
   },
 }
 export default results

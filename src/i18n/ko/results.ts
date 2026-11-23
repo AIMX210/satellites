@@ -331,8 +331,10 @@ const results: typeof en = {
     sub: '해마다 본 이곳',
   },
   colophon: {
-    title: 'Armaan에게 커피 한 잔',
-    sub: 'Watched는 무료이며 광고도 가입도 없습니다. 한 사람이 만들고 운영합니다.',
+    title: 'Watched가 계속 무료일 수 있도록',
+    sub: '광고도 가입도 없이, 한 사람이 만듭니다. 커피 한 잔이 큰 힘이 됩니다.',
+    bar: 'Watched는 혼자 만들고 있고, 앞으로도 무료로 두고 싶습니다.',
+    link: '커피 한 잔 사 주기',
   },
 }
 export default results

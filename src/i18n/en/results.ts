@@ -520,11 +520,17 @@ export default ns('results', {
     sub: 'This place, year by year',
   },
 
-  /** The row that closes the overview, after the footnotes: a link to the maker's Buy Me a Coffee page (new tab) */
+  /**
+   * The maker's thanks (src/ui/results/Colophon.tsx), in the maker's own voice ("me" is Armaan, who makes the site): the row
+   * that closes the overview and the bar near its top. Plain and short; keep the brand "Watched" as it is
+   */
   colophon: {
-    /** Mono caps title; "Armaan" is the maker's name (keep it as it is) */
-    title: 'Buy Armaan a coffee',
-    /** Under it, one or two lines: why. Keep the brand "Watched" as it is. Its accessible name is the two lines together */
-    sub: 'Watched is free, with no ads and no sign-up. One person makes it and keeps it running.',
+    /** The closing row's mono caps title */
+    title: 'Help keep Watched free',
+    /** Under it, one or two lines (the row's accessible name is the two together) */
+    sub: 'No ads, no sign-up, just one person. A coffee helps keep it that way.',
+    /** The bar: one sentence, then the link (`link`, its own phrase) */
+    bar: 'I make Watched on my own, and I’d like to keep it free.',
+    link: 'Buy me a coffee',
   },
 })

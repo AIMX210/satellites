@@ -324,8 +324,10 @@ const results: typeof en = {
     sub: '这个地方，一年一帧',
   },
   colophon: {
-    title: '请 Armaan 喝杯咖啡',
-    sub: 'Watched 免费，没有广告，无需注册。由一个人制作和维护。',
+    title: '帮 Watched 保持免费',
+    sub: '没有广告，无需注册，只有一个人在做。一杯咖啡就能帮它继续免费。',
+    bar: 'Watched 是我一个人做的，我希望它一直免费。',
+    link: '请我喝杯咖啡',
   },
 }
 
