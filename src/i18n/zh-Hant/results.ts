@@ -377,9 +377,7 @@ const results: typeof en = {
     sub: '這個地點，逐年變化',
   },
   colophon: {
-    title: '幫 Watched 保持免費',
-    sub: '沒有廣告，無須註冊，只有一個人在做。一杯咖啡就能幫它繼續免費。',
-    bar: 'Watched 是我一個人做的，我希望它一直免費。',
+    title: '幫 Watched 保持免費！',
     link: '請我喝杯咖啡',
   },
 }

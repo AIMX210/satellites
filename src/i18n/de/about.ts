@@ -169,7 +169,7 @@ const about: typeof en = {
   /** Product, agency, licence and people's names as they are; agencies take their article (§5.2) */
   credits: {
     madeBy: { who: 'Gemacht von', text: (handle: string): AboutPart[] => ['Armaan, ', link(handle), ' auf X'] },
-    support: { who: 'Unterstützen', text: ['Hilf, Watched kostenlos zu halten. ', link('Spendier mir einen Kaffee'), '.'] as AboutPart[] },
+    support: { who: 'Unterstützen', text: ['Hilf mit, dass Watched kostenlos bleibt! ', link('Spendier mir einen Kaffee')] as AboutPart[] },
     gibs: 'Bilder vom NASA-Dienst GIBS, einem Teil von EOSDIS. GOES über die NOAA und das CIRA, Himawari über die JMA.',
     archives: {
       who: 'Archive',

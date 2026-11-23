@@ -156,7 +156,7 @@ const about: typeof en = {
    */
   credits: {
     madeBy: { who: '制作', text: (handle: string): AboutPart[] => ['Armaan、Xの', link(handle)] },
-    support: { who: '支援', text: ['Watchedを無料で続けるために、', link('コーヒーを一杯おごってください'), '。'] as AboutPart[] },
+    support: { who: '支援', text: ['Watchedを無料で続けるために、', link('コーヒーを一杯おごってください')] as AboutPart[] },
     gibs: '画像はNASAのGIBS（EOSDISの一部）から。GOESはNOAAとCIRA経由、Himawariは気象庁経由。',
     archives: {
       who: 'アーカイブ',

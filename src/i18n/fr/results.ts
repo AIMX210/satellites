@@ -396,9 +396,7 @@ const results: typeof en = {
     sub: 'Ce lieu, année après année',
   },
   colophon: {
-    title: 'Aider Watched à rester gratuit',
-    sub: 'Sans pub, sans inscription, une seule personne derrière. Un café aide à ce que ça dure.',
-    bar: 'Je fais Watched seul, et j’aimerais qu’il reste gratuit.',
+    title: 'Aidez Watched à rester gratuit',
     link: 'Offrez-moi un café',
   },
 }

@@ -331,9 +331,7 @@ const results: typeof en = {
     sub: '해마다 본 이곳',
   },
   colophon: {
-    title: 'Watched가 계속 무료일 수 있도록',
-    sub: '광고도 가입도 없이, 한 사람이 만듭니다. 커피 한 잔이 큰 힘이 됩니다.',
-    bar: 'Watched는 혼자 만들고 있고, 앞으로도 무료로 두고 싶습니다.',
+    title: 'Watched가 계속 무료일 수 있게 도와주세요!',
     link: '커피 한 잔 사 주기',
   },
 }

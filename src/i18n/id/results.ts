@@ -316,9 +316,7 @@ const results: typeof en = {
     sub: 'Tempat ini, dari tahun ke tahun',
   },
   colophon: {
-    title: 'Bantu Watched tetap gratis',
-    sub: 'Tanpa iklan, tanpa daftar, hanya satu orang. Secangkir kopi membantu agar tetap begitu.',
-    bar: 'Saya membuat Watched sendirian dan ingin tetap gratis.',
+    title: 'Bantu Watched tetap gratis!',
     link: 'Traktir saya kopi',
   },
 }

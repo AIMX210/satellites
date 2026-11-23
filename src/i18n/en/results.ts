@@ -521,16 +521,13 @@ export default ns('results', {
   },
 
   /**
-   * The maker's thanks (src/ui/results/Colophon.tsx), in the maker's own voice ("me" is Armaan, who makes the site): the row
-   * that closes the overview and the bar near its top. Plain and short; keep the brand "Watched" as it is
+   * The maker's thanks (src/ui/results/Colophon.tsx): the row that closes the overview and the line at the foot of the
+   * share sheet. Two short phrases, nothing more (owner); keep the brand "Watched" as it is
    */
   colophon: {
-    /** The closing row's mono caps title */
-    title: 'Help keep Watched free',
-    /** Under it, one or two lines (the row's accessible name is the two together) */
-    sub: 'No ads, no sign-up, just one person. A coffee helps keep it that way.',
-    /** The bar: one sentence, then the link (`link`, its own phrase) */
-    bar: 'I make Watched on my own, and I’d like to keep it free.',
+    /** The ask: the row's mono caps title, and the share sheet's line */
+    title: 'Help keep Watched free!',
+    /** The link to the maker's Buy Me a Coffee page ("me" is the maker) */
     link: 'Buy me a coffee',
   },
 })

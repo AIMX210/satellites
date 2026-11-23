@@ -176,7 +176,7 @@ const about: typeof en = {
   /** Every product, agency, licence and person's name as it is; the attribution quoted as given (§8) */
   credits: {
     madeBy: { who: 'من صنع', text: (handle: string): AboutPart[] => ['Armaan، ', handleLink(handle), ' على X'] },
-    support: { who: 'الدعم', text: ['ساعد في إبقاء Watched مجانيًا. ', link('ادعمني بفنجان قهوة'), '.'] as AboutPart[] },
+    support: { who: 'الدعم', text: ['ساعد في إبقاء Watched مجانيًا! ', link('ادعمني بفنجان قهوة')] as AboutPart[] },
     gibs: 'الصور من خدمة GIBS التابعة لناسا، ضمن EOSDIS. صور GOES عبر NOAA وCIRA، وHimawari عبر JMA.',
     archives: {
       who: 'الأرشيفات',

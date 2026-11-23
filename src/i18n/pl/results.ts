@@ -381,9 +381,7 @@ const results: typeof en = {
     sub: 'To miejsce w\u00a0kolejnych latach',
   },
   colophon: {
-    title: 'Pomóż utrzymać Watched za darmo',
-    sub: 'Bez reklam, bez rejestracji, tylko jedna osoba. Kawa pomaga, żeby tak zostało.',
-    bar: 'Robię Watched sam i\u00a0chcę, żeby został darmowy.',
+    title: 'Pomóż utrzymać Watched za darmo!',
     link: 'Postaw mi kawę',
   },
 }

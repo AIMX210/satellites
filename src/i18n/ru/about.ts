@@ -149,7 +149,7 @@ const about: typeof en = {
 
   credits: {
     madeBy: { who: 'Автор', text: (handle: string): AboutPart[] => ['Armaan, ', link(handle), ' в X'] },
-    support: { who: 'Поддержать', text: ['Помогите Watched остаться бесплатным: ', link('угостите меня кофе'), '.'] as AboutPart[] },
+    support: { who: 'Поддержать', text: ['Помогите Watched остаться бесплатным! ', link('Угостить меня кофе')] as AboutPart[] },
     gibs: 'Снимки из NASA GIBS, части EOSDIS. GOES через NOAA и CIRA, Himawari через JMA.',
     archives: {
       who: 'Архивы',

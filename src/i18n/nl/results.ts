@@ -320,9 +320,7 @@ const results: typeof en = {
     sub: 'Deze plek, jaar na jaar',
   },
   colophon: {
-    title: 'Help Watched gratis te houden',
-    sub: 'Geen advertenties, geen account, gewoon één persoon. Een koffie helpt om dat zo te houden.',
-    bar: 'Ik maak Watched in mijn eentje en wil het graag gratis houden.',
+    title: 'Help Watched gratis te houden!',
     link: 'Trakteer me op koffie',
   },
 }
