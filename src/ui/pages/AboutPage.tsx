@@ -304,6 +304,14 @@ export function AboutPage({ onClose }: { onClose: () => void }) {
               <Reveal as="p" className={s.lede} delay={500} duration={720}>
                 {m.lede}
               </Reveal>
+              {/* The maker's thanks under the intro, where everyone who opens this page reads (owner, 2026-11-23); the
+                  same words as the Support credit below. */}
+              <Reveal as="p" className={s.support} delay={560} duration={720}>
+                <Glyph name="cup" size={14} className={s.supportMark} />
+                <span>
+                  <AboutText parts={m.credits.support.text} href={SUPPORT_URL} onLink={() => track('support_click', { from: 'about_top' })} />
+                </span>
+              </Reveal>
             </header>
 
             <Section id="short" index="00" title={m.sections.short}>
