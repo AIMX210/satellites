@@ -34,6 +34,7 @@ import { ARCHIVE_START, FRAME_HALF_KM, MIN_FRAMES, type Frame, type Timelapse as
 import { useBackLayer } from '@/lib/backStack'
 import { track } from '@/lib/telemetry'
 import type { TimelapseFrom } from '@/state/timelapse'
+import { ColophonText } from '@/ui/results/Colophon'
 import { Reticle } from '@/ui/results/Reticle'
 import { Button, Glyph, Kbd, cx, useReducedMotion } from '@/ui/system'
 import { WORDMARK_BOX, WORDMARK_DOT, WORDMARK_PATH } from '../../../api/_lib/wordmark'
@@ -92,6 +93,8 @@ function Player({ place, from, mobile, onClose }: TimelapseProps) {
   const [at, setAt] = useState({ i: 0, under: -1 })
   const [playing, setPlaying] = useState(!reduced)
   const [scrubbing, setScrubbing] = useState(false)
+  // A video is being made or waits to be saved (VideoButton): the note gives way to the maker's thanks
+  const [exporting, setExporting] = useState(false)
   const i = Math.min(at.i, Math.max(0, n - 1))
 
   const go = useCallback((to: number | ((cur: number) => number)) => {
@@ -208,13 +211,23 @@ function Player({ place, from, mobile, onClose }: TimelapseProps) {
   const tools = (
     <div className={s.tools}>
       <CopyLink place={place} ready={!!data} />
-      {frames && canEncodeVideo() ? <VideoButton key={frames[0].src} frames={frames} place={place} mobile={mobile} onStart={() => setPlaying(false)} /> : null}
+      {frames && canEncodeVideo() ? (
+        <VideoButton key={frames[0].src} frames={frames} place={place} mobile={mobile} onStart={() => setPlaying(false)} onExporting={setExporting} />
+      ) : null}
     </div>
   )
   const note = (
     <p className={s.note}>
       {/* A single-season loop (war zones, glaciers) must not say the years turn through the seasons. */}
-      {frame ? <span className={s.noteText}>{data?.season ? m.noteOneSeason(FRAME_HALF_KM * 2) : m.note(FRAME_HALF_KM * 2)}</span> : null}
+      {/* While its video is made and saved, the maker's thanks stands in: a file is being exported then, not the screen
+          recorded (src/ui/results/Colophon.tsx). */}
+      {frame && exporting ? (
+        <span className={s.noteText}>
+          <ColophonText from="timelapse" />
+        </span>
+      ) : frame ? (
+        <span className={s.noteText}>{data?.season ? m.noteOneSeason(FRAME_HALF_KM * 2) : m.note(FRAME_HALF_KM * 2)}</span>
+      ) : null}
       {/* The licence credit stays as the Copernicus data policy words it, in English, in every language. */}
       <span className={s.credit} lang={frames?.length ? 'en' : undefined}>
         {frames?.length ? `Contains modified Copernicus Sentinel data ${yearSpan(frames)}` : m.source}
@@ -582,9 +595,27 @@ type VideoState = { phase: 'idle' } | { phase: 'busy'; done: number } | { phase:
  * the second saves or shares it. A browser only lets a page open the share sheet or start a download inside a press,
  * and the press that started the rendering is long over by the time the file exists.
  */
-function VideoButton({ frames, place, mobile, onStart }: { frames: Frame[]; place: TimelapseProps['place']; mobile: boolean; onStart: () => void }) {
+function VideoButton({
+  frames,
+  place,
+  mobile,
+  onStart,
+  onExporting,
+}: {
+  frames: Frame[]
+  place: TimelapseProps['place']
+  mobile: boolean
+  onStart: () => void
+  /** True while a video is made or waits to be saved */
+  onExporting: (on: boolean) => void
+}) {
   const m = useMsgs(enTimelapse)
   const [state, setState] = useState<VideoState>({ phase: 'idle' })
+  const exporting = state.phase === 'busy' || state.phase === 'ready'
+  useEffect(() => {
+    onExporting(exporting)
+    return () => onExporting(false)
+  }, [exporting, onExporting])
   const abort = useRef<AbortController | null>(null)
   useEffect(() => () => abort.current?.abort(), [])
   useEffect(() => {
