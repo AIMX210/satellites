@@ -518,6 +518,12 @@ const POINT_PAIR = /^([+-]?\d{1,2}(?:\.\d+)?)\s*([NS])?\s*[,;\s]\s*([+-]?\d{1,3}
  * letter (where it cannot be a decimal one).
  */
 const COMMA_PAIR = /^([+-]?\d{1,2}(?:[.,]\d+)?)\s*(?:([NS])\s*[,;\s]|[;\s])\s*([+-]?\d{1,3}(?:[.,]\d+)?)\s*([EW])?$/
+/**
+ * What is typed or pasted for the minutes mark (prime, either curly quote, modifier prime and apostrophe, acute,
+ * grave) and for the seconds mark (double prime, either curly double quote, modifier double prime, double acute).
+ */
+const MINUTE_MARKS = /[\u2032\u2018\u2019\u02b9\u02bc\u00b4`]/g
+const SECOND_MARKS = /[\u2033\u201c\u201d\u02ba\u02dd]/g
 
 /**
  * Coordinates typed into the search box: "43.4723, -80.5449", "43.4723 -80.5449",
@@ -533,6 +539,11 @@ const COMMA_PAIR = /^([+-]?\d{1,2}(?:[.,]\d+)?)\s*(?:([NS])\s*[,;\s]|[;\s])\s*([
  * and punctuation (a Chinese, Japanese or Korean input method's "４３．４７，−８０．５４") read as their ASCII forms
  * (NFKC, after the degree signs go: it would turn "º" into the letter o). So do the digits an Arabic, Persian or Hindi
  * keyboard types ("۴۳٫۴۷، −۸۰٫۵۴", "٤٣٫٤٧"), with the Arabic decimal sign and comma.
+ *
+ * Whatever those two forms do not read goes to `parseAngles` (below): degrees with minutes and seconds, as Wikipedia
+ * and the map apps print a position ("43°28′20″N 80°32′42″W"), and a hemisphere letter before its number
+ * ("N 43.4723 W 80.5449"). The marks for minutes and seconds are made one character each first, before NFKC, which
+ * would turn a double prime into two primes and an acute accent into a space and a combining mark.
  */
 export function parseCoordinates(q: string): LatLon | null {
   const s = q
@@ -543,19 +554,121 @@ export function parseCoordinates(q: string): LatLon | null {
     .replace(/\u066b/g, '.')
     .replace(/\u060c/g, ',')
     .replace(/[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '')
-    .replace(/[°º]/g, ' ')
+    .replace(/º/g, '°')
+    .replace(MINUTE_MARKS, "'")
+    .replace(SECOND_MARKS, '"')
     .normalize('NFKC')
     .trim()
     .toUpperCase()
     .replace(/[\u2212\u2013]/g, '-')
-  const m = POINT_PAIR.exec(s) ?? COMMA_PAIR.exec(s)
-  if (!m) return null
+  const plain = s.replace(/°/g, ' ').trim()
+  const m = POINT_PAIR.exec(plain) ?? COMMA_PAIR.exec(plain)
+  if (!m) {
+    // The comma parts the numbers where it can, as above; only then is one between two digits a decimal comma.
+    const marked = s.replace(/''/g, '"')
+    return parseAngles(marked) ?? parseAngles(marked.replace(/(\d),(?=\d)/g, '$1.'))
+  }
   let lat = Number(m[1].replace(',', '.'))
   let lon = Number(m[3].replace(',', '.'))
   if (m[2] === 'S') lat = -Math.abs(lat)
   if (m[4] === 'W') lon = -Math.abs(lon)
   if (!(Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) return null
   return { lat, lon }
+}
+
+/** One piece of a typed position: a number, a unit mark, a hemisphere letter, or the comma or semicolon between. */
+interface AngleToken {
+  kind: 'num' | 'mark' | 'letter' | 'sep'
+  text: string
+  /** White space came before it */
+  gap: boolean
+}
+
+const ANGLE_TOKEN = /(\s*)(?:([+-]?\d+(?:\.\d+)?)|([°'"])|([NSEW])|([,;]))/y
+/** The mark each part of an angle may carry: degrees, minutes, seconds. */
+const ANGLE_MARKS = ['°', "'", '"']
+
+/** `s` as tokens, or null if anything in it is not part of a position (so no address is ever read as one). */
+function angleTokens(s: string): AngleToken[] | null {
+  const out: AngleToken[] = []
+  ANGLE_TOKEN.lastIndex = 0
+  while (ANGLE_TOKEN.lastIndex < s.length) {
+    const m = ANGLE_TOKEN.exec(s)
+    if (!m) return null
+    const gap = m[1].length > 0
+    if (m[2] !== undefined) out.push({ kind: 'num', text: m[2], gap })
+    else if (m[3] !== undefined) out.push({ kind: 'mark', text: m[3], gap })
+    else if (m[4] !== undefined) out.push({ kind: 'letter', text: m[4], gap })
+    else out.push({ kind: 'sep', text: m[5], gap })
+  }
+  return out
+}
+
+/**
+ * One angle from `t[at]` on: an optional hemisphere letter (one of `letters`) before or after, and one to three
+ * numbers (degrees, minutes, seconds), each with its own mark or none. Only the last number may have a fraction
+ * ("43°28.34'"), and minutes and seconds stay under 60. Null if it is not such an angle, or is over `max` degrees.
+ *
+ * Where the angle ends when nothing parts it from the next: at a number with a sign or a degree mark (the next
+ * angle's degrees), after a number with a fraction, and after the third number.
+ */
+function readAngle(t: AngleToken[], at: number, letters: string, max: number): { value: number; next: number } | null {
+  let i = at
+  let hemi: string | undefined
+  if (t[i]?.kind === 'letter') {
+    if (!letters.includes(t[i].text)) return null
+    hemi = t[i++].text
+  }
+  const led = hemi !== undefined
+  const parts: string[] = []
+  let marked = false
+  while (parts.length < 3 && t[i]?.kind === 'num') {
+    const text = t[i].text
+    if (parts.length && (/^[+-]/.test(text) || t[i + 1]?.text === '°' || parts[parts.length - 1].includes('.'))) break
+    parts.push(text)
+    i++
+    if (t[i]?.kind === 'mark') {
+      if (t[i].text !== ANGLE_MARKS[parts.length - 1]) return null
+      marked = true
+      i++
+    }
+  }
+  if (!parts.length) return null
+  if (!led && t[i]?.kind === 'letter' && letters.includes(t[i].text)) hemi = t[i++].text
+  // Bare numbers are minutes and seconds only beside a mark or a hemisphere letter: "43 28" stays latitude, longitude.
+  if (parts.length > 1 && !marked && !hemi) return null
+  const [deg, min = 0, sec = 0] = parts.map((p) => Math.abs(Number(p)))
+  if (min >= 60 || sec >= 60) return null
+  const size = deg + min / 60 + sec / 3600
+  if (!(size <= max)) return null
+  // As in the plain forms above: S and W are the negative side, and a minus sign is one whatever the letter.
+  const negative = hemi === 'S' || hemi === 'W' || parts[0].startsWith('-')
+  return { value: negative ? -size : size, next: i }
+}
+
+/**
+ * A latitude and a longitude with minutes and seconds, or with their hemisphere letters first: what the two plain
+ * patterns above do not read. `s` is the query as `parseCoordinates` cleaned it.
+ *
+ *   43°28'20"N 80°32'42"W        43° 28' 20" N, 80° 32' 42" W      43°28.34'N 80°32.7'W
+ *   -33°51'54" 151°12'34"        43 28 20 N 80 32 42 W             N 43.4723 W 80.5449
+ *   N 43° 28.340 W 080° 32.700   S33°51'54" E151°12'34"
+ *
+ * Latitude comes first, as everywhere here, and white space, a comma or a semicolon parts the two ("…N80…" is no
+ * position, as "43.47N80.54W" is none above). Something must say these are angles: a mark or a letter somewhere,
+ * or the plain patterns' answer (none) stands.
+ */
+function parseAngles(s: string): LatLon | null {
+  const t = angleTokens(s)
+  if (!t || !t.some((k) => k.kind === 'mark' || k.kind === 'letter')) return null
+  const lat = readAngle(t, 0, 'NS', 90)
+  if (!lat) return null
+  let i = lat.next
+  if (t[i]?.kind === 'sep') i++
+  else if (!t[i]?.gap) return null
+  const lon = readAngle(t, i, 'EW', 180)
+  if (!lon || lon.next !== t.length) return null
+  return { lat: lat.value, lon: lon.value }
 }
 
 // ── Network ────────────────────────────────────────────────────────────────────────────────
