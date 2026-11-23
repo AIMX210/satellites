@@ -59,7 +59,8 @@ const landing: typeof en = {
     `Wpisz dowolne miejsce na Ziemi. Zobacz wszystkie satelity, które przeleciały nad nim ${inLastDays(n)}, i\u00a0ich prawdziwe zdjęcia.`,
   ],
   builtBy: (handle: string) => `Autor: ${handle}`,
-  support: 'Pomóż utrzymać go za darmo :)',
+  support: 'Pomóż utrzymać Watched za darmo :)',
+  supportShort: 'Pomóż utrzymać go za darmo :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Szukaj miejsca',

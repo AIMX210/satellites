@@ -63,7 +63,8 @@ const landing: typeof en = {
     `Scegli un luogo qualsiasi sulla Terra. Vedi tutti i satelliti che l’hanno sorvolato ${lastWindow(days)}, e le immagini vere che hanno ripreso.`,
   ],
   builtBy: (handle: string) => `Realizzato da ${handle}`,
-  support: 'Aiutalo a restare gratuito :)',
+  support: 'Aiuta Watched a restare gratuito :)',
+  supportShort: 'Aiutalo a restare gratuito :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Cerca un luogo',

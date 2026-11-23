@@ -408,9 +408,11 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
 /**
  * Under the chips: the maker's credit, then the maker's Buy Me a Coffee link, on one mono caps line, for every visitor
  * on wide screens (owner, 2026-11-23; the link to the code is in the top-left readout now, src/ui/hud/Hud.tsx). The
- * credit always shows (owner). The line is never wrapped (a second one would push the column into the bottom readouts),
- * so it is measured: where the two do not fit (a long language in a narrow window), the link is left out. Phones never
- * show it here: their ink panel has no room for it (owner), and the computing screen, the results and About carry it.
+ * credit always shows (owner). The link is the results' ask, word for word ("Help keep Watched free :)"; owner). The line
+ * is never wrapped (a second one would push the column into the bottom readouts), so it is measured: where the whole ask
+ * does not fit beside the credit (a long language, a narrow window), its short form does ("Help keep this free :)"),
+ * and where that does not either, the link is left out. Phones never show it here: their ink panel has no room for it
+ * (owner), and the computing screen, the results and About carry it.
  */
 function LandingFoot() {
   const m = useMsgs(enLanding)
@@ -418,26 +420,40 @@ function LandingFoot() {
   const creditRef = useRef<HTMLAnchorElement>(null)
   const sepRef = useRef<HTMLSpanElement>(null)
   const linkRef = useRef<HTMLAnchorElement>(null)
-  const [tight, setTight] = useState(false)
+  const fullRef = useRef<HTMLSpanElement>(null)
+  const shortRef = useRef<HTMLSpanElement>(null)
+  // The whole ask where it fits beside the credit, else its short form, else no link.
+  const [ask, setAsk] = useState<'full' | 'short' | 'none'>('full')
   useLayoutEffect(() => {
     const foot = footRef.current
     if (!foot) return
-    // Each part is measured on its own, and none changes size with the answer (the dot leaves the flow then, still laid
-    // out), so the answer cannot flip back and forth.
+    // Every part is measured on its own, and none changes size with the answer (the dot, the link and the form not
+    // shown leave the flow, still laid out), so the answer cannot flip back and forth.
     const outer = (el: HTMLElement | null) => {
       if (!el) return 0
       const cs = getComputedStyle(el)
       return el.offsetWidth + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight)
     }
-    const fit = () => setTight(outer(creditRef.current) + outer(sepRef.current) + outer(linkRef.current) > foot.clientWidth + 0.5)
+    const fit = () => {
+      const link = linkRef.current
+      const full = fullRef.current
+      const short = shortRef.current
+      if (!link || !full || !short) return
+      // The link's arrow and gap: what it has beyond the form it shows.
+      const shown = link.dataset.ask === 'short' ? short : full
+      const extra = link.offsetWidth - shown.offsetWidth
+      const base = outer(creditRef.current) + outer(sepRef.current) + extra + parseFloat(getComputedStyle(link).marginLeft)
+      const room = foot.clientWidth + 0.5
+      setAsk(base + full.offsetWidth <= room ? 'full' : base + short.offsetWidth <= room ? 'short' : 'none')
+    }
     fit()
     if (typeof ResizeObserver === 'undefined') return
     const ro = new ResizeObserver(fit)
-    for (const el of [foot, creditRef.current, linkRef.current]) if (el) ro.observe(el)
+    for (const el of [foot, creditRef.current, fullRef.current, shortRef.current]) if (el) ro.observe(el)
     return () => ro.disconnect()
   }, [m])
   return (
-    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, tight && s.footTight)} data-hero-copy>
+    <div ref={footRef} className={cx(s.foot, s.rise, s.riseExamples, ask === 'none' && s.footTight)} data-hero-copy>
       <a ref={creditRef} className={s.credit} href={CREDIT_URL} target="_blank" rel="noreferrer">
         {m.builtBy(CREDIT_HANDLE)}
       </a>
@@ -445,8 +461,21 @@ function LandingFoot() {
         <span ref={sepRef} className={s.footSep} aria-hidden>
           ·
         </span>
-        <a ref={linkRef} className={cx(s.credit, s.coffeeLink)} href={SUPPORT_URL} target="_blank" rel="noopener" onClick={() => track('support_click', { from: 'landing' })}>
-          {m.support}
+        <a
+          ref={linkRef}
+          className={cx(s.credit, s.coffeeLink)}
+          href={SUPPORT_URL}
+          target="_blank"
+          rel="noopener"
+          data-ask={ask === 'short' ? 'short' : 'full'}
+          onClick={() => track('support_click', { from: 'landing' })}
+        >
+          <span ref={fullRef} className={s.askFull}>
+            {m.support}
+          </span>
+          <span ref={shortRef} className={s.askShort}>
+            {m.supportShort}
+          </span>
           <Glyph name="arrow-up-right" size={10} />
         </a>
       </span>

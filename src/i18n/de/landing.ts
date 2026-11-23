@@ -44,7 +44,8 @@ const landing: typeof en = {
     })} überflogen haben, und ihre echten Bilder.`,
   ],
   builtBy: (handle: string) => `Von ${handle}`,
-  support: 'Hilf, es kostenlos zu halten :)',
+  support: 'Hilf mit, dass Watched kostenlos bleibt :)',
+  supportShort: 'Hilf, es kostenlos zu halten :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   searchPlaceholder: 'Ort suchen',

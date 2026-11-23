@@ -57,10 +57,13 @@ export default ns('landing', {
   builtBy: (handle: string) => `Built by ${handle}`,
   /**
    * After the credit, on the same mono caps line (wide screens only), for every visitor: the link to the maker's Buy Me
-   * a Coffee page, with a ↗ after it. The results' ask (results.colophon.ask), shortened to fit beside the credit. Where
-   * the line cannot hold the credit and this, this is left out (Landing.tsx measures it)
+   * a Coffee page, with a ↗ after it. The results' ask, word for word (results.colophon.ask: one wording everywhere,
+   * owner). Where the line cannot hold the credit and this, `supportShort` takes its place, and where it cannot hold
+   * that either, the link is left out (Landing.tsx measures it)
    */
-  support: 'Help keep it free :)',
+  support: 'Help keep Watched free :)',
+  /** The same, shorter, where the line cannot hold the credit and the whole ask ("this" is Watched) */
+  supportShort: 'Help keep this free :)',
 
   // ── The place search ──────────────────────────────────────────────────────────────────────
   /** The empty field's prompt. Must fit beside the field's buttons on a 390 px phone (it ellipsises) */

@@ -44,7 +44,8 @@ const landing: typeof en = {
     ' 天從上空飛過的每一顆衛星，以及它們實際拍下的影像。',
   ],
   builtBy: (handle: string) => `由 ${handle} 製作`,
-  support: '幫它保持免費 :)',
+  support: '幫 Watched 保持免費 :)',
+  supportShort: '幫它保持免費 :)',
 
   // ── The place search ──
   searchPlaceholder: '搜尋地點',

@@ -485,6 +485,12 @@
   visibility: hidden;
   pointer-events: none;
 }
+/* The link's two forms: the one not shown is out of the flow, unseen, still measured (LandingFoot). */
+.coffeeLink[data-ask='full'] .askShort,
+.coffeeLink[data-ask='short'] .askFull {
+  position: absolute;
+  visibility: hidden;
+}
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px), (orientation: landscape) and (max-height: 540px) {
   .coffee {
     display: none;
