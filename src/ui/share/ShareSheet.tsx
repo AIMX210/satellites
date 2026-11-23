@@ -45,6 +45,7 @@ import { useApp } from '@/state/store'
 import { track, type ShareFrom } from '@/lib/telemetry'
 import type { Pass, Report } from '@/types'
 import { Button, Glyph, Rule, Sheet, cx, useExitClone, useIsMobile, useMediaQuery } from '@/ui/system'
+import { ColophonLine } from '../results/Colophon'
 import { isClouded } from '../results/lib/bestLook'
 import { captureFor, slug } from '../results/lib/captures'
 import { satMeta } from '../results/sats'
@@ -813,6 +814,9 @@ function SheetBody({ pass, report, onClose, clouded, kind = 'pass', from }: Shar
           ) : null}
         </div>
       ) : null}
+      {/* Last, the maker's thanks: whoever is here just chose to show the site to someone, and what they post is the
+          card, never this sheet (src/ui/results/Colophon.tsx). */}
+      <ColophonLine />
     </div>
   )
 

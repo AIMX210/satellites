@@ -70,27 +70,22 @@
     transform var(--d-hover) var(--ease-out);
 }
 
-/* The bar at the top of the overview (ColophonBar): the shared-link invite's shape (results.module.css .invite), without
-   its signal edge: it asks, it reports nothing watched. */
-.bar {
+/* The share sheet's foot (ColophonLine): one quiet line under the post preview, mono like the sheet's labels. */
+.line {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding-block: 10px;
-  padding-inline: 12px 0;
-  border: 1px solid var(--line-strong);
-}
-.barText {
-  flex: 1;
-  min-width: 0;
+  gap: 10px;
   margin: 0;
-  font-size: var(--fs-small);
-  line-height: calc(1.4 * var(--lh-text-k));
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-stretch: 87.5%;
+  font-size: var(--fs-label);
+  letter-spacing: 0.02em;
+  line-height: 1.6;
   color: var(--bone-2);
-  text-wrap: pretty;
 }
-.barLink {
+.lineLink {
   color: var(--bone);
   white-space: nowrap;
   text-decoration: underline;
@@ -98,42 +93,20 @@
   text-underline-offset: 3px;
   transition: text-decoration-color var(--d-hover) var(--ease-out);
 }
-.barArrow {
+.lineArrow {
   margin-inline-start: 4px;
-  vertical-align: baseline;
   color: var(--bone-3);
   transition: color var(--d-hover) var(--ease-out);
 }
 @media (hover: hover) {
-  .barLink:hover {
+  .lineLink:hover {
     text-decoration-color: var(--bone-3);
   }
-  .barLink:hover .barArrow {
+  .lineLink:hover .lineArrow {
     color: var(--signal);
   }
-  .barClose:hover {
-    color: var(--bone);
-  }
 }
-.barLink:focus-visible,
-.barClose:focus-visible {
+.lineLink:focus-visible {
   outline: 1px solid var(--signal);
   outline-offset: 2px;
-}
-.barClose {
-  flex: none;
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-block: -8px;
-  color: var(--bone-3);
-}
-@media (pointer: coarse) {
-  .barClose {
-    width: 44px;
-    height: 44px;
-  }
 }
