@@ -341,5 +341,9 @@ const results: typeof en = {
     title: 'Таймлапс',
     sub: 'Це місце рік за роком',
   },
+  colophon: {
+    title: 'Пригостити Armaan кавою',
+    sub: 'Watched безплатний, без реклами й реєстрації. Його створює й підтримує одна людина.',
+  },
 }
 export default results

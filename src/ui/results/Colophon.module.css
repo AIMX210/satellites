@@ -1,0 +1,71 @@
+/* The results' closing row (Colophon.tsx): one hairline row, in the time-lapse row's language but quieter (its frame is
+   the default hairline, its title bone-2 until hovered; the line under it is bone-2 too, as bone-3 is only for mono
+   labels, DESIGN §9), so the photos' way into the time-lapse stays the louder of the two. */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 20px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  color: var(--bone-2);
+  text-decoration: none;
+  transition:
+    border-color var(--d-hover) var(--ease-out),
+    background-color var(--d-hover) var(--ease-out);
+}
+@media (hover: hover) {
+  .row:hover {
+    border-color: var(--bone-3);
+  }
+  .row:hover .title {
+    color: var(--bone);
+  }
+  .row:hover .arrow {
+    color: var(--signal);
+    transform: translate(1px, -1px);
+  }
+}
+.row:active {
+  background: var(--ink-3);
+  transition-duration: 0ms;
+}
+.row:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: 2px;
+}
+.mark {
+  flex: none;
+  color: var(--bone-3-mark);
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.title {
+  font-family: var(--font-mono);
+  font-stretch: 87.5%;
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--bone-2);
+  transition: color var(--d-hover) var(--ease-out);
+}
+.sub {
+  font-size: var(--fs-small);
+  line-height: calc(1.45 * var(--lh-text-k));
+  color: var(--bone-2);
+  text-wrap: pretty;
+}
+.arrow {
+  flex: none;
+  color: var(--bone-3);
+  transition:
+    color var(--d-hover) var(--ease-out),
+    transform var(--d-hover) var(--ease-out);
+}

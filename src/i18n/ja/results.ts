@@ -326,5 +326,9 @@ const results: typeof en = {
     title: 'タイムラプス',
     sub: 'この場所の年ごとの変化',
   },
+  colophon: {
+    title: 'Armaanにコーヒーを一杯',
+    sub: 'Watchedは無料で、広告も登録もありません。ひとりで作り、運営しています。',
+  },
 }
 export default results

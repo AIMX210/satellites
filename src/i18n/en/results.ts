@@ -519,4 +519,12 @@ export default ns('results', {
     /** Under it: what it shows (the row's accessible name is the two lines together) */
     sub: 'This place, year by year',
   },
+
+  /** The row that closes the overview, after the footnotes: a link to the maker's Buy Me a Coffee page (new tab) */
+  colophon: {
+    /** Mono caps title; "Armaan" is the maker's name (keep it as it is) */
+    title: 'Buy Armaan a coffee',
+    /** Under it, one or two lines: why. Keep the brand "Watched" as it is. Its accessible name is the two lines together */
+    sub: 'Watched is free, with no ads and no sign-up. One person makes it and keeps it running.',
+  },
 })

@@ -386,5 +386,9 @@ const results: typeof en = {
     title: 'Time-lapse',
     sub: 'Questo luogo, anno dopo anno',
   },
+  colophon: {
+    title: 'Offri un caffè ad Armaan',
+    sub: 'Watched è gratuito, senza pubblicità e senza registrazione. Lo crea e lo mantiene una sola persona.',
+  },
 }
 export default results

@@ -339,5 +339,9 @@ const results: typeof en = {
     title: 'گذر سال‌ها',
     sub: 'این مکان، سال به سال',
   },
+  colophon: {
+    title: 'یک قهوه برای Armaan',
+    sub: 'Watched رایگان است، بدون تبلیغ و بدون ثبت\u200cنام. یک نفر آن را می\u200cسازد و سرپا نگه می\u200cدارد.',
+  },
 }
 export default results

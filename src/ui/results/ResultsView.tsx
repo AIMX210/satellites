@@ -44,6 +44,7 @@ import { PassList } from './PassList'
 import { Headline, MoreLine, Notes, Verdicts, countPending, enterStyle } from './Summary'
 import { Timeline } from './Timeline'
 import { TimelapseLayer, TimelapseRow } from './TimelapseEntry'
+import { Colophon } from './Colophon'
 import { clearPass, focusPass, quiet, startReplay, togglePlay } from './actions'
 import { crossed, onSceneFrame } from './capture'
 import { useGallery } from './gallery'
@@ -965,6 +966,8 @@ function Overview({ model, mobile, compactTimeline, noSummaryRule = false, wide 
             <p className={s.footnote}>
               {m.notes.passTimes(placeName(report.place), report.catalogFetchedAt ? `${report.catalogFetchedAt.slice(0, 16).replace('T', ' ')}Z` : undefined, model.tzLabel)}
             </p>
+            {/* Last of all, once the reader has had the week: how to thank the maker (Colophon.tsx). */}
+            <Colophon />
           </section>
         </>
       ) : (

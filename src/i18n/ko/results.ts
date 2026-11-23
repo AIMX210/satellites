@@ -330,5 +330,9 @@ const results: typeof en = {
     title: '타임랩스',
     sub: '해마다 본 이곳',
   },
+  colophon: {
+    title: 'Armaan에게 커피 한 잔',
+    sub: 'Watched는 무료이며 광고도 가입도 없습니다. 한 사람이 만들고 운영합니다.',
+  },
 }
 export default results

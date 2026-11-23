@@ -323,6 +323,10 @@ const results: typeof en = {
     title: '延时摄影',
     sub: '这个地方，一年一帧',
   },
+  colophon: {
+    title: '请 Armaan 喝杯咖啡',
+    sub: 'Watched 免费，没有广告，无需注册。由一个人制作和维护。',
+  },
 }
 
 export default results

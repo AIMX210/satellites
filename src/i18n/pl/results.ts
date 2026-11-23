@@ -380,5 +380,9 @@ const results: typeof en = {
     title: 'Rok po roku',
     sub: 'To miejsce w\u00a0kolejnych latach',
   },
+  colophon: {
+    title: 'Postaw Armaanowi kawę',
+    sub: 'Watched jest bezpłatny, bez reklam i\u00a0bez rejestracji. Tworzy go i\u00a0utrzymuje jedna osoba.',
+  },
 }
 export default results

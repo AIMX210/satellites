@@ -335,5 +335,9 @@ const results: typeof en = {
     title: 'Time-lapse',
     sub: 'Nơi này, qua từng năm',
   },
+  colophon: {
+    title: 'Mời Armaan một ly cà phê',
+    sub: 'Watched miễn phí, không quảng cáo, không cần đăng ký. Một người làm ra và duy trì nó.',
+  },
 }
 export default results

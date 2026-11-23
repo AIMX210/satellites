@@ -296,5 +296,9 @@ const results: typeof en = {
     title: 'टाइम-लैप्स',
     sub: 'यह जगह, साल दर साल',
   },
+  colophon: {
+    title: 'Armaan को एक कॉफ़ी पिलाएँ',
+    sub: 'Watched मुफ़्त है, न विज्ञापन, न साइन-अप। इसे एक ही व्यक्ति बनाता और चलाता है।',
+  },
 }
 export default results

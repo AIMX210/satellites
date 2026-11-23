@@ -376,6 +376,10 @@ const results: typeof en = {
     title: '縮時影像',
     sub: '這個地點，逐年變化',
   },
+  colophon: {
+    title: '請 Armaan 喝杯咖啡',
+    sub: 'Watched 免費，沒有廣告，無須註冊。由一個人製作和維護。',
+  },
 }
 
 export default results

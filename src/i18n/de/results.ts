@@ -389,6 +389,10 @@ const results: typeof en = {
     title: 'Zeitraffer',
     sub: 'Dieser Ort, Jahr für Jahr',
   },
+  colophon: {
+    title: 'Spendier Armaan einen Kaffee',
+    sub: 'Watched ist kostenlos, ohne Werbung und ohne Anmeldung. Eine einzige Person macht es und hält es am Laufen.',
+  },
 }
 
 export default results

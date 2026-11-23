@@ -446,5 +446,9 @@ const results: typeof en = {
     title: 'عبر السنين',
     sub: 'هذا المكان، عامًا بعد عام',
   },
+  colophon: {
+    title: 'دعم Armaan بفنجان قهوة',
+    sub: 'Watched مجاني، بلا إعلانات وبلا تسجيل. يصنعه ويشغّله شخص واحد.',
+  },
 }
 export default results

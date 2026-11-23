@@ -395,5 +395,9 @@ const results: typeof en = {
     title: 'Au fil des ans',
     sub: 'Ce lieu, année après année',
   },
+  colophon: {
+    title: 'Offrir un café à Armaan',
+    sub: 'Watched est gratuit, sans publicité ni inscription. Une seule personne le crée et le fait vivre.',
+  },
 }
 export default results

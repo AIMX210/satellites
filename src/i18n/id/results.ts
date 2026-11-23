@@ -315,5 +315,9 @@ const results: typeof en = {
     title: 'Time-lapse',
     sub: 'Tempat ini, dari tahun ke tahun',
   },
+  colophon: {
+    title: 'Traktir Armaan kopi',
+    sub: 'Watched gratis, tanpa iklan dan tanpa daftar. Satu orang yang membuat dan menjalankannya.',
+  },
 }
 export default results

@@ -319,5 +319,9 @@ const results: typeof en = {
     title: 'Timelapse',
     sub: 'Deze plek, jaar na jaar',
   },
+  colophon: {
+    title: 'Trakteer Armaan op koffie',
+    sub: 'Watched is gratis, zonder advertenties en zonder account. Eén persoon maakt het en houdt het draaiende.',
+  },
 }
 export default results

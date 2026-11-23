@@ -329,5 +329,9 @@ const results: typeof en = {
     title: 'Zaman atlamalı',
     sub: 'Bu yer, yıl yıl',
   },
+  colophon: {
+    title: 'Armaan’a bir kahve ısmarla',
+    sub: 'Watched ücretsiz; reklam yok, kayıt yok. Tek bir kişi yapıyor ve ayakta tutuyor.',
+  },
 }
 export default results
