@@ -412,7 +412,7 @@ function LandingImpl({ onSubmit: onSubmitProp, enterDelay = 0 }: LandingProps) {
  * is never wrapped (a second one would push the column into the bottom readouts), so it is measured: where the whole ask
  * does not fit beside the credit (a long language, a narrow window), its short form does ("Help keep this free :)"),
  * and where that does not either, the link is left out. Phones never show it here: their ink panel has no room for it
- * (owner), and the computing screen, the results and About carry it.
+ * (owner), and the results, the share sheet and About carry it.
  */
 function LandingFoot() {
   const m = useMsgs(enLanding)

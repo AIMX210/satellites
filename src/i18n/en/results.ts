@@ -527,8 +527,8 @@ export default ns('results', {
   colophon: {
     /**
      * The ask, and the link itself, to the maker's Buy Me a Coffee page (owner, 2026-11-23: the ask is the link; no
-     * "buy me a coffee"): the computing screen, the results' bar, the share sheet, the time-lapse, About. Keep the
-     * brand "Watched" as it is
+     * "buy me a coffee"): the results' bar, the share sheet, the time-lapse, About, the landing. Keep the brand
+     * "Watched" as it is
      */
     ask: 'Help keep Watched free :)',
     /** Under it in the row that closes the results (mono caps title above): where the link goes, so it is no surprise */

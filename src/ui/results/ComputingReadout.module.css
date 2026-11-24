@@ -157,35 +157,6 @@
   color: var(--warn);
 }
 
-/* ── the maker's thanks under the readout (ComputingBody): one quiet mono line on a hairline, entering with the body ── */
-.thanks {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-stretch: 87.5%;
-  font-size: var(--fs-label);
-  letter-spacing: 0.02em;
-  line-height: 1.6;
-  color: var(--bone-3);
-  animation: enter var(--d-md) var(--ease-out) 200ms backwards;
-}
-.thanksMark {
-  flex: none;
-  color: var(--bone-3-mark);
-}
-/* Phones (the stacked layout's query, src/lib/layout.ts): the computing sheet ends at the screen's bottom edge, and the
-   line came within a pixel of it on a 390 × 664 phone; closer to the readout, it stays on screen. */
-@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
-  .thanks {
-    margin-top: 2px;
-    padding-top: 10px;
-  }
-}
-
 /* ── a shared picture, shown while the recipient's report computes ── */
 .shared {
   display: flex;

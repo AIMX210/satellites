@@ -52,7 +52,7 @@ export function Colophon() {
   )
 }
 
-/** The ask as a link, in its parent's type (the computing screen, the time-lapse's note, the share sheet's line). */
+/** The ask as a link, in its parent's type (the time-lapse's note, the share sheet's line). */
 export function ColophonText({ from }: { from: SupportFrom }) {
   const m = useMsgs(enResults).colophon
   return (

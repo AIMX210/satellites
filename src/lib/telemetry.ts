@@ -40,10 +40,11 @@ export type EventType =
 
 /**
  * Which place's Buy Me a Coffee link was pressed (src/ui/results/Colophon.tsx): the results' bar, the share sheet's
- * foot, the row closing the results, About's credit, the time-lapse's video, the landing (0029); the computing screen
- * and the line under About's intro (0030).
+ * foot, the row closing the results, About's credit, the time-lapse's video, the landing (0029); the line under
+ * About's intro (0030). 0030 also allows 'computing', the computing screen's line, taken out on 2026-11-24 (owner): the
+ * admin page still names the presses it had.
  */
-export type SupportFrom = 'bar' | 'share' | 'results' | 'about' | 'timelapse' | 'landing' | 'computing' | 'about_top'
+export type SupportFrom = 'bar' | 'share' | 'results' | 'about' | 'timelapse' | 'landing' | 'about_top'
 export type ShareAction = 'x' | 'copy_link' | 'copy_image' | 'save_png' | 'native'
 /** Where a share sheet was opened from: the headline's Share, the lead photo's caption, the photo viewer, the pass view. */
 export type ShareFrom = 'headline' | 'hero' | 'viewer' | 'pass'
