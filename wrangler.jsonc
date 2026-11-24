@@ -28,7 +28,7 @@
   // ("a namespace with this account ID and title already exists", two preview builds on 2026-11-21); a production
   // deploy takes the same path. An id is not a secret and opens nothing outside this account. A fork removes the
   // `id` for its first deploy, which creates its own namespace, then writes that id here (docs/SELF-HOSTING.md).
-  "kv_namespaces": [{ "binding": "GEO_FRAMES", "id": "850fcd2c858c4eaa806bd14401a57da5" }],
+  "kv_namespaces": [{ "binding": "GEO_FRAMES", "id": "8757fc7b965240c597591e915d1b6318" }],
   // Every minute; a run with nothing due reads one key and stops.
   "triggers": { "crons": ["* * * * *"] },
   // satori imports harfbuzzjs; the package's own loader compiles WebAssembly at runtime, which Workers refuse.
